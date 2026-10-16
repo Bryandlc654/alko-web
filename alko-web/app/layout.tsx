@@ -1,0 +1,54 @@
+import type { Metadata } from "next";
+import { EB_Garamond } from "next/font/google";
+import "./globals.css";
+import Nav from "@/components/layout/Nav";
+import Footer from "@/components/layout/Footer";
+import WhatsAppFloat from "@/components/layout/WhatsAppFloat";
+import SiteScripts from "@/components/SiteScripts";
+import RouteLoader from "@/components/RouteLoader";
+import { getSettings } from "@/lib/wordpress";
+import { SITE } from "@/lib/site";
+
+// Una única tipografía para todo el sitio.
+const ebGaramond = EB_Garamond({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-eb-garamond",
+  display: "swap",
+});
+
+export const metadata: Metadata = {
+  title: SITE.title,
+  description: SITE.description,
+  keywords: SITE.keywords as unknown as string[],
+  openGraph: {
+    title: SITE.title,
+    description: SITE.description,
+    type: "website",
+    locale: SITE.locale,
+  },
+};
+
+export const revalidate = 60;
+
+export default async function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
+  const settings = await getSettings();
+
+  return (
+    <html lang="es" className="scroll-smooth">
+      <body
+        className={`${ebGaramond.variable} bg-stone-950 text-white font-sans antialiased overflow-x-hidden selection:bg-white/20`}
+      >
+        <Nav />
+        {children}
+        <Footer settings={settings} />
+        <WhatsAppFloat settings={settings} />
+        <RouteLoader />
+        <SiteScripts />
+      </body>
+    </html>
+  );
+}
