@@ -134,6 +134,13 @@ alko-web/
   - Verificado: la API pública devuelve todos los campos y el build genera servicios y guías desde WP. Portada (slides, sectores, fases, logos), `/servicios`, `/conocimiento/guias` y `/contacto` usan datos e imágenes de WP.
   - **Ya no queda contenido servido desde `content.ts`** mientras WP responda. `content.ts` sigue como respaldo si WP cae o una colección queda vacía.
   - Script de migración (temporal, no versionado): scratchpad de la sesión, `wpmcp.py`.
+- **Detalle de proyecto ampliado** (2026-10-16):
+  - `Project` incluye ahora `superficie`, `plazo`, `reto`, `solucion`, `alcance: string[]` y `cifras: ProjectCifra[]` (con `valor` y `etiqueta`).
+  - Página: la ficha del hero suma Superficie y Plazo y se adapta al número de datos. Secciones nuevas: banda de cifras (fondo negro), «El reto / La solución», «Alcance de los trabajos» (lista numerada) y «Cómo lo ejecutamos» (las fases de `getFases()`, con enlace a `/metodo`). Cada sección solo aparece si tiene datos.
+  - `content.ts`: los 3 proyectos traen estos campos y más párrafos en la memoria. **Superficies, plazos, cifras y textos son de ejemplo, redactados por Claude**: hay que revisarlos con datos reales.
+  - Plugin 1.2.0: campos `superficie`, `plazo`, `reto`, `solucion`, `alcance` (una partida por línea) y `cifras` (`valor | etiqueta` por línea), leídos con `wpLinesField` y `wpCifrasField`. Zip regenerado. El usuario reinstaló el plugin en WP y el contenido de los proyectos 16–18 se cargó vía MCP (`wp_rest_write` con `acf` + `content`). Verificado en modo WP: los 3 detalles muestran todas las secciones.
+  - `.claude/launch.json`: nueva configuración `alko-web-fallback` (puerto 4556, `WP_API_URL` vacío) para ver el contenido de respaldo.
+  - Verificado en modo respaldo (1440 px y 375 px, sin scroll horizontal) y en modo WP. `tsc` y lint pasan.
 - Ojo: un artículo con slug `articulos` (o `guias`) quedaría tapado por la ruta estática.
 - **Nueva sección Guías** (`/conocimiento/guias` + `/conocimiento/guias/[slug]`), siguiendo la convención del proyecto:
   - `lib/types.ts`: tipo `Guide` (numero, tema, descripcion, lectura, imagen, content).

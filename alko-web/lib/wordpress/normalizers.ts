@@ -5,6 +5,7 @@ import type {
   Fase,
   Guide,
   Project,
+  ProjectCifra,
   Sector,
   SiteSettings,
   Slide,
@@ -63,6 +64,24 @@ export function wpGalleryField(post: WpPost, key: string): string[] {
     .filter(Boolean);
 }
 
+/** Lee un campo de texto multilínea de ACF/SCF como lista (una entrada por línea). */
+export function wpLinesField(post: WpPost, key: string): string[] {
+  return text(wpFields(post)[key])
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
+
+/** Lee las cifras de un proyecto, escritas como «valor | etiqueta» (una por línea). */
+export function wpCifrasField(post: WpPost, key: string): ProjectCifra[] {
+  return wpLinesField(post, key)
+    .map((line) => {
+      const [valor, ...etiqueta] = line.split("|");
+      return { valor: valor.trim(), etiqueta: etiqueta.join("|").trim() };
+    })
+    .filter((cifra) => cifra.valor && cifra.etiqueta);
+}
+
 export function toSlide(post: WpPost): Slide {
   return {
     id: `slide-${post.id}`,
@@ -82,10 +101,16 @@ export function toProject(post: WpPost, index: number): Project {
     anio: text(fields.anio),
     ubicacion: text(fields.ubicacion),
     tipologia: text(fields.tipologia),
+    superficie: text(fields.superficie),
+    plazo: text(fields.plazo),
     imagen: wpImageField(post, "imagen") || wpFeaturedImage(post),
     galeria: wpGalleryField(post, "galeria"),
     enlace: text(fields.enlace) || "/contacto",
     content: post.content?.rendered ?? "",
+    reto: text(fields.reto),
+    solucion: text(fields.solucion),
+    alcance: wpLinesField(post, "alcance"),
+    cifras: wpCifrasField(post, "cifras"),
   };
 }
 

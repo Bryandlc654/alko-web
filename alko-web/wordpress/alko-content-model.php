@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       ALKO Content Model (Headless)
  * Description:       Registra los tipos de contenido (CPT) y los campos SCF/ACF que consume el front-end Next.js de ALKO.
- * Version:           1.1.0
+ * Version:           1.2.0
  * Author:            ALKO
  *
  * Requiere "Secure Custom Fields" o "Advanced Custom Fields" activo (no se usa la
@@ -171,10 +171,16 @@ add_action( 'acf/include_fields', function () {
 			array( 'key' => 'field_proyecto_indice', 'label' => 'Índice (p. ej. 01)', 'name' => 'indice', 'type' => 'text', 'wrapper' => array( 'width' => '25' ) ),
 			array( 'key' => 'field_proyecto_anio', 'label' => 'Año', 'name' => 'anio', 'type' => 'text', 'wrapper' => array( 'width' => '25' ) ),
 			array( 'key' => 'field_proyecto_ubicacion', 'label' => 'Ubicación', 'name' => 'ubicacion', 'type' => 'text', 'wrapper' => array( 'width' => '50' ) ),
-			array( 'key' => 'field_proyecto_tipologia', 'label' => 'Tipología', 'name' => 'tipologia', 'type' => 'text' ),
+			array( 'key' => 'field_proyecto_tipologia', 'label' => 'Tipología', 'name' => 'tipologia', 'type' => 'text', 'wrapper' => array( 'width' => '50' ) ),
+			array( 'key' => 'field_proyecto_superficie', 'label' => 'Superficie (p. ej. 1.450 m²)', 'name' => 'superficie', 'type' => 'text', 'wrapper' => array( 'width' => '25' ) ),
+			array( 'key' => 'field_proyecto_plazo', 'label' => 'Plazo de obra (p. ej. 20 semanas)', 'name' => 'plazo', 'type' => 'text', 'wrapper' => array( 'width' => '25' ) ),
 			array( 'key' => 'field_proyecto_imagen', 'label' => 'Imagen del proyecto', 'name' => 'imagen', 'type' => 'image', 'return_format' => 'url' ),
 			array( 'key' => 'field_proyecto_galeria', 'label' => 'Galería (imágenes adicionales)', 'name' => 'galeria', 'type' => 'gallery', 'return_format' => 'url' ),
 			array( 'key' => 'field_proyecto_enlace', 'label' => 'Enlace', 'name' => 'enlace', 'type' => 'url' ),
+			array( 'key' => 'field_proyecto_reto', 'label' => 'El reto', 'name' => 'reto', 'type' => 'textarea', 'rows' => 4, 'new_lines' => '', 'instructions' => 'Punto de partida: condicionantes y exigencias del encargo.' ),
+			array( 'key' => 'field_proyecto_solucion', 'label' => 'La solución', 'name' => 'solucion', 'type' => 'textarea', 'rows' => 4, 'new_lines' => '', 'instructions' => 'Cómo se resolvió el encargo.' ),
+			array( 'key' => 'field_proyecto_alcance', 'label' => 'Alcance de los trabajos', 'name' => 'alcance', 'type' => 'textarea', 'rows' => 6, 'new_lines' => '', 'instructions' => 'Una partida por línea.' ),
+			array( 'key' => 'field_proyecto_cifras', 'label' => 'Cifras destacadas', 'name' => 'cifras', 'type' => 'textarea', 'rows' => 4, 'new_lines' => '', 'instructions' => 'Una por línea, con el formato «valor | etiqueta». Ej.: 0 | días de cierre de la actividad' ),
 		),
 	) );
 

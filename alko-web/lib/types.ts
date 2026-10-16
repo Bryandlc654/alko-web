@@ -21,6 +21,12 @@ export interface LinkItem {
   href: string;
 }
 
+/** Dato destacado de un proyecto (p. ej. «0» + «días de cierre»). */
+export interface ProjectCifra {
+  valor: string;
+  etiqueta: string;
+}
+
 export interface Project {
   id: string;
   slug: string;
@@ -29,12 +35,24 @@ export interface Project {
   anio: string;
   ubicacion: string;
   tipologia: string;
+  /** Superficie intervenida (p. ej. «1.450 m²»). */
+  superficie: string;
+  /** Duración de la obra (p. ej. «20 semanas»). */
+  plazo: string;
   imagen: string;
   /** Imágenes adicionales para la galería del detalle (puede estar vacía). */
   galeria: string[];
   enlace: string;
   /** Contenido en HTML del proyecto (descripción larga). */
   content: string;
+  /** Punto de partida: condicionantes y exigencias del encargo. */
+  reto: string;
+  /** Cómo se resolvió el encargo. */
+  solucion: string;
+  /** Partidas o trabajos ejecutados. */
+  alcance: string[];
+  /** Cifras destacadas del proyecto. */
+  cifras: ProjectCifra[];
 }
 
 export interface Sector {

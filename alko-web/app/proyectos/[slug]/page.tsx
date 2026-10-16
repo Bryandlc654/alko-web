@@ -5,10 +5,19 @@ import Container from "@/components/ui/Container";
 import Prose from "@/components/ui/Prose";
 import ContactCta from "@/components/sections/ContactCta";
 import { ROUTES } from "@/lib/site";
-import { getProjectBySlug, getProjects, getSettings } from "@/lib/wordpress";
+import { getFases, getProjectBySlug, getProjects, getSettings } from "@/lib/wordpress";
 import { splitLead } from "@/lib/utils";
 
 export const revalidate = 60;
+
+// Columnas de la ficha en escritorio según el número de datos (clases literales para Tailwind).
+const FICHA_COLS: Record<number, string> = {
+  1: "sm:grid-cols-1",
+  2: "sm:grid-cols-2",
+  3: "sm:grid-cols-3",
+  4: "sm:grid-cols-2 lg:grid-cols-4",
+  5: "sm:grid-cols-3 lg:grid-cols-5",
+};
 
 export async function generateStaticParams() {
   const projects = await getProjects();
@@ -36,9 +45,10 @@ export default async function ProjectDetail({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const [project, projects, settings] = await Promise.all([
+  const [project, projects, fases, settings] = await Promise.all([
     getProjectBySlug(slug),
     getProjects(),
+    getFases(),
     getSettings(),
   ]);
   if (!project) return notFound();
@@ -47,8 +57,14 @@ export default async function ProjectDetail({
   const ficha = [
     ["Tipología", project.tipologia],
     ["Ubicación", project.ubicacion],
+    ["Superficie", project.superficie],
+    ["Plazo", project.plazo],
     ["Año", project.anio],
   ].filter(([, value]) => value);
+  const enfoque = [
+    { tag: "01", label: "El reto", texto: project.reto },
+    { tag: "02", label: "La solución", texto: project.solucion },
+  ].filter((item) => item.texto);
 
   // Proyecto anterior y siguiente (circular) para seguir navegando.
   const index = projects.findIndex((p) => p.slug === project.slug);
@@ -96,16 +112,16 @@ export default async function ProjectDetail({
           </div>
 
           {ficha.length > 0 && (
-            <dl className="mt-12 sm:mt-16 grid grid-cols-1 sm:grid-cols-3 border-t border-white/20">
+            <dl className={`mt-12 sm:mt-16 grid grid-cols-1 ${FICHA_COLS[ficha.length]} border-t border-white/20`}>
               {ficha.map(([label, value]) => (
                 <div
                   key={label}
-                  className="flex items-baseline justify-between gap-4 sm:block border-b sm:border-b-0 sm:border-r last:border-r-0 border-white/20 py-4 sm:py-6 sm:pr-6 sm:[&:not(:first-child)]:pl-6"
+                  className="flex items-baseline justify-between gap-4 sm:block border-b border-white/20 py-4 sm:py-6 sm:pr-6"
                 >
                   <dt className="font-mono text-[10px] sm:text-[11px] tracking-[0.25em] uppercase text-white/60">
                     {label}
                   </dt>
-                  <dd className="sm:mt-2 text-right sm:text-left font-serif font-light text-lg sm:text-2xl text-white">
+                  <dd className="sm:mt-2 text-right sm:text-left font-serif font-light text-lg sm:text-xl lg:text-2xl text-white">
                     {value}
                   </dd>
                 </div>
@@ -157,6 +173,91 @@ export default async function ProjectDetail({
         </Container>
       </section>
 
+      {/* Cifras */}
+      {project.cifras.length > 0 && (
+        <section aria-label="Cifras del proyecto" className="bg-stone-950 text-white">
+          <Container className="py-16 sm:py-20">
+            <dl
+              className={`grid grid-cols-2 gap-x-6 gap-y-10 ${project.cifras.length === 3 ? "lg:grid-cols-3" : "lg:grid-cols-4"}`}
+            >
+              {project.cifras.map((cifra, i) => (
+                <div
+                  key={`${cifra.valor}-${i}`}
+                  className="reveal-item flex flex-col-reverse justify-end border-t border-white/20 pt-6"
+                  style={{ transitionDelay: `${i * 90}ms` }}
+                >
+                  <dt className="mt-4 max-w-[16rem] text-sm sm:text-base font-light text-white/70 leading-snug">
+                    {cifra.etiqueta}
+                  </dt>
+                  <dd className="font-serif font-light text-4xl sm:text-5xl lg:text-6xl tracking-tight text-amber-500 leading-none">
+                    {cifra.valor}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </Container>
+        </section>
+      )}
+
+      {/* Reto y solución */}
+      {enfoque.length > 0 && (
+        <section className="bg-stone-100">
+          <Container className="py-20 sm:py-28">
+            <div className={`grid grid-cols-1 gap-12 lg:gap-0 ${enfoque.length > 1 ? "lg:grid-cols-2" : ""}`}>
+              {enfoque.map((item, i) => (
+                <div
+                  key={item.tag}
+                  className={`reveal-item ${i === 1 ? "lg:border-l lg:border-stone-900/15 lg:pl-16" : "lg:pr-16"}`}
+                  style={{ transitionDelay: `${i * 120}ms` }}
+                >
+                  <div className="flex items-baseline gap-4">
+                    <span className="font-mono text-[11px] sm:text-xs tracking-[0.25em] text-amber-700">{item.tag}</span>
+                    <h2 className="font-mono text-[11px] sm:text-xs tracking-[0.25em] uppercase text-stone-500">
+                      {item.label}
+                    </h2>
+                  </div>
+                  <p className="mt-6 font-serif font-light text-2xl sm:text-3xl text-stone-900 leading-snug tracking-tight">
+                    {item.texto}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </Container>
+        </section>
+      )}
+
+      {/* Alcance de los trabajos */}
+      {project.alcance.length > 0 && (
+        <section>
+          <Container className="py-20 sm:py-28">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
+              <div className="lg:col-span-4 reveal-item">
+                <span className="font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase">
+                  Alcance de los trabajos
+                </span>
+                <h2 className="mt-6 font-serif font-light text-3xl sm:text-4xl text-stone-900 leading-tight tracking-tight">
+                  Todo lo que <em className="italic text-amber-700">ejecutamos</em> en esta obra.
+                </h2>
+              </div>
+              <ol className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 sm:gap-x-10 border-t border-stone-900/15">
+                {project.alcance.map((partida, i) => (
+                  <li
+                    key={`${partida}-${i}`}
+                    className="reveal-item flex items-baseline gap-5 border-b border-stone-900/15 py-5"
+                    style={{ transitionDelay: `${(i % 6) * 60}ms` }}
+                  >
+                    <span className="font-mono text-[11px] tracking-[0.2em] text-amber-700 tabular-nums">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="text-base sm:text-lg font-light text-stone-800">{partida}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </Container>
+        </section>
+      )}
+
       {/* Galería */}
       <section className="pb-20 sm:pb-28">
         <Container>
@@ -185,6 +286,54 @@ export default async function ProjectDetail({
           </div>
         </Container>
       </section>
+
+      {/* Método */}
+      {fases.length > 0 && (
+        <section className="border-t border-stone-300 bg-white">
+          <Container className="py-20 sm:py-28">
+            <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+              <div className="reveal-item max-w-2xl">
+                <span className="font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase">
+                  Cómo lo ejecutamos
+                </span>
+                <h2 className="mt-6 font-serif font-light text-3xl sm:text-4xl lg:text-5xl text-stone-900 leading-tight tracking-tight">
+                  Un mismo <em className="italic text-amber-700">método</em> en cada obra.
+                </h2>
+              </div>
+              <Link
+                href={ROUTES.method}
+                className="group reveal-item inline-flex shrink-0 items-center gap-2 font-mono text-[11px] tracking-[0.25em] uppercase text-stone-900 hover:text-amber-700 transition-colors"
+              >
+                Conoce el método
+                <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">
+                  →
+                </span>
+              </Link>
+            </div>
+            <ol className="mt-12 sm:mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-stone-900/15 border border-stone-900/15">
+              {fases.map((fase, i) => (
+                <li
+                  key={fase.id}
+                  className="reveal-item bg-white p-6 sm:p-8"
+                  style={{ transitionDelay: `${(i % 3) * 90}ms` }}
+                >
+                  <span className="font-mono text-[11px] tracking-[0.2em] text-amber-700 tabular-nums">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <h3 className="mt-4 font-serif font-light text-xl sm:text-2xl text-stone-900 leading-snug">
+                    {fase.title}
+                  </h3>
+                  {fase.texto && (
+                    <p className="mt-3 text-sm sm:text-base font-light text-stone-600 leading-relaxed line-clamp-3">
+                      {fase.texto}
+                    </p>
+                  )}
+                </li>
+              ))}
+            </ol>
+          </Container>
+        </section>
+      )}
 
       {/* Más proyectos */}
       {neighbours.length > 0 && (
