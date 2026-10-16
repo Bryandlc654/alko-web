@@ -2,9 +2,11 @@
 /**
  * Plugin Name:       ALKO Content Model (Headless)
  * Description:       Registra los tipos de contenido (CPT) y los campos SCF/ACF que consume el front-end Next.js de ALKO.
- * Version:           1.0.0
- * Requires Plugins:  secure-custom-fields (o Advanced Custom Fields)
+ * Version:           1.1.0
  * Author:            ALKO
+ *
+ * Requiere "Secure Custom Fields" o "Advanced Custom Fields" activo (no se usa la
+ * cabecera "Requires Plugins" para admitir cualquiera de los dos).
  *
  * INSTALACIÓN
  * -----------
@@ -19,6 +21,7 @@
  *   GET /wp-json/wp/v2/fases?_embed
  *   GET /wp-json/wp/v2/fabricantes?_embed
  *   GET /wp-json/wp/v2/slides?_embed
+ *   GET /wp-json/wp/v2/guias?_embed
  *   GET /wp-json/wp/v2/ajustes?per_page=1
  */
 
@@ -112,6 +115,22 @@ add_action( 'init', function () {
 		'supports'      => array( 'title', 'thumbnail', 'page-attributes' ),
 	) );
 
+	register_post_type( 'guia', array(
+		'labels'        => array(
+			'name'          => 'Guías',
+			'singular_name' => 'Guía',
+			'add_new_item'  => 'Añadir Guía',
+			'edit_item'     => 'Editar Guía',
+			'all_items'     => 'Todas las Guías',
+		),
+		'public'        => true,
+		'show_in_rest'  => true,
+		'rest_base'     => 'guias',
+		'menu_icon'     => 'dashicons-book-alt',
+		'menu_position' => 26,
+		'supports'      => array( 'title', 'editor', 'thumbnail', 'excerpt', 'page-attributes' ),
+	) );
+
 	register_post_type( 'ajuste', array(
 		'labels'        => array(
 			'name'          => 'Ajustes del sitio',
@@ -154,6 +173,7 @@ add_action( 'acf/include_fields', function () {
 			array( 'key' => 'field_proyecto_ubicacion', 'label' => 'Ubicación', 'name' => 'ubicacion', 'type' => 'text', 'wrapper' => array( 'width' => '50' ) ),
 			array( 'key' => 'field_proyecto_tipologia', 'label' => 'Tipología', 'name' => 'tipologia', 'type' => 'text' ),
 			array( 'key' => 'field_proyecto_imagen', 'label' => 'Imagen del proyecto', 'name' => 'imagen', 'type' => 'image', 'return_format' => 'url' ),
+			array( 'key' => 'field_proyecto_galeria', 'label' => 'Galería (imágenes adicionales)', 'name' => 'galeria', 'type' => 'gallery', 'return_format' => 'url' ),
 			array( 'key' => 'field_proyecto_enlace', 'label' => 'Enlace', 'name' => 'enlace', 'type' => 'url' ),
 		),
 	) );
@@ -207,6 +227,21 @@ add_action( 'acf/include_fields', function () {
 			array( 'key' => 'field_slide_grupo', 'label' => 'Grupo', 'name' => 'grupo', 'type' => 'select', 'choices' => array( 'hero' => 'Hero', 'showcase' => 'Showcase' ), 'default_value' => 'hero', 'wrapper' => array( 'width' => '25' ) ),
 			array( 'key' => 'field_slide_alt', 'label' => 'Texto alternativo', 'name' => 'alt', 'type' => 'text', 'wrapper' => array( 'width' => '75' ) ),
 			array( 'key' => 'field_slide_imagen', 'label' => 'Imagen', 'name' => 'imagen', 'type' => 'image', 'return_format' => 'url' ),
+		),
+	) );
+
+	// Guías.
+	acf_add_local_field_group( array(
+		'key'          => 'group_guia',
+		'title'        => 'Datos de la Guía',
+		'show_in_rest' => 1,
+		'location'     => array( array( array( 'param' => 'post_type', 'operator' => '==', 'value' => 'guia' ) ) ),
+		'fields'       => array(
+			array( 'key' => 'field_guia_numero', 'label' => 'Número (p. ej. 01)', 'name' => 'numero', 'type' => 'text', 'wrapper' => array( 'width' => '25' ) ),
+			array( 'key' => 'field_guia_tema', 'label' => 'Tema (p. ej. PLANIFICACIÓN)', 'name' => 'tema', 'type' => 'text', 'wrapper' => array( 'width' => '50' ) ),
+			array( 'key' => 'field_guia_lectura', 'label' => 'Tiempo de lectura (p. ej. 8 min)', 'name' => 'lectura', 'type' => 'text', 'wrapper' => array( 'width' => '25' ) ),
+			array( 'key' => 'field_guia_descripcion', 'label' => 'Descripción', 'name' => 'descripcion', 'type' => 'textarea' ),
+			array( 'key' => 'field_guia_imagen', 'label' => 'Imagen de la guía', 'name' => 'imagen', 'type' => 'image', 'return_format' => 'url' ),
 		),
 	) );
 

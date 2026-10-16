@@ -16,7 +16,9 @@ import { MAIN_NAV, ROUTES, TRANSPARENT_HEADER_ROUTES } from "@/lib/site";
  */
 export default function Nav() {
   const pathname = usePathname();
-  const transparent = TRANSPARENT_HEADER_ROUTES.includes(pathname);
+  const transparent = TRANSPARENT_HEADER_ROUTES.some((route) =>
+    route.endsWith("/*") ? pathname.startsWith(route.slice(0, -1)) : pathname === route,
+  );
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -89,7 +91,7 @@ export default function Nav() {
                         key={child.href}
                         href={child.href}
                         className={`block rounded-lg px-4 py-2.5 text-xs tracking-[0.16em] uppercase font-light transition-colors ${
-                          isActive(child.href)
+                          pathname === child.href
                             ? "text-white"
                             : "text-white/70 hover:text-white hover:bg-white/5"
                         }`}
@@ -162,7 +164,7 @@ export default function Nav() {
                       key={child.href}
                       href={child.href}
                       className={
-                        isActive(child.href) ? "text-white" : "text-white/60 hover:text-white"
+                        pathname === child.href ? "text-white" : "text-white/60 hover:text-white"
                       }
                     >
                       {child.label}

@@ -23,7 +23,7 @@ export default function ArticlesSection({ articles }: { articles: Article[] }) {
           </div>
           <div className="reveal-item">
             <Link
-              href={ROUTES.articles}
+              href={ROUTES.articlesList}
               className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-stone-800 hover:text-amber-800 transition group/all"
             >
               <span className="underline underline-offset-4 decoration-stone-900/30 group-hover/all:decoration-stone-900">

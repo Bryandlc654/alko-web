@@ -37,7 +37,10 @@ export const ROUTES = {
   team: "/equipo",
   method: "/metodo",
   careers: "/trabaja-con-nosotros",
+  /** Base de las URL de cada artículo; redirige a articlesList (no tiene página propia). */
   articles: "/conocimiento",
+  articlesList: "/conocimiento/articulos",
+  guides: "/conocimiento/guias",
   contact: "/contacto",
 } as const;
 
@@ -55,16 +58,29 @@ export const MAIN_NAV: NavItem[] = [
       { href: ROUTES.careers, label: "Trabaja con nosotros" },
     ],
   },
-  { href: ROUTES.articles, label: "Conocimiento" },
+  {
+    href: ROUTES.articles,
+    label: "Conocimiento",
+    children: [
+      { href: ROUTES.articlesList, label: "Artículos" },
+      { href: ROUTES.guides, label: "Guías" },
+    ],
+  },
   { href: ROUTES.contact, label: "Contacto" },
 ];
 
 /**
  * Rutas en las que la cabecera es transparente al hacer scroll hasta arriba
- * (páginas con un hero oscuro a pantalla completa). En el resto, la cabecera
+ * (páginas con un hero oscuro a pantalla completa). Una entrada terminada en
+ * "/*" se aplica a todas sus subrutas. En el resto, la cabecera
  * arranca con fondo sólido para mantener la legibilidad.
  */
-export const TRANSPARENT_HEADER_ROUTES: string[] = [ROUTES.home];
+export const TRANSPARENT_HEADER_ROUTES: string[] = [
+  ROUTES.home,
+  ROUTES.projects,
+  `${ROUTES.projects}/*`,
+  ROUTES.contact,
+];
 
 /** Elementos del pie de página. */
 export const FOOTER_NAV: NavItem[] = [
@@ -74,6 +90,6 @@ export const FOOTER_NAV: NavItem[] = [
   { href: ROUTES.team, label: "Equipo" },
   { href: ROUTES.method, label: "Método" },
   { href: ROUTES.careers, label: "Trabaja con nosotros" },
-  { href: ROUTES.articles, label: "Conocimiento" },
+  { href: ROUTES.articlesList, label: "Conocimiento" },
   { href: ROUTES.contact, label: "Contacto" },
 ];

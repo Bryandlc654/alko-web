@@ -2,6 +2,7 @@ import type {
   Article,
   Fabricante,
   Fase,
+  Guide,
   Project,
   Sector,
   SiteSettings,
@@ -48,6 +49,7 @@ export const DEFAULT_PROJECTS: Project[] = [
     ubicacion: "Madrid",
     tipologia: "Reforma integral de oficinas",
     imagen: "/start-research-1.jpg",
+    galeria: ["/start-research-2.jpg"],
     enlace: "/contacto",
     content:
       "<p>Transformación arquitectónica e infraestructural completa de una sede corporativa de dos plantas en Madrid, manteniendo la operatividad continua de la compañía durante toda la obra.</p><p>El proyecto integró áreas de trabajo abiertas, laboratorios analíticos, climatización VRF, renovación forzada de aire, cableado estructurado y acabados de especificación H2, todo con una única dirección facultativa.</p>",
@@ -61,6 +63,7 @@ export const DEFAULT_PROJECTS: Project[] = [
     ubicacion: "Paseo de la Castellana, Madrid",
     tipologia: "Reforma integral de oficinas",
     imagen: "/oficinas.jpg",
+    galeria: [],
     enlace: "/contacto",
     content:
       "<p>Reforma integral de una planta corporativa de oficinas con redistribución de espacios, nuevas instalaciones de climatización y datos, y acabados de alta gama.</p><p>La coordinación de gremios y las compras anticipadas permitieron cumplir un cronograma cerrado sin afectar a la actividad de las plantas contiguas.</p>",
@@ -74,6 +77,7 @@ export const DEFAULT_PROJECTS: Project[] = [
     ubicacion: "El Viso, Chamartín, Madrid",
     tipologia: "Reforma residencial",
     imagen: "/el-viso.jpg",
+    galeria: [],
     enlace: "/contacto",
     content:
       "<p>Reforma integral de una vivienda unifamiliar en El Viso, con renovación completa de instalaciones, carpinterías minimalistas y materiales nobles seleccionados con los fabricantes.</p><p>El resultado combina confort, eficiencia energética y un control milimétrico de tolerancias y acabados.</p>",
@@ -223,6 +227,48 @@ export const DEFAULT_ARTICLES: Article[] = [
       "<p>Anticipar las compras críticas de maquinaria y materiales es la herramienta más eficaz para proteger un plazo cerrado.</p><p>Un único equipo coordinando compras, instalaciones y obra elimina desviaciones y asegura la entrega con verificación técnica total.</p>",
     image: "/proceso-control.jpg",
     date: "2024-02-20",
+  },
+];
+
+export const DEFAULT_GUIDES: Guide[] = [
+  {
+    id: "g-1",
+    slug: "planificar-reforma-integral",
+    numero: "01",
+    title: "Cómo planificar una reforma integral",
+    tema: "PLANIFICACIÓN",
+    descripcion:
+      "Del primer programa de necesidades a la entrega de llaves: las decisiones que conviene tomar antes de empezar la obra.",
+    lectura: "8 min",
+    imagen: "/proceso-coordinacion.jpg",
+    content:
+      "<h2>1. Programa de necesidades</h2><p>Antes de pedir presupuestos, define cómo se va a usar el espacio: estancias, almacenamiento, instalaciones y prioridades. Un programa claro evita cambios de criterio a mitad de obra.</p><h2>2. Proyecto y mediciones</h2><p>Con el proyecto definido se pueden medir partidas y comparar ofertas en igualdad de condiciones. Sin mediciones, los presupuestos no son comparables.</p><h2>3. Compras críticas</h2><p>Carpinterías, piedra, climatización y cocina tienen plazos de fabricación largos. Cerrarlas al inicio protege el calendario.</p><h2>4. Ejecución y control</h2><p>Un único interlocutor coordina oficios, instalaciones y acabados, con visitas de control y actas en cada hito.</p><h2>5. Entrega</h2><p>Revisión conjunta de acabados, pruebas de instalaciones y documentación final.</p>",
+  },
+  {
+    id: "g-2",
+    slug: "presupuesto-de-obra",
+    numero: "02",
+    title: "Cómo leer y comparar un presupuesto de obra",
+    tema: "PRESUPUESTO",
+    descripcion:
+      "Qué debe incluir un presupuesto bien hecho y cómo detectar partidas abiertas antes de firmar.",
+    lectura: "6 min",
+    imagen: "/proceso-compras.jpg",
+    content:
+      "<h2>Partidas cerradas frente a partidas abiertas</h2><p>Un presupuesto fiable describe cada partida con su unidad, medición y calidad. Las partidas «a justificar» o sin medición son la principal fuente de desviaciones.</p><h2>Calidades y marcas</h2><p>Comprueba que materiales y equipos están definidos con marca y modelo, o con una referencia equivalente acordada.</p><h2>Qué suele quedar fuera</h2><ul><li>Licencias y tasas.</li><li>Gestión de residuos.</li><li>Ayudas de albañilería a instalaciones.</li><li>Limpieza final.</li></ul><h2>Calendario de pagos</h2><p>Vincula los pagos a hitos verificables de obra, no a fechas.</p>",
+  },
+  {
+    id: "g-3",
+    slug: "elegir-materiales-y-acabados",
+    numero: "03",
+    title: "Cómo elegir materiales y acabados",
+    tema: "MATERIALES",
+    descripcion:
+      "Criterios para seleccionar pavimentos, revestimientos y carpinterías pensando en uso, mantenimiento y plazos.",
+    lectura: "7 min",
+    imagen: "/service-interior-1.jpg",
+    content:
+      "<h2>Uso antes que estética</h2><p>El tránsito, la humedad y la exposición solar de cada estancia determinan qué materiales funcionan a largo plazo.</p><h2>Mantenimiento</h2><p>La piedra natural, la madera y los microcementos exigen cuidados distintos. Conviene conocerlos antes de elegir.</p><h2>Muestras en obra</h2><p>Valida siempre las muestras con la luz real del espacio y junto al resto de acabados.</p><h2>Plazos de suministro</h2><p>Algunos acabados se fabrican bajo pedido: incorpora sus plazos al calendario de compras.</p>",
   },
 ];
 

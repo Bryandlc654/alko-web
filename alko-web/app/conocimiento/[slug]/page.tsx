@@ -68,10 +68,10 @@ export default async function ArticleDetail({
         <div className="max-w-3xl mx-auto">
           <Prose html={article.content} />
           <Link
-            href={ROUTES.articles}
+            href={ROUTES.articlesList}
             className="mt-10 inline-flex items-center gap-2 text-xs uppercase tracking-widest border-b border-stone-900 pb-1 hover:text-amber-800 hover:border-amber-800"
           >
-            ← Volver a conocimiento
+            ← Volver a artículos
           </Link>
         </div>
       </Container>

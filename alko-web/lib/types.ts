@@ -30,6 +30,8 @@ export interface Project {
   ubicacion: string;
   tipologia: string;
   imagen: string;
+  /** Imágenes adicionales para la galería del detalle (puede estar vacía). */
+  galeria: string[];
   enlace: string;
   /** Contenido en HTML del proyecto (descripción larga). */
   content: string;
@@ -71,6 +73,22 @@ export interface Article {
   image: string;
   /** Fecha ISO 8601. */
   date: string;
+}
+
+/** Guía práctica paso a paso (sección Conocimiento → Guías). */
+export interface Guide {
+  id: string;
+  slug: string;
+  numero: string;
+  title: string;
+  /** Tema principal, en mayúsculas (p. ej. PLANIFICACIÓN). */
+  tema: string;
+  descripcion: string;
+  /** Tiempo de lectura orientativo (p. ej. "8 min"). */
+  lectura: string;
+  imagen: string;
+  /** Contenido en HTML de la guía. */
+  content: string;
 }
 
 export interface SiteSettings {

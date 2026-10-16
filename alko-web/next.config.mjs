@@ -29,6 +29,10 @@ const nextConfig = {
     minimumCacheTTL: 2678400,
     remotePatterns,
   },
+  // «Biblioteca técnica» (/conocimiento) se eliminó: la sección arranca en Artículos.
+  async redirects() {
+    return [{ source: "/conocimiento", destination: "/conocimiento/articulos", permanent: true }];
+  },
 };
 
 export default nextConfig;

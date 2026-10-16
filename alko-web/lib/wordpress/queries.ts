@@ -2,6 +2,7 @@ import {
   DEFAULT_ARTICLES,
   DEFAULT_FABRICANTES,
   DEFAULT_FASES,
+  DEFAULT_GUIDES,
   DEFAULT_HERO_SLIDES,
   DEFAULT_PROJECTS,
   DEFAULT_SECTORS,
@@ -12,6 +13,7 @@ import type {
   Article,
   Fabricante,
   Fase,
+  Guide,
   HomeData,
   Project,
   Sector,
@@ -23,6 +25,7 @@ import {
   toArticle,
   toFabricante,
   toFase,
+  toGuide,
   toProject,
   toSector,
   toSettings,
@@ -127,6 +130,22 @@ export async function getArticleBySlug(slug: string): Promise<Article | null> {
   const posts = await wpGet<WpPost[]>(`posts?slug=${encodeURIComponent(slug)}&_embed`);
   if (posts && posts.length > 0) return toArticle(posts[0]);
   return DEFAULT_ARTICLES.find((article) => article.slug === slug) ?? null;
+}
+
+/* --------------------------------- Guías ---------------------------------- */
+
+export async function getGuides(): Promise<Guide[]> {
+  const posts = await collection(`guias?${COLLECTION_ORDER}`);
+  if (!posts || posts.length === 0) return DEFAULT_GUIDES;
+  return posts.map((post, i) =>
+    withFallbackImage(toGuide(post, i), DEFAULT_GUIDES[i % DEFAULT_GUIDES.length]?.imagen),
+  );
+}
+
+export async function getGuideBySlug(slug: string): Promise<Guide | null> {
+  const posts = await wpGet<WpPost[]>(`guias?slug=${encodeURIComponent(slug)}&_embed`);
+  if (posts && posts.length > 0) return toGuide(posts[0], 0);
+  return DEFAULT_GUIDES.find((guide) => guide.slug === slug) ?? null;
 }
 
 /* ------------------------------- Ajustes ---------------------------------- */

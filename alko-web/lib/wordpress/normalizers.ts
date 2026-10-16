@@ -3,6 +3,7 @@ import type {
   Article,
   Fabricante,
   Fase,
+  Guide,
   Project,
   Sector,
   SiteSettings,
@@ -47,6 +48,21 @@ export function wpImageField(post: WpPost, key: string): string {
   return "";
 }
 
+/** Lee un campo de galería de ACF/SCF (array de URLs o de objetos imagen). */
+export function wpGalleryField(post: WpPost, key: string): string[] {
+  const value = wpFields(post)[key];
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((item) =>
+      typeof item === "string"
+        ? item
+        : item && typeof item === "object" && "url" in item
+          ? text((item as { url: unknown }).url)
+          : "",
+    )
+    .filter(Boolean);
+}
+
 export function toSlide(post: WpPost): Slide {
   return {
     id: `slide-${post.id}`,
@@ -67,6 +83,7 @@ export function toProject(post: WpPost, index: number): Project {
     ubicacion: text(fields.ubicacion),
     tipologia: text(fields.tipologia),
     imagen: wpImageField(post, "imagen") || wpFeaturedImage(post),
+    galeria: wpGalleryField(post, "galeria"),
     enlace: text(fields.enlace) || "/contacto",
     content: post.content?.rendered ?? "",
   };
@@ -121,6 +138,22 @@ export function toArticle(post: WpPost, fallbackImage = ""): Article {
     content: post.content?.rendered ?? "",
     image: wpFeaturedImage(post) || fallbackImage,
     date: post.date ?? "",
+  };
+}
+
+export function toGuide(post: WpPost, index: number): Guide {
+  const fields = wpFields(post);
+  const title = wpTitle(post);
+  return {
+    id: `guide-${post.id}`,
+    slug: post.slug || slugify(title),
+    numero: text(fields.numero) || String(index + 1).padStart(2, "0"),
+    title,
+    tema: text(fields.tema),
+    descripcion: text(fields.descripcion) || decodeEntities(stripHtml(post.excerpt?.rendered ?? "")),
+    lectura: text(fields.lectura),
+    imagen: wpImageField(post, "imagen") || wpFeaturedImage(post),
+    content: post.content?.rendered ?? "",
   };
 }
 

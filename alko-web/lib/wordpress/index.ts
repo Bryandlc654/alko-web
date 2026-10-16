@@ -11,6 +11,8 @@ export {
   getFabricantes,
   getArticles,
   getArticleBySlug,
+  getGuides,
+  getGuideBySlug,
   getSettings,
   getHomeData,
 } from "./queries";

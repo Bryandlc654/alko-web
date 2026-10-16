@@ -56,3 +56,18 @@ export function formatDate(value: string): string {
     year: "numeric",
   }).format(date);
 }
+
+/**
+ * Separa el primer párrafo de un contenido HTML (como texto plano, para usarlo
+ * de entradilla) del resto del HTML.
+ */
+export function splitLead(html: string): { lead: string; rest: string } {
+  const match = html.match(/<p[^>]*>([\s\S]*?)<\/p>/i);
+  if (!match || match.index == null) {
+    return { lead: decodeEntities(stripHtml(html)), rest: "" };
+  }
+  return {
+    lead: decodeEntities(stripHtml(match[1])),
+    rest: (html.slice(0, match.index) + html.slice(match.index + match[0].length)).trim(),
+  };
+}

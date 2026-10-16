@@ -44,7 +44,10 @@ export async function wpGet<T>(path: string): Promise<T | null> {
   if (!isWpConfigured) return null;
 
   try {
-    const res = await fetch(`${WP_API_URL}/wp-json/wp/v2/${path}`, {
+    // acf_format=standard: ACF/SCF devuelve los campos ya formateados (imágenes
+    // y galerías como URL) en lugar de IDs de adjunto.
+    const separator = path.includes("?") ? "&" : "?";
+    const res = await fetch(`${WP_API_URL}/wp-json/wp/v2/${path}${separator}acf_format=standard`, {
       next: { revalidate: WP_REVALIDATE_SECONDS },
     });
     if (!res.ok) return null;
