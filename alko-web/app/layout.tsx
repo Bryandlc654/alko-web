@@ -48,7 +48,7 @@ export default async function RootLayout({
       <body
         className={`${ebGaramond.variable} bg-stone-950 text-white font-sans antialiased overflow-x-hidden selection:bg-white/20`}
       >
-        <Nav />
+        <Nav settings={settings} />
         {children}
         {process.env.NODE_ENV === "production" && (
           <script dangerouslySetInnerHTML={{ __html: REVEAL_IN_VIEW_SCRIPT }} />
