@@ -23,12 +23,13 @@ html {
 }
 
 /* Clases de animación de entrada con scroll */
+/* Sin will-change: con decenas de elementos crea una capa por cada uno y encarece
+   el estilo y el pintado iniciales; GSAP promueve la capa solo mientras anima. */
 .reveal-item {
   opacity: 0;
   transform: translateY(32px);
   transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1),
     transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: opacity, transform;
 }
 
 .reveal-item.is-visible {
@@ -41,12 +42,19 @@ html {
   transform: scale(0.96) translateY(24px);
   transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
     transform 1s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: opacity, transform;
 }
 
 .reveal-scale.is-visible {
   opacity: 1;
   transform: scale(1) translateY(0);
+}
+
+/* Marcado por el script en línea del layout antes de hidratar: lo que ya está en
+   pantalla aparece sin esperar a React ni a GSAP (mejora el LCP). */
+.reveal-item[data-inview],
+.reveal-scale[data-inview] {
+  opacity: 1;
+  transform: none;
 }
 
 /* Servicios Interactivo Dual-State - Transición Cinemática Ultra-Suave */
@@ -70,7 +78,6 @@ html {
   transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
     transform 0.75s cubic-bezier(0.16, 1, 0.3, 1),
     filter 0.65s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: opacity, transform, filter;
 }
 
 /* Estado Reposo / Inactivo */

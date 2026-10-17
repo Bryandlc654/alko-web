@@ -141,6 +141,13 @@ alko-web/
   - Plugin 1.2.0: campos `superficie`, `plazo`, `reto`, `solucion`, `alcance` (una partida por línea) y `cifras` (`valor | etiqueta` por línea), leídos con `wpLinesField` y `wpCifrasField`. Zip regenerado. El usuario reinstaló el plugin en WP y el contenido de los proyectos 16–18 se cargó vía MCP (`wp_rest_write` con `acf` + `content`). Verificado en modo WP: los 3 detalles muestran todas las secciones.
   - `.claude/launch.json`: nueva configuración `alko-web-fallback` (puerto 4556, `WP_API_URL` vacío) para ver el contenido de respaldo.
   - Verificado en modo respaldo (1440 px y 375 px, sin scroll horizontal) y en modo WP. `tsc` y lint pasan.
+- **Optimización de rendimiento** (2026-10-17, objetivo PageSpeed móvil ≥ 90):
+  - Causa de que las imágenes «a veces» tardaran: el optimizador `/_next/image` codificaba en AVIF (muy lento) la primera vez que se pedía cada tamaño. En la portada, `slide1` tardó 7,4 s. Ahora `next.config.mjs` usa **solo WebP** y menos tamaños (`deviceSizes` 640/828/1080/1440/1920, `imageSizes` 64–384): las 6 imágenes de la portada salen en ~2,3 s con la caché vacía y en ~6 ms con la caché llena. El origen (Hostinger) ya tarda ~0,8 s por imagen (TTFB 0,5 s).
+  - Logos de cabecera y pie con `sizes` (antes se pedía la variante de 1080 px); la imagen de Process ya no lleva `priority`; los slides 2+ del hero llevan `fetchPriority="low"`.
+  - `package.json` → `browserslist` moderno (Chrome/Edge/Firefox ≥ 111, Safari ≥ 16.4): quita polyfills antiguos.
+  - Animaciones: un script en línea en `layout.tsx` marca con `data-inview` los `.reveal-*` visibles antes de hidratar (CSS en `globals.css`), así no esperan a React ni a GSAP. GSAP se carga en `requestIdleCallback` tras `load`, o con el primer scroll. Se quitó `will-change` de `.reveal-*` y `.service-row`.
+  - Se probó `experimental.inlineCss`: no mejoraba (y Next dejaba de precargar cosas), así que **se descartó**. Next tampoco emite la precarga de las fuentes (`next/font`); no se ha tocado.
+  - Medición: Lighthouse 12.6 móvil en local (`next start`), mediana de 3 pasadas. La máquina (Ryzen 5 3500U, benchmarkIndex ~1000) es más lenta que la de PageSpeed: con `cpuSlowdownMultiplier=2` (calibrado) da 92–97 en portada, proyectos, detalle, servicios, artículos y contacto; con 4× (por defecto) da 75–90 y mucho ruido. **Falta medir en PageSpeed real tras desplegar.**
 - Ojo: un artículo con slug `articulos` (o `guias`) quedaría tapado por la ruta estática.
 - **Nueva sección Guías** (`/conocimiento/guias` + `/conocimiento/guias/[slug]`), siguiendo la convención del proyecto:
   - `lib/types.ts`: tipo `Guide` (numero, tema, descripcion, lectura, imagen, content).

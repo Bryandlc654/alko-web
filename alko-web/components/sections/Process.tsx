@@ -73,7 +73,6 @@ export default function Process({ fases }: { fases: Fase[] }) {
                 fill
                 sizes="(max-width: 1024px) 100vw, 576px"
                 className="object-cover object-center transition-all duration-700 ease-out"
-                priority
               />
             </div>
           </div>

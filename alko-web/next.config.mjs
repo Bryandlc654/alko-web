@@ -25,7 +25,12 @@ const nextConfig = {
   outputFileTracingRoot: __dirname,
   poweredByHeader: false,
   images: {
-    formats: ["image/avif", "image/webp"],
+    // Solo WebP: AVIF pesa algo menos, pero codificarlo es varias veces más lento y la
+    // primera petición de cada tamaño dejaba las imágenes varios segundos en cola.
+    formats: ["image/webp"],
+    // Menos variantes = menos trabajo del optimizador y más aciertos de caché.
+    deviceSizes: [640, 828, 1080, 1440, 1920],
+    imageSizes: [64, 128, 256, 384],
     minimumCacheTTL: 2678400,
     remotePatterns,
   },

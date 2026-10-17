@@ -39,6 +39,7 @@ export default function Footer({ settings }: { settings: SiteSettings }) {
                 alt="ALKO Construcción"
                 width={500}
                 height={130}
+                sizes="160px"
                 className="h-9 sm:h-10 w-auto object-contain"
               />
             </div>

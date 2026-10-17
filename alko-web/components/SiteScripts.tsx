@@ -88,14 +88,22 @@ export default function SiteScripts() {
     }
 
     /* ---------- GSAP (cargado en diferido para no bloquear la carga inicial) ---------- */
-    const animatedElements = document.querySelectorAll(".reveal-item, .reveal-scale");
+    const allAnimated = Array.from(document.querySelectorAll(".reveal-item, .reveal-scale"));
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const showAll = () => animatedElements.forEach((el) => el.classList.add("is-visible"));
 
-    if (prefersReducedMotion) {
-      showAll();
-    } else {
-      void (async () => {
+    // Lo que ya está en pantalla aparece sin esperar a GSAP (con la transición CSS):
+    // si no, el contenido principal queda invisible hasta que se descarga la librería.
+    const viewportBottom = window.innerHeight;
+    const animatedElements = allAnimated.filter((el) => {
+      if (prefersReducedMotion || el.getBoundingClientRect().top < viewportBottom) {
+        el.classList.add("is-visible");
+        return false;
+      }
+      return true;
+    });
+
+    if (!prefersReducedMotion) {
+      const runGsap = async () => {
         const [{ default: gsap }, { ScrollTrigger }] = await Promise.all([
           import("gsap"),
           import("gsap/ScrollTrigger"),
@@ -206,9 +214,28 @@ export default function SiteScripts() {
           );
         }
 
-        addEvent(window, "load", () => ScrollTrigger.refresh());
         ScrollTrigger.refresh();
-      })();
+      };
+
+      // GSAP no hace falta para el primer pintado: se carga cuando la página ya ha
+      // terminado y el navegador está libre (o antes, si el usuario empieza a hacer scroll).
+      let gsapStarted = false;
+      const startGsap = () => {
+        if (gsapStarted || cancelled) return;
+        gsapStarted = true;
+        void runGsap();
+      };
+      const scheduleGsap = () => {
+        if ("requestIdleCallback" in window) {
+          const id = window.requestIdleCallback(startGsap, { timeout: 2000 });
+          cleanups.push(() => window.cancelIdleCallback(id));
+        } else {
+          timers.push(setTimeout(startGsap, 200) as unknown as number);
+        }
+      };
+      addEvent(window, "scroll", startGsap, { once: true, passive: true });
+      if (document.readyState === "complete") scheduleGsap();
+      else addEvent(window, "load", scheduleGsap, { once: true });
     }
 
     /* ---------- Interactividad de fases ---------- */

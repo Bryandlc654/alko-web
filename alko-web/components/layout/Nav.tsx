@@ -56,6 +56,7 @@ export default function Nav() {
             alt="ALKO"
             width={500}
             height={130}
+            sizes="170px"
             priority
             className="h-8 sm:h-10 md:h-11 w-auto object-contain transition-transform group-hover:scale-105 duration-300"
           />

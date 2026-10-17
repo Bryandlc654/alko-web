@@ -18,6 +18,8 @@ export default function Hero({ slides }: { slides: Slide[] }) {
               alt={slide.alt}
               fill
               priority={i === 0}
+              // Los demás slides no se ven al cargar: que no compitan con el primero.
+              fetchPriority={i === 0 ? undefined : "low"}
               sizes="100vw"
               className={`object-cover object-center filter brightness-100 contrast-[1.01] transition-transform duration-[7000ms] ease-out ${
                 i === 0 ? "scale-105" : "scale-100"
