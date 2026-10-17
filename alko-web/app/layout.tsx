@@ -32,8 +32,9 @@ export const metadata: Metadata = {
 
 export const revalidate = 60;
 
-// Se ejecuta en cuanto se ha parseado el contenido, antes de hidratar. Usa un atributo
-// data-* (no una clase) para no provocar diferencias de hidratación en React.
+// Se ejecuta en cuanto se ha parseado el contenido, antes de hidratar. Solo en producción:
+// en desarrollo React avisa del atributo añadido como diferencia de hidratación (en
+// producción no se comprueba) y allí ya basta con SiteScripts.
 const REVEAL_IN_VIEW_SCRIPT = `(function(){var h=innerHeight;document.querySelectorAll(".reveal-item,.reveal-scale").forEach(function(e){if(e.getBoundingClientRect().top<h)e.setAttribute("data-inview","")})})()`;
 
 export default async function RootLayout({
@@ -48,7 +49,9 @@ export default async function RootLayout({
       >
         <Nav />
         {children}
-        <script dangerouslySetInnerHTML={{ __html: REVEAL_IN_VIEW_SCRIPT }} />
+        {process.env.NODE_ENV === "production" && (
+          <script dangerouslySetInnerHTML={{ __html: REVEAL_IN_VIEW_SCRIPT }} />
+        )}
         <Footer settings={settings} />
         <WhatsAppFloat settings={settings} />
         <RouteLoader />

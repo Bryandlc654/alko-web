@@ -27,6 +27,19 @@ export interface ProjectCifra {
   etiqueta: string;
 }
 
+/** Etapa del cronograma de una obra. */
+export interface ProjectEtapa {
+  periodo: string;
+  titulo: string;
+  texto: string;
+}
+
+/** Línea de la ficha de materiales y acabados. */
+export interface ProjectMaterial {
+  elemento: string;
+  detalle: string;
+}
+
 export interface Project {
   id: string;
   slug: string;
@@ -35,6 +48,10 @@ export interface Project {
   anio: string;
   ubicacion: string;
   tipologia: string;
+  /** Cliente o tipo de cliente (p. ej. «Cliente particular»). */
+  cliente: string;
+  /** Slug del servicio relacionado (p. ej. «oficinas»). */
+  servicio: string;
   /** Superficie intervenida (p. ej. «1.450 m²»). */
   superficie: string;
   /** Duración de la obra (p. ej. «20 semanas»). */
@@ -53,6 +70,12 @@ export interface Project {
   alcance: string[];
   /** Cifras destacadas del proyecto. */
   cifras: ProjectCifra[];
+  /** Etapas de la obra, en orden. */
+  cronograma: ProjectEtapa[];
+  /** Materiales y acabados principales. */
+  materiales: ProjectMaterial[];
+  /** Cierre: qué se consiguió con el proyecto. */
+  resultado: string;
 }
 
 export interface Sector {

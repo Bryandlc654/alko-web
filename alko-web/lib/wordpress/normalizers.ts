@@ -6,6 +6,8 @@ import type {
   Guide,
   Project,
   ProjectCifra,
+  ProjectEtapa,
+  ProjectMaterial,
   Sector,
   SiteSettings,
   Slide,
@@ -72,14 +74,34 @@ export function wpLinesField(post: WpPost, key: string): string[] {
     .filter(Boolean);
 }
 
-/** Lee las cifras de un proyecto, escritas como «valor | etiqueta» (una por línea). */
-export function wpCifrasField(post: WpPost, key: string): ProjectCifra[] {
+/**
+ * Lee un campo multilínea cuyas líneas tienen columnas separadas por «|».
+ * La última columna conserva cualquier «|» sobrante; las filas incompletas se descartan.
+ */
+export function wpRowsField(post: WpPost, key: string, columns: number): string[][] {
   return wpLinesField(post, key)
     .map((line) => {
-      const [valor, ...etiqueta] = line.split("|");
-      return { valor: valor.trim(), etiqueta: etiqueta.join("|").trim() };
+      const parts = line.split("|");
+      const head = parts.slice(0, columns - 1);
+      const tail = parts.slice(columns - 1).join("|");
+      return [...head, tail].map((part) => part.trim());
     })
-    .filter((cifra) => cifra.valor && cifra.etiqueta);
+    .filter((row) => row.length === columns && row.every(Boolean));
+}
+
+/** Cifras de un proyecto: «valor | etiqueta», una por línea. */
+export function wpCifrasField(post: WpPost, key: string): ProjectCifra[] {
+  return wpRowsField(post, key, 2).map(([valor, etiqueta]) => ({ valor, etiqueta }));
+}
+
+/** Cronograma de un proyecto: «periodo | título | descripción», una etapa por línea. */
+export function wpCronogramaField(post: WpPost, key: string): ProjectEtapa[] {
+  return wpRowsField(post, key, 3).map(([periodo, titulo, texto]) => ({ periodo, titulo, texto }));
+}
+
+/** Materiales de un proyecto: «elemento | detalle», uno por línea. */
+export function wpMaterialesField(post: WpPost, key: string): ProjectMaterial[] {
+  return wpRowsField(post, key, 2).map(([elemento, detalle]) => ({ elemento, detalle }));
 }
 
 export function toSlide(post: WpPost): Slide {
@@ -101,6 +123,8 @@ export function toProject(post: WpPost, index: number): Project {
     anio: text(fields.anio),
     ubicacion: text(fields.ubicacion),
     tipologia: text(fields.tipologia),
+    cliente: text(fields.cliente),
+    servicio: text(fields.servicio),
     superficie: text(fields.superficie),
     plazo: text(fields.plazo),
     imagen: wpImageField(post, "imagen") || wpFeaturedImage(post),
@@ -111,6 +135,9 @@ export function toProject(post: WpPost, index: number): Project {
     solucion: text(fields.solucion),
     alcance: wpLinesField(post, "alcance"),
     cifras: wpCifrasField(post, "cifras"),
+    cronograma: wpCronogramaField(post, "cronograma"),
+    materiales: wpMaterialesField(post, "materiales"),
+    resultado: text(fields.resultado),
   };
 }
 

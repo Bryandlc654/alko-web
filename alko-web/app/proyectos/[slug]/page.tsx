@@ -5,7 +5,7 @@ import Container from "@/components/ui/Container";
 import Prose from "@/components/ui/Prose";
 import ContactCta from "@/components/sections/ContactCta";
 import { ROUTES } from "@/lib/site";
-import { getFases, getProjectBySlug, getProjects, getSettings } from "@/lib/wordpress";
+import { getFases, getProjectBySlug, getProjects, getSectorBySlug, getSettings } from "@/lib/wordpress";
 import { splitLead } from "@/lib/utils";
 
 export const revalidate = 60;
@@ -52,6 +52,7 @@ export default async function ProjectDetail({
     getSettings(),
   ]);
   if (!project) return notFound();
+  const servicio = project.servicio ? await getSectorBySlug(project.servicio) : null;
 
   const { lead, rest } = splitLead(project.content);
   const ficha = [
@@ -148,13 +149,38 @@ export default async function ProjectDetail({
         <Container className="py-20 sm:py-28">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
             <div className="lg:col-span-4 reveal-item">
-              <div className="flex items-center gap-4 lg:sticky lg:top-32">
-                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-amber-700">
-                  <span className="h-1.5 w-1.5 rounded-full bg-amber-700" />
-                </span>
-                <span className="font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase">
-                  Memoria del proyecto
-                </span>
+              <div className="lg:sticky lg:top-32">
+                <div className="flex items-center gap-4">
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-amber-700">
+                    <span className="h-1.5 w-1.5 rounded-full bg-amber-700" />
+                  </span>
+                  <span className="font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase">
+                    Memoria del proyecto
+                  </span>
+                </div>
+                {(project.cliente || servicio) && (
+                  <dl className="mt-8 max-w-xs border-t border-stone-900/15">
+                    {project.cliente && (
+                      <div className="border-b border-stone-900/15 py-4">
+                        <dt className="font-mono text-[10px] tracking-[0.25em] uppercase text-stone-500">Cliente</dt>
+                        <dd className="mt-1 font-serif text-lg text-stone-900">{project.cliente}</dd>
+                      </div>
+                    )}
+                    {servicio && (
+                      <div className="border-b border-stone-900/15 py-4">
+                        <dt className="font-mono text-[10px] tracking-[0.25em] uppercase text-stone-500">Servicio</dt>
+                        <dd className="mt-1 font-serif text-lg">
+                          <Link
+                            href={`${ROUTES.sectors}/${servicio.slug}`}
+                            className="text-stone-900 underline decoration-amber-700/60 underline-offset-4 hover:text-amber-700 transition-colors"
+                          >
+                            {servicio.title}
+                          </Link>
+                        </dd>
+                      </div>
+                    )}
+                  </dl>
+                )}
               </div>
             </div>
             <div className="lg:col-span-8 reveal-item" style={{ transitionDelay: "120ms" }}>
@@ -226,6 +252,46 @@ export default async function ProjectDetail({
         </section>
       )}
 
+      {/* Cronograma */}
+      {project.cronograma.length > 0 && (
+        <section className="bg-white">
+          <Container className="py-20 sm:py-28">
+            <div className="reveal-item flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <span className="font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase">
+                  Cronograma de la obra
+                </span>
+                <h2 className="mt-6 font-serif font-light text-3xl sm:text-4xl lg:text-5xl text-stone-900 leading-tight tracking-tight">
+                  Cómo avanzó, <em className="italic text-amber-700">etapa a etapa</em>.
+                </h2>
+              </div>
+              {project.plazo && (
+                <p className="font-mono text-[11px] tracking-[0.25em] uppercase text-stone-500">
+                  Plazo total · <span className="text-stone-900">{project.plazo}</span>
+                </p>
+              )}
+            </div>
+            {/* Línea de tiempo (pseudo-elemento): vertical en móvil, horizontal en escritorio */}
+            <ol className="relative mt-12 sm:mt-16 grid grid-cols-1 gap-10 lg:grid-flow-col lg:auto-cols-fr lg:gap-8 before:absolute before:left-[5px] before:top-2 before:bottom-2 before:w-px before:bg-stone-900/15 lg:before:left-0 lg:before:right-0 lg:before:top-[5px] lg:before:bottom-auto lg:before:h-px lg:before:w-auto">
+              {project.cronograma.map((etapa, i) => (
+                <li
+                  key={`${etapa.periodo}-${i}`}
+                  className="reveal-item relative pl-8 lg:pl-0 lg:pt-10"
+                  style={{ transitionDelay: `${i * 90}ms` }}
+                >
+                  <span aria-hidden="true" className="absolute left-0 top-1.5 h-[11px] w-[11px] rounded-full border-2 border-white bg-amber-700 ring-1 ring-amber-700 lg:top-0" />
+                  <p className="font-mono text-[11px] tracking-[0.2em] uppercase text-amber-700">{etapa.periodo}</p>
+                  <h3 className="mt-3 font-serif font-light text-xl sm:text-2xl text-stone-900 leading-snug">
+                    {etapa.titulo}
+                  </h3>
+                  <p className="mt-3 text-sm sm:text-base font-light text-stone-600 leading-relaxed">{etapa.texto}</p>
+                </li>
+              ))}
+            </ol>
+          </Container>
+        </section>
+      )}
+
       {/* Alcance de los trabajos */}
       {project.alcance.length > 0 && (
         <section>
@@ -258,10 +324,45 @@ export default async function ProjectDetail({
         </section>
       )}
 
+      {/* Materiales y acabados */}
+      {project.materiales.length > 0 && (
+        <section className="bg-stone-100">
+          <Container className="py-20 sm:py-28">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
+              <div className="lg:col-span-4 reveal-item">
+                <span className="font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase">
+                  Materiales y acabados
+                </span>
+                <h2 className="mt-6 font-serif font-light text-3xl sm:text-4xl text-stone-900 leading-tight tracking-tight">
+                  Lo que se <em className="italic text-amber-700">eligió</em>, y por qué se nota.
+                </h2>
+              </div>
+              <dl className="lg:col-span-8 border-t border-stone-900/20">
+                {project.materiales.map((material, i) => (
+                  <div
+                    key={`${material.elemento}-${i}`}
+                    className="reveal-item grid grid-cols-1 gap-1 border-b border-stone-900/20 py-5 sm:grid-cols-3 sm:gap-6"
+                    style={{ transitionDelay: `${(i % 6) * 60}ms` }}
+                  >
+                    <dt className="font-mono text-[11px] tracking-[0.2em] uppercase text-stone-500 sm:pt-1">
+                      {material.elemento}
+                    </dt>
+                    <dd className="sm:col-span-2 text-base sm:text-lg font-light text-stone-900">{material.detalle}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          </Container>
+        </section>
+      )}
+
       {/* Galería */}
-      <section className="pb-20 sm:pb-28">
+      <section className="py-20 sm:py-28">
         <Container>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+          <span className="reveal-item block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase">
+            Galería · {[project.imagen, ...project.galeria].length} imágenes
+          </span>
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             {[project.imagen, ...project.galeria].map((src, i, all) => {
               // La primera ocupa todo el ancho; si el resto es impar, la última también.
               const wide = i === 0 || (all.length % 2 === 0 && i === all.length - 1);
@@ -286,6 +387,76 @@ export default async function ProjectDetail({
           </div>
         </Container>
       </section>
+
+      {/* Resultado */}
+      {project.resultado && (
+        <section className="relative isolate overflow-hidden bg-stone-950 text-white">
+          <Image
+            src={project.galeria[0] || project.imagen}
+            alt=""
+            fill
+            sizes="100vw"
+            className="-z-10 object-cover object-center opacity-30"
+          />
+          <div className="absolute inset-0 -z-10 bg-gradient-to-r from-stone-950/90 via-stone-950/60 to-stone-950/30" />
+          <Container className="py-24 sm:py-32">
+            <div className="reveal-item max-w-4xl">
+              <span className="font-mono text-[11px] sm:text-xs tracking-[0.25em] uppercase text-amber-500">
+                El resultado
+              </span>
+              <p className="mt-8 font-serif font-light text-3xl sm:text-4xl lg:text-5xl leading-tight tracking-tight">
+                {project.resultado}
+              </p>
+              <Link
+                href={project.enlace || ROUTES.contact}
+                className="group mt-10 inline-flex items-center gap-3 rounded-full border border-white/50 px-7 py-3 text-xs font-semibold tracking-[0.18em] uppercase text-white hover:bg-white hover:text-stone-950 transition-colors"
+              >
+                Quiero un proyecto así
+                <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">→</span>
+              </Link>
+            </div>
+          </Container>
+        </section>
+      )}
+
+      {/* Servicio relacionado */}
+      {servicio && (
+        <section className="bg-white">
+          <Container className="py-16 sm:py-20">
+            <Link
+              href={`${ROUTES.sectors}/${servicio.slug}`}
+              className="group reveal-item grid grid-cols-1 items-center gap-8 md:grid-cols-12"
+            >
+              <div className="relative aspect-[16/10] overflow-hidden bg-stone-200 md:col-span-5">
+                <Image
+                  src={servicio.imagen}
+                  alt={servicio.title}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 480px"
+                  className="object-cover object-center transition duration-700 ease-out group-hover:scale-105"
+                />
+              </div>
+              <div className="md:col-span-7">
+                <span className="font-mono text-[11px] tracking-[0.25em] uppercase text-stone-500">
+                  Servicio relacionado · {servicio.numero}
+                </span>
+                <h2 className="mt-4 font-serif font-light text-3xl sm:text-4xl text-stone-900 leading-tight tracking-tight group-hover:text-amber-700 transition-colors">
+                  {servicio.title}
+                </h2>
+                {servicio.descripcion && (
+                  <p className="mt-4 max-w-xl text-base sm:text-lg font-light text-stone-600 leading-relaxed">
+                    {servicio.descripcion}
+                  </p>
+                )}
+                <span className="mt-6 inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.25em] uppercase text-stone-900">
+                  Ver servicio
+                  <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">→</span>
+                </span>
+              </div>
+            </Link>
+          </Container>
+        </section>
+      )}
 
       {/* Método */}
       {fases.length > 0 && (

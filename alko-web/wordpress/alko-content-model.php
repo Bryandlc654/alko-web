@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       ALKO Content Model (Headless)
  * Description:       Registra los tipos de contenido (CPT) y los campos SCF/ACF que consume el front-end Next.js de ALKO.
- * Version:           1.2.0
+ * Version:           1.3.0
  * Author:            ALKO
  *
  * Requiere "Secure Custom Fields" o "Advanced Custom Fields" activo (no se usa la
@@ -172,6 +172,8 @@ add_action( 'acf/include_fields', function () {
 			array( 'key' => 'field_proyecto_anio', 'label' => 'Año', 'name' => 'anio', 'type' => 'text', 'wrapper' => array( 'width' => '25' ) ),
 			array( 'key' => 'field_proyecto_ubicacion', 'label' => 'Ubicación', 'name' => 'ubicacion', 'type' => 'text', 'wrapper' => array( 'width' => '50' ) ),
 			array( 'key' => 'field_proyecto_tipologia', 'label' => 'Tipología', 'name' => 'tipologia', 'type' => 'text', 'wrapper' => array( 'width' => '50' ) ),
+			array( 'key' => 'field_proyecto_cliente', 'label' => 'Cliente (p. ej. Cliente particular)', 'name' => 'cliente', 'type' => 'text', 'wrapper' => array( 'width' => '50' ) ),
+			array( 'key' => 'field_proyecto_servicio', 'label' => 'Servicio relacionado (slug, p. ej. oficinas)', 'name' => 'servicio', 'type' => 'text', 'wrapper' => array( 'width' => '50' ) ),
 			array( 'key' => 'field_proyecto_superficie', 'label' => 'Superficie (p. ej. 1.450 m²)', 'name' => 'superficie', 'type' => 'text', 'wrapper' => array( 'width' => '25' ) ),
 			array( 'key' => 'field_proyecto_plazo', 'label' => 'Plazo de obra (p. ej. 20 semanas)', 'name' => 'plazo', 'type' => 'text', 'wrapper' => array( 'width' => '25' ) ),
 			array( 'key' => 'field_proyecto_imagen', 'label' => 'Imagen del proyecto', 'name' => 'imagen', 'type' => 'image', 'return_format' => 'url' ),
@@ -180,6 +182,9 @@ add_action( 'acf/include_fields', function () {
 			array( 'key' => 'field_proyecto_reto', 'label' => 'El reto', 'name' => 'reto', 'type' => 'textarea', 'rows' => 4, 'new_lines' => '', 'instructions' => 'Punto de partida: condicionantes y exigencias del encargo.' ),
 			array( 'key' => 'field_proyecto_solucion', 'label' => 'La solución', 'name' => 'solucion', 'type' => 'textarea', 'rows' => 4, 'new_lines' => '', 'instructions' => 'Cómo se resolvió el encargo.' ),
 			array( 'key' => 'field_proyecto_alcance', 'label' => 'Alcance de los trabajos', 'name' => 'alcance', 'type' => 'textarea', 'rows' => 6, 'new_lines' => '', 'instructions' => 'Una partida por línea.' ),
+			array( 'key' => 'field_proyecto_cronograma', 'label' => 'Cronograma de la obra', 'name' => 'cronograma', 'type' => 'textarea', 'rows' => 6, 'new_lines' => '', 'instructions' => 'Una etapa por línea, con el formato «periodo | título | descripción». Ej.: Semanas 1–2 | Planificación | Levantamiento y plan de fases.' ),
+			array( 'key' => 'field_proyecto_materiales', 'label' => 'Materiales y acabados', 'name' => 'materiales', 'type' => 'textarea', 'rows' => 6, 'new_lines' => '', 'instructions' => 'Uno por línea, con el formato «elemento | detalle». Ej.: Pavimentos | Madera natural de roble' ),
+			array( 'key' => 'field_proyecto_resultado', 'label' => 'Resultado', 'name' => 'resultado', 'type' => 'textarea', 'rows' => 3, 'new_lines' => '', 'instructions' => 'Cierre del proyecto: qué se consiguió.' ),
 			array( 'key' => 'field_proyecto_cifras', 'label' => 'Cifras destacadas', 'name' => 'cifras', 'type' => 'textarea', 'rows' => 4, 'new_lines' => '', 'instructions' => 'Una por línea, con el formato «valor | etiqueta». Ej.: 0 | días de cierre de la actividad' ),
 		),
 	) );
