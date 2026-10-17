@@ -91,7 +91,7 @@ export default async function EquipoPage() {
           </>
         }
         description="Un equipo multidisciplinar que comparte un mismo criterio constructivo. Dirección técnica, arquitectura, obra, instalaciones y atención al cliente."
-        image="/oficinas.jpg"
+        image="/proceso-coordinacion.jpg"
       />
 
       {/* QUIÉNES SOMOS */}

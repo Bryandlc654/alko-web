@@ -75,7 +75,7 @@ export default async function TrabajaConNosotrosPage() {
           </>
         }
         description="Buscamos profesionales que compartan nuestro criterio técnico y quieran crecer dentro de un equipo que trabaja como una dirección única."
-        image="/oficinas.jpg"
+        image="/proceso-control.jpg"
       />
 
       {/* Cultura */}

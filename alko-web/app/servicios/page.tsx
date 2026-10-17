@@ -20,6 +20,7 @@ export default async function ServiciosPage() {
         eyebrow="SERVICIOS"
         title="Especialidades"
         description="Actuamos de forma transversal para reducir interfaces y garantizar la coherencia entre proyecto y obra."
+        image={sectors[0]?.imagen || "/sector-oficinas.jpg"}
       />
       <Container className="py-12 sm:py-20">
         <SectorsList sectors={sectors} />

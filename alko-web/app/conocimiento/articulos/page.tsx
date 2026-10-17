@@ -43,7 +43,7 @@ export default async function ArticulosPage() {
           </>
         }
         description="Detalles constructivos, instalaciones y gestión de obra explicados por el equipo que los ejecuta cada día."
-        image={featured?.image}
+        image={featured?.image || "/proceso-instalaciones.jpg"}
       >
         <dl className="mt-12 sm:mt-16 grid grid-cols-1 sm:grid-cols-3 border-t border-white/15">
           {stats.map((stat) => (

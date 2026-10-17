@@ -22,6 +22,7 @@ export default async function GuiasPage() {
         eyebrow="CONOCIMIENTO · GUÍAS"
         title="Guías"
         description="Recorridos paso a paso por las decisiones clave de una obra: planificación, presupuesto, materiales y entrega."
+        image={guides[0]?.imagen || "/proceso-control.jpg"}
       />
 
       <Container className="py-16 sm:py-24">

@@ -71,16 +71,14 @@ export const MAIN_NAV: NavItem[] = [
 
 /**
  * Rutas en las que la cabecera es transparente al hacer scroll hasta arriba
- * (páginas con un hero oscuro a pantalla completa). Una entrada terminada en
- * "/*" se aplica a todas sus subrutas. En el resto, la cabecera
- * arranca con fondo sólido para mantener la legibilidad.
+ * (páginas con un hero oscuro con imagen). Una entrada terminada en "/*" se
+ * aplica a todas sus subrutas. En el resto, la cabecera arranca con fondo
+ * sólido para mantener la legibilidad.
+ *
+ * Hoy todas las páginas (también la 404) empiezan con un hero con imagen
+ * (Hero, PageHero o uno propio), así que se aplica a todo el sitio.
  */
-export const TRANSPARENT_HEADER_ROUTES: string[] = [
-  ROUTES.home,
-  ROUTES.projects,
-  `${ROUTES.projects}/*`,
-  ROUTES.contact,
-];
+export const TRANSPARENT_HEADER_ROUTES: string[] = ["/*"];
 
 /** Elementos del pie de página. */
 export const FOOTER_NAV: NavItem[] = [

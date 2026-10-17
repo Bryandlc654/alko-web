@@ -35,7 +35,7 @@ export default async function MetodoPage() {
           </>
         }
         description="Un único equipo coordina construcción, instalaciones, compras y gestión técnica para mantener el proyecto bajo control de principio a fin."
-        image="/proceso-coordinacion.jpg"
+        image="/proceso-construccion.jpg"
       />
 
       {/* Enfoque */}

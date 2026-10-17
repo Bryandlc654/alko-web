@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import Container from "@/components/ui/Container";
+import PageHero from "@/components/ui/PageHero";
 import Prose from "@/components/ui/Prose";
 import { ROUTES } from "@/lib/site";
 import { getSectorBySlug, getSectors } from "@/lib/wordpress";
@@ -38,26 +38,13 @@ export default async function SectorDetail({
 
   return (
     <main className="bg-white text-stone-900">
-      <header className="relative isolate overflow-hidden bg-stone-950 pt-36 sm:pt-44 pb-16">
-        <Image
-          src={sector.imagen}
-          alt={sector.title}
-          fill
-          priority
-          sizes="100vw"
-          className="-z-10 object-cover object-center opacity-30"
-        />
-        <div className="absolute inset-0 -z-10 bg-gradient-to-t from-stone-950 via-stone-950/80 to-stone-950/40" />
-        <Container className="relative">
-          <span className="font-mono text-xs tracking-widest text-white/60 uppercase">
-            SERVICIO
-          </span>
-          <h1 className="mt-3 font-serif font-light text-4xl sm:text-5xl lg:text-6xl">
-            {sector.title}
-          </h1>
-          <p className="mt-4 max-w-2xl text-stone-200/80">{sector.descripcion}</p>
-        </Container>
-      </header>
+      <PageHero
+        eyebrow="SERVICIO"
+        title={sector.title}
+        description={sector.descripcion}
+        image={sector.imagen}
+        imageAlt={sector.title}
+      />
 
       <Container className="py-12 sm:py-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
