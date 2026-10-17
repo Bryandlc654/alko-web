@@ -136,7 +136,7 @@ export default function Experience() {
                     </div>
 
                     <div className="flex-1 flex flex-col pl-2 sm:pl-3">
-                      <span className="font-serif italic text-xs sm:text-sm text-stone-600 font-normal">
+                      <span className="font-serif text-xs sm:text-sm text-stone-600 font-normal">
                         03 / QUÉ EJECUTÓ ALKO · EL ALCANCE
                       </span>
                       <div className="flex items-baseline">
@@ -192,7 +192,7 @@ export default function Experience() {
                     </div>
 
                     <div className="flex-1 flex flex-col pl-2 sm:pl-3">
-                      <span className="font-serif italic text-xs sm:text-sm text-stone-600 font-normal">
+                      <span className="font-serif text-xs sm:text-sm text-stone-600 font-normal">
                         04 / DECISIONES TÉCNICAS · LA SOLUCIÓN
                       </span>
                       <div className="flex items-baseline">

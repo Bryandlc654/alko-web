@@ -262,7 +262,7 @@ export default async function ProjectDetail({
                   Cronograma de la obra
                 </span>
                 <h2 className="mt-6 font-serif font-light text-3xl sm:text-4xl lg:text-5xl text-stone-900 leading-tight tracking-tight">
-                  Cómo avanzó, <em className="italic text-amber-700">etapa a etapa</em>.
+                  Cómo avanzó, etapa a etapa.
                 </h2>
               </div>
               {project.plazo && (
@@ -302,7 +302,7 @@ export default async function ProjectDetail({
                   Alcance de los trabajos
                 </span>
                 <h2 className="mt-6 font-serif font-light text-3xl sm:text-4xl text-stone-900 leading-tight tracking-tight">
-                  Todo lo que <em className="italic text-amber-700">ejecutamos</em> en esta obra.
+                  Todo lo que ejecutamos en esta obra.
                 </h2>
               </div>
               <ol className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 sm:gap-x-10 border-t border-stone-900/15">
@@ -334,7 +334,7 @@ export default async function ProjectDetail({
                   Materiales y acabados
                 </span>
                 <h2 className="mt-6 font-serif font-light text-3xl sm:text-4xl text-stone-900 leading-tight tracking-tight">
-                  Lo que se <em className="italic text-amber-700">eligió</em>, y por qué se nota.
+                  Lo que se eligió, y por qué se nota.
                 </h2>
               </div>
               <dl className="lg:col-span-8 border-t border-stone-900/20">
@@ -468,7 +468,7 @@ export default async function ProjectDetail({
                   Cómo lo ejecutamos
                 </span>
                 <h2 className="mt-6 font-serif font-light text-3xl sm:text-4xl lg:text-5xl text-stone-900 leading-tight tracking-tight">
-                  Un mismo <em className="italic text-amber-700">método</em> en cada obra.
+                  Un mismo método en cada obra.
                 </h2>
               </div>
               <Link

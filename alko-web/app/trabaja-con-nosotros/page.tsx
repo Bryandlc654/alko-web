@@ -197,8 +197,7 @@ export default async function TrabajaConNosotrosPage() {
               <h2 className="text-3xl font-light leading-[1.08] tracking-[-0.03em] text-white sm:text-5xl md:text-6xl lg:text-[68px]">
                 ¿No encuentras tu
                 <br />
-                <span className="font-serif italic font-normal">puesto</span> ideal
-                <span className="font-sans">?</span>
+                puesto ideal?
               </h2>
             </div>
             <div className="flex flex-col justify-between gap-8 lg:flex-row lg:items-end">

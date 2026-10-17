@@ -21,7 +21,7 @@ export default function ContactCta({ settings }: { settings: SiteSettings }) {
             <h2 className="text-3xl sm:text-5xl md:text-6xl lg:text-[68px] font-light font-display text-white tracking-[-0.03em] leading-[1.08] select-text">
               Hablemos de tu
               <br />
-              <span className="font-serif italic font-normal text-white">próximo</span> proyecto<span className="font-sans">.</span>
+              próximo proyecto.
             </h2>
           </div>
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 pt-6">

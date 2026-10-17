@@ -38,8 +38,7 @@ export default async function ArticulosPage() {
           <>
             Criterio técnico,
             <br />
-            <span className="font-serif italic font-normal">por escrito</span>
-            <span className="font-sans">.</span>
+            por escrito.
           </>
         }
         description="Detalles constructivos, instalaciones y gestión de obra explicados por el equipo que los ejecuta cada día."

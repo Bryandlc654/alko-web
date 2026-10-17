@@ -13,7 +13,8 @@ import { SITE } from "@/lib/site";
 const ebGaramond = EB_Garamond({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
-  style: ["normal", "italic"],
+  // Solo estilo normal: la web no usa cursiva (tampoco mezclada dentro de los títulos).
+  style: ["normal"],
   variable: "--font-eb-garamond",
   display: "swap",
 });

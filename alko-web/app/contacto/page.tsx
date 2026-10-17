@@ -75,8 +75,7 @@ export default async function ContactoPage() {
           <h1 className="font-display font-light text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-[-0.03em] leading-[1.02] drop-shadow-[0_2px_20px_rgba(0,0,0,0.35)]">
             Hablemos de tu
             <br />
-            <span className="font-serif italic font-normal">próximo</span> proyecto
-            <span className="font-sans">.</span>
+            próximo proyecto.
           </h1>
           <p className="mt-6 max-w-xl text-base sm:text-lg text-white/85 font-light leading-relaxed">
             Cuéntanos tus necesidades y te proponemos un planteamiento técnico claro, con plazos
@@ -191,7 +190,7 @@ export default async function ContactoPage() {
                       id="form-title"
                       className="font-serif font-light text-3xl sm:text-4xl lg:text-5xl tracking-tight leading-none"
                     >
-                      Cuéntanos qué <span className="italic">necesitas</span>
+                      Cuéntanos qué necesitas
                     </h2>
                   </div>
                   <div className="hidden sm:flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-amber-700 mt-2">

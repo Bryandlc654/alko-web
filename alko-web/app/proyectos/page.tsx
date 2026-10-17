@@ -51,8 +51,7 @@ export default async function ProyectosPage() {
           <h1 className="font-display font-light text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-[-0.03em] leading-[1.02] drop-shadow-[0_2px_20px_rgba(0,0,0,0.35)]">
             Obra hecha,
             <br />
-            <span className="font-serif italic font-normal">obra</span> entregada
-            <span className="font-sans">.</span>
+            obra entregada.
           </h1>
           <p className="mt-6 max-w-xl text-base sm:text-lg text-white/85 font-light leading-relaxed">
             Una selección de obras donde la planificación, la coordinación y la ejecución garantizan
