@@ -69,7 +69,7 @@ export default function Experience() {
                   </h4>
                   <p className="font-sans text-base sm:text-lg text-stone-600 font-light leading-relaxed tracking-normal">
                     Transformación arquitectónica e infraestructural completa de sede corporativa
-                    de dos plantas en Madrid para START Research, requiriendo operatividad
+                    de dos plantas en Madrid para Start Research, requiriendo operatividad
                     continua, áreas de trabajo abiertas y laboratorios analíticos.
                   </p>
                 </div>

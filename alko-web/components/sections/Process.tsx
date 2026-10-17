@@ -20,7 +20,7 @@ export default function Process({ fases }: { fases: Fase[] }) {
         <div className="reveal-item flex items-baseline justify-between pb-12 sm:pb-16 border-b border-stone-300/60">
           <div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-light text-stone-900 tracking-tight leading-none">
-              NUESTRO <span className="text-stone-700">Proceso</span>
+              Nuestro proceso
             </h2>
             <span className="block mt-2 font-mono text-[11px] tracking-[0.25em] text-stone-500 uppercase">
               SECUENCIA DE COORDINACIÓN INTEGRAL · 6 FASES · 1 EQUIPO
