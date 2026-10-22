@@ -10,7 +10,7 @@ export const revalidate = 60;
 
 export async function generateStaticParams() {
   const sectors = await getSectors();
-  return sectors.map((s) => ({ slug: s.slug }));
+  return sectors.filter((s) => s.slug !== "oficinas").map((s) => ({ slug: s.slug }));
 }
 
 export async function generateMetadata({
