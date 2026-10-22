@@ -4,6 +4,7 @@ import "./globals.css";
 import Nav from "@/components/layout/Nav";
 import Footer from "@/components/layout/Footer";
 import WhatsAppFloat from "@/components/layout/WhatsAppFloat";
+import ChatWidget from "@/components/chat/ChatWidget";
 import SiteScripts from "@/components/SiteScripts";
 import RouteLoader from "@/components/RouteLoader";
 import { getSettings } from "@/lib/wordpress";
@@ -55,6 +56,7 @@ export default async function RootLayout({
         )}
         <Footer settings={settings} />
         <WhatsAppFloat settings={settings} />
+        <ChatWidget />
         <RouteLoader />
         <SiteScripts />
       </body>
