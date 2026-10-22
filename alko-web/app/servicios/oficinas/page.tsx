@@ -17,10 +17,6 @@ import {
   ShieldCheck,
   CheckCircle2,
   Check,
-  FileCheck2,
-  AlertCircle,
-  Clock,
-  Sparkles,
 } from "lucide-react";
 
 export const revalidate = 60;
@@ -39,125 +35,97 @@ export const metadata: Metadata = {
 
 const METRICAS = [
   { valor: "0 días", label: "de interrupción en la actividad de la empresa" },
-  { valor: "100%", label: "cumplimiento de cronogramas cerrados con fecha vinculante" },
+  { valor: "100%", label: "cumplimiento de cronogramas cerrados" },
   { valor: "1", label: "único interlocutor técnico para compras, diseño y obra" },
   { valor: "+15.000 m²", label: "de superficie de trabajo ejecutada en Madrid" },
 ];
 
 const CAPACIDADES_TECNICAS = [
   {
-    codigo: "CAP-01",
-    titulo: "Climatización VRF y Calidad Ambiental (IAQ)",
-    especificacion: "Caudal exterior IDA 2 · Recuperación entálpica · VRF 3 tubos",
-    descripcion:
-      "Diseño y montaje de sistemas de caudal variable con recuperación de calor para permitir frío y calor simultáneo por zonas. Filtración de aire F7/F9, monitorización continua de CO2 y difusión por microtoberas o ranuras lineales integradas en techos.",
-    beneficio:
-      "Máximo confort térmico individual en despachos y salas de reunión, con ahorro de hasta un 38% en consumo respecto a sistemas convencionales.",
+    codigo: "01",
+    titulo: "Climatización VRF & IAQ",
+    metrica: "VRF 3 tubos · Caudal IDA 2",
+    resumen: "Sistemas zonificados con recuperación de calor, filtración F7/F9 y microdifusión lineal invisible.",
+    puntos: ["Control térmico independiente por despacho", "Ahorro energético del 35% frente a split"],
     icon: Wind,
-    tags: ["VRF Zonificado", "Filtración F9", "Microdifusión invisible"],
   },
   {
-    codigo: "CAP-02",
-    titulo: "Aislamiento Acústico y Compartimentación Modular",
-    especificacion: "Atenuación acústica Rw = 42–48 dB · Vidrio laminado acústico",
-    descripcion:
-      "Mamparas modulares con perfiles de aluminio ocultos y doble vidrio laminado acústico. Puertas enrasadas de suelo a techo con junta guillotina automática inferior y fajeados perimetrales con lana de roca de alta densidad para evitar puentes fónicos por el falso techo.",
-    beneficio:
-      "Confidencialidad absoluta en salas de consejo y despachos ejecutivos, eliminando la contaminación sonora en zonas operativas abiertas.",
+    codigo: "02",
+    titulo: "Aislamiento Acústico",
+    metrica: "Atenuación Rw 42–48 dB",
+    resumen: "Mamparas modulares de doble vidrio laminado y puertas enrasadas con junta guillotina hermética.",
+    puntos: ["Confidencialidad total en salas de juntas", "Atenuación fónica continua en plenum"],
     icon: Volume2,
-    tags: ["Rw hasta 48 dB", "Puertas con guillotina", "Atenuación plenum"],
   },
   {
-    codigo: "CAP-03",
-    titulo: "Infraestructura IT, CPD y Suelo Técnico Elevado",
-    especificacion: "Categoría 6A / 7 · Fibra OM4 · Carga concentrada 14 kN/m²",
-    descripcion:
-      "Tendido ordenado de cableado estructurado en bandejas independientes para evitar interferencias electromagnéticas. Construcción de salas CPD con redundancia SAI, climatización in-row de precisión y suelo técnico registrable encapsulado en chapa de acero.",
-    beneficio:
-      "Capacidad para reubicar puestos de trabajo en menos de 2 horas sin obra húmeda ni canaletas vistas, con conectividad certificada punto a punto.",
+    codigo: "03",
+    titulo: "Redes, CPD & Suelo Técnico",
+    metrica: "Cat 6A / 7 · Carga 14 kN/m²",
+    resumen: "Cableado estructurado certificado, salas técnicas climatizadas y suelo registrable encapsulado.",
+    puntos: ["Reconfiguración de puestos sin obra", "Conectividad certificada punto a punto"],
     icon: Cpu,
-    tags: ["Cableado Cat 6A", "Sala CPD redundante", "Suelo registrable"],
   },
   {
-    codigo: "CAP-04",
-    titulo: "Iluminación Dinámica DALI y Confort Circadiano",
-    especificacion: "UGR < 19 en puestos · Tunable White 2700K–5000K · Protocolo DALI-2",
-    descripcion:
-      "Luminarias lineales de bajo deslumbramiento integradas en la arquitectura. Regulación de temperatura de color que acompaña el ritmo biológico humano y sensores de presencia y aporte solar que atenúan automáticamente los puestos junto a fachada.",
-    beneficio:
-      "Reducción notable de la fatiga visual del equipo humano y cumplimiento estricto de las normativas europeas de ergonomía lumínica UNE-EN 12464-1.",
+    codigo: "04",
+    titulo: "Iluminación Circadiana",
+    metrica: "UGR < 19 · Protocolo DALI-2",
+    resumen: "Luminarias de bajo deslumbramiento con regulación según el aporte solar y ritmo biológico.",
+    puntos: ["Cumplimiento estricto UNE-EN 12464", "Sensores de presencia y aporte natural"],
     icon: Sliders,
-    tags: ["UGR < 19", "Ritmo circadiano", "Control solar"],
   },
   {
-    codigo: "CAP-05",
-    titulo: "Zonas Singulares, Lounges y Espacios Colaborativos",
-    especificacion: "Panelados de madera noble acústica · Piedra natural · Phone booths",
-    descripcion:
-      "Fabricación e instalación de recepciones con mostradores escultóricos retroiluminados, cabinas individuales insonorizadas para videollamadas, cantinas corporativas equipadas con extracción técnica y auditorios polivalentes con integración audiovisual invisible.",
-    beneficio:
-      "Imagen corporativa de alto impacto ante visitas e inversores, ofreciendo a los empleados entornos que favorecen la creatividad y la desconexión.",
+    codigo: "05",
+    titulo: "Zonas Singulares & Lounge",
+    metrica: "Diseño a medida · Piedra & Madera",
+    resumen: "Recepciones representativas, phone booths insonorizados, offices de diseño y salas polivalentes.",
+    puntos: ["Espacios para retener y atraer talento", "Materiales nobles de alto impacto"],
     icon: Layers,
-    tags: ["Carpintería singular", "Cabinas acústicas", "Offices de diseño"],
   },
   {
-    codigo: "CAP-06",
-    titulo: "Licencias de Actividad, CTE y Sellos BREEAM / WELL",
-    especificacion: "Gestión ECLU Madrid · CTE-DBSI · Parámetros BREEAM / WELL Ready",
-    descripcion:
-      "Gestión documental integral ante el Ayuntamiento de Madrid para la obtención de licencias de funcionamiento o declaraciones responsables. Justificación técnica de evacuación de incendios, accesibilidad y selección de materiales con baja emisión de COVs (formaldehídos).",
-    beneficio:
-      "Seguridad jurídica inmediata para el inicio de la actividad sin riesgo de paralizaciones administrativas o sanciones municipales.",
+    codigo: "06",
+    titulo: "Licencias & Sostenibilidad",
+    metrica: "ECLU Madrid · BREEAM / WELL Ready",
+    resumen: "Gestión completa de licencias de actividad ante el Ayuntamiento de Madrid y cumplimiento del CTE.",
+    puntos: ["Seguridad jurídica sin retrasos", "Materiales sostenibles con bajas emisiones COV"],
     icon: ShieldCheck,
-    tags: ["ECLU Madrid", "Materiales Low-VOC", "BREEAM / WELL Ready"],
   },
 ];
 
 const METODOLOGIA_OFICINAS = [
   {
     fase: "01",
-    tag: "SEMANAS 1–2",
-    titulo: "Auditoría de Sede, Levantamiento BIM y Licencias",
-    descripcion:
-      "Inspección de las instalaciones del edificio (montantes de climatización comunitarias, potencia asignada, redes de evacuación y limitaciones de sobrecarga). Elaboración del modelo tridimensional BIM y presentación del expediente de licencia ante el Ayuntamiento de Madrid.",
-    entregable: "Informe de diagnóstico estructural y registro oficial de la licencia.",
-    garantia: "Elimina sorpresas de costes por patologías ocultas del inmueble.",
+    semanas: "Sem. 1–2",
+    titulo: "Auditoría & BIM",
+    resumen: "Revisión de instalaciones del edificio, levantamiento 3D y tramitación de licencias.",
+    entregable: "Expediente de licencia e informe técnico",
   },
   {
     fase: "02",
-    tag: "SEMANAS 2–4",
-    titulo: "Cierre de Compras Críticas y Fabricación Anticipada",
-    descripcion:
-      "Se bloquean y reservan en fábrica los suministros de mayor tiempo de entrega antes de iniciar la demolición: perfilería y vidrios de mamparas, máquinas de climatización VRF, cuadros eléctricos y pavimento registrable.",
-    entregable: "Cronograma de compras con fechas de entrega garantizadas por fabricante.",
-    garantia: "Cero días de parón en obra por retrasos en la cadena de suministros.",
+    semanas: "Sem. 3–4",
+    titulo: "Compras Previas",
+    resumen: "Bloqueo y acopio en fábrica de mamparas, máquinas VRF y materiales críticos.",
+    entregable: "Cronograma de suministros garantizado",
   },
   {
     fase: "03",
-    tag: "SEMANAS 4–6",
-    titulo: "Sectorización Estanca y Convivencia Operativa",
-    descripcion:
-      "Si la empresa o las plantas contiguas permanecen en activo, se montan cerramientos estancos antipolvo con presión negativa. Los acopios y trabajos de ruido se restringen a horarios no lectivos consensuados con la comunidad de propietarios del edificio.",
-    entregable: "Protocolo de convivencia, accesos y horarios visado por la propiedad del inmueble.",
-    garantia: "La compañía sigue trabajando con normalidad sin molestias acústicas ni polvo.",
+    semanas: "Sem. 5–6",
+    titulo: "Sectorización Limpia",
+    resumen: "Cerramientos estancos antipolvo y horarios pactados para convivencia sin molestias.",
+    entregable: "Convivencia operativa sin ruidos",
   },
   {
     fase: "04",
-    tag: "SEMANAS 6–12",
-    titulo: "Instalaciones Simultáneas y Acabados de Alta Tolerancia",
-    descripcion:
-      "Montaje ordenado en falso techo y suelo técnico de conductos de climatización, bandejas de red, fontanería y extinción de incendios. Ejecución paralela de trasdosados acústicos, mamparas de vidrio y pavimentos técnicos bajo supervisión facultativa diaria.",
-    entregable: "Dossier fotográfico semanal y actas de replanteo de cada partida técnica.",
-    garantia: "Encuentros limpios, tolerancias milimétricas y trazabilidad total.",
+    semanas: "Sem. 7–12",
+    titulo: "Instalaciones & Acabados",
+    resumen: "Tendido simultáneo de clima, redes, electricidad y mamparas con dirección diaria.",
+    entregable: "Actas de replanteo y tolerancias milimétricas",
   },
   {
     fase: "05",
-    tag: "SEMANAS 13–14",
-    titulo: "Commissioning, Certificación de Red y Dossier As-Built",
-    descripcion:
-      "Equilibrado de caudales de aire por anemómetro, pruebas de estanqueidad de conductos, certificación reflectométrica de fibra y red Cat 6A, limpieza técnica profunda y entrega del dossier 'As-Built' con esquemas unifilares y manuales de mantenimiento.",
-    entregable: "Certificados de red punto a punto, libro del edificio y planos finales As-Built.",
-    garantia: "Recepción de la sede lista para operar desde el primer minuto.",
+    semanas: "Sem. 13–14",
+    titulo: "Pruebas & As-Built",
+    resumen: "Equilibrado de aire, certificación de red, limpieza técnica y planos finales.",
+    entregable: "Llave en mano con dossier As-Built",
   },
 ];
 
@@ -316,118 +284,71 @@ export default async function OficinasPage() {
       </section>
 
       {/* ========================================================
-          REDISEÑO: CAPACIDADES TÉCNICAS (Dossier de Ingeniería)
+          CAPACIDADES TÉCNICAS (Versión Sintética y Visual)
           ======================================================== */}
-      <section className="py-20 sm:py-28 bg-[#fbfbfa] border-b border-stone-200">
+      <section className="py-16 sm:py-24 bg-[#fafaf8] border-b border-stone-200">
         <Container>
-          {/* Cabecera del bloque */}
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 pb-12 border-b border-stone-300/70">
-            <div className="max-w-2xl">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="inline-block w-2 h-2 rounded-full bg-[#c98300]" />
-                <span className="font-mono text-xs text-[#c98300] uppercase tracking-[0.25em] font-semibold">
-                  INGENIERÍA & ESPECIFICACIONES
-                </span>
-              </div>
-              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-light text-stone-900 leading-tight">
-                Capacidades Técnicas para Oficinas de Alta Exigencia
+          {/* Cabecera */}
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-8 mb-10 border-b border-stone-200">
+            <div>
+              <span className="font-mono text-xs text-[#c98300] uppercase tracking-[0.25em] font-semibold">
+                INGENIERÍA & DISCIPLINAS
+              </span>
+              <h2 className="mt-2 font-serif text-3xl sm:text-4xl font-light text-stone-900">
+                Capacidades Técnicas
               </h2>
             </div>
-            <div className="max-w-md">
-              <p className="text-sm sm:text-base text-stone-600 font-light leading-relaxed">
-                Coordinamos de manera transversal las 6 disciplinas críticas que condicionan el confort,
-                la confidencialidad y la vida útil de una sede corporativa.
-              </p>
-            </div>
+            <p className="text-xs sm:text-sm text-stone-500 max-w-sm font-light">
+              Coordinación transversal de las 6 disciplinas críticas del espacio de trabajo.
+            </p>
           </div>
 
-          {/* Grid Técnico Editorial */}
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {/* Grid conciso de 6 capacidades */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {CAPACIDADES_TECNICAS.map((cap) => {
               const Icon = cap.icon;
               return (
                 <div
                   key={cap.codigo}
-                  className="group relative flex flex-col justify-between bg-white border border-stone-200/90 p-8 shadow-xs hover:shadow-xl hover:border-[#c98300]/50 transition-all duration-300"
+                  className="bg-white border border-stone-200/90 p-6 sm:p-7 shadow-xs hover:border-[#c98300]/60 hover:shadow-md transition-all flex flex-col justify-between"
                 >
-                  {/* Top: Código técnico e icono */}
                   <div>
-                    <div className="flex items-center justify-between pb-6 mb-6 border-b border-stone-100">
-                      <span className="font-mono text-xs tracking-widest text-stone-400 font-medium">
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="font-mono text-xs text-stone-400 font-medium">
                         {cap.codigo}
                       </span>
-                      <div className="w-10 h-10 rounded-full bg-stone-50 border border-stone-200 flex items-center justify-center text-[#c98300] group-hover:bg-[#c98300] group-hover:text-white transition-colors duration-300">
-                        <Icon className="w-5 h-5" />
+                      <div className="w-8 h-8 rounded-full bg-stone-50 border border-stone-200 flex items-center justify-center text-[#c98300]">
+                        <Icon className="w-4 h-4" />
                       </div>
                     </div>
 
-                    {/* Especificación clave destacada */}
-                    <div className="mb-4">
-                      <span className="inline-block font-mono text-[11px] tracking-wide text-[#b87600] bg-[#c98300]/10 px-2.5 py-1 rounded-sm border border-[#c98300]/20">
-                        {cap.especificacion}
-                      </span>
-                    </div>
+                    <span className="inline-block font-mono text-[10px] uppercase tracking-wider text-[#b87600] bg-[#c98300]/10 px-2 py-0.5 rounded-xs border border-[#c98300]/20 mb-3">
+                      {cap.metrica}
+                    </span>
 
-                    {/* Título de la disciplina */}
-                    <h3 className="font-serif text-2xl font-normal text-stone-900 mb-3 group-hover:text-[#c98300] transition-colors">
+                    <h3 className="font-serif text-xl font-normal text-stone-900 mb-2">
                       {cap.titulo}
                     </h3>
 
-                    {/* Descripción técnica */}
-                    <p className="text-sm text-stone-600 font-light leading-relaxed mb-6">
-                      {cap.descripcion}
+                    <p className="text-xs sm:text-sm text-stone-600 font-light leading-relaxed mb-4">
+                      {cap.resumen}
                     </p>
                   </div>
 
-                  {/* Bottom: Impacto de negocio y Tags */}
-                  <div className="pt-6 border-t border-stone-100 space-y-4">
-                    <div className="bg-stone-50/80 p-3.5 border-l-2 border-[#c98300]">
-                      <span className="font-mono text-[10px] uppercase tracking-wider text-stone-500 block mb-1">
-                        Impacto Operativo
-                      </span>
-                      <p className="text-xs text-stone-700 leading-snug font-medium">
-                        {cap.beneficio}
-                      </p>
-                    </div>
-
-                    <div className="flex flex-wrap gap-1.5 pt-1">
-                      {cap.tags.map((tag, tIdx) => (
-                        <span
-                          key={tIdx}
-                          className="text-[10px] font-mono uppercase tracking-wider bg-stone-100 text-stone-600 px-2 py-0.5 rounded-xs"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
+                  <ul className="pt-3 border-t border-stone-100 space-y-1.5">
+                    {cap.puntos.map((punto, pIdx) => (
+                      <li
+                        key={pIdx}
+                        className="flex items-center gap-2 text-xs text-stone-700 font-light"
+                      >
+                        <Check className="w-3.5 h-3.5 text-[#c98300] shrink-0" />
+                        <span>{punto}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               );
             })}
-          </div>
-
-          {/* Banner complementario de rigor técnico */}
-          <div className="mt-12 bg-white border border-stone-200 p-8 sm:p-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-[#c98300]/10 border border-[#c98300]/30 flex items-center justify-center text-[#c98300] shrink-0">
-                <FileCheck2 className="w-6 h-6" />
-              </div>
-              <div>
-                <h4 className="font-serif text-xl font-normal text-stone-900">
-                  Protocolo de Ensayos y Mediciones In-Situ
-                </h4>
-                <p className="text-xs sm:text-sm text-stone-600 mt-1 font-light">
-                  No damos por buena ninguna partida sin pruebas previas de aislamiento acústico (sonómetro), pruebas de estanqueidad de conductos y reflectometría de fibra óptica.
-                </p>
-              </div>
-            </div>
-            <Link
-              href="/contacto"
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-stone-900 hover:bg-stone-800 text-white font-mono text-xs uppercase tracking-wider transition-colors shrink-0"
-            >
-              <span>Consultar pliego técnico</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
           </div>
         </Container>
       </section>
@@ -508,138 +429,84 @@ export default async function OficinasPage() {
       </section>
 
       {/* ========================================================
-          REDISEÑO: METODOLOGÍA DE EJECUCIÓN (Secuencia Editorial)
+          METODOLOGÍA DE EJECUCIÓN (Secuencia Sintética de 5 Pasos)
           ======================================================== */}
-      <section className="py-20 sm:py-32 bg-white border-b border-stone-200">
+      <section className="py-16 sm:py-24 bg-white border-b border-stone-200">
         <Container>
-          {/* Cabecera del bloque */}
-          <div className="pb-14 border-b border-stone-300/70">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="inline-block w-2 h-2 rounded-full bg-[#c98300]" />
+          {/* Cabecera */}
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-8 mb-10 border-b border-stone-200">
+            <div>
               <span className="font-mono text-xs text-[#c98300] uppercase tracking-[0.25em] font-semibold">
-                SECUENCIA OPERATIVA · 5 ETAPAS
+                SECUENCIA OPERATIVA
               </span>
+              <h2 className="mt-2 font-serif text-3xl sm:text-4xl font-light text-stone-900">
+                Metodología de Ejecución
+              </h2>
             </div>
-            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-light text-stone-900 leading-tight">
-              Metodología de Ejecución: Plazo y Coste Bajo Control
-            </h2>
-            <p className="mt-4 max-w-2xl text-base text-stone-600 font-light leading-relaxed">
-              La diferencia entre una reforma caótica y una entrega impecable reside en la anticipación.
-              Desglosamos cada fase con hitos verificables y entregables técnicos por escrito.
+            <p className="text-xs sm:text-sm text-stone-500 max-w-sm font-light">
+              5 etapas secuenciales con cronograma cerrado y entregables técnicos garantizados.
             </p>
           </div>
 
-          {/* Línea de tiempo secuencial editorial */}
-          <div className="mt-14 space-y-12 sm:space-y-16">
-            {METODOLOGIA_OFICINAS.map((etapa, idx) => (
+          {/* 5 Pasos en Carril Horizontal / Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-5">
+            {METODOLOGIA_OFICINAS.map((etapa) => (
               <div
                 key={etapa.fase}
-                className="relative grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 pb-12 sm:pb-16 border-b border-stone-200/80 last:border-b-0 items-start"
+                className="bg-[#fbfbfa] border border-stone-200 p-6 flex flex-col justify-between hover:border-[#c98300]/50 transition-colors"
               >
-                {/* Columna 1: Indicador de fase y cronología */}
-                <div className="lg:col-span-3 flex lg:flex-col justify-between lg:justify-start items-center lg:items-start gap-4">
-                  <div className="flex items-baseline gap-2">
-                    <span className="font-mono text-3xl sm:text-4xl font-light text-[#c98300]">
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="font-mono text-2xl font-light text-[#c98300]">
                       ({etapa.fase})
                     </span>
-                    <span className="font-mono text-xs tracking-widest text-stone-400 uppercase">
-                      FASE
+                    <span className="font-mono text-[10px] uppercase tracking-wider bg-stone-200/70 text-stone-700 px-2 py-0.5 font-medium">
+                      {etapa.semanas}
                     </span>
                   </div>
-                  <span className="inline-block px-3 py-1 font-mono text-xs uppercase tracking-wider bg-stone-100 text-stone-800 border border-stone-200 font-medium">
-                    {etapa.tag}
-                  </span>
-                </div>
 
-                {/* Columna 2: Título y descripción detallada */}
-                <div className="lg:col-span-5 space-y-4">
-                  <h3 className="font-serif text-2xl sm:text-3xl font-light text-stone-900 leading-snug">
+                  <h3 className="font-serif text-lg font-normal text-stone-900 mb-2">
                     {etapa.titulo}
                   </h3>
-                  <p className="text-sm sm:text-base text-stone-600 font-light leading-relaxed">
-                    {etapa.descripcion}
+
+                  <p className="text-xs text-stone-600 font-light leading-relaxed mb-4">
+                    {etapa.resumen}
                   </p>
                 </div>
 
-                {/* Columna 3: Entregables y Garantías contra imprevistos */}
-                <div className="lg:col-span-4 bg-[#fbfbfa] border border-stone-200 p-6 space-y-4">
-                  <div>
-                    <div className="flex items-center gap-2 text-stone-900 font-semibold text-xs tracking-wider uppercase font-mono mb-1.5">
-                      <FileCheck2 className="w-4 h-4 text-[#c98300]" />
-                      <span>Entregable Técnico</span>
-                    </div>
-                    <p className="text-xs text-stone-600 font-light leading-relaxed">
-                      {etapa.entregable}
-                    </p>
-                  </div>
-
-                  <div className="pt-3 border-t border-stone-200">
-                    <div className="flex items-center gap-2 text-stone-900 font-semibold text-xs tracking-wider uppercase font-mono mb-1.5">
-                      <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                      <span>Garantía ALKO</span>
-                    </div>
-                    <p className="text-xs text-stone-600 font-light leading-relaxed">
-                      {etapa.garantia}
-                    </p>
-                  </div>
+                <div className="pt-3 border-t border-stone-200/80">
+                  <span className="font-mono text-[10px] uppercase tracking-wider text-stone-400 block mb-1">
+                    Entregable
+                  </span>
+                  <span className="text-xs text-stone-800 font-medium leading-tight block">
+                    {etapa.entregable}
+                  </span>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Resumen comparativo: Modelo Tradicional vs Método ALKO */}
-          <div className="mt-16 bg-[#fafaf8] border border-stone-300 p-8 sm:p-12">
-            <div className="max-w-2xl mb-8">
-              <span className="font-mono text-xs text-[#c98300] uppercase tracking-[0.2em] font-semibold">
-                COMPARATIVA DE CONTROL
+          {/* Franja de 3 Garantías Clave */}
+          <div className="mt-10 p-6 bg-stone-50 border border-stone-200 flex flex-col sm:flex-row items-center justify-around gap-4 text-center sm:text-left">
+            <div className="flex items-center gap-2.5">
+              <CheckCircle2 className="w-4 h-4 text-[#c98300] shrink-0" />
+              <span className="text-xs font-mono tracking-wider uppercase text-stone-800 font-medium">
+                Compras anticipadas en fábrica
               </span>
-              <h3 className="mt-2 font-serif text-2xl sm:text-3xl font-light text-stone-900">
-                ¿Por qué el Método ALKO neutraliza los desvíos habituales?
-              </h3>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 divide-y md:divide-y-0 md:divide-x divide-stone-200">
-              <div className="space-y-4">
-                <span className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-rose-700 font-semibold">
-                  <AlertCircle className="w-4 h-4" />
-                  Modelo Tradicional de Reforma
-                </span>
-                <ul className="space-y-2.5 text-xs text-stone-600 font-light">
-                  <li className="flex items-start gap-2">
-                    <span className="text-rose-500 font-bold">✕</span>
-                    <span>Los suministros críticos se piden cuando la demolición ya ha terminado (semanas de parón).</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-rose-500 font-bold">✕</span>
-                    <span>El instalador de clima, el electricista y el montador de mamparas no se coordinan previamente.</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-rose-500 font-bold">✕</span>
-                    <span>Modificaciones imprevistas durante la obra que encarecen el presupuesto original.</span>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="pt-6 md:pt-0 md:pl-8 space-y-4">
-                <span className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-emerald-700 font-semibold">
-                  <CheckCircle2 className="w-4 h-4" />
-                  Método Integrado ALKO
-                </span>
-                <ul className="space-y-2.5 text-xs text-stone-800 font-normal">
-                  <li className="flex items-start gap-2">
-                    <span className="text-emerald-600 font-bold">✓</span>
-                    <span><strong>Compras anticipadas:</strong> todo el material crítico está fabricado antes de empezar.</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-emerald-600 font-bold">✓</span>
-                    <span><strong>Un solo interlocutor técnico:</strong> arquitectura, cálculo e instalaciones 100% integradas.</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-emerald-600 font-bold">✓</span>
-                    <span><strong>Presupuesto cerrado vinculante:</strong> sin adicionales ni sorpresas de liquidación.</span>
-                  </li>
-                </ul>
-              </div>
+            <span className="hidden sm:inline text-stone-300">•</span>
+            <div className="flex items-center gap-2.5">
+              <CheckCircle2 className="w-4 h-4 text-[#c98300] shrink-0" />
+              <span className="text-xs font-mono tracking-wider uppercase text-stone-800 font-medium">
+                1 único interlocutor técnico
+              </span>
+            </div>
+            <span className="hidden sm:inline text-stone-300">•</span>
+            <div className="flex items-center gap-2.5">
+              <CheckCircle2 className="w-4 h-4 text-[#c98300] shrink-0" />
+              <span className="text-xs font-mono tracking-wider uppercase text-stone-800 font-medium">
+                Presupuesto y plazo cerrados
+              </span>
             </div>
           </div>
         </Container>
