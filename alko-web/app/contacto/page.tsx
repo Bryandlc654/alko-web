@@ -190,14 +190,16 @@ export default async function ContactoPage() {
                       id="form-title"
                       className="font-serif font-light text-3xl sm:text-4xl lg:text-5xl tracking-tight leading-none"
                     >
-                      Cuéntanos qué necesitas
+                      Cuéntanos tu
+                      <br />
+                      proyecto
                     </h2>
                   </div>
                   <div className="hidden sm:flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-amber-700 mt-2">
                     <div className="h-1.5 w-1.5 rounded-full bg-amber-700" />
                   </div>
                 </div>
-                <ContactForm email={settings.email} projectTypes={projectTypes} />
+                <ContactForm projectTypes={projectTypes} email={settings.email} whatsappHref={whatsappHref} />
               </div>
             </section>
           </div>
