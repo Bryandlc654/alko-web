@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { MessageSquare, Send, X, RotateCcw, Sparkles, Bot, Loader2 } from "lucide-react";
+import { AI_LIMITS, AI_MESSAGES } from "@/lib/ai/limits";
 
 interface Message {
   id: string;
@@ -61,42 +62,38 @@ export default function ChatWidget() {
     setIsLoading(true);
 
     try {
-      // Enviamos el historial a la API
+      // Solo se envían los mensajes más recientes: el servidor no admite historiales largos.
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          messages: newHistory.map((m) => ({
+          messages: newHistory.slice(-AI_LIMITS.maxMessages).map((m) => ({
             role: m.role,
             content: m.content,
           })),
         }),
       });
 
-      const data = await res.json();
-
-      if (!res.ok && data?.error) {
-        throw new Error(data.details || data.error);
-      }
+      // El servidor responde siempre con `content` (también en los errores, con un texto
+      // amable). Si la respuesta no es la esperada, se muestra un aviso genérico: nunca
+      // el mensaje interno de un error.
+      const data: unknown = await res.json().catch(() => null);
+      const content = (data as { content?: unknown } | null)?.content;
 
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: data.content || "Gracias por tu consulta. ¿En qué más puedo ayudarte?",
+        content: typeof content === "string" && content ? content : AI_MESSAGES.failed,
         timestamp: new Date(),
       };
 
       setMessages((prev) => [...prev, botMessage]);
-    } catch (err: unknown) {
-      const errorMsg =
-        err instanceof Error
-          ? err.message
-          : "Ha ocurrido un error al conectar con el servidor.";
-
+    } catch {
+      // Sin conexión o petición cancelada.
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: `Lo sentimos, ocurrió un inconveniente: ${errorMsg}\n\nPuedes contactarnos directamente en nuestra sección de contacto o por WhatsApp.`,
+        content: AI_MESSAGES.failed,
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, errorMessage]);
@@ -260,6 +257,7 @@ export default function ChatWidget() {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
+                maxLength={AI_LIMITS.maxMessageChars}
                 onKeyDown={handleKeyDown}
                 placeholder="Escribe tu consulta sobre tu obra o proyecto..."
                 disabled={isLoading}
