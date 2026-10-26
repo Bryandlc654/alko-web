@@ -4,14 +4,14 @@ import Container from "@/components/ui/Container";
 import PageHero from "@/components/ui/PageHero";
 import Prose from "@/components/ui/Prose";
 import { ROUTES } from "@/lib/site";
-import { getArticleBySlug, getArticles } from "@/lib/wordpress";
+import { getArticleBySlug, getArticles, getNews } from "@/lib/wordpress";
 import { formatDate } from "@/lib/utils";
 
 export const revalidate = 60;
 
 export async function generateStaticParams() {
-  const articles = await getArticles(50);
-  return articles.map((a) => ({ slug: a.slug }));
+  const [articles, news] = await Promise.all([getArticles(50), getNews(50)]);
+  return [...articles, ...news].map((a) => ({ slug: a.slug }));
 }
 
 export async function generateMetadata({
@@ -37,6 +37,9 @@ export default async function ArticleDetail({
   const article = await getArticleBySlug(slug);
   if (!article) return notFound();
 
+  // Las novedades (categoría Actualidad) viven dentro de Guías.
+  const isNews = article.category.toLowerCase() === "actualidad";
+
   return (
     <main className="bg-white text-stone-900">
       <PageHero
@@ -56,10 +59,10 @@ export default async function ArticleDetail({
         <div className="max-w-3xl mx-auto">
           <Prose html={article.content} />
           <Link
-            href={ROUTES.articlesList}
+            href={isNews ? `${ROUTES.guides}#actualidad` : ROUTES.articlesList}
             className="mt-10 inline-flex items-center gap-2 text-xs uppercase tracking-widest border-b border-stone-900 pb-1 hover:text-amber-800 hover:border-amber-800"
           >
-            ← Volver a artículos
+            {isNews ? "← Volver a actualidad" : "← Volver a artículos"}
           </Link>
         </div>
       </Container>

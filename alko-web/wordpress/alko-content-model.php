@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       ALKO Content Model (Headless)
  * Description:       Registra los tipos de contenido (CPT) y los campos SCF/ACF que consume el front-end Next.js de ALKO.
- * Version:           1.3.0
+ * Version:           1.4.0
  * Author:            ALKO
  *
  * Requiere "Secure Custom Fields" o "Advanced Custom Fields" activo (no se usa la
@@ -22,6 +22,7 @@
  *   GET /wp-json/wp/v2/fabricantes?_embed
  *   GET /wp-json/wp/v2/slides?_embed
  *   GET /wp-json/wp/v2/guias?_embed
+ *   GET /wp-json/wp/v2/descargas?_embed
  *   GET /wp-json/wp/v2/ajustes?per_page=1
  */
 
@@ -129,6 +130,22 @@ add_action( 'init', function () {
 		'menu_icon'     => 'dashicons-book-alt',
 		'menu_position' => 26,
 		'supports'      => array( 'title', 'editor', 'thumbnail', 'excerpt', 'page-attributes' ),
+	) );
+
+	register_post_type( 'descarga', array(
+		'labels'        => array(
+			'name'          => 'Descargas',
+			'singular_name' => 'Descarga',
+			'add_new_item'  => 'Añadir Descarga',
+			'edit_item'     => 'Editar Descarga',
+			'all_items'     => 'Todas las Descargas',
+		),
+		'public'        => true,
+		'show_in_rest'  => true,
+		'rest_base'     => 'descargas',
+		'menu_icon'     => 'dashicons-download',
+		'menu_position' => 27,
+		'supports'      => array( 'title', 'page-attributes' ),
 	) );
 
 	register_post_type( 'ajuste', array(
@@ -253,6 +270,21 @@ add_action( 'acf/include_fields', function () {
 			array( 'key' => 'field_guia_lectura', 'label' => 'Tiempo de lectura (p. ej. 8 min)', 'name' => 'lectura', 'type' => 'text', 'wrapper' => array( 'width' => '25' ) ),
 			array( 'key' => 'field_guia_descripcion', 'label' => 'Descripción', 'name' => 'descripcion', 'type' => 'textarea' ),
 			array( 'key' => 'field_guia_imagen', 'label' => 'Imagen de la guía', 'name' => 'imagen', 'type' => 'image', 'return_format' => 'url' ),
+		),
+	) );
+
+	// Descargas.
+	acf_add_local_field_group( array(
+		'key'          => 'group_descarga',
+		'title'        => 'Datos de la Descarga',
+		'show_in_rest' => 1,
+		'location'     => array( array( array( 'param' => 'post_type', 'operator' => '==', 'value' => 'descarga' ) ) ),
+		'fields'       => array(
+			array( 'key' => 'field_descarga_descripcion', 'label' => 'Descripción (una línea)', 'name' => 'descripcion', 'type' => 'textarea', 'rows' => 3, 'new_lines' => '' ),
+			array( 'key' => 'field_descarga_archivo', 'label' => 'Archivo (ruta o URL del PDF)', 'name' => 'archivo', 'type' => 'text', 'instructions' => 'Ruta de un archivo de la web (p. ej. /descargas/checklist.pdf) o URL completa de uno subido a la biblioteca de medios.' ),
+			array( 'key' => 'field_descarga_formato', 'label' => 'Formato (p. ej. PDF)', 'name' => 'formato', 'type' => 'text', 'wrapper' => array( 'width' => '25' ) ),
+			array( 'key' => 'field_descarga_peso', 'label' => 'Peso (p. ej. 120 KB)', 'name' => 'peso', 'type' => 'text', 'wrapper' => array( 'width' => '25' ) ),
+			array( 'key' => 'field_descarga_guia', 'label' => 'Guía relacionada (slug)', 'name' => 'guia', 'type' => 'text', 'wrapper' => array( 'width' => '50' ), 'instructions' => 'Slug de la guía a la que acompaña, p. ej. planificar-reforma-integral.' ),
 		),
 	) );
 

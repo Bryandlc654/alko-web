@@ -65,6 +65,8 @@ export const MAIN_NAV: NavItem[] = [
     children: [
       { href: ROUTES.articlesList, label: "Artículos" },
       { href: ROUTES.guides, label: "Guías" },
+      { href: `${ROUTES.guides}#descargas`, label: "Descargas" },
+      { href: `${ROUTES.guides}#actualidad`, label: "Actualidad" },
     ],
   },
   { href: ROUTES.contact, label: "Contacto" },

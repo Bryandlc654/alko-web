@@ -2,6 +2,7 @@ import { decodeEntities, slugify, stripHtml, text } from "../utils";
 import type {
   Article,
   Fabricante,
+  Descarga,
   Fase,
   Guide,
   Project,
@@ -220,5 +221,22 @@ export function toSettings(post: WpPost): Partial<SiteSettings> {
     linkedin: text(fields.linkedin),
     facebook: text(fields.facebook),
     instagram: text(fields.instagram),
+  };
+}
+
+export function toDescarga(post: WpPost): Descarga {
+  const fields = wpFields(post);
+  const title = wpTitle(post);
+  const archivo = text(fields.archivo).trim();
+  const extension = archivo.split(/[?#]/)[0].split(".").pop() ?? "";
+  return {
+    id: `descarga-${post.id}`,
+    slug: post.slug || slugify(title),
+    title,
+    descripcion: text(fields.descripcion),
+    archivo,
+    formato: text(fields.formato).trim() || (extension.length <= 4 ? extension.toUpperCase() : ""),
+    peso: text(fields.peso).trim(),
+    guia: text(fields.guia).trim(),
   };
 }

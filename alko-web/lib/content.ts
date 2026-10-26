@@ -1,5 +1,6 @@
 import type {
   Article,
+  Descarga,
   Fabricante,
   Fase,
   Guide,
@@ -431,6 +432,44 @@ export const DEFAULT_GUIDES: Guide[] = [
       "<h2>Uso antes que estética</h2><p>El tránsito, la humedad y la exposición solar de cada estancia determinan qué materiales funcionan a largo plazo.</p><h2>Mantenimiento</h2><p>La piedra natural, la madera y los microcementos exigen cuidados distintos. Conviene conocerlos antes de elegir.</p><h2>Muestras en obra</h2><p>Valida siempre las muestras con la luz real del espacio y junto al resto de acabados.</p><h2>Plazos de suministro</h2><p>Algunos acabados se fabrican bajo pedido: incorpora sus plazos al calendario de compras.</p>",
   },
 ];
+
+/** Descargables que acompañan a las guías. Los PDF viven en public/descargas. */
+export const DEFAULT_DESCARGAS: Descarga[] = [
+  {
+    id: "d-1",
+    slug: "checklist-planificar-reforma",
+    title: "Checklist para planificar una reforma",
+    descripcion:
+      "Los puntos que conviene cerrar antes de pedir presupuestos y de empezar la obra.",
+    archivo: "/descargas/checklist-planificar-reforma.pdf",
+    formato: "PDF",
+    peso: "14 KB",
+    guia: "planificar-reforma-integral",
+  },
+  {
+    id: "d-2",
+    slug: "plantilla-comparar-presupuestos",
+    title: "Plantilla para comparar presupuestos de obra",
+    descripcion:
+      "Una columna por oferta para comparar partidas, calidades, plazos y condiciones en igualdad.",
+    archivo: "/descargas/plantilla-comparar-presupuestos.pdf",
+    formato: "PDF",
+    peso: "14 KB",
+    guia: "presupuesto-de-obra",
+  },
+  {
+    id: "d-3",
+    slug: "ficha-calidades-acabados",
+    title: "Ficha de calidades y acabados",
+    descripcion:
+      "Anota material, referencia y plazo de cada elemento y marca las muestras ya validadas.",
+    archivo: "/descargas/ficha-calidades-acabados.pdf",
+    formato: "PDF",
+    peso: "14 KB",
+    guia: "elegir-materiales-y-acabados",
+  },
+];
+
 
 export const DEFAULT_SETTINGS: SiteSettings = {
   telefono: "+34 910 000 000",

@@ -1,5 +1,6 @@
 import {
   DEFAULT_ARTICLES,
+  DEFAULT_DESCARGAS,
   DEFAULT_FABRICANTES,
   DEFAULT_FASES,
   DEFAULT_GUIDES,
@@ -11,6 +12,7 @@ import {
 } from "../content";
 import type {
   Article,
+  Descarga,
   Fabricante,
   Fase,
   Guide,
@@ -23,6 +25,7 @@ import type {
 import { wpGet, type WpPost } from "./client";
 import {
   toArticle,
+  toDescarga,
   toFabricante,
   toFase,
   toGuide,
@@ -118,12 +121,33 @@ export async function getFabricantes(): Promise<Fabricante[]> {
 
 /* ------------------------------- Artículos -------------------------------- */
 
+/** Categoría de WordPress cuyas entradas se muestran como «Actualidad» (dentro de Guías). */
+const NEWS_CATEGORY_SLUG = "actualidad";
+
+async function newsCategoryId(): Promise<number | null> {
+  const categories = await wpGet<{ id: number }[]>(
+    `categories?slug=${NEWS_CATEGORY_SLUG}&_fields=id`,
+  );
+  return categories && categories.length > 0 ? categories[0].id : null;
+}
+
+/** Artículos técnicos: todas las entradas salvo las de la categoría Actualidad. */
 export async function getArticles(limit = 6): Promise<Article[]> {
-  const posts = await wpGet<WpPost[]>(`posts?per_page=${limit}&_embed`);
+  const newsId = await newsCategoryId();
+  const exclude = newsId ? `&categories_exclude=${newsId}` : "";
+  const posts = await wpGet<WpPost[]>(`posts?per_page=${limit}&_embed${exclude}`);
   if (!posts || posts.length === 0) return DEFAULT_ARTICLES;
   return posts.map((post, i) =>
     toArticle(post, DEFAULT_ARTICLES[i % DEFAULT_ARTICLES.length]?.image),
   );
+}
+
+/** Novedades de ALKO (categoría Actualidad). Sin respaldo: si no hay, la sección no se muestra. */
+export async function getNews(limit = 4): Promise<Article[]> {
+  const newsId = await newsCategoryId();
+  if (!newsId) return [];
+  const posts = await wpGet<WpPost[]>(`posts?per_page=${limit}&categories=${newsId}&_embed`);
+  return (posts ?? []).map((post) => toArticle(post));
 }
 
 export async function getArticleBySlug(slug: string): Promise<Article | null> {
@@ -133,6 +157,13 @@ export async function getArticleBySlug(slug: string): Promise<Article | null> {
 }
 
 /* --------------------------------- Guías ---------------------------------- */
+
+/** Descargables (PDF) que acompañan a las guías. */
+export async function getDescargas(): Promise<Descarga[]> {
+  const posts = await collection(`descargas?${COLLECTION_ORDER}`);
+  const items = (posts ?? []).map(toDescarga).filter((item) => item.archivo);
+  return items.length > 0 ? items : DEFAULT_DESCARGAS;
+}
 
 export async function getGuides(): Promise<Guide[]> {
   const posts = await collection(`guias?${COLLECTION_ORDER}`);

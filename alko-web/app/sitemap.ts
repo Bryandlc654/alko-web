@@ -1,14 +1,16 @@
 import { MetadataRoute } from "next";
 import { ROUTES, SITE } from "@/lib/site";
-import { getArticles, getGuides, getProjects, getSectors } from "@/lib/wordpress";
+import { getArticles, getGuides, getNews, getProjects, getSectors } from "@/lib/wordpress";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [projects, sectors, articles, guides] = await Promise.all([
+  const [projects, sectors, articleList, news, guides] = await Promise.all([
     getProjects(),
     getSectors(),
     getArticles(50),
+    getNews(50),
     getGuides(),
   ]);
+  const articles = [...articleList, ...news];
 
   const staticRoutes: MetadataRoute.Sitemap = Object.values(ROUTES)
     .filter((route) => route !== ROUTES.articles)

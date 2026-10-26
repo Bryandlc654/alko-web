@@ -132,6 +132,22 @@ export interface Guide {
   content: string;
 }
 
+/** Recurso descargable (PDF) que acompaña a una guía. */
+export interface Descarga {
+  id: string;
+  slug: string;
+  title: string;
+  descripcion: string;
+  /** Ruta o URL del archivo (p. ej. /descargas/checklist.pdf). */
+  archivo: string;
+  /** Formato en mayúsculas (p. ej. PDF); si no se indica, sale de la extensión. */
+  formato: string;
+  /** Peso orientativo (p. ej. 14 KB). */
+  peso: string;
+  /** Slug de la guía a la que acompaña (puede estar vacío). */
+  guia: string;
+}
+
 export interface SiteSettings {
   telefono: string;
   email: string;

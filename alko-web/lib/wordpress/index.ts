@@ -10,6 +10,8 @@ export {
   getFases,
   getFabricantes,
   getArticles,
+  getNews,
+  getDescargas,
   getArticleBySlug,
   getGuides,
   getGuideBySlug,
