@@ -1,0 +1,3 @@
+# Los PDF se generan con texto ASCII85: sin esto, Git los trata como texto y en Windows
+# (core.autocrlf=true) podría cambiarles los saltos de línea y corromperlos.
+*.pdf binary
