@@ -35,7 +35,6 @@ export const ROUTES = {
   sectors: "/servicios",
   company: "/nosotros",
   team: "/equipo",
-  method: "/metodo",
   careers: "/trabaja-con-nosotros",
   /** Base de las URL de cada artículo; redirige a articlesList (no tiene página propia). */
   articles: "/conocimiento",
@@ -43,6 +42,9 @@ export const ROUTES = {
   guides: "/conocimiento/guias",
   contact: "/contacto",
 } as const;
+
+/** El método ALKO es una sección de Nosotros (antes tenía página propia en /metodo). */
+export const METHOD_HREF = `${ROUTES.company}#metodo`;
 
 /** Navegación principal (cabecera y menú móvil). */
 export const MAIN_NAV: NavItem[] = [
@@ -54,7 +56,6 @@ export const MAIN_NAV: NavItem[] = [
     children: [
       { href: ROUTES.company, label: "Nosotros" },
       { href: ROUTES.team, label: "Equipo" },
-      { href: ROUTES.method, label: "Método" },
       { href: ROUTES.careers, label: "Trabaja con nosotros" },
     ],
   },
@@ -86,7 +87,6 @@ export const FOOTER_NAV: NavItem[] = [
   { href: ROUTES.sectors, label: "Servicios" },
   { href: ROUTES.company, label: "Empresa" },
   { href: ROUTES.team, label: "Equipo" },
-  { href: ROUTES.method, label: "Método" },
   { href: ROUTES.careers, label: "Trabaja con nosotros" },
   { href: ROUTES.articlesList, label: "Conocimiento" },
   { href: ROUTES.contact, label: "Contacto" },

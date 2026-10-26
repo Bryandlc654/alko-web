@@ -4,7 +4,7 @@ import Link from "next/link";
 import Container from "@/components/ui/Container";
 import Prose from "@/components/ui/Prose";
 import ContactCta from "@/components/sections/ContactCta";
-import { ROUTES } from "@/lib/site";
+import { METHOD_HREF, ROUTES } from "@/lib/site";
 import { getFases, getProjectBySlug, getProjects, getSectorBySlug, getSettings } from "@/lib/wordpress";
 import { splitLead } from "@/lib/utils";
 
@@ -472,7 +472,7 @@ export default async function ProjectDetail({
                 </h2>
               </div>
               <Link
-                href={ROUTES.method}
+                href={METHOD_HREF}
                 className="group reveal-item inline-flex shrink-0 items-center gap-2 font-mono text-[11px] tracking-[0.25em] uppercase text-stone-900 hover:text-amber-700 transition-colors"
               >
                 Conoce el método

@@ -198,9 +198,21 @@ export const DEFAULT_PROJECTS: Project[] = [
 export const DEFAULT_SECTORS: Sector[] = [
   {
     id: "s-1",
-    slug: "oficinas",
+    slug: "reformas-integrales",
     numero: "01",
-    title: "Oficinas",
+    title: "Reformas integrales",
+    descripcion:
+      "Transformación completa de viviendas, oficinas y locales: proyecto, obra, instalaciones y acabados bajo una única dirección.",
+    imagen: "/proceso-construccion.jpg",
+    enlace: "/proyectos",
+    content:
+      "<p>Transformamos por completo viviendas, oficinas y locales: desde el proyecto y las demoliciones hasta las instalaciones, los acabados y la entrega, con un único responsable de toda la obra.</p><p>Una reforma integral afecta a todo el espacio a la vez. Por eso planificamos juntos arquitectura, instalaciones y compras, de modo que cada decisión se toma con la obra completa a la vista.</p><h2>Qué incluye</h2><ul><li>Estudio previo, mediciones y proyecto de ejecución</li><li>Demoliciones, refuerzos y nueva distribución</li><li>Instalaciones de climatización, electricidad, fontanería y datos</li><li>Carpinterías, pavimentos, revestimientos y acabados</li><li>Gestión de licencias y coordinación con la propiedad</li><li>Entrega con documentación final y garantía postventa</li></ul><h2>Cómo lo ejecutamos</h2><p>Trabajamos por fases, con el calendario y las compras cerradas antes de empezar. Un mismo equipo coordina a los gremios y verifica cada partida hasta la entrega.</p>",
+  },
+  {
+    id: "s-2",
+    slug: "oficinas",
+    numero: "02",
+    title: "Reformas de oficinas",
     descripcion:
       "Reformas integrales de espacios corporativos, instalaciones, climatización, ventilación, datos y acabados.",
     imagen: "/sector-oficinas.jpg",
@@ -209,20 +221,57 @@ export const DEFAULT_SECTORS: Sector[] = [
       "<p>Ejecutamos reformas integrales de espacios corporativos donde clima, ventilación, conectividad y acabados deben convivir sin comprometer la operación diaria.</p><p>Coordinamos en paralelo instalaciones, compras e ingeniería para entregar oficinas listas para trabajar en plazos cerrados.</p>",
   },
   {
-    id: "s-2",
+    id: "s-3",
     slug: "residencial",
-    numero: "02",
-    title: "Residencial",
-    descripcion: "Reformas integrales y ejecución de viviendas de alta exigencia.",
-    imagen: "/service-interior-1.jpg",
+    numero: "03",
+    title: "Reformas de viviendas",
+    descripcion:
+      "Reformas integrales y ejecución de viviendas de alta exigencia.",
+    imagen: "/el-viso.jpg",
     enlace: "/proyectos",
     content:
-      "<p>Reformas integrales y ejecución de viviendas de alta exigencia, con especial atención a la eficiencia energética, el confort acústico y la calidad de los acabados.</p><p>Trabajamos con materiales nobles y soluciones técnicas adaptadas a cada vivienda.</p>",
+      "<p>Reformas integrales y ejecución de viviendas de alta exigencia, con especial atención a la eficiencia energética, el confort acústico y la calidad de los acabados.</p><p>Trabajamos con materiales nobles y soluciones técnicas adaptadas a cada vivienda, respetando su carácter y mejorando su confort.</p><h2>Qué incluye</h2><ul><li>Renovación integral de instalaciones</li><li>Aislamiento térmico y acústico</li><li>Carpinterías minimalistas de altas prestaciones</li><li>Climatización eficiente, con suelo radiante si el proyecto lo pide</li><li>Cocinas y baños a medida</li><li>Pavimentos y revestimientos nobles</li><li>Iluminación técnica y domótica</li></ul><h2>Cómo lo ejecutamos</h2><p>Seleccionamos los materiales junto a los fabricantes, con muestras en obra y pruebas de acabado antes de cada pedido, y controlamos las tolerancias partida a partida.</p>",
   },
   {
-    id: "s-3",
+    id: "s-4",
+    slug: "interiorismo",
+    numero: "04",
+    title: "Interiorismo",
+    descripcion:
+      "Diseño y ejecución de interiores: distribución, iluminación, materiales y mobiliario a medida, coordinados con la obra.",
+    imagen: "/slide1.jpg",
+    enlace: "/proyectos",
+    content:
+      "<p>Diseñamos y ejecutamos interiores completos: distribución, iluminación, materiales y mobiliario a medida, siempre coordinados con la obra para que el resultado final sea el proyectado.</p><p>El interiorismo no es una capa final: se decide junto a la arquitectura y las instalaciones. Así evitamos que el diseño obligue a rehacer trabajo ya ejecutado.</p><h2>Qué incluye</h2><ul><li>Propuesta de distribución y ambientes</li><li>Selección de materiales, colores y acabados</li><li>Proyecto de iluminación técnica y decorativa</li><li>Mobiliario y carpintería a medida</li><li>Coordinación con proveedores y fabricantes</li><li>Supervisión del montaje y remates finales</li></ul><h2>Cómo lo ejecutamos</h2><p>Presentamos cada propuesta con muestras y calidades definidas, y la validamos contigo antes de comprar. El equipo de obra ejecuta con el mismo criterio de diseño.</p>",
+  },
+  {
+    id: "s-5",
+    slug: "instalaciones",
+    numero: "05",
+    title: "Instalaciones",
+    descripcion:
+      "Climatización, electricidad, fontanería, ventilación y datos proyectadas y ejecutadas dentro de la propia obra.",
+    imagen: "/proceso-instalaciones.jpg",
+    enlace: "/proyectos",
+    content:
+      "<p>Proyectamos y ejecutamos las instalaciones del edificio —climatización, electricidad, fontanería, ventilación y datos— integradas en la obra y pensadas para su mantenimiento futuro.</p><p>Las instalaciones condicionan el resto de la reforma. Las resolvemos desde el proyecto, con recorridos coordinados y registros accesibles, para que funcionen bien y no obliguen a abrir paramentos más adelante.</p><h2>Qué incluye</h2><ul><li>Climatización y ventilación (aerotermia, VRF, renovación de aire)</li><li>Instalación eléctrica, iluminación técnica y domótica</li><li>Fontanería, saneamiento y producción de agua caliente</li><li>Cableado estructurado y redes de datos</li><li>Pruebas, puesta en marcha y certificados</li><li>Manuales y documentación de cada sistema</li></ul><h2>Cómo lo ejecutamos</h2><p>Coordinamos las instalaciones con la obra civil y los acabados, hacemos pruebas antes de cerrar los falsos techos y entregamos cada sistema con su documentación.</p>",
+  },
+  {
+    id: "s-6",
+    slug: "gestion-tecnica",
+    numero: "06",
+    title: "Gestión técnica",
+    descripcion:
+      "Dirección de obra, control de plazos y costes, compras y coordinación de gremios con un único interlocutor.",
+    imagen: "/proceso-coordinacion.jpg",
+    enlace: "/proyectos",
+    content:
+      "<p>Dirigimos tu obra de principio a fin: planificación, control de plazos y costes, compras, coordinación de gremios y verificación de la calidad, con un único interlocutor.</p><p>La gestión técnica es lo que hace previsible una obra. Anticipamos decisiones, cerramos las compras de plazo largo y seguimos el avance con hitos claros para que el resultado coincida con lo acordado.</p><h2>Qué incluye</h2><ul><li>Planificación por fases y calendario de obra</li><li>Presupuesto por partidas y control de costes</li><li>Compras anticipadas y gestión de proveedores</li><li>Coordinación diaria de gremios en obra</li><li>Control de calidad, tolerancias y pruebas por fase</li><li>Informes de seguimiento y recepción final</li></ul><h2>Cómo lo ejecutamos</h2><p>Un responsable técnico acompaña la obra a diario y te informa del avance. Cada fase se verifica antes de pasar a la siguiente, hasta la recepción formal.</p>",
+  },
+  {
+    id: "s-7",
     slug: "retail",
-    numero: "03",
+    numero: "07",
     title: "Retail",
     descripcion:
       "Espacios comerciales diseñados para operar, recibir clientes y cumplir los requisitos técnicos del proyecto.",
@@ -232,9 +281,9 @@ export const DEFAULT_SECTORS: Sector[] = [
       "<p>Espacios comerciales diseñados para operar y recibir clientes, cumpliendo los requisitos técnicos, de accesibilidad y de imagen de marca de cada proyecto.</p><p>Ajustamos plazos y ejecución para minimizar el impacto en la actividad comercial.</p>",
   },
   {
-    id: "s-4",
+    id: "s-8",
     slug: "hospitality",
-    numero: "04",
+    numero: "08",
     title: "Hospitality",
     descripcion:
       "Intervenciones donde arquitectura, instalaciones, materiales y operación deben funcionar conjuntamente.",

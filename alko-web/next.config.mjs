@@ -36,7 +36,11 @@ const nextConfig = {
   },
   // «Biblioteca técnica» (/conocimiento) se eliminó: la sección arranca en Artículos.
   async redirects() {
-    return [{ source: "/conocimiento", destination: "/conocimiento/articulos", permanent: true }];
+    return [
+      { source: "/conocimiento", destination: "/conocimiento/articulos", permanent: true },
+      // El método ALKO es ahora una sección de Nosotros.
+      { source: "/metodo", destination: "/nosotros#metodo", permanent: true },
+    ];
   },
 };
 

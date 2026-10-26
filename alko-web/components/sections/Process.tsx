@@ -7,12 +7,12 @@ function phaseNumber(fase: Fase, index: number) {
   return (match ? match[0] : String(index + 1)).padStart(2, "0");
 }
 
-export default function Process({ fases }: { fases: Fase[] }) {
+export default function Process({ fases, id = "metodo" }: { fases: Fase[]; id?: string }) {
   const first = fases[0];
 
   return (
     <section
-      id="metodo"
+      id={id}
       className="relative bg-white text-stone-900 py-24 sm:py-32 px-6 sm:px-10 lg:px-12 overflow-hidden border-t border-stone-200"
     >
       <div className="max-w-7xl mx-auto">

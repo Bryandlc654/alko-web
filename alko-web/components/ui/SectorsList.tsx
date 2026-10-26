@@ -16,9 +16,9 @@ export default function SectorsList({ sectors }: { sectors: Sector[] }) {
           {/* Vista inactiva */}
           <div className="service-inactive py-8 sm:py-10 md:py-12 lg:py-14 flex items-center">
             <span className="w-24 sm:w-32 md:w-40 lg:w-48 shrink-0 font-mono text-xs sm:text-sm text-stone-400 tracking-wider select-none">
-              {sector.numero} — SECTOR
+              {sector.numero} — SERVICIO
             </span>
-            <h3 className="flex-1 text-5xl sm:text-7xl md:text-8xl lg:text-[110px] xl:text-[135px] font-serif font-light text-stone-900 leading-none tracking-tight">
+            <h3 className="flex-1 text-4xl sm:text-6xl md:text-7xl lg:text-[84px] xl:text-[100px] font-serif font-light text-stone-900 leading-none tracking-tight">
               {sector.title}
             </h3>
           </div>
@@ -27,7 +27,7 @@ export default function SectorsList({ sectors }: { sectors: Sector[] }) {
           <div className="service-active py-8 sm:py-10 md:py-12 lg:py-14 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             <div className="flex items-start gap-4 sm:gap-6 w-full lg:w-[48%] shrink-0">
               <span className="w-24 sm:w-32 md:w-40 lg:w-48 shrink-0 font-mono text-xs sm:text-sm text-stone-900 tracking-wider select-none font-medium pt-1">
-                {sector.numero} — SECTOR
+                {sector.numero} — SERVICIO
               </span>
               <div className="flex-1 pr-2 sm:pr-4">
                 <h3 className="text-xl sm:text-2xl font-serif font-light text-stone-900 tracking-tight leading-snug">
@@ -41,7 +41,7 @@ export default function SectorsList({ sectors }: { sectors: Sector[] }) {
                     href={`${ROUTES.sectors}/${sector.slug}`}
                     className="inline-flex items-center gap-1.5 text-[11px] font-mono tracking-widest uppercase text-stone-900 hover:text-amber-800 transition-colors border-b border-stone-900 pb-0.5 group/link"
                   >
-                    <span>VER SECTOR</span>
+                    <span>VER SERVICIO</span>
                     <span className="transition-transform group-hover/link:translate-x-1">→</span>
                   </Link>
                 </div>

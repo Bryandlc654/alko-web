@@ -12,7 +12,7 @@ export default function ServicesSection({ sectors }: { sectors: Sector[] }) {
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
             <div>
               <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase mb-3">
-                SECTORES DE ACTUACIÓN
+                SERVICIOS Y SECTORES
               </span>
               <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-light text-stone-900 tracking-tight leading-none">
                 ESPECIALIDADES

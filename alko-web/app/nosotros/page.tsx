@@ -5,7 +5,8 @@ import Container from "@/components/ui/Container";
 import PageHero from "@/components/ui/PageHero";
 import ContactCta from "@/components/sections/ContactCta";
 import Materials from "@/components/sections/Materials";
-import { ROUTES } from "@/lib/site";
+import Process from "@/components/sections/Process";
+import { METHOD_HREF, ROUTES } from "@/lib/site";
 import { getFabricantes, getFases, getProjects, getSectors, getSettings } from "@/lib/wordpress";
 
 export const revalidate = 60;
@@ -89,7 +90,7 @@ export default async function NosotrosPage() {
   const cifras = [
     { valor: "1996", etiqueta: "Construyendo y reformando en Madrid" },
     { valor: "1", etiqueta: "Interlocutor para todo el proyecto" },
-    sectors.length > 0 && { valor: String(sectors.length), etiqueta: "Sectores especializados" },
+    sectors.length > 0 && { valor: String(sectors.length), etiqueta: "Servicios y sectores especializados" },
     fases.length > 0 && { valor: String(fases.length), etiqueta: "Fases de control por obra" },
   ].filter(Boolean) as { valor: string; etiqueta: string }[];
 
@@ -176,7 +177,7 @@ export default async function NosotrosPage() {
                   Ver proyectos
                 </Link>
                 <Link
-                  href={ROUTES.method}
+                  href={METHOD_HREF}
                   className="group inline-flex items-center gap-2 border-b border-stone-900 pb-1.5 text-xs font-semibold uppercase tracking-[0.22em] transition hover:border-amber-700 hover:text-amber-700"
                 >
                   Conoce el método
@@ -291,6 +292,61 @@ export default async function NosotrosPage() {
           </div>
         </Container>
       </section>
+
+      {/* Método ALKO */}
+      <div id="metodo">
+        <section className="relative isolate overflow-clip border-t border-stone-300">
+          <Container className="py-20 sm:py-28">
+            <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-16">
+              <div className="reveal-item lg:col-span-5">
+                <div className="flex items-center gap-4">
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-amber-700">
+                    <span className="h-1.5 w-1.5 rounded-full bg-amber-700" />
+                  </span>
+                  <span className="font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase">
+                    El método ALKO
+                  </span>
+                </div>
+                <h2 className="mt-8 font-serif font-light text-4xl sm:text-5xl text-stone-900 leading-[1.05] tracking-tight">
+                  Una dirección, muchas manos.
+                </h2>
+              </div>
+
+              <div className="reveal-item lg:col-span-7 lg:pt-4" style={{ transitionDelay: "120ms" }}>
+                <p className="font-serif font-light text-2xl sm:text-3xl text-stone-900 leading-snug tracking-tight">
+                  Coordinar antes que ejecutar: un único equipo mantiene construcción, instalaciones,
+                  compras y gestión técnica bajo control de principio a fin.
+                </p>
+                <div className="mt-10 grid grid-cols-1 gap-6 border-t border-stone-900/15 pt-10 sm:grid-cols-2">
+                  <p className="text-base sm:text-lg font-light text-stone-600 leading-relaxed">
+                    Trabajamos como un solo equipo, no como departamentos aislados. Antes de empezar la
+                    obra definimos la secuencia, el calendario y las compras críticas para que cada
+                    oficio entre en el momento exacto.
+                  </p>
+                  <p className="text-base sm:text-lg font-light text-stone-600 leading-relaxed">
+                    Esa coordinación reduce interfaces, acelera decisiones y mantiene la coherencia
+                    técnica del proyecto. El resultado es una ejecución previsible, sin sorpresas de plazo
+                    ni de coste.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="reveal-scale relative mt-14 aspect-[16/9] w-full overflow-hidden bg-stone-200 sm:mt-20 sm:aspect-[16/7]">
+              <Image
+                src="/proceso-compras.jpg"
+                alt="Compras y planificación de la obra por el equipo de ALKO"
+                fill
+                sizes="(max-width: 1280px) 100vw, 1200px"
+                className="object-cover object-center"
+              />
+            </div>
+          </Container>
+        </section>
+
+        {/* Las fases del proceso (id propio: "metodo" es el de este contenedor) */}
+        <Process fases={fases} id="fases" />
+      </div>
 
       {/* Valores */}
       <section className="bg-stone-100 py-20 sm:py-28">
