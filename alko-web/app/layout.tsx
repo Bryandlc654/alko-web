@@ -7,7 +7,7 @@ import WhatsAppFloat from "@/components/layout/WhatsAppFloat";
 import ChatWidget from "@/components/chat/ChatWidget";
 import SiteScripts from "@/components/SiteScripts";
 import RouteLoader from "@/components/RouteLoader";
-import { getSettings } from "@/lib/wordpress";
+import { getSectors, getSettings } from "@/lib/wordpress";
 import { SITE } from "@/lib/site";
 
 // Una única tipografía para todo el sitio.
@@ -42,14 +42,17 @@ const REVEAL_IN_VIEW_SCRIPT = `(function(){var h=innerHeight;document.querySelec
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const settings = await getSettings();
+  const [settings, sectors] = await Promise.all([getSettings(), getSectors()]);
 
   return (
     <html lang="es" className="scroll-smooth">
       <body
         className={`${ebGaramond.variable} bg-stone-950 text-white font-sans antialiased overflow-x-hidden selection:bg-white/20`}
       >
-        <Nav settings={settings} />
+        <Nav
+          settings={settings}
+          services={sectors.map(({ slug, title }) => ({ slug, title }))}
+        />
         {children}
         {process.env.NODE_ENV === "production" && (
           <script dangerouslySetInnerHTML={{ __html: REVEAL_IN_VIEW_SCRIPT }} />

@@ -5,7 +5,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown, Mail, MessageCircle, Phone, X } from "lucide-react";
-import { MAIN_NAV, ROUTES, TRANSPARENT_HEADER_ROUTES } from "@/lib/site";
+import {
+  buildMainNav,
+  ROUTES,
+  TRANSPARENT_HEADER_ROUTES,
+  type NavItem,
+  type ServiceLink,
+} from "@/lib/site";
 import type { SiteSettings } from "@/lib/types";
 
 /**
@@ -18,8 +24,15 @@ import type { SiteSettings } from "@/lib/types";
  *   contenedor de sus hijos `fixed` y el panel quedaría recortado a su altura.
  * - El estado del panel lo gestiona React, de modo que se cierra al navegar.
  */
-export default function Nav({ settings }: { settings?: SiteSettings }) {
+export default function Nav({
+  settings,
+  services,
+}: {
+  settings?: SiteSettings;
+  services?: ServiceLink[];
+}) {
   const pathname = usePathname();
+  const items = buildMainNav(services);
   const transparent = TRANSPARENT_HEADER_ROUTES.some((route) =>
     route.endsWith("/*") ? pathname.startsWith(route.slice(0, -1)) : pathname === route,
   );
@@ -68,7 +81,7 @@ export default function Nav({ settings }: { settings?: SiteSettings }) {
           </Link>
 
           <div className="hidden lg:flex items-center gap-8 xl:gap-10">
-            {MAIN_NAV.map((link) =>
+            {items.map((link) =>
               link.children ? (
                 <div key={link.href} className="group relative">
                   <Link
@@ -96,7 +109,7 @@ export default function Nav({ settings }: { settings?: SiteSettings }) {
                         <Link
                           key={child.href}
                           href={child.href}
-                          className={`block rounded-lg px-4 py-2.5 text-xs tracking-[0.16em] uppercase font-light transition-colors ${
+                          className={`block whitespace-nowrap rounded-lg px-4 py-2.5 text-xs tracking-[0.16em] uppercase font-light transition-colors ${
                             pathname === child.href
                               ? "text-white"
                               : "text-white/70 hover:text-white hover:bg-white/5"
@@ -159,6 +172,7 @@ export default function Nav({ settings }: { settings?: SiteSettings }) {
         pathname={pathname}
         isActive={isActive}
         settings={settings}
+        items={items}
       />
     </>
   );
@@ -171,12 +185,14 @@ function MobileDrawer({
   pathname,
   isActive,
   settings,
+  items,
 }: {
   open: boolean;
   onClose: () => void;
   pathname: string;
   isActive: (href: string) => boolean;
   settings?: SiteSettings;
+  items: NavItem[];
 }) {
   const closeRef = useRef<HTMLButtonElement>(null);
   // Submenú desplegado: al abrir, el de la sección en la que estamos.
@@ -184,7 +200,7 @@ function MobileDrawer({
 
   useEffect(() => {
     if (!open) return;
-    setExpanded(MAIN_NAV.find((link) => link.children && isActive(link.href))?.href ?? null);
+    setExpanded(items.find((link) => link.children && isActive(link.href))?.href ?? null);
 
     // Bloquea el scroll de la página, cierra con Escape y lleva el foco al panel.
     const previousOverflow = document.body.style.overflow;
@@ -247,7 +263,7 @@ function MobileDrawer({
 
         <nav className="flex-1 overflow-y-auto px-6 py-4" aria-label="Principal">
           <ul className="divide-y divide-white/10">
-            {MAIN_NAV.map((link, i) => {
+            {items.map((link, i) => {
               const numero = String(i + 1).padStart(2, "0");
               const active = isActive(link.href);
               const isOpen = expanded === link.href;

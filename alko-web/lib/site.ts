@@ -72,6 +72,33 @@ export const MAIN_NAV: NavItem[] = [
   { href: ROUTES.contact, label: "Contacto" },
 ];
 
+/** Servicio mínimo que necesita el menú (los datos vienen del CMS). */
+export interface ServiceLink {
+  slug: string;
+  title: string;
+}
+
+/**
+ * Navegación principal con el desplegable de Servicios construido a partir de los
+ * servicios del CMS: uno nuevo aparece en el menú sin tocar el código.
+ */
+export function buildMainNav(services: ServiceLink[] = []): NavItem[] {
+  return MAIN_NAV.map((item) =>
+    item.href === ROUTES.sectors && services.length > 0
+      ? {
+          ...item,
+          children: [
+            { href: ROUTES.sectors, label: "Todos los servicios" },
+            ...services.map((service) => ({
+              href: `${ROUTES.sectors}/${service.slug}`,
+              label: service.title,
+            })),
+          ],
+        }
+      : item,
+  );
+}
+
 /**
  * Rutas en las que la cabecera es transparente al hacer scroll hasta arriba
  * (páginas con un hero oscuro con imagen). Una entrada terminada en "/*" se
