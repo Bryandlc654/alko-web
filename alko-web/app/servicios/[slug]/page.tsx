@@ -48,20 +48,14 @@ const COMMITMENTS = [
   { title: "Un único equipo", text: "De proyecto a entrega, sin intermediarios" },
 ];
 
-/** Lo que suele fallar en una obra frente a cómo lo resuelve ALKO. */
+/** Fotografías de obra para completar el mosaico cuando un servicio tiene pocas imágenes propias. */
+const EXTRA_PHOTOS = ["/service-interior-2.jpg", "/terrace-ocean.jpg", "/el-viso.jpg", "/setart.jpg"];
+
+/** Lo que suele fallar en una obra y lo que ALKO pone en su lugar (frases cortas, con imagen). */
 const PROBLEMS = [
-  {
-    problem: "Cada gremio trabaja por su cuenta y las decisiones se contradicen.",
-    solution: "Un único equipo coordina proyecto, compras, instalaciones y obra.",
-  },
-  {
-    problem: "Los retrasos y las partidas nuevas aparecen cuando la obra ya ha empezado.",
-    solution: "Presupuesto por partidas y plazo fijados por escrito antes del primer día.",
-  },
-  {
-    problem: "Nadie responde del conjunto cuando algo no sale como estaba previsto.",
-    solution: "Un responsable técnico acompaña la obra a diario y te informa del avance.",
-  },
+  { avoid: "Gremios descoordinados", promise: "Un único equipo coordina toda la obra", phase: 2 },
+  { avoid: "Sobrecostes y retrasos", promise: "Presupuesto y plazo cerrados por escrito", phase: 3 },
+  { avoid: "Nadie responde del conjunto", promise: "Un responsable técnico a pie de obra", phase: 1 },
 ];
 
 const FAQ = [
@@ -103,7 +97,7 @@ export default async function SectorDetail({
   ]);
   if (!sector) return notFound();
 
-  const { lead, intro, sections } = parseService(sector.content);
+  const { lead, sections } = parseService(sector.content);
   const includes = sections.find((s) => s.items.length > 0 && /incluye/i.test(s.title)) ?? sections.find((s) => s.items.length > 0);
   const others = sections.filter((s) => s !== includes);
 
@@ -111,6 +105,20 @@ export default async function SectorDetail({
   const own = projects.filter((project) => project.servicio === sector.slug);
   const showcase = [...own, ...projects.filter((project) => !own.includes(project))].slice(0, 3);
   const otros = sectors.filter((item) => item.slug !== sector.slug);
+
+  // Imágenes para las secciones visuales (sin repetir): servicio, obras y fases.
+  const phaseImage = (index: number) => fases[index]?.imagen || sector.imagen;
+  const mosaic = [
+    ...new Set(
+      [
+        sector.imagen,
+        ...own.flatMap((project) => [project.imagen, ...project.galeria]),
+        ...projects.flatMap((project) => [project.imagen, ...project.galeria]),
+        ...EXTRA_PHOTOS,
+      ].filter(Boolean),
+    ),
+  ].slice(0, 5);
+  const supportImage = own[0]?.imagen || projects[0]?.imagen || sector.imagen;
 
   const whatsappHref = `https://wa.me/${settings.whatsapp.replace(/[^\d]/g, "")}`;
   const telHref = `tel:${settings.telefono.replace(/[^+\d]/g, "")}`;
@@ -174,7 +182,7 @@ export default async function SectorDetail({
               <h1 className="font-display text-4xl font-light leading-[1.03] tracking-tight drop-shadow-[0_2px_20px_rgba(0,0,0,0.35)] sm:text-5xl md:text-6xl lg:text-7xl">
                 {sector.title}
               </h1>
-              <p className="mt-6 max-w-2xl font-sans text-lg font-light leading-relaxed text-white/85 sm:text-xl">
+              <p className="mt-6 max-w-xl font-sans text-lg font-light leading-relaxed text-white/85 sm:line-clamp-3 sm:text-xl">
                 {lead || sector.descripcion}
               </p>
 
@@ -242,136 +250,191 @@ export default async function SectorDetail({
         </Container>
       </section>
 
-      {/* 3. Interés: lo que suele fallar y cómo se resuelve */}
+      {/* 3. Interés: lo que evitamos, en tres tarjetas con imagen */}
       <section className="py-20 sm:py-28">
         <Container>
           <div className="reveal-item max-w-3xl">
             <span className="font-mono text-[11px] uppercase tracking-[0.25em] text-stone-500 sm:text-xs">
-              El problema de siempre
+              Por qué ALKO
             </span>
             <h2 className="mt-5 font-serif text-3xl font-light leading-tight tracking-tight sm:text-4xl lg:text-5xl">
-              Lo que suele fallar en una obra, y cómo lo resolvemos.
+              Una obra sin sorpresas.
             </h2>
-            {intro && (
-              <div className="mt-8">
-                <Prose html={intro} />
-              </div>
-            )}
           </div>
 
-          <div className="mt-14 border-t border-stone-300">
+          <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-3">
             {PROBLEMS.map((item, index) => (
               <div
-                key={item.problem}
-                className="reveal-item grid grid-cols-1 gap-4 border-b border-stone-300 py-8 md:grid-cols-12 md:gap-10"
-                style={{ transitionDelay: `${index * 80}ms` }}
+                key={item.promise}
+                className="group reveal-item relative isolate flex aspect-[4/5] flex-col justify-between overflow-hidden bg-stone-900 p-6 text-white sm:p-8 md:aspect-[3/4]"
+                style={{ transitionDelay: `${index * 90}ms` }}
               >
-                <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-stone-400 md:col-span-1">
-                  {String(index + 1).padStart(2, "0")}
-                </p>
-                <p className="text-lg font-light leading-snug text-stone-500 md:col-span-5">{item.problem}</p>
-                <p className="flex items-start gap-3 text-lg font-normal leading-snug text-stone-900 md:col-span-6">
-                  <span aria-hidden="true" className="text-amber-700">
-                    →
+                <Image
+                  src={phaseImage(item.phase)}
+                  alt=""
+                  fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  className="-z-10 object-cover object-center transition duration-700 ease-out group-hover:scale-105"
+                />
+                <div className="absolute inset-0 -z-10 bg-gradient-to-t from-stone-950/95 via-stone-950/35 to-stone-950/30" />
+                <span className="self-start rounded-full border border-white/30 bg-stone-950/40 px-4 py-1.5 font-mono text-[10px] uppercase tracking-[0.2em] text-white/85 backdrop-blur">
+                  Evita: {item.avoid}
+                </span>
+                <div>
+                  <span className="font-mono text-xs tabular-nums text-amber-500">
+                    {String(index + 1).padStart(2, "0")}
                   </span>
-                  {item.solution}
-                </p>
+                  <p className="mt-3 font-serif text-2xl font-light leading-snug tracking-tight sm:text-3xl">
+                    {item.promise}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
         </Container>
       </section>
 
-      {/* 4. Deseo: qué incluye */}
+      {/* 4. Deseo: qué incluye, con imagen grande */}
       {includes && (
-        <section id="incluye" className="bg-stone-950 py-20 text-white sm:py-28">
-          <Container>
-            <div className="reveal-item grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-16">
-              <div className="lg:col-span-5">
-                <span className="font-mono text-[11px] uppercase tracking-[0.25em] text-white/60 sm:text-xs">
-                  {includes.title}
-                </span>
-                <h2 className="mt-5 font-serif text-3xl font-light leading-tight tracking-tight sm:text-4xl lg:text-5xl">
-                  Todo lo que entra en {sector.title.toLowerCase()}.
-                </h2>
-                <p className="mt-6 max-w-md font-light leading-relaxed text-white/70">{sector.descripcion}</p>
-                <div className="mt-10">
-                  <ContactTrigger mode="avanzado" source={`Servicio ${sector.title} (qué incluye)`} tipo={sector.title} className={cta}>
-                    Solicitar valoración
-                  </ContactTrigger>
-                </div>
-              </div>
+        <section id="incluye" className="bg-stone-950 text-white">
+          <div className="grid grid-cols-1 lg:grid-cols-2">
+            <div className="relative min-h-[320px] sm:min-h-[420px] lg:min-h-[640px]">
+              <Image
+                src={mosaic[1] ?? sector.imagen}
+                alt={sector.title}
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover object-center"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-stone-950/70 via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:to-stone-950/40" />
+            </div>
 
-              <ul className="grid grid-cols-1 gap-px bg-white/10 sm:grid-cols-2 lg:col-span-7">
-                {includes.items.map((item, index) => (
-                  <li key={item} className="flex items-start gap-4 bg-stone-950 p-6 sm:p-8">
-                    <span className="font-mono text-xs tabular-nums text-amber-500">
-                      {String(index + 1).padStart(2, "0")}
+            <div className="reveal-item flex flex-col justify-center px-6 py-14 sm:px-12 lg:px-16 lg:py-24">
+              <span className="font-mono text-[11px] uppercase tracking-[0.25em] text-white/60 sm:text-xs">
+                {includes.title}
+              </span>
+              <h2 className="mt-5 font-serif text-3xl font-light leading-tight tracking-tight sm:text-4xl lg:text-5xl">
+                Todo en un mismo equipo.
+              </h2>
+              <ul className="mt-10 grid grid-cols-1 gap-x-8 gap-y-5 sm:grid-cols-2">
+                {includes.items.map((item) => (
+                  <li key={item} className="flex items-start gap-3 text-base font-light leading-snug text-white/90">
+                    <span aria-hidden="true" className="mt-0.5 text-amber-500">
+                      ✓
                     </span>
-                    <span className="font-light leading-snug text-white/90">{item}</span>
+                    {item}
                   </li>
                 ))}
               </ul>
+              <div className="mt-12">
+                <ContactTrigger mode="avanzado" source={`Servicio ${sector.title} (qué incluye)`} tipo={sector.title} className={cta}>
+                  Solicitar valoración
+                </ContactTrigger>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Mosaico de resultados: solo imágenes */}
+      {mosaic.length >= 3 && (
+        <section aria-label="Resultados" className="py-6 sm:py-8">
+          <Container>
+            <div className="grid h-[420px] grid-cols-2 grid-rows-3 gap-3 sm:h-[520px] sm:gap-4 lg:h-[620px] lg:grid-cols-4 lg:grid-rows-2">
+              {mosaic.map((src, index) => (
+                <div
+                  key={src}
+                  className={`group reveal-item relative overflow-hidden bg-stone-200 ${
+                    index === 0 ? "col-span-2 row-span-2" : ""
+                  } ${index === 3 && mosaic.length === 4 ? "col-span-2" : ""}`}
+                  style={{ transitionDelay: `${index * 70}ms` }}
+                >
+                  <Image
+                    src={src}
+                    alt=""
+                    fill
+                    sizes={index === 0 ? "(max-width: 1024px) 100vw, 50vw" : "(max-width: 1024px) 50vw, 25vw"}
+                    className="object-cover object-center transition duration-700 ease-out group-hover:scale-105"
+                  />
+                </div>
+              ))}
             </div>
           </Container>
         </section>
       )}
 
-      {/* 5. Cómo trabajamos */}
+      {/* 5. Cómo trabajamos: una tarjeta con imagen por fase */}
       {fases.length > 0 && (
         <section id="como-trabajamos" className="scroll-mt-24 py-20 sm:py-28">
           <Container>
-            <div className="reveal-item max-w-3xl">
-              <span className="font-mono text-[11px] uppercase tracking-[0.25em] text-stone-500 sm:text-xs">
-                Cómo trabajamos
-              </span>
-              <h2 className="mt-5 font-serif text-3xl font-light leading-tight tracking-tight sm:text-4xl lg:text-5xl">
-                Del primer contacto a la entrega, en {fases.length} fases.
-              </h2>
-            </div>
-
-            <ol className="mt-14 grid grid-cols-1 gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
-              {fases.map((fase, index) => (
-                <li
-                  key={fase.id}
-                  className="reveal-item border-t border-stone-900 pt-6"
-                  style={{ transitionDelay: `${(index % 3) * 80}ms` }}
-                >
-                  <span className="font-mono text-xs tabular-nums text-amber-700">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <h3 className="mt-3 font-serif text-2xl font-light leading-snug tracking-tight">{fase.title}</h3>
-                  <p className="mt-3 line-clamp-4 text-base font-light leading-relaxed text-stone-600">{fase.texto}</p>
-                </li>
-              ))}
-            </ol>
-
-            <div className="mt-14">
-              <ContactTrigger mode="rapido" source={`Servicio ${sector.title} (cómo trabajamos)`} className={`${cta} bg-stone-900 hover:bg-amber-700 hover:text-white`}>
+            <div className="reveal-item flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+              <div className="max-w-2xl">
+                <span className="font-mono text-[11px] uppercase tracking-[0.25em] text-stone-500 sm:text-xs">
+                  Cómo trabajamos
+                </span>
+                <h2 className="mt-5 font-serif text-3xl font-light leading-tight tracking-tight sm:text-4xl lg:text-5xl">
+                  {fases.length} fases, un solo equipo.
+                </h2>
+              </div>
+              <ContactTrigger mode="rapido" source={`Servicio ${sector.title} (cómo trabajamos)`} className={`${cta} self-start bg-stone-900 hover:bg-amber-700 hover:text-white`}>
                 Empezar ahora
               </ContactTrigger>
             </div>
+
+            <ol className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {fases.map((fase, index) => (
+                <li
+                  key={fase.id}
+                  className="group reveal-item relative isolate flex aspect-[4/3] flex-col justify-end overflow-hidden bg-stone-900 p-6 text-white"
+                  style={{ transitionDelay: `${(index % 3) * 80}ms` }}
+                >
+                  <Image
+                    src={fase.imagen || sector.imagen}
+                    alt=""
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="-z-10 object-cover object-center transition duration-700 ease-out group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 -z-10 bg-gradient-to-t from-stone-950/90 via-stone-950/30 to-transparent" />
+                  <span className="font-mono text-xs tabular-nums text-amber-500">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <h3 className="mt-2 font-serif text-2xl font-light leading-snug tracking-tight sm:text-3xl">
+                    {fase.title}
+                  </h3>
+                </li>
+              ))}
+            </ol>
           </Container>
         </section>
       )}
 
-      {/* Texto de apoyo del servicio (el resto de apartados del CMS) */}
+      {/* Texto de apoyo del servicio (el resto de apartados del CMS), junto a una imagen */}
       {others.length > 0 && (
-        <section className="border-t border-stone-200 bg-stone-50 py-16 sm:py-24">
-          <Container>
-            <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-16">
+        <section className="border-t border-stone-200 bg-stone-50">
+          <div className="grid grid-cols-1 lg:grid-cols-2">
+            <div className="reveal-item flex flex-col justify-center gap-10 px-6 py-14 sm:px-12 lg:px-16 lg:py-24">
               {others.map((section) => (
-                <div key={section.title} className="reveal-item lg:col-span-8 lg:col-start-3">
+                <div key={section.title}>
                   <h2 className="font-serif text-3xl font-light leading-tight tracking-tight sm:text-4xl">
                     {section.title}
                   </h2>
-                  <div className="mt-6">
+                  <div className="mt-5">
                     <Prose html={section.html} />
                   </div>
                 </div>
               ))}
             </div>
-          </Container>
+            <div className="relative min-h-[300px] sm:min-h-[420px] lg:min-h-[520px]">
+              <Image
+                src={supportImage}
+                alt=""
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover object-center"
+              />
+            </div>
+          </div>
         </section>
       )}
 
@@ -399,37 +462,31 @@ export default async function SectorDetail({
               </Link>
             </div>
 
-            <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-3">
+            <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-3">
               {showcase.map((project, index) => (
                 <Link
                   key={project.id}
                   href={`${ROUTES.projects}/${project.slug}`}
-                  className="group reveal-item block"
+                  className="group reveal-item relative isolate flex aspect-[4/5] flex-col justify-end overflow-hidden bg-stone-900 p-6 text-white sm:p-8"
                   style={{ transitionDelay: `${index * 90}ms` }}
                 >
-                  <div className="relative aspect-[4/3] overflow-hidden bg-stone-200">
-                    <Image
-                      src={project.imagen}
-                      alt={project.title}
-                      fill
-                      sizes="(max-width: 768px) 100vw, 33vw"
-                      className="object-cover object-center transition duration-700 ease-out group-hover:scale-105"
-                    />
-                  </div>
-                  <span className="mt-5 block font-mono text-[11px] uppercase tracking-[0.2em] text-stone-500">
+                  <Image
+                    src={project.imagen}
+                    alt={project.title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="-z-10 object-cover object-center transition duration-700 ease-out group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 -z-10 bg-gradient-to-t from-stone-950/90 via-stone-950/20 to-transparent" />
+                  <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/70">
                     {[project.tipologia, project.anio].filter(Boolean).join(" · ")}
                   </span>
-                  <span className="mt-2 flex items-center gap-3 font-serif text-2xl font-light leading-tight tracking-tight text-stone-900 transition-colors group-hover:text-amber-700">
+                  <span className="mt-2 flex items-center gap-3 font-serif text-2xl font-light leading-tight tracking-tight sm:text-3xl">
                     {project.title}
-                    <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">
+                    <span aria-hidden="true" className="text-amber-500 transition-transform group-hover:translate-x-1">
                       →
                     </span>
                   </span>
-                  {(project.ubicacion || project.superficie) && (
-                    <span className="mt-2 block text-sm font-light text-stone-600">
-                      {[project.ubicacion, project.superficie].filter(Boolean).join(" · ")}
-                    </span>
-                  )}
                 </Link>
               ))}
             </div>
@@ -527,14 +584,24 @@ export default async function SectorDetail({
             <h2 className="font-mono text-[11px] uppercase tracking-[0.25em] text-stone-500 sm:text-xs">
               Otros servicios
             </h2>
-            <ul className="mt-6 flex flex-wrap gap-3">
-              {otros.map((item) => (
+            <ul className="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+              {otros.slice(0, 4).map((item) => (
                 <li key={item.id}>
                   <Link
                     href={`${ROUTES.sectors}/${item.slug}`}
-                    className="inline-flex rounded-full border border-stone-300 px-5 py-2.5 text-sm font-light text-stone-700 transition hover:border-stone-900 hover:bg-stone-900 hover:text-white"
+                    className="group relative isolate flex aspect-[4/3] items-end overflow-hidden bg-stone-900 p-4 text-white sm:p-5"
                   >
-                    {item.title}
+                    <Image
+                      src={item.imagen}
+                      alt=""
+                      fill
+                      sizes="(max-width: 1024px) 50vw, 25vw"
+                      className="-z-10 object-cover object-center transition duration-700 ease-out group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 -z-10 bg-gradient-to-t from-stone-950/85 to-transparent" />
+                    <span className="font-serif text-lg font-light leading-snug tracking-tight sm:text-xl">
+                      {item.title}
+                    </span>
                   </Link>
                 </li>
               ))}
