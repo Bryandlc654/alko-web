@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import ContactTrigger from "@/components/contact/ContactTrigger";
 import Container from "@/components/ui/Container";
 import Prose from "@/components/ui/Prose";
 import ContactCta from "@/components/sections/ContactCta";
@@ -407,13 +408,23 @@ export default async function ProjectDetail({
               <p className="mt-8 font-serif font-light text-3xl sm:text-4xl lg:text-5xl leading-tight tracking-tight">
                 {project.resultado}
               </p>
-              <Link
-                href={project.enlace || ROUTES.contact}
-                className="group mt-10 inline-flex items-center gap-3 rounded-full border border-white/50 px-7 py-3 text-xs font-semibold tracking-[0.18em] uppercase text-white hover:bg-white hover:text-stone-950 transition-colors"
-              >
-                Quiero un proyecto así
-                <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">→</span>
-              </Link>
+              {/* `enlace` vale «/contacto» por defecto: solo un destino distinto sustituye al formulario. */}
+              {project.enlace && project.enlace !== ROUTES.contact ? (
+                <Link href={project.enlace} className="group mt-10 inline-flex items-center gap-3 rounded-full border border-white/50 px-7 py-3 text-xs font-semibold tracking-[0.18em] uppercase text-white hover:bg-white hover:text-stone-950 transition-colors">
+                  Quiero un proyecto así
+                  <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">→</span>
+                </Link>
+              ) : (
+                <ContactTrigger
+                  mode="avanzado"
+                  source={`Proyecto ${project.title}`}
+                  tipo={servicio?.title}
+                  className="group mt-10 inline-flex items-center gap-3 rounded-full border border-white/50 px-7 py-3 text-xs font-semibold tracking-[0.18em] uppercase text-white hover:bg-white hover:text-stone-950 transition-colors"
+                >
+                  Quiero un proyecto así
+                  <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">→</span>
+                </ContactTrigger>
+              )}
             </div>
           </Container>
         </section>

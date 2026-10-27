@@ -5,6 +5,7 @@ import Nav from "@/components/layout/Nav";
 import Footer from "@/components/layout/Footer";
 import WhatsAppFloat from "@/components/layout/WhatsAppFloat";
 import ChatWidget from "@/components/chat/ChatWidget";
+import ContactModalProvider from "@/components/contact/ContactModalProvider";
 import SiteScripts from "@/components/SiteScripts";
 import RouteLoader from "@/components/RouteLoader";
 import { getSectors, getSettings } from "@/lib/wordpress";
@@ -49,19 +50,25 @@ export default async function RootLayout({
       <body
         className={`${ebGaramond.variable} bg-stone-950 text-white font-sans antialiased overflow-x-hidden selection:bg-white/20`}
       >
-        <Nav
-          settings={settings}
-          services={sectors.map(({ slug, title }) => ({ slug, title }))}
-        />
-        {children}
-        {process.env.NODE_ENV === "production" && (
-          <script dangerouslySetInnerHTML={{ __html: REVEAL_IN_VIEW_SCRIPT }} />
-        )}
-        <Footer settings={settings} />
-        <WhatsAppFloat settings={settings} />
-        <ChatWidget />
-        <RouteLoader />
-        <SiteScripts />
+        <ContactModalProvider
+          projectTypes={[...sectors.map((sector) => sector.title), "Otro"]}
+          email={settings.email}
+          whatsappHref={`https://wa.me/${settings.whatsapp.replace(/[^\d]/g, "")}`}
+        >
+          <Nav
+            settings={settings}
+            services={sectors.map(({ slug, title }) => ({ slug, title }))}
+          />
+          {children}
+          {process.env.NODE_ENV === "production" && (
+            <script dangerouslySetInnerHTML={{ __html: REVEAL_IN_VIEW_SCRIPT }} />
+          )}
+          <Footer settings={settings} />
+          <WhatsAppFloat settings={settings} />
+          <ChatWidget />
+          <RouteLoader />
+          <SiteScripts />
+        </ContactModalProvider>
       </body>
     </html>
   );

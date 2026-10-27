@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import ContactTrigger from "@/components/contact/ContactTrigger";
 import Container from "@/components/ui/Container";
 import PageHero from "@/components/ui/PageHero";
 import Prose from "@/components/ui/Prose";
@@ -88,12 +89,14 @@ export default async function SectorDetail({
                   </span>
                 </div>
                 <div className="mt-8 flex max-w-xs flex-col items-start gap-5">
-                  <Link
-                    href={ROUTES.contact}
+                  <ContactTrigger
+                    mode="avanzado"
+                    source={`Servicio ${sector.title}`}
+                    tipo={sector.title}
                     className="inline-flex items-center justify-center gap-2 rounded-full bg-amber-700 px-7 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-amber-800"
                   >
                     Solicitar valoración
-                  </Link>
+                  </ContactTrigger>
                   <Link
                     href={ROUTES.sectors}
                     className="group inline-flex items-center gap-2 border-b border-stone-900 pb-1.5 text-xs font-semibold uppercase tracking-[0.22em] transition hover:border-amber-700 hover:text-amber-700"

@@ -1,4 +1,6 @@
+import Link from "next/link";
 import type { Project } from "@/lib/types";
+import { ROUTES } from "@/lib/site";
 import ProjectsList from "@/components/ui/ProjectsList";
 
 export default function ProjectsSection({ projects }: { projects: Project[] }) {
@@ -22,15 +24,15 @@ export default function ProjectsSection({ projects }: { projects: Project[] }) {
               Cada proyecto rige planificación, ejecución, coordinación técnica y control hasta la entrega.
             </p>
             <div className="reveal-item mt-8" style={{ transitionDelay: "250ms" }}>
-              <a
-                href="#contacto"
+              <Link
+                href={ROUTES.projects}
                 className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.22em] uppercase text-stone-900 border-b border-stone-900 pb-1.5 hover:text-amber-700 hover:border-amber-700 transition duration-300 group"
               >
                 <span className="text-base transition-transform group-hover:translate-x-1 group-hover:-translate-y-1">
                   ↗
                 </span>
                 <span>DESCUBRIR PROYECTOS</span>
-              </a>
+              </Link>
             </div>
           </div>
         </div>

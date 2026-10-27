@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import ContactTrigger from "@/components/contact/ContactTrigger";
 import Container from "@/components/ui/Container";
 import PageHero from "@/components/ui/PageHero";
 import ContactCta from "@/components/sections/ContactCta";
 import { ROUTES } from "@/lib/site";
-import { getSettings } from "@/lib/wordpress";
+import { getSectorBySlug, getSettings } from "@/lib/wordpress";
 import {
   ArrowRight,
   ChevronRight,
@@ -170,7 +171,7 @@ const FAQS_OFICINAS = [
 ];
 
 export default async function OficinasPage() {
-  const settings = await getSettings();
+  const [settings, servicio] = await Promise.all([getSettings(), getSectorBySlug("oficinas")]);
 
   return (
     <main className="bg-white text-stone-900 selection:bg-[#c98300]/20">
@@ -183,13 +184,15 @@ export default async function OficinasPage() {
         imageAlt="Reforma integral de oficinas corporativas en Madrid por ALKO"
       >
         <div className="mt-8 flex flex-wrap items-center gap-4">
-          <Link
-            href="/contacto"
+          <ContactTrigger
+            mode="avanzado"
+            source="Servicio Reformas de oficinas"
+            tipo={servicio?.title}
             className="inline-flex items-center gap-2 px-6 py-3.5 bg-[#c98300] hover:bg-[#b87600] text-stone-950 font-semibold text-xs tracking-widest uppercase transition-all shadow-lg active:scale-95"
           >
             <span>Solicitar valoración de sede</span>
             <ArrowRight className="w-4 h-4" />
-          </Link>
+          </ContactTrigger>
           <Link
             href={ROUTES.projects}
             className="inline-flex items-center gap-2 px-6 py-3.5 bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs tracking-widest uppercase backdrop-blur-sm transition-all"

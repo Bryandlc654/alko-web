@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown, Mail, MessageCircle, Phone, X } from "lucide-react";
+import ContactTrigger from "@/components/contact/ContactTrigger";
 import {
   buildMainNav,
   ROUTES,
@@ -137,12 +138,9 @@ export default function Nav({
 
           <div className="flex items-center gap-4">
             {/* En móvil el botón va dentro del panel lateral, para no saturar la barra. */}
-            <Link
-              href={ROUTES.contact}
-              className="hidden sm:inline-flex items-center justify-center px-6 sm:px-7 py-2.5 rounded-full bg-amber-700 hover:bg-amber-800 text-white text-[11px] sm:text-xs font-light tracking-[0.16em] uppercase active:scale-95 transition-all shadow-md"
-            >
+            <ContactTrigger mode="rapido" source="Cabecera" className="hidden sm:inline-flex items-center justify-center px-6 sm:px-7 py-2.5 rounded-full bg-amber-700 hover:bg-amber-800 text-white text-[11px] sm:text-xs font-light tracking-[0.16em] uppercase active:scale-95 transition-all shadow-md">
               Contactar
-            </Link>
+            </ContactTrigger>
             <button
               id="mobile-menu-btn"
               type="button"
@@ -345,14 +343,18 @@ function MobileDrawer({
         </nav>
 
         <div className="border-t border-white/10 px-6 pb-8 pt-6">
-          <Link
-            href={ROUTES.contact}
-            onClick={onClose}
-            className="flex w-full items-center justify-center gap-2 rounded-full bg-amber-700 px-6 py-3.5 text-xs font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-amber-800"
-          >
+          <ContactTrigger mode="avanzado" source="Menú móvil" onClick={onClose} className="flex w-full items-center justify-center gap-2 rounded-full bg-amber-700 px-6 py-3.5 text-xs font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-amber-800">
             Solicitar presupuesto
             <span aria-hidden="true">→</span>
-          </Link>
+          </ContactTrigger>
+          <ContactTrigger
+            mode="rapido"
+            source="Menú móvil"
+            onClick={onClose}
+            className="mt-3 flex w-full items-center justify-center rounded-full border border-white/30 px-6 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-white/10"
+          >
+            Contactar
+          </ContactTrigger>
           {settings && (
             <ul className="mt-6 space-y-3 text-sm font-light text-white/70">
               {telHref && (

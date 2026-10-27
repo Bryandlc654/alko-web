@@ -86,6 +86,8 @@ export default function RouteLoader() {
       if (!anchor) return;
       if (anchor.target && anchor.target !== "_self") return;
       if (anchor.hasAttribute("download")) return;
+      // Botones que abren un modal (p. ej. el de contacto): no hay cambio de página.
+      if (anchor.hasAttribute("data-modal-trigger")) return;
 
       const href = anchor.getAttribute("href") ?? "";
       if (!href.startsWith("/") || href.startsWith("//")) return;

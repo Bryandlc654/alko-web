@@ -35,10 +35,22 @@ export default function ContactForm({
   projectTypes,
   email,
   whatsappHref,
+  defaultTipo,
+  source,
+  onClose,
+  onSent,
 }: {
   projectTypes: string[];
   email: string;
   whatsappHref: string;
+  /** Tipo de proyecto que se marca de entrada (p. ej. el servicio desde el que se abre). */
+  defaultTipo?: string;
+  /** Qué botón y qué página lo abrieron; llega en el campo «Origen» del correo. */
+  source?: string;
+  /** Si va dentro de un modal, el botón «Cerrar» de la confirmación. */
+  onClose?: () => void;
+  /** Se llama cuando el envío termina bien (el modal oculta entonces el enlace al otro formulario). */
+  onSent?: () => void;
 }) {
   const uid = useId();
   const id = (name: string) => `${uid}-${name}`;
@@ -110,6 +122,7 @@ export default function ContactForm({
 
     const body = new FormData();
     for (const [key, val] of data.entries()) if (typeof val === "string") body.append(key, val);
+    body.append("origen", source ?? "");
     for (const file of files) body.append("planos", file, file.name);
 
     setStatus("sending");
@@ -127,6 +140,7 @@ export default function ContactForm({
           planos: files.length,
         });
         setStatus("sent");
+        onSent?.();
         form.reset();
         setFiles([]);
         setFileNotice("");
@@ -184,13 +198,16 @@ export default function ContactForm({
 
         <button
           type="button"
-          onClick={() => {
-            setStatus("idle");
-            setSent(null);
-          }}
+          onClick={
+            onClose ??
+            (() => {
+              setStatus("idle");
+              setSent(null);
+            })
+          }
           className="mt-10 inline-flex items-center gap-2 border-b border-white pb-1 text-xs font-semibold uppercase tracking-[0.22em] text-white transition hover:border-amber-500 hover:text-amber-500"
         >
-          Enviar otro proyecto
+          {onClose ? "Cerrar" : "Enviar otro proyecto"}
         </button>
       </div>
     );
@@ -262,6 +279,7 @@ export default function ContactForm({
                   type="radio"
                   name="tipo"
                   value={type}
+                  defaultChecked={type === defaultTipo}
                   required
                   onChange={() => setErrors((prev) => ({ ...prev, tipo: undefined }))}
                   className="peer sr-only"

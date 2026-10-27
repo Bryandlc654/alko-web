@@ -103,37 +103,86 @@ export async function POST(req: NextRequest) {
   // 3. Campo trampa: los bots lo rellenan, las personas no lo ven. Se simula éxito sin enviar.
   if (String(data.get("website") ?? "").trim()) return NextResponse.json({ ok: true });
 
-  // 4. Campos de texto.
-  const tipo = text(data, "tipo", CONTACT_LIMITS.maxTipo);
-  const ubicacion = text(data, "ubicacion", CONTACT_LIMITS.maxUbicacion);
-  const superficie = cleanSurface(text(data, "superficie", CONTACT_LIMITS.maxSuperficie));
+  // 4. Qué formulario es: el rápido (nombre, correo y teléfono) o el completo del proyecto.
+  const rapido = String(data.get("modo") ?? "") === "rapido";
+  // Qué botón y qué página lo abrieron (para saber qué llamadas a la acción convierten).
+  const origen = text(data, "origen", CONTACT_LIMITS.maxOrigen);
   const nombre = text(data, "nombre", CONTACT_LIMITS.maxNombre);
-  const contacto = text(data, "contacto", CONTACT_LIMITS.maxContacto);
-  const situacion = option(text(data, "situacion", 80), SITUACIONES);
-  const fecha = option(text(data, "fecha", 80), FECHAS);
-  const presupuesto = option(text(data, "presupuesto", 80), PRESUPUESTOS);
 
-  const kind = contactKind(contacto);
-  if (!tipo || !nombre || !kind) return fail(CONTACT_MESSAGES.invalid, 400);
-
-  // 5. Archivos adjuntos (planos y documentación).
-  const files = data.getAll("planos").filter((item): item is File => typeof item !== "string" && item.size > 0);
-  if (files.length > CONTACT_LIMITS.maxFiles) return fail(CONTACT_MESSAGES.tooManyFiles, 400);
-  let total = 0;
+  let title: string;
+  let subject: string;
+  let rows: [string, string][];
+  let replyTo: string | undefined;
   const attachments: { filename: string; content: Buffer; contentType?: string }[] = [];
-  for (const file of files) {
-    const problem = fileProblem(file.name, file.size);
-    if (problem) return fail(problem, problem.includes("pesa más") ? 413 : 400);
-    total += file.size;
-    if (total > CONTACT_LIMITS.maxTotalBytes) return fail(CONTACT_MESSAGES.tooBig, 413);
-    const buffer = Buffer.from(await file.arrayBuffer());
-    if (!matchesType(buffer, fileExtension(file.name))) {
-      return fail(`«${file.name}» no parece un archivo ${fileExtension(file.name).toUpperCase()} válido.`, 400);
+
+  if (rapido) {
+    const email = text(data, "email", CONTACT_LIMITS.maxEmail);
+    const telefono = text(data, "telefono", CONTACT_LIMITS.maxTelefono);
+    // Nombre y, al menos, un medio de contacto válido.
+    const emailOk = !email || contactKind(email) === "email";
+    const telefonoOk = !telefono || contactKind(telefono) === "phone";
+    if (!nombre || (!email && !telefono) || !emailOk || !telefonoOk) return fail(CONTACT_MESSAGES.invalid, 400);
+
+    title = "Nueva solicitud de contacto desde la web";
+    subject = `Nueva solicitud de contacto — ${nombre}`;
+    rows = [
+      ["Nombre", nombre],
+      ["Email", email],
+      ["Teléfono", telefono],
+      ["Origen", origen],
+    ];
+    replyTo = email || undefined;
+  } else {
+    const tipo = text(data, "tipo", CONTACT_LIMITS.maxTipo);
+    const ubicacion = text(data, "ubicacion", CONTACT_LIMITS.maxUbicacion);
+    const superficie = cleanSurface(text(data, "superficie", CONTACT_LIMITS.maxSuperficie));
+    const contacto = text(data, "contacto", CONTACT_LIMITS.maxContacto);
+    const situacion = option(text(data, "situacion", 80), SITUACIONES);
+    const fecha = option(text(data, "fecha", 80), FECHAS);
+    const presupuesto = option(text(data, "presupuesto", 80), PRESUPUESTOS);
+
+    const kind = contactKind(contacto);
+    if (!tipo || !nombre || !kind) return fail(CONTACT_MESSAGES.invalid, 400);
+
+    // Archivos adjuntos (planos y documentación).
+    const files = data.getAll("planos").filter((item): item is File => typeof item !== "string" && item.size > 0);
+    if (files.length > CONTACT_LIMITS.maxFiles) return fail(CONTACT_MESSAGES.tooManyFiles, 400);
+    let total = 0;
+    for (const file of files) {
+      const problem = fileProblem(file.name, file.size);
+      if (problem) return fail(problem, problem.includes("pesa más") ? 413 : 400);
+      total += file.size;
+      if (total > CONTACT_LIMITS.maxTotalBytes) return fail(CONTACT_MESSAGES.tooBig, 413);
+      const buffer = Buffer.from(await file.arrayBuffer());
+      if (!matchesType(buffer, fileExtension(file.name))) {
+        return fail(`«${file.name}» no parece un archivo ${fileExtension(file.name).toUpperCase()} válido.`, 400);
+      }
+      attachments.push({ filename: safeName(file.name), content: buffer, contentType: file.type || undefined });
     }
-    attachments.push({ filename: safeName(file.name), content: buffer, contentType: file.type || undefined });
+
+    title = "Nuevo proyecto desde la web";
+    subject = `Nuevo proyecto: ${tipo} — ${nombre}`;
+    rows = [
+      ["Tipo de proyecto", tipo],
+      ["Ubicación", ubicacion],
+      ["Superficie", superficie ? `${superficie} m²` : ""],
+      ["Situación actual", situacion],
+      ["Fecha prevista", fecha],
+      ["Presupuesto aproximado", presupuesto],
+      ["Nombre / empresa", nombre],
+      [kind === "email" ? "Email" : "Teléfono", contacto],
+      [
+        "Planos adjuntos",
+        attachments.length
+          ? attachments.map((a) => `${a.filename} (${formatBytes(a.content.length)})`).join(", ")
+          : "",
+      ],
+      ["Origen", origen],
+    ];
+    replyTo = kind === "email" ? contacto : undefined;
   }
 
-  // 6. Sin correo configurado: aviso amable al visitante y el detalle solo en el log.
+  // 5. Sin correo configurado: aviso amable al visitante y el detalle solo en el log.
   const config = mailConfig();
   if (!config) {
     if (!warnedMissingConfig) {
@@ -143,27 +192,10 @@ export async function POST(req: NextRequest) {
     return fail(CONTACT_MESSAGES.unavailable, 503);
   }
 
-  // 7. Envío.
-  const rows: [string, string][] = [
-    ["Tipo de proyecto", tipo],
-    ["Ubicación", ubicacion],
-    ["Superficie", superficie ? `${superficie} m²` : ""],
-    ["Situación actual", situacion],
-    ["Fecha prevista", fecha],
-    ["Presupuesto aproximado", presupuesto],
-    ["Nombre / empresa", nombre],
-    [kind === "email" ? "Email" : "Teléfono", contacto],
-    [
-      "Planos adjuntos",
-      attachments.length
-        ? attachments.map((a) => `${a.filename} (${formatBytes(a.content.length)})`).join(", ")
-        : "",
-    ],
-  ];
+  // 6. Envío.
   const filled = rows.map(([label, value]) => [label, value || "—"] as const);
-
   const html =
-    `<h2 style="font-family:Arial,sans-serif;font-weight:normal">Nuevo proyecto desde la web</h2>` +
+    `<h2 style="font-family:Arial,sans-serif;font-weight:normal">${escapeHtml(title)}</h2>` +
     `<table style="border-collapse:collapse;font-family:Arial,sans-serif;font-size:14px">` +
     filled
       .map(
@@ -173,7 +205,7 @@ export async function POST(req: NextRequest) {
       )
       .join("") +
     `</table>`;
-  const plain = ["Nuevo proyecto desde la web", "", ...filled.map(([label, value]) => `${label}: ${value}`)].join("\n");
+  const plain = [title, "", ...filled.map(([label, value]) => `${label}: ${value}`)].join("\n");
 
   try {
     const transporter = nodemailer.createTransport({
@@ -187,8 +219,8 @@ export async function POST(req: NextRequest) {
     await transporter.sendMail({
       from: `"Web ALKO" <${config.from}>`,
       to: config.to,
-      replyTo: kind === "email" ? contacto : undefined,
-      subject: `Nuevo proyecto: ${tipo} — ${nombre}`.replace(/[\r\n]+/g, " ").slice(0, 200),
+      replyTo,
+      subject: subject.replace(/[\r\n]+/g, " ").slice(0, 200),
       text: plain,
       html,
       attachments,

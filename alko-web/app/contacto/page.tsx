@@ -199,7 +199,12 @@ export default async function ContactoPage() {
                     <div className="h-1.5 w-1.5 rounded-full bg-amber-700" />
                   </div>
                 </div>
-                <ContactForm projectTypes={projectTypes} email={settings.email} whatsappHref={whatsappHref} />
+                <ContactForm
+                  projectTypes={projectTypes}
+                  email={settings.email}
+                  whatsappHref={whatsappHref}
+                  source="Página de contacto"
+                />
               </div>
             </section>
           </div>

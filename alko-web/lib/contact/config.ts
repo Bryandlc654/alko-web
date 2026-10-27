@@ -40,6 +40,10 @@ export const CONTACT_LIMITS = {
   maxSuperficie: 20,
   maxNombre: 100,
   maxContacto: 120,
+  maxEmail: 120,
+  maxTelefono: 30,
+  /** Qué botón y qué página abrieron el formulario. */
+  maxOrigen: 120,
   /** Peticiones por IP en cada ventana, y tope diario global (por instancia). */
   perIpRequests: 5,
   perIpWindowMs: 30 * 60 * 1000,

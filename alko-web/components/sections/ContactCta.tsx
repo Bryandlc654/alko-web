@@ -1,4 +1,5 @@
 import Image from "next/image";
+import ContactTrigger from "@/components/contact/ContactTrigger";
 import type { SiteSettings } from "@/lib/types";
 
 export default function ContactCta({ settings }: { settings: SiteSettings }) {
@@ -50,13 +51,10 @@ export default function ContactCta({ settings }: { settings: SiteSettings }) {
               </div>
             </div>
             <div className="shrink-0 self-start lg:self-auto">
-              <a
-                href={mailto}
-                className="inline-flex items-center justify-center gap-2 px-8 py-3.5 sm:py-4 rounded-full bg-amber-700 hover:bg-amber-800 text-white text-[11px] sm:text-xs font-semibold tracking-wider uppercase transition-all duration-300 shadow-xl hover:scale-105 active:scale-95 border border-white/10 shrink-0 cursor-pointer"
-              >
+              <ContactTrigger mode="rapido" source="Cierre de página" className="inline-flex items-center justify-center gap-2 px-8 py-3.5 sm:py-4 rounded-full bg-amber-700 hover:bg-amber-800 text-white text-[11px] sm:text-xs font-semibold tracking-wider uppercase transition-all duration-300 shadow-xl hover:scale-105 active:scale-95 border border-white/10 shrink-0 cursor-pointer">
                 <span>SOLICITAR CONSULTORÍA</span>
                 <span>→</span>
-              </a>
+              </ContactTrigger>
             </div>
           </div>
         </div>

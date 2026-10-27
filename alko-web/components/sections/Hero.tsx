@@ -1,4 +1,5 @@
 import Image from "next/image";
+import ContactTrigger from "@/components/contact/ContactTrigger";
 import type { Slide } from "@/lib/types";
 
 export default function Hero({ slides }: { slides: Slide[] }) {
@@ -56,12 +57,9 @@ export default function Hero({ slides }: { slides: Slide[] }) {
       {/* Barra inferior del hero */}
       <div className="relative z-20 w-full max-w-7xl mx-auto px-6 sm:px-10 pb-8 sm:pb-10 pt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mt-16 sm:mt-20 lg:mt-24">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-8">
-          <a
-            href="#contacto"
-            className="inline-flex items-center justify-center px-7 py-3 rounded-full border border-white/60 bg-stone-900/30 hover:bg-white/15 backdrop-blur-md text-white text-xs font-semibold tracking-[0.18em] uppercase transition duration-300 shadow-sm active:scale-95"
-          >
+          <ContactTrigger mode="avanzado" source="Portada" className="inline-flex items-center justify-center px-7 py-3 rounded-full border border-white/60 bg-stone-900/30 hover:bg-white/15 backdrop-blur-md text-white text-xs font-semibold tracking-[0.18em] uppercase transition duration-300 shadow-sm active:scale-95">
             SOLICITAR PRESUPUESTO
-          </a>
+          </ContactTrigger>
 
           <a
             href="#proyectos"

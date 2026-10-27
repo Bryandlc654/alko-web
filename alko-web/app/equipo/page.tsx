@@ -1,4 +1,5 @@
 import Image from "next/image";
+import ContactTrigger from "@/components/contact/ContactTrigger";
 import Container from "@/components/ui/Container";
 import PageHero from "@/components/ui/PageHero";
 import { getSettings } from "@/lib/wordpress";
@@ -228,13 +229,10 @@ export default async function EquipoPage() {
                   </div>
                 </div>
                 <div className="shrink-0">
-                  <a
-                    href={`mailto:${settings.email}`}
-                    className="inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-amber-700 px-8 py-3.5 text-[11px] font-semibold uppercase tracking-wider text-white shadow-xl transition-all duration-300 hover:scale-105 hover:bg-amber-800 active:scale-95 sm:py-4 sm:text-xs"
-                  >
+                  <ContactTrigger mode="rapido" source="Equipo" className="inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-amber-700 px-8 py-3.5 text-[11px] font-semibold uppercase tracking-wider text-white shadow-xl transition-all duration-300 hover:scale-105 hover:bg-amber-800 active:scale-95 sm:py-4 sm:text-xs">
                     <span>SOLICITAR CONSULTORÍA</span>
                     <span>→</span>
-                  </a>
+                  </ContactTrigger>
                 </div>
               </div>
             </div>
