@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import ContactTrigger from "@/components/contact/ContactTrigger";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import Container from "@/components/ui/Container";
 import Prose from "@/components/ui/Prose";
 import ContactCta from "@/components/sections/ContactCta";
@@ -94,15 +95,7 @@ export default async function ProjectDetail({
         <div className="absolute inset-x-0 top-0 -z-10 h-40 bg-gradient-to-b from-stone-950/70 to-transparent" />
 
         <Container className="relative">
-          <Link
-            href={ROUTES.projects}
-            className="group inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.25em] uppercase text-white/70 hover:text-white transition-colors"
-          >
-            <span aria-hidden="true" className="transition-transform group-hover:-translate-x-1">
-              ←
-            </span>
-            Proyectos
-          </Link>
+          <Breadcrumbs items={[{ label: "Proyectos", href: ROUTES.projects }, { label: project.title }]} />
 
           <div className="mt-8 flex items-end gap-6">
             <span className="hidden sm:block font-serif font-light text-8xl lg:text-9xl text-white/20 leading-[0.8] select-none">

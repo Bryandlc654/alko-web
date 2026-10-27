@@ -1,5 +1,6 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
+import Breadcrumbs, { type Crumb } from "./Breadcrumbs";
 import Container from "./Container";
 
 /**
@@ -17,6 +18,7 @@ export default function PageHero({
   image,
   imageAlt = "",
   imagePosition = "object-center",
+  breadcrumbs,
   children,
 }: {
   eyebrow?: ReactNode;
@@ -26,6 +28,8 @@ export default function PageHero({
   imageAlt?: string;
   /** Encuadre de la imagen (clase object-*), p. ej. «object-top». */
   imagePosition?: string;
+  /** Migas de pan (sin «Inicio», que se añade solo); el último elemento es la página actual. */
+  breadcrumbs?: Crumb[];
   children?: ReactNode;
 }) {
   return (
@@ -43,6 +47,7 @@ export default function PageHero({
       <div className="absolute inset-x-0 top-0 -z-10 h-40 bg-gradient-to-b from-stone-950/70 to-transparent" />
 
       <Container className="relative w-full">
+        {breadcrumbs && <Breadcrumbs items={breadcrumbs} className="mb-8" />}
         {eyebrow && (
           <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-white/70 uppercase mb-4">
             {eyebrow}

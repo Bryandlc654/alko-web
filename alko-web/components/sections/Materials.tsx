@@ -33,13 +33,13 @@ export default function Materials({ fabricantes }: { fabricantes: Fabricante[] }
         <div className="animate-marquee flex items-center">
           <div className="flex items-center gap-20 sm:gap-28 lg:gap-36 shrink-0 pr-20 sm:pr-28 lg:pr-36">
             {doubled.map((fab, i) => (
-              <div key={`${fab.id}-${i}`} className="flex items-center h-10 sm:h-12 lg:h-14">
+              <div key={`${fab.id}-${i}`} className="flex items-center h-12 sm:h-16 lg:h-20">
                 <Image
                   src={fab.logo}
                   alt={fab.name}
                   width={120}
                   height={48}
-                  className="h-6 sm:h-7 lg:h-8 w-auto object-contain opacity-70 hover:opacity-100 transition duration-300 filter grayscale hover:grayscale-0"
+                  className="h-9 sm:h-11 lg:h-14 w-auto max-w-[240px] sm:max-w-[300px] lg:max-w-[340px] object-contain opacity-70 hover:opacity-100 transition duration-300 filter grayscale hover:grayscale-0"
                   unoptimized
                 />
               </div>

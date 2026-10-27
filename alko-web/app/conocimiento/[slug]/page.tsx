@@ -43,6 +43,12 @@ export default async function ArticleDetail({
   return (
     <main className="bg-white text-stone-900">
       <PageHero
+        breadcrumbs={[
+          isNews
+            ? { label: "Guías", href: ROUTES.guides }
+            : { label: "Artículos", href: ROUTES.articlesList },
+          { label: article.title },
+        ]}
         eyebrow={article.category}
         title={article.title}
         image={article.image}

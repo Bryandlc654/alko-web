@@ -177,6 +177,7 @@ export default async function OficinasPage() {
     <main className="bg-white text-stone-900 selection:bg-[#c98300]/20">
       {/* Hero Principal con imagen de oficinas de alta gama */}
       <PageHero
+        breadcrumbs={[{ label: "Servicios", href: ROUTES.sectors }, { label: "Reformas de oficinas" }]}
         eyebrow="SERVICIO 02 — ESPACIOS CORPORATIVOS & HEADQUARTERS"
         title="Reformas Integrales de Oficinas en Madrid"
         description="Transformamos sedes corporativas y centros de trabajo con un estricto control de plazos, presupuesto cerrado y la capacidad técnica de ejecutar la obra sin detener la actividad de tu empresa."

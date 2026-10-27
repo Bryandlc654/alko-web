@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import Container from "@/components/ui/Container";
 import ProjectsGallery from "@/components/ui/ProjectsGallery";
 import ContactCta from "@/components/sections/ContactCta";
@@ -45,6 +46,7 @@ export default async function ProyectosPage() {
         <div className="absolute inset-x-0 top-0 -z-10 h-40 bg-gradient-to-b from-stone-950/70 to-transparent" />
 
         <Container className="relative">
+          <Breadcrumbs items={[{ label: "Proyectos" }]} className="mb-8" />
           <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-white/70 uppercase mb-4">
             PROYECTOS
           </span>

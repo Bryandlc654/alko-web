@@ -33,6 +33,7 @@ export default async function ArticulosPage() {
   return (
     <main className="bg-white text-stone-900">
       <PageHero
+        breadcrumbs={[{ label: "Artículos" }]}
         eyebrow="CONOCIMIENTO · ARTÍCULOS"
         title={
           <>

@@ -17,6 +17,7 @@ export default async function ServiciosPage() {
   return (
     <main className="bg-white text-stone-900">
       <PageHero
+        breadcrumbs={[{ label: "Servicios" }]}
         eyebrow="SERVICIOS"
         title="Especialidades"
         description="Actuamos de forma transversal para reducir interfaces y garantizar la coherencia entre proyecto y obra."

@@ -55,6 +55,7 @@ export default async function SectorDetail({
   return (
     <main className="bg-white text-stone-900">
       <PageHero
+        breadcrumbs={[{ label: "Servicios", href: ROUTES.sectors }, { label: sector.title }]}
         eyebrow={`Servicio ${sector.numero}`}
         title={sector.title}
         description={sector.descripcion}
