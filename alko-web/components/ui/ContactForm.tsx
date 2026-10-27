@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, type DragEvent, type FormEvent } from "react";
-import { CheckCircle2, ChevronDown, FileText, Loader2, Paperclip, X } from "lucide-react";
+import { useEffect, useId, useRef, useState, type FormEvent } from "react";
+import { CheckCircle2, ChevronDown, Loader2 } from "lucide-react";
 import {
   CONTACT_LIMITS,
   CONTACT_MESSAGES,
@@ -10,8 +10,6 @@ import {
   SITUACIONES,
   cleanSurface,
   contactKind,
-  fileProblem,
-  formatBytes,
 } from "@/lib/contact/config";
 
 type Status = "idle" | "sending" | "sent" | "error";
@@ -22,13 +20,12 @@ interface Sent {
   contacto: string;
   tipo: string;
   ubicacion: string;
-  planos: number;
 }
 
 /**
  * Formulario «Cuéntanos tu proyecto» (pensado para ir sobre fondo oscuro).
  *
- * Se envía a /api/contacto con los planos adjuntos. Solo son obligatorios el tipo de
+ * Se envía a /api/contacto (que lo guarda en Fluent Forms). Solo son obligatorios el tipo de
  * proyecto, el nombre y un teléfono o email; el resto es opcional.
  */
 export default function ContactForm({
@@ -60,9 +57,6 @@ export default function ContactForm({
   const [errors, setErrors] = useState<Errors>({});
   const [serverError, setServerError] = useState("");
   const [sent, setSent] = useState<Sent | null>(null);
-  const [files, setFiles] = useState<File[]>([]);
-  const [fileNotice, setFileNotice] = useState("");
-  const [dragging, setDragging] = useState(false);
 
   // Al enviar, la confirmación recibe el foco y se lleva a la vista.
   useEffect(() => {
@@ -71,34 +65,6 @@ export default function ContactForm({
       confirmRef.current?.scrollIntoView({ block: "center", behavior: "smooth" });
     }
   }, [status]);
-
-  function addFiles(list: FileList | File[]) {
-    const messages: string[] = [];
-    const next = [...files];
-    for (const file of Array.from(list)) {
-      const problem = fileProblem(file.name, file.size);
-      if (problem) {
-        messages.push(problem);
-      } else if (next.some((f) => f.name === file.name && f.size === file.size)) {
-        continue; // ya está añadido
-      } else if (next.length >= CONTACT_LIMITS.maxFiles) {
-        messages.push(`Puedes adjuntar hasta ${CONTACT_LIMITS.maxFiles} archivos.`);
-        break;
-      } else if (next.reduce((sum, f) => sum + f.size, 0) + file.size > CONTACT_LIMITS.maxTotalBytes) {
-        messages.push(`Los adjuntos no pueden superar ${formatBytes(CONTACT_LIMITS.maxTotalBytes)} en total.`);
-      } else {
-        next.push(file);
-      }
-    }
-    setFiles(next);
-    setFileNotice(messages.join(" "));
-  }
-
-  function onDrop(event: DragEvent<HTMLLabelElement>) {
-    event.preventDefault();
-    setDragging(false);
-    if (event.dataTransfer.files.length > 0) addFiles(event.dataTransfer.files);
-  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -123,7 +89,6 @@ export default function ContactForm({
     const body = new FormData();
     for (const [key, val] of data.entries()) if (typeof val === "string") body.append(key, val);
     body.append("origen", source ?? "");
-    for (const file of files) body.append("planos", file, file.name);
 
     setStatus("sending");
     setServerError("");
@@ -137,13 +102,10 @@ export default function ContactForm({
           contacto: value("contacto"),
           tipo: value("tipo"),
           ubicacion: value("ubicacion"),
-          planos: files.length,
         });
         setStatus("sent");
         onSent?.();
         form.reset();
-        setFiles([]);
-        setFileNotice("");
         return;
       }
       const message = (json as { error?: unknown } | null)?.error;
@@ -166,7 +128,6 @@ export default function ContactForm({
     const resumen: [string, string][] = [
       ["Tipo de proyecto", sent.tipo],
       ["Ubicación", sent.ubicacion],
-      ["Planos adjuntos", sent.planos > 0 ? String(sent.planos) : ""],
     ];
     return (
       <div
@@ -338,7 +299,7 @@ export default function ContactForm({
 
       <p className={`${group} mt-14`}>
         <span className="text-amber-700">02</span>
-        <span>Tus datos y planos</span>
+        <span>Tus datos</span>
         <span className="h-px flex-1 bg-white/15" />
       </p>
       <div className="grid grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-2">
@@ -392,77 +353,17 @@ export default function ContactForm({
           )}
         </div>
 
-        <div className="sm:col-span-2">
-          <span className={label}>Adjuntar planos</span>
-          <div className="relative">
-            <input
-              id={id("planos")}
-              type="file"
-              multiple
-              accept={CONTACT_LIMITS.allowedExtensions.map((e) => `.${e}`).join(",")}
-              onChange={(e) => {
-                if (e.target.files) addFiles(e.target.files);
-                e.target.value = ""; // permite volver a elegir el mismo archivo
-              }}
-              className="peer sr-only"
-              aria-describedby={id("planos-hint")}
-            />
-            <label
-              htmlFor={id("planos")}
-              onDragOver={(e) => {
-                e.preventDefault();
-                setDragging(true);
-              }}
-              onDragLeave={() => setDragging(false)}
-              onDrop={onDrop}
-              className={`flex cursor-pointer flex-col items-center justify-center gap-2 border border-dashed px-6 py-8 text-center transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-white peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-stone-950 ${
-                dragging ? "border-amber-500 bg-white/5" : "border-white/25 hover:border-white/60"
-              }`}
-            >
-              <Paperclip className="h-6 w-6 text-amber-500" strokeWidth={1.5} aria-hidden="true" />
-              <span className="font-light text-white">
-                Arrastra tus planos aquí o <span className="underline underline-offset-4">elige archivos</span>
-              </span>
-            </label>
-          </div>
-          <p id={id("planos-hint")} className={hint}>
-            PDF, JPG, PNG, WEBP, DWG o DXF. Hasta {CONTACT_LIMITS.maxFiles} archivos y{" "}
-            {formatBytes(CONTACT_LIMITS.maxTotalBytes)} en total.
-          </p>
-          {fileNotice && (
-            <p role="alert" className={error}>
-              {fileNotice}
-            </p>
-          )}
-
-          {files.length > 0 && (
-            <ul className="mt-4 border-t border-white/15" aria-label="Archivos adjuntos">
-              {files.map((file) => (
-                <li
-                  key={`${file.name}-${file.size}`}
-                  className="flex items-center gap-3 border-b border-white/15 py-3"
-                >
-                  <FileText className="h-5 w-5 shrink-0 text-white/50" strokeWidth={1.5} aria-hidden="true" />
-                  <span className="min-w-0 flex-1 truncate font-light text-white">{file.name}</span>
-                  <span className="shrink-0 font-mono text-[11px] tracking-[0.15em] text-white/50">
-                    {formatBytes(file.size)}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setFiles((prev) => prev.filter((f) => f !== file));
-                      setFileNotice("");
-                    }}
-                    aria-label={`Quitar ${file.name}`}
-                    className="shrink-0 rounded-full p-1.5 text-white/60 transition hover:bg-white/10 hover:text-white"
-                  >
-                    <X className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+        <p className="sm:col-span-2 text-sm font-light leading-relaxed text-white/60">
+          ¿Tienes planos o documentación? Cuando te contestemos podrás enviárnoslos por{" "}
+          <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className="text-white underline underline-offset-4">
+            WhatsApp
+          </a>{" "}
+          o a{" "}
+          <a href={`mailto:${email}`} className="text-white underline underline-offset-4">
+            {email}
+          </a>
+          .
+        </p>
       </div>
 
       {status === "error" && (
@@ -482,7 +383,7 @@ export default function ContactForm({
 
       <div className="mt-12 flex flex-col justify-between gap-6 border-t border-white/15 pt-8 sm:flex-row sm:items-center">
         <p className="max-w-sm text-sm font-light leading-relaxed text-white/50">
-          Usaremos tus datos y tus planos solo para responder a tu consulta.
+          Usaremos tus datos solo para responder a tu consulta.
         </p>
         <button
           type="submit"
