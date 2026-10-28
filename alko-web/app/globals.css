@@ -61,6 +61,22 @@ html {
   transform: none !important;
 }
 
+/* Panel de Administración - Forzar tipografía Poppins limpia y moderna en todos los controles */
+.admin-root,
+.admin-root input,
+.admin-root textarea,
+.admin-root select,
+.admin-root button {
+  font-family: var(--font-poppins), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+}
+
+.admin-root code,
+.admin-root kbd,
+.admin-root samp,
+.admin-root pre {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+}
+
 /* Servicios Interactivo Dual-State - Transición Cinemática Ultra-Suave */
 .service-row {
   display: grid;

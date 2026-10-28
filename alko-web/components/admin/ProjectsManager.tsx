@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -103,9 +103,9 @@ export default function ProjectsManager({
       servicio: "reformas-integrales",
       superficie: "250 m²",
       plazo: "6 meses",
-      imagen: "/p1.jpg",
+      imagen: "/start-research-1.jpg",
       fotoAntes: "/start-research-1.jpg",
-      fotoDespues: "/p1.jpg",
+      fotoDespues: "/start-research-2.jpg",
       galeria: [],
     });
     setIsModalOpen(true);
@@ -114,7 +114,13 @@ export default function ProjectsManager({
   // Abrir Modal para Editar Proyecto Existente
   const handleEditProject = (project: Project) => {
     setModalError("");
-    setEditingProject({ ...project });
+    setEditingProject({
+      ...project,
+      imagen: project.imagen && project.imagen !== "/p1.jpg" ? project.imagen : "/start-research-1.jpg",
+      fotoAntes: project.fotoAntes || "/start-research-1.jpg",
+      fotoDespues: project.fotoDespues && project.fotoDespues !== "/p1.jpg" ? project.fotoDespues : (project.imagen && project.imagen !== "/p1.jpg" ? project.imagen : "/start-research-2.jpg"),
+      galeria: (project.galeria || []).filter((url) => url !== "/p1.jpg" && url !== "/p2.jpg" && url !== "/p3.jpg"),
+    });
     setIsModalOpen(true);
   };
 
@@ -380,18 +386,18 @@ export default function ProjectsManager({
               {/* Información del Proyecto */}
               <div className="p-5 flex-1 flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center gap-2 text-slate-400 text-[11px] mb-2 font-mono">
-                    <span className="flex items-center gap-1">
+                  <div className="flex items-center gap-2 text-slate-400 text-[11px] mb-2 font-medium">
+                    <span className="flex items-center gap-1 text-slate-500">
                       <MapPin className="w-3 h-3 text-slate-400" />
                       {project.ubicacion || "Madrid"}
                     </span>
                     <span>&middot;</span>
-                    <span className="flex items-center gap-1">
+                    <span className="flex items-center gap-1 text-slate-500">
                       <Calendar className="w-3 h-3 text-slate-400" />
                       {project.anio || "2024"}
                     </span>
                     <span>&middot;</span>
-                    <span className="font-semibold text-slate-600">{project.superficie || "—"}</span>
+                    <span className="font-semibold text-slate-700">{project.superficie || "—"}</span>
                   </div>
 
                   <h3 className="text-base font-bold text-slate-900 group-hover:text-blue-600 transition flex items-center justify-between">
@@ -406,11 +412,11 @@ export default function ProjectsManager({
                     </Link>
                   </h3>
 
-                  <div className="mt-3 flex flex-wrap gap-2 text-[10px] font-mono">
-                    <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 border border-slate-200">
+                  <div className="mt-3 flex flex-wrap gap-2 text-[11px]">
+                    <span className="px-2.5 py-0.5 rounded-lg bg-slate-100 text-slate-600 border border-slate-200/80 font-medium">
                       Cliente: {project.cliente || "Particular"}
                     </span>
-                    <span className="px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200">
+                    <span className="px-2.5 py-0.5 rounded-lg bg-blue-50 text-blue-700 border border-blue-200/80 font-medium">
                       Plazo: {project.plazo || "—"}
                     </span>
                   </div>
@@ -449,17 +455,17 @@ export default function ProjectsManager({
           MODAL DE FORMULARIO COMPLETO PARA RELLENAR PROYECTO
           ======================================================== */}
       {isModalOpen && editingProject && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden my-auto animate-in fade-in duration-200">
-            {/* Cabecera del Modal */}
-            <div className="px-8 py-5 border-b border-slate-200 flex items-center justify-between bg-slate-50/70">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-hidden">
+          <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-200/90 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            {/* Cabecera del Modal - Fija en la parte superior */}
+            <div className="shrink-0 px-6 sm:px-8 py-5 border-b border-slate-200/80 flex items-center justify-between bg-slate-50/80">
+              <div className="flex items-center gap-3.5">
+                <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-xs">
                   <Building2 className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-slate-900">
-                    {editingProject.id ? `Editar Proyecto: ${editingProject.title}` : "Crear Nuevo Proyecto"}
+                  <h3 className="text-base font-bold text-slate-900 leading-snug">
+                    {editingProject.id ? `Editar Proyecto: ${editingProject.title || "Sin título"}` : "Crear Nuevo Proyecto"}
                   </h3>
                   <p className="text-xs text-slate-500">
                     Rellena la ficha técnica, fotos de antes/después y galería del proyecto.
@@ -469,307 +475,231 @@ export default function ProjectsManager({
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="w-8 h-8 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 flex items-center justify-center transition"
+                className="w-9 h-9 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 flex items-center justify-center transition"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            {/* Formulario */}
-            <form onSubmit={handleSaveProjectForm} className="flex-1 overflow-y-auto p-8 space-y-8">
-              {modalError && (
-                <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0 text-red-500" />
-                  <span>{modalError}</span>
-                </div>
-              )}
-
-              {/* Bloque 1: Identificación Principal */}
-              <div>
-                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-blue-600" />
-                  <span>1. Identificación y Ficha General</span>
-                </h4>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-                  <div className="sm:col-span-2">
-                    <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                      Título de la Obra *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={editingProject.title || ""}
-                      onChange={(e) => setEditingProject({ ...editingProject, title: e.target.value })}
-                      placeholder="Ej. RESIDENCIA EL VISO"
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-medium"
-                    />
+            {/* Formulario que encapsula el cuerpo scrollable y el pie fijo */}
+            <form onSubmit={handleSaveProjectForm} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+              {/* Cuerpo Scrollable: Únicamente este bloque hace scroll vertical */}
+              <div className="flex-1 overflow-y-auto px-6 sm:px-8 py-6 space-y-8">
+                {modalError && (
+                  <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 shrink-0 text-red-500" />
+                    <span>{modalError}</span>
                   </div>
+                )}
 
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                      Número / Índice
-                    </label>
-                    <input
-                      type="text"
-                      value={editingProject.indice || ""}
-                      onChange={(e) => setEditingProject({ ...editingProject, indice: e.target.value })}
-                      placeholder="01"
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-mono"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                      Tipología
-                    </label>
-                    <input
-                      type="text"
-                      value={editingProject.tipologia || ""}
-                      onChange={(e) => setEditingProject({ ...editingProject, tipologia: e.target.value })}
-                      placeholder="Ej. Vivienda Unifamiliar"
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                      Ubicación
-                    </label>
-                    <input
-                      type="text"
-                      value={editingProject.ubicacion || ""}
-                      onChange={(e) => setEditingProject({ ...editingProject, ubicacion: e.target.value })}
-                      placeholder="Ej. Pozuelo de Alarcón, Madrid"
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                      Año de Ejecución
-                    </label>
-                    <input
-                      type="text"
-                      value={editingProject.anio || ""}
-                      onChange={(e) => setEditingProject({ ...editingProject, anio: e.target.value })}
-                      placeholder="2024"
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-mono"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                      Cliente
-                    </label>
-                    <input
-                      type="text"
-                      value={editingProject.cliente || ""}
-                      onChange={(e) => setEditingProject({ ...editingProject, cliente: e.target.value })}
-                      placeholder="Ej. Cliente particular / Corporativo"
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                      Superficie
-                    </label>
-                    <input
-                      type="text"
-                      value={editingProject.superficie || ""}
-                      onChange={(e) => setEditingProject({ ...editingProject, superficie: e.target.value })}
-                      placeholder="Ej. 520 m²"
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                      Plazo de Obra
-                    </label>
-                    <input
-                      type="text"
-                      value={editingProject.plazo || ""}
-                      onChange={(e) => setEditingProject({ ...editingProject, plazo: e.target.value })}
-                      placeholder="Ej. 14 meses"
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Bloque 2: Imágenes de Portada, Antes y Después */}
-              <div>
-                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-blue-600" />
-                  <span>2. Fotografías de la Obra (Hero, Antes y Después)</span>
-                </h4>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {/* Foto de Portada / Hero */}
-                  <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 flex flex-col justify-between">
-                    <div>
-                      <span className="block text-xs font-bold text-slate-800 mb-1">
-                        Foto de Portada / Principal
-                      </span>
-                      <p className="text-[11px] text-slate-500 mb-3">
-                        Aparece en la cabecera y listado.
-                      </p>
-                    </div>
-
-                    <div className="relative aspect-[16/10] w-full rounded-lg overflow-hidden bg-slate-200 mb-3">
-                      <Image
-                        src={editingProject.imagen || "/p1.jpg"}
-                        alt="Portada"
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-
-                    <label className="inline-flex items-center justify-center gap-2 w-full py-2 px-3 rounded-lg bg-white border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer shadow-xs transition">
-                      {uploadingField === "imagen" ? (
-                        <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-600" />
-                      ) : (
-                        <Upload className="w-3.5 h-3.5 text-slate-500" />
-                      )}
-                      <span>Cambiar Portada</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => handleFileUpload(e, "imagen")}
-                      />
-                    </label>
-                  </div>
-
-                  {/* Foto Estado Inicial (Antes) */}
-                  <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 flex flex-col justify-between">
-                    <div>
-                      <span className="block text-xs font-bold text-slate-800 mb-1">
-                        Foto ANTES (Estado Inicial)
-                      </span>
-                      <p className="text-[11px] text-slate-500 mb-3">
-                        Bloque de memoria del proyecto.
-                      </p>
-                    </div>
-
-                    <div className="relative aspect-[16/10] w-full rounded-lg overflow-hidden bg-slate-200 mb-3">
-                      <Image
-                        src={editingProject.fotoAntes || "/start-research-1.jpg"}
-                        alt="Foto Antes"
-                        fill
-                        className="object-cover grayscale"
-                      />
-                    </div>
-
-                    <label className="inline-flex items-center justify-center gap-2 w-full py-2 px-3 rounded-lg bg-white border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer shadow-xs transition">
-                      {uploadingField === "fotoAntes" ? (
-                        <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-600" />
-                      ) : (
-                        <Upload className="w-3.5 h-3.5 text-slate-500" />
-                      )}
-                      <span>Subir Foto Antes</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => handleFileUpload(e, "fotoAntes")}
-                      />
-                    </label>
-                  </div>
-
-                  {/* Foto Obra Entregada (Después) */}
-                  <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 flex flex-col justify-between">
-                    <div>
-                      <span className="block text-xs font-bold text-slate-800 mb-1">
-                        Foto DESPUÉS (Obra Entregada)
-                      </span>
-                      <p className="text-[11px] text-slate-500 mb-3">
-                        Resultado final acabado.
-                      </p>
-                    </div>
-
-                    <div className="relative aspect-[16/10] w-full rounded-lg overflow-hidden bg-slate-200 mb-3">
-                      <Image
-                        src={editingProject.fotoDespues || editingProject.imagen || "/p1.jpg"}
-                        alt="Foto Después"
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-
-                    <label className="inline-flex items-center justify-center gap-2 w-full py-2 px-3 rounded-lg bg-white border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer shadow-xs transition">
-                      {uploadingField === "fotoDespues" ? (
-                        <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-600" />
-                      ) : (
-                        <Upload className="w-3.5 h-3.5 text-slate-500" />
-                      )}
-                      <span>Subir Foto Después</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => handleFileUpload(e, "fotoDespues")}
-                      />
-                    </label>
-                  </div>
-                </div>
-              </div>
-
-              {/* Bloque 3: Galería de Fotos Adicionales */}
-              <div>
-                <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+                {/* Bloque 1: Identificación Principal */}
+                <div>
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-blue-600" />
-                    <span>3. Galería de Imágenes del Proyecto ({(editingProject.galeria || []).length})</span>
+                    <span>1. Identificación y Ficha General</span>
                   </h4>
 
-                  <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 text-xs font-semibold cursor-pointer transition">
-                    {uploadingField === "galeria" ? (
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    ) : (
-                      <Plus className="w-3.5 h-3.5" />
-                    )}
-                    <span>Añadir Foto a Galería</span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={(e) => handleFileUpload(e, "galeria")}
-                    />
-                  </label>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                    <div className="sm:col-span-2">
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                        Título de la Obra *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={editingProject.title || ""}
+                        onChange={(e) => setEditingProject({ ...editingProject, title: e.target.value })}
+                        placeholder="Ej. RESIDENCIA EL VISO"
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-100/60 text-sm font-medium transition bg-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                        Número / Índice
+                      </label>
+                      <input
+                        type="text"
+                        value={editingProject.indice || ""}
+                        onChange={(e) => setEditingProject({ ...editingProject, indice: e.target.value })}
+                        placeholder="01"
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-100/60 text-sm font-medium transition bg-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                        Tipología
+                      </label>
+                      <input
+                        type="text"
+                        value={editingProject.tipologia || ""}
+                        onChange={(e) => setEditingProject({ ...editingProject, tipologia: e.target.value })}
+                        placeholder="Ej. Vivienda Unifamiliar"
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-100/60 text-sm transition bg-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                        Ubicación
+                      </label>
+                      <input
+                        type="text"
+                        value={editingProject.ubicacion || ""}
+                        onChange={(e) => setEditingProject({ ...editingProject, ubicacion: e.target.value })}
+                        placeholder="Ej. Pozuelo de Alarcón, Madrid"
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-100/60 text-sm transition bg-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                        Año de Ejecución
+                      </label>
+                      <input
+                        type="text"
+                        value={editingProject.anio || ""}
+                        onChange={(e) => setEditingProject({ ...editingProject, anio: e.target.value })}
+                        placeholder="2024"
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-100/60 text-sm font-medium transition bg-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                        Cliente
+                      </label>
+                      <input
+                        type="text"
+                        value={editingProject.cliente || ""}
+                        onChange={(e) => setEditingProject({ ...editingProject, cliente: e.target.value })}
+                        placeholder="Ej. Cliente particular / Corporativo"
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-100/60 text-sm transition bg-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                        Superficie
+                      </label>
+                      <input
+                        type="text"
+                        value={editingProject.superficie || ""}
+                        onChange={(e) => setEditingProject({ ...editingProject, superficie: e.target.value })}
+                        placeholder="Ej. 520 m²"
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-100/60 text-sm font-medium transition bg-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                        Plazo de Obra
+                      </label>
+                      <input
+                        type="text"
+                        value={editingProject.plazo || ""}
+                        onChange={(e) => setEditingProject({ ...editingProject, plazo: e.target.value })}
+                        placeholder="Ej. 14 meses"
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-100/60 text-sm transition bg-white"
+                      />
+                    </div>
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                  {(editingProject.galeria || []).map((imgUrl, i) => (
-                    <div key={i} className="relative aspect-[4/3] rounded-xl overflow-hidden bg-slate-100 border border-slate-200 group">
-                      <Image src={imgUrl} alt={`Galería ${i + 1}`} fill className="object-cover" />
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveGalleryImage(i)}
-                        className="absolute top-2 right-2 p-1.5 rounded-full bg-red-600 text-white opacity-0 group-hover:opacity-100 transition shadow"
-                        title="Eliminar de galería"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  ))}
+                {/* Bloque 2: Imágenes de Portada, Antes y Después */}
+                <div>
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-blue-600" />
+                    <span>2. Fotografías de la Obra (Hero, Antes y Después)</span>
+                  </h4>
 
-                  {(!editingProject.galeria || editingProject.galeria.length === 0) && (
-                    <div className="col-span-full py-8 text-center border-2 border-dashed border-slate-200 rounded-xl text-slate-400 text-xs">
-                      No hay fotos adicionales en la galería aún. Haz clic en &quot;Añadir Foto a Galería&quot; para subir fotos de detalle.
-                    </div>
-                  )}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {/* Foto de Portada / Hero */}
+                    <SafePreviewBox
+                      url={editingProject.imagen}
+                      alt="Portada del Proyecto"
+                      label="Foto de Portada / Principal"
+                      sublabel="Aparece en la cabecera y listados públicos."
+                      badgeText="Sin Portada"
+                      uploading={uploadingField === "imagen"}
+                      onChangeFile={(e) => handleFileUpload(e, "imagen")}
+                    />
+
+                    {/* Foto Estado Inicial (Antes) */}
+                    <SafePreviewBox
+                      url={editingProject.fotoAntes}
+                      alt="Foto Estado Inicial"
+                      label="Foto ANTES (Estado Inicial)"
+                      sublabel="Muestra el estado previo a la intervención."
+                      badgeText="Sin Foto Antes"
+                      isGrayscale={true}
+                      uploading={uploadingField === "fotoAntes"}
+                      onChangeFile={(e) => handleFileUpload(e, "fotoAntes")}
+                    />
+
+                    {/* Foto Obra Entregada (Después) */}
+                    <SafePreviewBox
+                      url={editingProject.fotoDespues || editingProject.imagen}
+                      alt="Foto Obra Entregada"
+                      label="Foto DESPUÉS (Obra Entregada)"
+                      sublabel="Resultado final acabado y entregado."
+                      badgeText="Sin Foto Después"
+                      uploading={uploadingField === "fotoDespues"}
+                      onChangeFile={(e) => handleFileUpload(e, "fotoDespues")}
+                    />
+                  </div>
+                </div>
+
+                {/* Bloque 3: Galería de Fotos Adicionales */}
+                <div>
+                  <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-blue-600" />
+                      <span>3. Galería de Imágenes del Proyecto ({(editingProject.galeria || []).length})</span>
+                    </h4>
+
+                    <label className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200/80 text-xs font-semibold cursor-pointer transition shadow-xs">
+                      {uploadingField === "galeria" ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      ) : (
+                        <Plus className="w-3.5 h-3.5" />
+                      )}
+                      <span>Añadir Foto a Galería</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => handleFileUpload(e, "galeria")}
+                      />
+                    </label>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    {(editingProject.galeria || []).map((imgUrl, i) => (
+                      <GalleryItem
+                        key={i}
+                        imgUrl={imgUrl}
+                        index={i}
+                        onRemove={() => handleRemoveGalleryImage(i)}
+                      />
+                    ))}
+
+                    {(!editingProject.galeria || editingProject.galeria.length === 0) && (
+                      <div className="col-span-full py-8 text-center border-2 border-dashed border-slate-200 rounded-2xl text-slate-400 text-xs bg-slate-50/50">
+                        No hay fotos adicionales en la galería aún. Haz clic en &quot;Añadir Foto a Galería&quot; para subir detalles de acabados.
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
-              {/* Botones de Acción del Modal */}
-              <div className="pt-6 border-t border-slate-200 flex items-center justify-end gap-3 sticky bottom-0 bg-white">
+              {/* Pie de Acciones del Modal - Fijo en la parte inferior */}
+              <div className="shrink-0 px-6 sm:px-8 py-4 border-t border-slate-200 bg-slate-50/90 flex items-center justify-end gap-3 backdrop-blur-xs">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-5 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-xs font-semibold text-slate-700 transition"
+                  className="px-5 py-2.5 rounded-xl border border-slate-200 hover:bg-white text-xs font-semibold text-slate-700 hover:border-slate-300 transition shadow-xs"
                 >
                   Cancelar
                 </button>
@@ -777,7 +707,7 @@ export default function ProjectsManager({
                 <button
                   type="submit"
                   disabled={isSavingProject}
-                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-md shadow-blue-500/20 active:scale-95 transition"
+                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-md shadow-blue-500/20 active:scale-95 transition disabled:opacity-50"
                 >
                   {isSavingProject ? (
                     <>
@@ -793,6 +723,142 @@ export default function ProjectsManager({
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+/**
+ * Componente seguro para la vista previa de fotografías del proyecto.
+ * Previene iconos de imagen rota, gestiona errores 404/formato y añade indicadores visuales elegantes.
+ */
+function SafePreviewBox({
+  url,
+  alt,
+  label,
+  sublabel,
+  badgeText,
+  uploading,
+  onChangeFile,
+  isGrayscale = false,
+}: {
+  url?: string;
+  alt: string;
+  label: string;
+  sublabel: string;
+  badgeText?: string;
+  uploading: boolean;
+  onChangeFile: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  isGrayscale?: boolean;
+}) {
+  const [loadError, setLoadError] = useState(false);
+
+  useEffect(() => {
+    setLoadError(false);
+  }, [url]);
+
+  const hasValidImage = Boolean(url && url.trim() !== "" && !loadError);
+
+  return (
+    <div className="p-4 rounded-2xl border border-slate-200/90 bg-slate-50/60 hover:bg-slate-50 transition-colors flex flex-col justify-between">
+      <div>
+        <div className="flex items-center justify-between mb-1">
+          <span className="block text-xs font-bold text-slate-900 tracking-tight">
+            {label}
+          </span>
+          {hasValidImage ? (
+            <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/70 px-2 py-0.5 rounded-full">
+              <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+              <span>Foto lista</span>
+            </span>
+          ) : (
+            <span className="text-[10px] font-medium text-amber-700 bg-amber-50 border border-amber-200/70 px-2 py-0.5 rounded-full">
+              {badgeText || "Pendiente"}
+            </span>
+          )}
+        </div>
+        <p className="text-[11px] text-slate-500 mb-3 leading-relaxed">
+          {sublabel}
+        </p>
+      </div>
+
+      <div className="relative aspect-[16/10] w-full rounded-xl overflow-hidden bg-white border border-slate-200/80 mb-3 flex items-center justify-center shadow-xs">
+        {hasValidImage ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={url}
+            alt={alt}
+            onError={() => setLoadError(true)}
+            className={`w-full h-full object-cover transition-transform duration-300 hover:scale-105 ${
+              isGrayscale ? "grayscale contrast-105" : ""
+            }`}
+          />
+        ) : (
+          <div className="flex flex-col items-center justify-center p-4 text-center">
+            <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-1.5">
+              <ImageIcon className="w-5 h-5" />
+            </div>
+            <span className="text-xs font-medium text-slate-600">Sin vista previa</span>
+            <span className="text-[10px] text-slate-400">Sube una fotografía de calidad</span>
+          </div>
+        )}
+      </div>
+
+      <label className="inline-flex items-center justify-center gap-2 w-full py-2.5 px-3 rounded-xl bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50/80 text-xs font-semibold text-slate-700 cursor-pointer shadow-xs active:scale-[0.99] transition">
+        {uploading ? (
+          <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
+        ) : (
+          <Upload className="w-4 h-4 text-slate-500" />
+        )}
+        <span>{hasValidImage ? "Cambiar Imagen" : "Subir Fotografía"}</span>
+        <input
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={onChangeFile}
+        />
+      </label>
+    </div>
+  );
+}
+
+/**
+ * Thumbnail seguro para elementos individuales de la galería.
+ */
+function GalleryItem({
+  imgUrl,
+  index,
+  onRemove,
+}: {
+  imgUrl: string;
+  index: number;
+  onRemove: () => void;
+}) {
+  const [loadError, setLoadError] = useState(false);
+
+  return (
+    <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-slate-100 border border-slate-200/90 group shadow-xs">
+      {!loadError ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={imgUrl}
+          alt={`Galería ${index + 1}`}
+          onError={() => setLoadError(true)}
+          className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+        />
+      ) : (
+        <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 p-2 text-center bg-slate-50">
+          <ImageIcon className="w-5 h-5 mb-1 text-slate-300" />
+          <span className="text-[10px] text-slate-400">Imagen {index + 1}</span>
+        </div>
+      )}
+      <button
+        type="button"
+        onClick={onRemove}
+        className="absolute top-2 right-2 w-7 h-7 rounded-lg bg-red-600/90 hover:bg-red-600 text-white opacity-0 group-hover:opacity-100 transition flex items-center justify-center shadow-md"
+        title="Eliminar de galería"
+      >
+        <Trash2 className="w-3.5 h-3.5" />
+      </button>
     </div>
   );
 }
