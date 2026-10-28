@@ -1,0 +1,250 @@
+/* ALKO Admin Theme: panel claro con barra lateral oscura, azul de acento y tarjetas redondeadas. */
+:root {
+	--alko-bg: #f6f7fb;
+	--alko-card: #ffffff;
+	--alko-border: #e6e8ee;
+	--alko-text: #0f172a;
+	--alko-muted: #64748b;
+	--alko-side: #0b1220;
+	--alko-side-2: #111a2e;
+	--alko-side-line: #1f2a44;
+	--alko-side-text: #aab4c8;
+	--alko-accent: #2563eb;
+	--alko-accent-dark: #1d4ed8;
+	--alko-radius: 14px;
+	--alko-font: "Inter", -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* ---------- Base ---------- */
+html.wp-toolbar { padding-top: 64px !important; }
+body.wp-admin, #wpwrap, #wpcontent, #wpbody { background: var(--alko-bg); }
+body, #wpbody-content, .wrap, input, select, textarea, button, .button, #adminmenu, #wpadminbar * {
+	font-family: var(--alko-font) !important;
+}
+#wpadminbar .ab-icon, #wpadminbar .ab-item:before, #wpadminbar #adminbarsearch:before,
+#adminmenu div.wp-menu-image:before, .dashicons, .dashicons-before:before { font-family: dashicons !important; }
+body { color: var(--alko-text); font-size: 14px; }
+a { color: var(--alko-accent); }
+a:hover, a:focus { color: var(--alko-accent-dark); }
+#wpcontent { padding-left: 28px; }
+#wpbody-content { padding-bottom: 40px; }
+.wrap { margin: 24px 28px 0 0; }
+.wrap > h1, .wrap h1.wp-heading-inline {
+	font-size: 26px; font-weight: 700; letter-spacing: -0.02em; color: var(--alko-text); padding: 0; margin-bottom: 8px;
+}
+.wrap .page-title-action, .wrap .add-new-h2 {
+	border-radius: 10px; border: 1px solid var(--alko-border); background: var(--alko-card); color: var(--alko-text);
+	padding: 6px 14px; font-weight: 600; top: 0;
+}
+.wrap .page-title-action:hover { border-color: var(--alko-accent); color: var(--alko-accent); background: var(--alko-card); }
+
+/* ---------- Barra superior ---------- */
+#wpadminbar {
+	height: 64px; background: #fff; border-bottom: 1px solid var(--alko-border);
+	box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+#wpadminbar .ab-top-menu > li > .ab-item, #wpadminbar .quicklinks .ab-empty-item,
+#wpadminbar .ab-top-secondary > li > .ab-item { height: 64px; line-height: 64px; color: var(--alko-text); }
+#wpadminbar .ab-icon, #wpadminbar .ab-item:before, #wpadminbar #adminbarsearch:before { color: var(--alko-muted); top: 18px; }
+#wpadminbar .ab-top-menu > li:hover > .ab-item, #wpadminbar .ab-top-menu > li.hover > .ab-item,
+#wpadminbar .ab-top-menu > li > .ab-item:focus {
+	background: var(--alko-bg); color: var(--alko-accent);
+}
+#wpadminbar li:hover .ab-icon:before, #wpadminbar li:hover .ab-item:before { color: var(--alko-accent); }
+#wpadminbar #wp-admin-bar-alko-brand > .ab-item {
+	display: flex; flex-direction: column; justify-content: center; line-height: 1.25; padding-left: 28px; height: 64px;
+}
+#wpadminbar .alko-brand-name { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; }
+#wpadminbar .alko-brand-sub { font-size: 12px; font-weight: 400; color: var(--alko-muted); }
+#wpadminbar #wp-admin-bar-alko-brand > .ab-item:hover { background: transparent; color: var(--alko-text); }
+#wpadminbar .menupop .ab-sub-wrapper { border-radius: 0 0 12px 12px; box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12); }
+#wpadminbar .ab-submenu { background: #fff; border: 1px solid var(--alko-border); }
+#wpadminbar .ab-submenu .ab-item, #wpadminbar .quicklinks .menupop ul li a { color: var(--alko-text) !important; height: auto; line-height: 2; }
+#wpadminbar .ab-submenu .ab-item:hover { color: var(--alko-accent) !important; }
+#wpadminbar #wp-admin-bar-my-account > .ab-item { padding-right: 16px; }
+#wpadminbar #wp-admin-bar-my-account img.avatar { border-radius: 10px; top: 14px; width: 36px; height: 36px; }
+#wpadminbar #wp-admin-bar-site-name > .ab-item {
+	border: 1px solid var(--alko-border); border-radius: 12px; height: 42px; line-height: 40px; margin: 11px 8px; padding: 0 16px;
+}
+#wpadminbar #wp-admin-bar-site-name > .ab-item:before { top: 8px; }
+#wpadminbar #wp-admin-bar-new-content > .ab-item {
+	background: var(--alko-accent); color: #fff; border-radius: 10px; height: 42px; line-height: 42px; margin: 11px 4px; padding: 0 14px;
+}
+#wpadminbar #wp-admin-bar-new-content > .ab-item .ab-icon:before, #wpadminbar #wp-admin-bar-new-content > .ab-item:before { color: #fff; top: 8px; }
+#wpadminbar #wp-admin-bar-new-content:hover > .ab-item { background: var(--alko-accent-dark); color: #fff; }
+
+/* ---------- Barra lateral ---------- */
+#adminmenuback, #adminmenuwrap, #adminmenu { background: var(--alko-side); width: 280px; }
+#adminmenu { margin: 0; padding: 16px 12px 24px; }
+#wpcontent, #wpfooter { margin-left: 280px; }
+#adminmenu::before {
+	content: "ALKO";
+	display: block; margin: 0 0 16px; padding: 18px 16px;
+	border: 1px solid var(--alko-side-line); border-radius: 16px; background: var(--alko-side-2);
+	color: #fff; font-size: 18px; font-weight: 700; letter-spacing: 0.12em;
+}
+#adminmenu li.menu-top { margin-bottom: 4px; }
+#adminmenu a { color: var(--alko-side-text); font-size: 15px; font-weight: 500; }
+#adminmenu li.menu-top > a { border-radius: 12px; padding: 0; min-height: 44px; }
+#adminmenu div.wp-menu-image { width: 44px; height: 44px; }
+#adminmenu div.wp-menu-image:before { color: var(--alko-side-text); font-size: 20px; padding: 12px 0; }
+#adminmenu .wp-menu-name { padding: 12px 8px 12px 44px; }
+#adminmenu li.menu-top:hover, #adminmenu li.opensub > a.menu-top, #adminmenu li > a.menu-top:focus {
+	background: var(--alko-side-2); color: #fff;
+}
+#adminmenu li.menu-top:hover div.wp-menu-image:before, #adminmenu li.menu-top > a:focus div.wp-menu-image:before { color: #fff; }
+#adminmenu li.wp-has-current-submenu > a.wp-has-current-submenu,
+#adminmenu li.current > a.current, #adminmenu li.menu-top.current > a {
+	background: var(--alko-accent); color: #fff; box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35);
+}
+#adminmenu li.wp-has-current-submenu div.wp-menu-image:before, #adminmenu li.current div.wp-menu-image:before { color: #fff; }
+#adminmenu li.wp-has-current-submenu a.wp-has-current-submenu .wp-menu-name { color: #fff; }
+#adminmenu .wp-submenu { background: transparent; }
+#adminmenu li.wp-has-current-submenu .wp-submenu, #adminmenu li.current .wp-submenu { padding: 6px 0 6px 12px; position: static; }
+#adminmenu .wp-submenu a { color: var(--alko-side-text); font-size: 14px; padding: 6px 12px; border-radius: 8px; }
+#adminmenu .wp-submenu a:hover, #adminmenu .wp-submenu a:focus { color: #fff; background: var(--alko-side-2); }
+#adminmenu .wp-submenu li.current a, #adminmenu .wp-submenu li.current a:hover { color: #fff; font-weight: 600; }
+#adminmenu .wp-submenu-head { display: none; }
+#adminmenu li.wp-menu-separator { display: none; }
+#adminmenu .awaiting-mod, #adminmenu .update-plugins { background: var(--alko-accent); color: #fff; border-radius: 999px; }
+#adminmenu li.menu-top:not(.wp-has-current-submenu) .wp-submenu {
+	background: var(--alko-side-2); border: 1px solid var(--alko-side-line); border-radius: 12px; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+}
+#collapse-button { color: var(--alko-side-text); }
+#collapse-button:hover { color: #fff; }
+#adminmenuwrap::-webkit-scrollbar { width: 6px; }
+#adminmenuwrap::-webkit-scrollbar-thumb { background: var(--alko-side-line); border-radius: 6px; }
+.folded #adminmenuback, .folded #adminmenuwrap, .folded #adminmenu { width: 72px; }
+.folded #wpcontent, .folded #wpfooter { margin-left: 72px; }
+.folded #adminmenu::before { content: "A"; text-align: center; padding: 14px 0; letter-spacing: 0; }
+.folded #adminmenu { padding: 16px 8px; }
+.folded #adminmenu .wp-menu-name { padding-left: 0; }
+@media screen and (max-width: 782px) {
+	html.wp-toolbar { padding-top: 56px !important; }
+	#wpadminbar { height: 56px; }
+	#wpcontent, #wpfooter, .folded #wpcontent { margin-left: 0; padding-left: 12px; }
+	.wrap { margin-right: 12px; }
+	#adminmenuwrap, #adminmenuback { width: 280px; }
+}
+
+/* ---------- Tarjetas y cajas ---------- */
+.postbox, .card, .stuffbox, .plugin-card {
+	background: var(--alko-card); border: 1px solid var(--alko-border); border-radius: var(--alko-radius); box-shadow: none; max-width: none;
+}
+.postbox .hndle, .postbox .postbox-header, .stuffbox h3 { border-bottom: 1px solid var(--alko-border); }
+.postbox-header { border-radius: var(--alko-radius) var(--alko-radius) 0 0; }
+.postbox .hndle, .postbox-header h2 { font-size: 15px; font-weight: 600; padding: 14px 18px; }
+.postbox .inside { margin: 0; padding: 16px 18px 18px; }
+#welcome-panel, .welcome-panel {
+	background: linear-gradient(135deg, #0b1220 0%, #12203f 100%); border: 0; border-radius: 20px; color: #fff; padding: 8px 8px 20px;
+}
+.welcome-panel h2, .welcome-panel h3, .welcome-panel p, .welcome-panel a:not(.button), .welcome-panel li { color: #fff; }
+.welcome-panel .welcome-panel-close { color: #cbd5e1; }
+
+/* ---------- Tablas ---------- */
+.wp-list-table, .widefat {
+	border: 1px solid var(--alko-border); border-radius: var(--alko-radius); box-shadow: none; overflow: hidden;
+	border-collapse: separate; border-spacing: 0;
+}
+.widefat thead th, .widefat tfoot th, .widefat thead td, .widefat tfoot td {
+	background: #fafbfd; color: var(--alko-muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em;
+	border-bottom: 1px solid var(--alko-border);
+}
+.widefat td, .widefat th { border-color: var(--alko-border); padding: 12px; }
+.striped > tbody > :nth-child(odd), ul.striped > :nth-child(odd), .alternate { background: #fafbfd; }
+.widefat tbody tr:hover { background: #f1f5ff; }
+.row-title, .wp-list-table a.row-title { font-weight: 600; color: var(--alko-text); }
+.subsubsub { margin: 12px 0; }
+.subsubsub a { color: var(--alko-muted); font-weight: 500; }
+.subsubsub a.current { color: var(--alko-accent); font-weight: 700; }
+
+/* ---------- Formularios ---------- */
+input[type="text"], input[type="search"], input[type="email"], input[type="url"], input[type="password"], input[type="number"],
+input[type="tel"], input[type="date"], select, textarea {
+	border: 1px solid var(--alko-border); border-radius: 10px; background: #fff; color: var(--alko-text);
+	min-height: 40px; padding: 6px 12px; box-shadow: none;
+}
+textarea { padding: 10px 12px; }
+input:focus, select:focus, textarea:focus {
+	border-color: var(--alko-accent); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); outline: 0;
+}
+input[type="radio"]:checked::before { background: var(--alko-accent); }
+.form-table th { font-weight: 600; color: var(--alko-text); }
+.description, p.description { color: var(--alko-muted); }
+
+/* ---------- Botones ---------- */
+.button, .button-secondary {
+	border-radius: 10px; border: 1px solid var(--alko-border); background: #fff; color: var(--alko-text);
+	min-height: 38px; line-height: 36px; padding: 0 16px; font-weight: 600;
+}
+.button:hover, .button-secondary:hover, .button:focus { background: #fff; border-color: var(--alko-accent); color: var(--alko-accent); }
+.button-primary, .wp-core-ui .button-primary {
+	background: var(--alko-accent); border-color: var(--alko-accent); color: #fff; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+	text-shadow: none;
+}
+.button-primary:hover, .button-primary:focus, .wp-core-ui .button-primary:hover { background: var(--alko-accent-dark); border-color: var(--alko-accent-dark); color: #fff; }
+.button-link-delete, a.submitdelete, #delete-action a { color: #dc2626; }
+.button.button-small, .button-small { min-height: 30px; line-height: 28px; padding: 0 10px; }
+
+/* ---------- Avisos ---------- */
+.notice, div.error, div.updated {
+	background: #fff; border: 1px solid var(--alko-border); border-left-width: 4px; border-radius: 10px; box-shadow: none; padding: 12px 16px;
+}
+.notice-success, div.updated { border-left-color: #16a34a; }
+.notice-error, div.error { border-left-color: #dc2626; }
+.notice-warning { border-left-color: #f59e0b; }
+.notice-info { border-left-color: var(--alko-accent); }
+
+/* ---------- Pestañas, editor, medios ---------- */
+.nav-tab-wrapper { border-bottom: 1px solid var(--alko-border); }
+.nav-tab { border: 0; border-radius: 10px 10px 0 0; background: transparent; color: var(--alko-muted); font-weight: 600; }
+.nav-tab-active, .nav-tab-active:hover { background: #fff; color: var(--alko-accent); border-bottom: 2px solid var(--alko-accent); }
+#titlediv #title { min-height: 48px; font-size: 20px; font-weight: 600; border-radius: var(--alko-radius); }
+.media-modal, .media-frame { border-radius: 16px; overflow: hidden; }
+.attachment.selected, .attachment.details { box-shadow: 0 0 0 3px var(--alko-accent); }
+#wpfooter { display: none; }
+
+/* ---------- Pantalla de acceso ---------- */
+body.login { background: var(--alko-bg); }
+body.login #login { padding-top: 6vh; width: 380px; }
+body.login h1 a {
+	background-image: none; width: auto; height: auto; text-indent: 0; font-size: 28px; font-weight: 700; letter-spacing: 0.16em;
+	color: var(--alko-text); text-decoration: none; margin: 0 auto 24px;
+}
+body.login form {
+	background: #fff; border: 1px solid var(--alko-border); border-radius: 20px; box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08); padding: 28px;
+}
+body.login form .input, body.login input[type="text"], body.login input[type="password"] { min-height: 46px; font-size: 16px; }
+body.login .button-primary { width: 100%; float: none; min-height: 46px; margin-top: 8px; }
+body.login #nav a, body.login #backtoblog a { color: var(--alko-muted); }
+body.login #nav a:hover, body.login #backtoblog a:hover { color: var(--alko-accent); }
+
+/* ---------- Ajustes 1.0.1 ---------- */
+#wpadminbar #wp-admin-bar-wp-logo, #wpadminbar #wp-admin-bar-comments, #wpadminbar #wp-admin-bar-search,
+#wpadminbar #wp-admin-bar-updates, #wpadminbar #wp-admin-bar-customize { display: none !important; }
+#wpadminbar #wp-admin-bar-new-content .ab-icon { display: none; }
+#wpadminbar #wp-admin-bar-new-content > .ab-item:before { display: none; }
+#wpadminbar #wp-admin-bar-alko-brand > .ab-item { padding-top: 0; padding-bottom: 0; }
+#wpadminbar .alko-brand-name { font-size: 17px; line-height: 1.2; }
+#wpadminbar .alko-brand-sub { line-height: 1.2; }
+
+html body #wpcontent { padding-left: 32px !important; padding-right: 8px; }
+html body #wpbody-content { padding-top: 8px; }
+.wrap { margin-left: 0; }
+#screen-meta-links { margin-right: 0; }
+#screen-meta-links .screen-meta-toggle .button { border-radius: 0 0 10px 10px; min-height: 32px; line-height: 30px; }
+
+/* Submenú del elemento activo: integrado, sin caja ni flecha */
+#adminmenu a.wp-has-current-submenu:after, #adminmenu li.current > a.menu-top:after,
+#adminmenu .wp-menu-arrow, #adminmenu li.wp-has-current-submenu:after { display: none !important; }
+#adminmenu li.wp-has-current-submenu .wp-submenu, #adminmenu li.current .wp-submenu,
+#adminmenu li.wp-has-current-submenu.opensub .wp-submenu {
+	position: static !important; width: auto; min-width: 0; margin: 4px 0 8px; padding: 0 0 0 16px;
+	background: transparent !important; border: 0 !important; box-shadow: none !important; border-radius: 0;
+}
+#adminmenu .wp-submenu li { margin: 0; }
+#adminmenu .wp-submenu a { display: block; padding: 7px 14px; font-weight: 500; color: var(--alko-side-text); box-shadow: none; }
+#adminmenu .wp-submenu li.current a, #adminmenu .wp-submenu li.current a:hover, #adminmenu .wp-submenu a.current {
+	background: var(--alko-side-2); color: #fff; font-weight: 600; box-shadow: none; text-shadow: none;
+}
+#adminmenu .wp-submenu a.current:before, #adminmenu .wp-submenu li.current a:before { display: none; }
