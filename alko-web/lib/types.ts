@@ -287,6 +287,13 @@ export interface NosotrosPageContent {
   valoresDescripcion: string;
   valores: ValorNosotros[];
 
+  // Fases del Proceso
+  procesoTitulo?: string;
+  procesoSubtitulo?: string;
+  procesoColHeading?: string;
+  procesoColText?: string;
+  fases?: Fase[];
+
   // Enlaces inferiores (Equipo y Empleo)
   enlaceEquipoEtiqueta: string;
   enlaceEquipoTitulo: string;

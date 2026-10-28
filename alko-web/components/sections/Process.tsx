@@ -7,7 +7,20 @@ function phaseNumber(fase: Fase, index: number) {
   return (match ? match[0] : String(index + 1)).padStart(2, "0");
 }
 
-export default function Process({ fases, id = "metodo", content }: { fases: Fase[]; id?: string; content?: HomeContent }) {
+export default function Process({
+  fases,
+  id = "metodo",
+  content,
+}: {
+  fases: Fase[];
+  id?: string;
+  content?: {
+    procesoTitulo?: string;
+    procesoSubtitulo?: string;
+    procesoColHeading?: string;
+    procesoColText?: string;
+  };
+}) {
   const first = fases[0];
 
   return (
@@ -81,11 +94,11 @@ export default function Process({ fases, id = "metodo", content }: { fases: Fase
           <div className="lg:col-span-4 flex flex-col justify-between self-stretch space-y-8 lg:pl-6 reveal-item">
             <div>
               <h3 className="text-xl sm:text-2xl font-serif font-light text-stone-900 tracking-tight leading-snug">
-                Una única dirección para todo el proyecto
+                {content?.procesoColHeading ?? "Una única dirección para todo el proyecto"}
               </h3>
               <p className="mt-4 text-base sm:text-lg text-stone-600 font-light leading-relaxed font-sans">
-                Un único equipo coordina construcción, instalaciones, compras y gestión técnica
-                para mantener el proyecto bajo control.
+                {content?.procesoColText || "Un único equipo coordina construcción, instalaciones, compras y gestión técnica para mantener el proyecto bajo control."}
+
               </p>
             </div>
 

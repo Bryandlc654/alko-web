@@ -99,6 +99,7 @@ export default function LiveEditor({
   const [activeHeroSlideIndex, setActiveHeroSlideIndex] = useState(0);
   const [activeShowcaseSlideIndex, setActiveShowcaseSlideIndex] = useState(0);
   const [activeFaseIndex, setActiveFaseIndex] = useState(0);
+  const [activeNosotrosFaseIndex, setActiveNosotrosFaseIndex] = useState(0);
 
   const [device, setDevice] = useState<"desktop" | "tablet" | "mobile">("desktop");
   const [isSaving, setIsSaving] = useState(false);
@@ -1494,8 +1495,137 @@ export default function LiveEditor({
                 </div>
               </section>
 
-              {/* Fases del proceso */}
-              <Process fases={fases} id="fases" />
+              {/* ========================================================
+                  5. FASES DEL PROCESO EN NOSOTROS (EDITABLE EN VIVO)
+                  ======================================================== */}
+              <section id="proceso-nosotros" className="relative bg-white text-stone-900 py-24 sm:py-32 px-6 sm:px-10 lg:px-12 overflow-hidden border-t border-stone-200">
+                <div className="max-w-7xl mx-auto">
+                  {/* Cabecera editable */}
+                  <div className="flex items-baseline justify-between pb-12 sm:pb-16 border-b border-stone-300/60">
+                    <div>
+                      <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-light text-stone-900 tracking-tight leading-none">
+                        <InlineText
+                          value={nosotrosContent.procesoTitulo || "Nuestro proceso"}
+                          onChange={(val) => updateNosotrosField("procesoTitulo", val)}
+                          placeholder="Título del proceso..."
+                        />
+                      </h2>
+                      <div className="mt-2 font-mono text-[11px] tracking-[0.25em] text-stone-500 uppercase">
+                        <InlineText
+                          value={nosotrosContent.procesoSubtitulo || "SECUENCIA DE COORDINACIÓN INTEGRAL · 6 FASES · 1 EQUIPO"}
+                          onChange={(val) => updateNosotrosField("procesoSubtitulo", val)}
+                          placeholder="Subtítulo del proceso..."
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Layout de fases interactivo y editable */}
+                  <div className="mt-14 sm:mt-20 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-start">
+                    {/* Columna 1: Tabs de fases con edición de título */}
+                    <div className="lg:col-span-4 flex flex-col space-y-4 sm:space-y-6">
+                      {(nosotrosContent.fases && nosotrosContent.fases.length > 0 ? nosotrosContent.fases : fases).map((fase, i, allFases) => (
+                        <div
+                          key={fase.id || i}
+                          onClick={() => setActiveNosotrosFaseIndex(i)}
+                          className={`text-left group flex items-baseline gap-3 cursor-pointer transition-all duration-300 ${
+                            activeNosotrosFaseIndex === i ? "is-active" : ""
+                          }`}
+                        >
+                          <span
+                            className={`phase-badge font-mono text-xs shrink-0 transition ${
+                              activeNosotrosFaseIndex === i ? "text-stone-900 font-bold" : "text-stone-400 group-hover:text-stone-700"
+                            }`}
+                          >
+                            ({phaseNumber(fase, i)})
+                          </span>
+                          <span
+                            className={`phase-title text-2xl sm:text-3xl lg:text-4xl font-serif border-b-2 pb-1 transition-all flex-1 ${
+                              activeNosotrosFaseIndex === i
+                                ? "text-stone-900 border-stone-900"
+                                : "text-stone-400 border-transparent group-hover:text-stone-700"
+                            }`}
+                          >
+                            <InlineText
+                              value={fase.title}
+                              onChange={(val) => {
+                                const updated = [...allFases];
+                                updated[i] = { ...updated[i], title: val };
+                                updateNosotrosField("fases", updated);
+                              }}
+                              placeholder={`Título de fase ${i + 1}...`}
+                            />
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Columna 2: Imagen de la fase activa con edición en línea */}
+                    {(() => {
+                      const activeFases = nosotrosContent.fases && nosotrosContent.fases.length > 0 ? nosotrosContent.fases : fases;
+                      const activeFase = activeFases[activeNosotrosFaseIndex] || activeFases[0];
+                      if (!activeFase) return null;
+
+                      return (
+                        <>
+                          <div className="lg:col-span-4">
+                            <div className="relative w-full aspect-[3/4] overflow-hidden bg-stone-200 shadow-md group/fase-img">
+                              <InlineImage
+                                src={activeFase.imagen || "/proceso-control.jpg"}
+                                alt={activeFase.title}
+                                label={`Cambiar foto fase (${phaseNumber(activeFase, activeNosotrosFaseIndex)})`}
+                                onImageChange={(newUrl) => {
+                                  const updated = [...activeFases];
+                                  updated[activeNosotrosFaseIndex] = { ...updated[activeNosotrosFaseIndex], imagen: newUrl };
+                                  updateNosotrosField("fases", updated);
+                                }}
+                                className="w-full h-full"
+                                imageClassName="object-cover object-center"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Columna 3: Textos editables (encabezado lateral y detalle de fase) */}
+                          <div className="lg:col-span-4 flex flex-col justify-between self-stretch space-y-8 lg:pl-6">
+                            <div>
+                              <h3 className="text-xl sm:text-2xl font-serif font-light text-stone-900 tracking-tight leading-snug">
+                                <InlineText
+                                  value={nosotrosContent.procesoColHeading || "Una única dirección para todo el proyecto"}
+                                  onChange={(val) => updateNosotrosField("procesoColHeading", val)}
+                                  placeholder="Encabezado lateral..."
+                                />
+                              </h3>
+                              <div className="mt-4 text-base sm:text-lg text-stone-600 font-light leading-relaxed font-sans">
+                                <InlineText
+                                  value={nosotrosContent.procesoColText || "Un único equipo coordina construcción, instalaciones, compras y gestión técnica para mantener el proyecto bajo control."}
+                                  onChange={(val) => updateNosotrosField("procesoColText", val)}
+                                  placeholder="Descripción lateral..."
+                                  multiline
+                                />
+                              </div>
+                            </div>
+
+                            <div className="pt-6 border-t border-stone-300/60">
+                              <div className="text-base sm:text-lg text-stone-600 font-light leading-relaxed font-sans">
+                                <InlineText
+                                  value={activeFase.texto}
+                                  onChange={(val) => {
+                                    const updated = [...activeFases];
+                                    updated[activeNosotrosFaseIndex] = { ...updated[activeNosotrosFaseIndex], texto: val };
+                                    updateNosotrosField("fases", updated);
+                                  }}
+                                  placeholder={`Detalle explicativo de la fase ${activeNosotrosFaseIndex + 1}...`}
+                                  multiline
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </>
+                      );
+                    })()}
+                  </div>
+                </div>
+              </section>
 
               {/* 6. Valores */}
               <section className="bg-stone-100 py-20 sm:py-28">

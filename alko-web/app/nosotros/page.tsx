@@ -290,7 +290,16 @@ export default async function NosotrosPage() {
         </section>
 
         {/* Las fases del proceso */}
-        <Process fases={fases} id="fases" />
+        <Process
+          fases={pageContent.fases && pageContent.fases.length > 0 ? pageContent.fases : fases}
+          id="fases"
+          content={{
+            procesoTitulo: pageContent.procesoTitulo,
+            procesoSubtitulo: pageContent.procesoSubtitulo,
+            procesoColHeading: pageContent.procesoColHeading,
+            procesoColText: pageContent.procesoColText,
+          }}
+        />
       </div>
 
       {/* Valores */}

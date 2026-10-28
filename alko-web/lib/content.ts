@@ -466,4 +466,10 @@ export const DEFAULT_NOSOTROS_PAGE_CONTENT: import('./types').NosotrosPageConten
   enlaceEmpleoEtiqueta: "Trabaja con nosotros",
   enlaceEmpleoTitulo: "Buscamos profesionales con criterio",
   enlaceEmpleoImagen: "/proceso-instalaciones.jpg",
+
+  procesoTitulo: "Nuestro proceso",
+  procesoSubtitulo: "SECUENCIA DE COORDINACIÓN INTEGRAL · 6 FASES · 1 EQUIPO",
+  procesoColHeading: "Una única dirección para todo el proyecto",
+  procesoColText: "Un único equipo coordina construcción, instalaciones, compras y gestión técnica para mantener el proyecto bajo control.",
+  fases: DEFAULT_FASES,
 };
