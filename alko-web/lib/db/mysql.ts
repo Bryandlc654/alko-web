@@ -1,8 +1,8 @@
 import mysql, { Pool } from "mysql2/promise";
 import fs from "fs";
 import path from "path";
-import { DEFAULT_HOME_CONTENT, DEFAULT_PROJECTS_PAGE_CONTENT, DEFAULT_NOSOTROS_PAGE_CONTENT } from "../content";
-import type { HomeContent, ProjectsPageContent, NosotrosPageContent, Slide } from "../types";
+import { DEFAULT_HOME_CONTENT, DEFAULT_PROJECTS_PAGE_CONTENT, DEFAULT_NOSOTROS_PAGE_CONTENT, DEFAULT_PROJECTS } from "../content";
+import type { Project, HomeContent, ProjectsPageContent, NosotrosPageContent, Slide } from "../types";
 
 let pool: Pool | null = null;
 
@@ -34,6 +34,7 @@ interface LocalStoreData {
   nosotrosPage?: NosotrosPageContent;
   slides: Slide[];
   featuredProjectIds?: string[];
+  customProjects?: Project[];
 }
 
 function getLocalContent(): LocalStoreData {
@@ -251,4 +252,119 @@ export async function saveDbNosotrosPageContent(content: Partial<NosotrosPageCon
   }
 
   return updated;
+}
+
+/**
+ * Obtiene la lista completa de proyectos gestionados por base de datos.
+ */
+export async function getDbProjects(): Promise<Project[]> {
+  try {
+    const db = getDbPool();
+    const [rows] = await db.execute<any[]>(
+      "SELECT data FROM alko_site_content WHERE id = 'projects_list' LIMIT 1"
+    );
+    if (rows && rows.length > 0) {
+      const data = typeof rows[0].data === "string" ? JSON.parse(rows[0].data) : rows[0].data;
+      if (Array.isArray(data) && data.length > 0) {
+        return data;
+      }
+    }
+  } catch (err: any) {
+    console.warn("Aviso: Error obteniendo proyectos de MySQL:", err.message);
+  }
+
+  const local = getLocalContent();
+  if (local.customProjects && local.customProjects.length > 0) {
+    return local.customProjects;
+  }
+
+  return DEFAULT_PROJECTS;
+}
+
+/**
+ * Guarda o actualiza un proyecto en MySQL.
+ */
+export async function saveDbProject(projectData: Partial<Project> & { id?: string; title: string }): Promise<Project> {
+  const currentProjects = await getDbProjects();
+  let updatedList = [...currentProjects];
+
+  const projectId = projectData.id && projectData.id.trim() !== "" ? projectData.id : "project-" + Date.now();
+  const slug = projectData.slug || projectData.title.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
+  const existingIndex = updatedList.findIndex(p => String(p.id) === String(projectId) || p.slug === slug);
+
+  const baseProject = existingIndex >= 0 ? updatedList[existingIndex] : null;
+
+  const fullProject: Project = {
+    id: projectId,
+    slug: slug,
+    title: projectData.title,
+    indice: projectData.indice || baseProject?.indice || String(existingIndex >= 0 ? existingIndex + 1 : updatedList.length + 1).padStart(2, "0"),
+    anio: projectData.anio || baseProject?.anio || new Date().getFullYear().toString(),
+    ubicacion: projectData.ubicacion || baseProject?.ubicacion || "Madrid",
+    tipologia: projectData.tipologia || baseProject?.tipologia || "Residencial",
+    cliente: projectData.cliente ?? baseProject?.cliente ?? "",
+    servicio: projectData.servicio || baseProject?.servicio || "reformas-integrales",
+    superficie: projectData.superficie ?? baseProject?.superficie ?? "",
+    plazo: projectData.plazo ?? baseProject?.plazo ?? "",
+    imagen: projectData.imagen || baseProject?.imagen || "/p1.jpg",
+    fotoAntes: projectData.fotoAntes || baseProject?.fotoAntes || "/start-research-1.jpg",
+    fotoDespues: projectData.fotoDespues || baseProject?.fotoDespues || projectData.imagen || "/p1.jpg",
+    galeria: Array.isArray(projectData.galeria) ? projectData.galeria : (baseProject?.galeria || []),
+    enlace: projectData.enlace || baseProject?.enlace || ("/proyectos/" + slug),
+    content: projectData.content ?? baseProject?.content ?? "",
+    reto: projectData.reto ?? baseProject?.reto ?? "",
+    solucion: projectData.solucion ?? baseProject?.solucion ?? "",
+    alcance: Array.isArray(projectData.alcance) ? projectData.alcance : (baseProject?.alcance || []),
+    cifras: Array.isArray(projectData.cifras) ? projectData.cifras : (baseProject?.cifras || []),
+    cronograma: Array.isArray(projectData.cronograma) ? projectData.cronograma : (baseProject?.cronograma || []),
+    materiales: Array.isArray(projectData.materiales) ? projectData.materiales : (baseProject?.materiales || []),
+    resultado: projectData.resultado ?? baseProject?.resultado ?? "",
+  };
+
+  if (existingIndex >= 0) {
+    updatedList[existingIndex] = fullProject;
+  } else {
+    updatedList.push(fullProject);
+  }
+
+  saveLocalContent({ customProjects: updatedList });
+
+  try {
+    const db = getDbPool();
+    await db.execute(
+      `INSERT INTO alko_site_content (id, data) 
+       VALUES ('projects_list', ?) 
+       ON DUPLICATE KEY UPDATE data = VALUES(data)`,
+      [JSON.stringify(updatedList)]
+    );
+  } catch (err: any) {
+    console.warn("Aviso: Fallo al guardar lista de proyectos en MySQL:", err.message);
+  }
+
+  return fullProject;
+}
+
+/**
+ * Elimina un proyecto por ID en MySQL.
+ */
+export async function deleteDbProject(id: string): Promise<boolean> {
+  const currentProjects = await getDbProjects();
+  const updatedList = currentProjects.filter(p => String(p.id) !== String(id) && p.slug !== id);
+
+  saveLocalContent({ customProjects: updatedList });
+
+  try {
+    const db = getDbPool();
+    await db.execute(
+      `INSERT INTO alko_site_content (id, data) 
+       VALUES ('projects_list', ?) 
+       ON DUPLICATE KEY UPDATE data = VALUES(data)`,
+      [JSON.stringify(updatedList)]
+    );
+    return true;
+  } catch (err: any) {
+    console.warn("Aviso: Fallo al eliminar proyecto en MySQL:", err.message);
+    return false;
+  }
 }

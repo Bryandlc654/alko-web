@@ -1,4 +1,4 @@
-import { getDbHomeContent, getFeaturedProjectIds } from "../db/mysql";
+import { getDbHomeContent, getFeaturedProjectIds, getDbProjects } from "../db/mysql";
 import {
   DEFAULT_ARTICLES,
   DEFAULT_DESCARGAS,
@@ -95,6 +95,15 @@ export async function getShowcaseSlides(): Promise<Slide[]> {
 /* ------------------------------- Proyectos -------------------------------- */
 
 export async function getProjects(): Promise<Project[]> {
+  try {
+    const dbProjects = await getDbProjects();
+    if (dbProjects && dbProjects.length > 0) {
+      return dbProjects;
+    }
+  } catch (err) {
+    console.warn("Error leyendo proyectos de MySQL:", err);
+  }
+
   const posts = await collection(`proyectos?${COLLECTION_ORDER}`);
   if (!posts || posts.length === 0) return DEFAULT_PROJECTS;
   return posts.map((post, i) =>
@@ -127,6 +136,14 @@ export async function getFeaturedHomeProjects(): Promise<Project[]> {
 }
 
 export async function getProjectBySlug(slug: string): Promise<Project | null> {
+  try {
+    const dbProjects = await getDbProjects();
+    const found = dbProjects.find((p) => p.slug === slug || String(p.id) === slug);
+    if (found) return found;
+  } catch (err) {
+    console.warn("Error buscando proyecto en MySQL:", err);
+  }
+
   const posts = await wpGet<WpPost[]>(`proyectos?slug=${encodeURIComponent(slug)}&_embed`);
   if (posts && posts.length > 0) return toProject(posts[0], 0);
   return DEFAULT_PROJECTS.find((project) => project.slug === slug) ?? null;
