@@ -9,7 +9,11 @@ import {
   getSettings,
   getHomeContent,
 } from "@/lib/wordpress";
-import { getDbProjectsPageContent, getDbNosotrosPageContent } from "@/lib/db/mysql";
+import {
+  getDbProjectsPageContent,
+  getDbNosotrosPageContent,
+  getDbContactoPageContent,
+} from "@/lib/db/mysql";
 import LiveEditor from "@/components/admin/LiveEditor";
 
 export const dynamic = "force-dynamic";
@@ -19,6 +23,7 @@ export default async function AdminEditorPage() {
     homeContent,
     projectsPageContent,
     nosotrosPageContent,
+    contactoPageContent,
     heroSlides,
     showcaseSlides,
     projects,
@@ -31,6 +36,7 @@ export default async function AdminEditorPage() {
     getHomeContent(),
     getDbProjectsPageContent(),
     getDbNosotrosPageContent(),
+    getDbContactoPageContent(),
     getHeroSlides(),
     getShowcaseSlides(),
     getProjects(),
@@ -46,6 +52,7 @@ export default async function AdminEditorPage() {
       initialContent={homeContent}
       initialProjectsPageContent={projectsPageContent}
       initialNosotrosPageContent={nosotrosPageContent}
+      initialContactoPageContent={contactoPageContent}
       heroSlides={heroSlides}
       showcaseSlides={showcaseSlides}
       projects={projects}

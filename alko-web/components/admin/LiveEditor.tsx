@@ -14,6 +14,7 @@ import {
   Monitor,
 } from "lucide-react";
 import type {
+  ContactoPageContent,
   NosotrosPageContent,
   ProjectsPageContent,
   HomeContent,
@@ -32,8 +33,10 @@ import SectorsList from "@/components/ui/SectorsList";
 import ArticleCard from "@/components/ui/ArticleCard";
 import Footer from "@/components/layout/Footer";
 import { ROUTES } from "@/lib/site";
-import { DEFAULT_PROJECTS_PAGE_CONTENT, DEFAULT_NOSOTROS_PAGE_CONTENT } from "@/lib/content";
-import { Handshake, CalendarClock, Wallet, BadgeCheck } from "lucide-react";
+import { DEFAULT_PROJECTS_PAGE_CONTENT, DEFAULT_NOSOTROS_PAGE_CONTENT,
+  DEFAULT_CONTACTO_PAGE_CONTENT,
+} from "@/lib/content";
+import { Handshake, CalendarClock, Wallet, BadgeCheck, Phone, MessageCircle, Mail, MapPin, Clock } from "lucide-react";
 import Materials from "@/components/sections/Materials";
 import Process from "@/components/sections/Process";
 import { METHOD_HREF } from "@/lib/site";
@@ -46,6 +49,7 @@ interface LiveEditorProps {
   initialContent: HomeContent;
   initialProjectsPageContent?: ProjectsPageContent;
   initialNosotrosPageContent?: NosotrosPageContent;
+  initialContactoPageContent?: ContactoPageContent;
   heroSlides: Slide[];
   showcaseSlides: Slide[];
   projects: Project[];
@@ -65,6 +69,7 @@ export default function LiveEditor({
   initialContent,
   initialProjectsPageContent,
   initialNosotrosPageContent,
+  initialContactoPageContent,
   heroSlides: initialHeroSlides,
   showcaseSlides: initialShowcaseSlides,
   projects,
@@ -75,7 +80,30 @@ export default function LiveEditor({
   settings,
 }: LiveEditorProps) {
   // Selector de página a editar: 'home' o 'projects'
-  const [activePage, setActivePage] = useState<"home" | "projects" | "nosotros">("home");
+  const [activePage, setActivePage] = useState<"home" | "projects" | "nosotros" | "contacto">("home");
+
+  // Estado de contenido editable de la página contacto
+  const [contactoContent, setContactoContent] = useState<ContactoPageContent>(
+    initialContactoPageContent || DEFAULT_CONTACTO_PAGE_CONTENT
+  );
+
+  const updateContactoField = useCallback((field: keyof ContactoPageContent, value: any) => {
+    setContactoContent((prev) => ({ ...prev, [field]: value }));
+    setHasUnsavedChanges(true);
+    setSaveSuccess(false);
+  }, []);
+
+  const updateContactoPaso = useCallback((index: number, field: "title" | "text", value: string) => {
+    setContactoContent((prev) => {
+      const pasos = [...(prev.pasos || DEFAULT_CONTACTO_PAGE_CONTENT.pasos)];
+      if (pasos[index]) {
+        pasos[index] = { ...pasos[index], [field]: value };
+      }
+      return { ...prev, pasos };
+    });
+    setHasUnsavedChanges(true);
+    setSaveSuccess(false);
+  }, []);
 
   // Estado de contenido editable de la página nosotros
   const [nosotrosContent, setNosotrosContent] = useState<NosotrosPageContent>(
@@ -155,6 +183,17 @@ export default function LiveEditor({
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(nosotrosContent),
+        });
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.error || "Error al guardar en el servidor");
+        }
+      } else if (activePage === "contacto") {
+        const res = await fetch("/api/admin/content/contacto", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(contactoContent),
         });
 
         if (!res.ok) {
@@ -311,6 +350,17 @@ export default function LiveEditor({
               >
                 <span>Página Nosotros</span>
               </button>
+              <button
+                type="button"
+                onClick={() => setActivePage("contacto")}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition ${
+                  activePage === "contacto"
+                    ? "bg-white text-blue-700 shadow-sm"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                <span>Página Contacto</span>
+              </button>
             </div>
           </div>
         </div>
@@ -333,7 +383,7 @@ export default function LiveEditor({
           )}
 
           <Link
-            href={activePage === "home" ? "/" : activePage === "projects" ? "/proyectos" : "/nosotros"}
+            href={activePage === "home" ? "/" : activePage === "projects" ? "/proyectos" : activePage === "nosotros" ? "/nosotros" : "/contacto"}
             target="_blank"
             className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition shadow-sm"
           >
@@ -1730,6 +1780,315 @@ export default function LiveEditor({
                           placeholder="Título..."
                           multiline
                         />
+                        <span>→</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          )}
+
+
+          {/* ========================================================
+              VISTA EDITABLE: PÁGINA CONTACTO
+              ======================================================== */}
+          {activePage === "contacto" && (
+            <div className="bg-white text-stone-900">
+              {/* HERO DE CONTACTO */}
+              <header className="relative isolate flex min-h-[640px] sm:min-h-[720px] lg:min-h-[82vh] items-end overflow-hidden bg-stone-950 text-white pt-36 sm:pt-44 pb-16 sm:pb-20">
+                <div className="absolute inset-0 z-0 overflow-hidden">
+                  <InlineImage
+                    src={contactoContent.headerBgImage || "/cta-bg.jpg"}
+                    alt="Fondo de contacto"
+                    label="Cambiar fondo de cabecera"
+                    onImageChange={(newUrl) => updateContactoField("headerBgImage", newUrl)}
+                    className="w-full h-full"
+                    imageClassName="object-cover object-center"
+                    priority
+                  />
+                  <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-stone-950 via-stone-950/65 to-stone-950/20" />
+                </div>
+
+                <div className="relative max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 w-full z-10">
+                  <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-white/70 uppercase mb-4">
+                    <InlineText
+                      value={contactoContent.headerBadge || "CONTACTO"}
+                      onChange={(val) => updateContactoField("headerBadge", val)}
+                      placeholder="Badge..."
+                    />
+                  </span>
+                  <h1 className="font-display font-light text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-[-0.03em] leading-[1.02] drop-shadow-[0_2px_20px_rgba(0,0,0,0.35)]">
+                    <InlineText
+                      value={contactoContent.headerTitulo || "Hablemos de tu\npróximo proyecto."}
+                      onChange={(val) => updateContactoField("headerTitulo", val)}
+                      placeholder="Título de cabecera..."
+                      multiline
+                    />
+                  </h1>
+                  <p className="mt-6 max-w-xl text-base sm:text-lg text-white/85 font-light leading-relaxed">
+                    <InlineText
+                      value={
+                        contactoContent.headerDescripcion ||
+                        "Cuéntanos tus necesidades y te proponemos un planteamiento técnico claro, con plazos definidos y sin sorpresas."
+                      }
+                      onChange={(val) => updateContactoField("headerDescripcion", val)}
+                      placeholder="Descripción..."
+                      multiline
+                    />
+                  </p>
+                  <div className="mt-10 flex flex-wrap gap-3 pointer-events-none opacity-85">
+                    <span className="inline-flex items-center gap-2 rounded-full border border-amber-700 bg-amber-700 px-6 py-3 text-[11px] font-light uppercase tracking-[0.16em] text-white">
+                      Solicitar presupuesto ↓
+                    </span>
+                    <span className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-stone-950/20 backdrop-blur-sm px-6 py-3 text-[11px] font-light uppercase tracking-[0.16em] text-white">
+                      <Phone className="h-3.5 w-3.5" strokeWidth={1.5} />
+                      Llamar
+                    </span>
+                    <span className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-stone-950/20 backdrop-blur-sm px-6 py-3 text-[11px] font-light uppercase tracking-[0.16em] text-white">
+                      <MessageCircle className="h-3.5 w-3.5" strokeWidth={1.5} />
+                      WhatsApp
+                    </span>
+                  </div>
+                </div>
+              </header>
+
+              {/* CANALES + FORMULARIO */}
+              <section className="relative isolate overflow-clip">
+                <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 py-16 sm:py-24">
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-14 lg:gap-16">
+                    <aside className="lg:col-span-5 lg:sticky lg:top-32 lg:self-start">
+                      <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase mb-3">
+                        <InlineText
+                          value={contactoContent.canalesTag || "ALKO MADRID"}
+                          onChange={(val) => updateContactoField("canalesTag", val)}
+                          placeholder="Etiqueta..."
+                        />
+                      </span>
+                      <h2 className="font-serif font-light text-3xl sm:text-4xl lg:text-5xl text-stone-900 tracking-tight leading-tight">
+                        <InlineText
+                          value={contactoContent.canalesTitulo || "Un único interlocutor, desde la primera llamada."}
+                          onChange={(val) => updateContactoField("canalesTitulo", val)}
+                          placeholder="Título..."
+                          multiline
+                        />
+                      </h2>
+                      <p className="mt-5 max-w-md text-base sm:text-lg text-stone-600 font-light leading-relaxed">
+                        <InlineText
+                          value={
+                            contactoContent.canalesDescripcion ||
+                            "Elige el canal que prefieras. Te atenderá directamente el equipo técnico que llevará tu obra."
+                          }
+                          onChange={(val) => updateContactoField("canalesDescripcion", val)}
+                          placeholder="Descripción..."
+                          multiline
+                        />
+                      </p>
+
+                      <ul className="mt-10 border-t border-stone-300">
+                        <li className="border-b border-stone-300">
+                          <div className="flex items-center gap-5 py-5">
+                            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-stone-300 text-stone-900">
+                              <Phone className="h-4 w-4" strokeWidth={1.5} />
+                            </span>
+                            <span className="flex-1 min-w-0">
+                              <span className="block font-mono text-[10px] sm:text-[11px] tracking-[0.2em] uppercase text-stone-500">
+                                Teléfono directo
+                              </span>
+                              <span className="mt-0.5 block break-words font-serif font-light text-xl text-stone-900 leading-snug">
+                                {settings.telefono}
+                              </span>
+                            </span>
+                          </div>
+                        </li>
+                        <li className="border-b border-stone-300">
+                          <div className="flex items-center gap-5 py-5">
+                            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-stone-300 text-stone-900">
+                              <MessageCircle className="h-4 w-4" strokeWidth={1.5} />
+                            </span>
+                            <span className="flex-1 min-w-0">
+                              <span className="block font-mono text-[10px] sm:text-[11px] tracking-[0.2em] uppercase text-stone-500">
+                                WhatsApp técnico
+                              </span>
+                              <span className="mt-0.5 block break-words font-serif font-light text-xl text-stone-900 leading-snug">
+                                {settings.whatsapp}
+                              </span>
+                            </span>
+                          </div>
+                        </li>
+                        <li className="border-b border-stone-300">
+                          <div className="flex items-center gap-5 py-5">
+                            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-stone-300 text-stone-900">
+                              <Mail className="h-4 w-4" strokeWidth={1.5} />
+                            </span>
+                            <span className="flex-1 min-w-0">
+                              <span className="block font-mono text-[10px] sm:text-[11px] tracking-[0.2em] uppercase text-stone-500">
+                                Correo
+                              </span>
+                              <span className="mt-0.5 block break-words font-serif font-light text-xl text-stone-900 leading-snug">
+                                {settings.email}
+                              </span>
+                            </span>
+                          </div>
+                        </li>
+                      </ul>
+                    </aside>
+
+                    {/* VISTA PREVIA FORMULARIO */}
+                    <section className="lg:col-span-7">
+                      <div className="bg-stone-950 text-white p-6 sm:p-10 lg:p-12 shadow-2xl">
+                        <div className="flex items-start justify-between gap-6 mb-12">
+                          <div>
+                            <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-white/50 uppercase mb-3">
+                              <InlineText
+                                value={contactoContent.formTag || "SOLICITUD DE PRESUPUESTO"}
+                                onChange={(val) => updateContactoField("formTag", val)}
+                                placeholder="Etiqueta formulario..."
+                              />
+                            </span>
+                            <h2 className="font-serif font-light text-3xl sm:text-4xl lg:text-5xl tracking-tight leading-none">
+                              <InlineText
+                                value={contactoContent.formTitulo || "Cuéntanos tu proyecto"}
+                                onChange={(val) => updateContactoField("formTitulo", val)}
+                                placeholder="Título formulario..."
+                              />
+                            </h2>
+                          </div>
+                          <div className="hidden sm:flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-amber-700 mt-2">
+                            <div className="h-1.5 w-1.5 rounded-full bg-amber-700" />
+                          </div>
+                        </div>
+
+                        {/* Muestra interactiva de los campos */}
+                        <div className="space-y-6 opacity-90 border-t border-stone-800 pt-6">
+                          <div>
+                            <span className="text-xs uppercase tracking-wider text-stone-400 font-mono">Tipo de proyecto</span>
+                            <div className="flex flex-wrap gap-2 mt-2">
+                              {sectors.map((s) => (
+                                <span key={s.id} className="px-3 py-1 rounded-full border border-stone-700 text-xs text-stone-300">
+                                  {s.title}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="h-10 border border-stone-800 bg-stone-900/50 rounded px-3 flex items-center text-xs text-stone-500">
+                              Nombre y apellidos
+                            </div>
+                            <div className="h-10 border border-stone-800 bg-stone-900/50 rounded px-3 flex items-center text-xs text-stone-500">
+                              Teléfono de contacto
+                            </div>
+                          </div>
+                          <div className="h-24 border border-stone-800 bg-stone-900/50 rounded p-3 text-xs text-stone-500">
+                            Detalles del proyecto, localización, metros cuadrados aproximados...
+                          </div>
+                          <div className="h-12 bg-amber-700 rounded flex items-center justify-center text-xs font-medium uppercase tracking-wider text-white">
+                            Enviar solicitud
+                          </div>
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </div>
+              </section>
+
+              {/* QUÉ PASA A CONTINUACIÓN */}
+              <section className="bg-stone-100">
+                <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 py-16 sm:py-24">
+                  <div className="mb-12 sm:mb-16">
+                    <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase mb-2">
+                      <InlineText
+                        value={contactoContent.pasosTag || "DESPUÉS DE ESCRIBIRNOS"}
+                        onChange={(val) => updateContactoField("pasosTag", val)}
+                        placeholder="Etiqueta pasos..."
+                      />
+                    </span>
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-light text-stone-900 tracking-tight leading-none">
+                      <InlineText
+                        value={contactoContent.pasosTitulo || "Qué pasa a continuación"}
+                        onChange={(val) => updateContactoField("pasosTitulo", val)}
+                        placeholder="Título pasos..."
+                      />
+                    </h2>
+                  </div>
+
+                  <ol className="relative grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-10 lg:gap-14">
+                    <span
+                      aria-hidden="true"
+                      className="absolute left-2.5 top-2.5 bottom-0 w-px bg-stone-900/15 md:left-0 md:right-0 md:bottom-auto md:h-px md:w-auto"
+                    />
+                    {(contactoContent.pasos || DEFAULT_CONTACTO_PAGE_CONTENT.pasos).map((step, i) => (
+                      <li key={i} className="relative pl-12 md:pl-0 md:pt-12">
+                        <span className="absolute left-0 top-0 flex h-5 w-5 items-center justify-center rounded-full border border-amber-700 bg-stone-100">
+                          <span className="h-1.5 w-1.5 rounded-full bg-amber-700" />
+                        </span>
+                        <span className="font-serif font-light text-5xl sm:text-6xl text-stone-900/15 leading-none">
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
+                        <h3 className="mt-4 font-serif font-light text-2xl sm:text-3xl text-stone-900 tracking-tight">
+                          <InlineText
+                            value={step.title}
+                            onChange={(val) => updateContactoPaso(i, "title", val)}
+                            placeholder="Título del paso..."
+                          />
+                        </h3>
+                        <p className="mt-3 max-w-xs text-base text-stone-600 font-light leading-relaxed">
+                          <InlineText
+                            value={step.text}
+                            onChange={(val) => updateContactoPaso(i, "text", val)}
+                            placeholder="Descripción del paso..."
+                            multiline
+                          />
+                        </p>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              </section>
+
+              {/* OFICINA */}
+              <section>
+                <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 py-16 sm:py-24">
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+                    <div className="lg:col-span-7">
+                      <div className="relative overflow-hidden aspect-[16/10] bg-stone-200">
+                        <InlineImage
+                          src={contactoContent.oficinaImagen || "/oficinas.jpg"}
+                          alt="Oficina de ALKO"
+                          label="Cambiar foto de la oficina"
+                          onImageChange={(newUrl) => updateContactoField("oficinaImagen", newUrl)}
+                          className="w-full h-full"
+                          imageClassName="object-cover object-center"
+                        />
+                      </div>
+                    </div>
+                    <div className="lg:col-span-5">
+                      <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase mb-3">
+                        <InlineText
+                          value={contactoContent.oficinaTag || "VISÍTANOS"}
+                          onChange={(val) => updateContactoField("oficinaTag", val)}
+                          placeholder="Etiqueta oficina..."
+                        />
+                      </span>
+                      <h2 className="font-serif font-light text-3xl sm:text-4xl lg:text-5xl text-stone-900 tracking-tight leading-tight">
+                        <InlineText
+                          value={contactoContent.oficinaTitulo || "Nuestra oficina"}
+                          onChange={(val) => updateContactoField("oficinaTitulo", val)}
+                          placeholder="Título oficina..."
+                        />
+                      </h2>
+                      <div className="mt-8 space-y-5 border-t border-stone-300 pt-8">
+                        <p className="flex items-start gap-4 text-lg text-stone-900 font-light leading-snug">
+                          <MapPin className="mt-1 h-4 w-4 shrink-0 text-amber-700" strokeWidth={1.5} />
+                          {settings.direccion}
+                        </p>
+                        <p className="flex items-start gap-4 text-lg text-stone-900 font-light leading-snug">
+                          <Clock className="mt-1 h-4 w-4 shrink-0 text-amber-700" strokeWidth={1.5} />
+                          {settings.horario}
+                        </p>
+                      </div>
+                      <div className="mt-10 inline-flex items-center gap-3 rounded-full border border-stone-900 px-6 py-3 text-[11px] font-light uppercase tracking-[0.16em] text-stone-900 pointer-events-none opacity-80">
+                        Cómo llegar
                         <span>→</span>
                       </div>
                     </div>

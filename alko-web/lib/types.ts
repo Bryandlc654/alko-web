@@ -302,3 +302,30 @@ export interface NosotrosPageContent {
   enlaceEmpleoTitulo: string;
   enlaceEmpleoImagen: string;
 }
+
+export interface PasoContacto {
+  title: string;
+  text: string;
+}
+
+export interface ContactoPageContent {
+  headerBadge: string;
+  headerTitulo: string;
+  headerDescripcion: string;
+  headerBgImage: string;
+
+  canalesTag: string;
+  canalesTitulo: string;
+  canalesDescripcion: string;
+
+  formTag: string;
+  formTitulo: string;
+
+  pasosTag: string;
+  pasosTitulo: string;
+  pasos: PasoContacto[];
+
+  oficinaTag: string;
+  oficinaTitulo: string;
+  oficinaImagen: string;
+}

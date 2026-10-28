@@ -473,3 +473,38 @@ export const DEFAULT_NOSOTROS_PAGE_CONTENT: import('./types').NosotrosPageConten
   procesoColText: "Un único equipo coordina construcción, instalaciones, compras y gestión técnica para mantener el proyecto bajo control.",
   fases: DEFAULT_FASES,
 };
+
+export const DEFAULT_CONTACTO_PAGE_CONTENT: import('./types').ContactoPageContent = {
+  headerBadge: "CONTACTO",
+  headerTitulo: "Hablemos de tu\npróximo proyecto.",
+  headerDescripcion: "Cuéntanos tus necesidades y te proponemos un planteamiento técnico claro, con plazos definidos y sin sorpresas.",
+  headerBgImage: "/cta-bg.jpg",
+
+  canalesTag: "ALKO MADRID",
+  canalesTitulo: "Un único interlocutor, desde la primera llamada.",
+  canalesDescripcion: "Elige el canal que prefieras. Te atenderá directamente el equipo técnico que llevará tu obra.",
+
+  formTag: "SOLICITUD DE PRESUPUESTO",
+  formTitulo: "Cuéntanos tu\nproyecto",
+
+  pasosTag: "DESPUÉS DE ESCRIBIRNOS",
+  pasosTitulo: "Qué pasa a continuación",
+  pasos: [
+    {
+      title: "Revisamos tu consulta",
+      text: "El equipo técnico estudia el alcance y te contacta para concretar necesidades.",
+    },
+    {
+      title: "Visita técnica",
+      text: "Vemos el espacio, tomamos medidas y detectamos condicionantes de obra e instalaciones.",
+    },
+    {
+      title: "Propuesta cerrada",
+      text: "Presupuesto por partidas, calidades definidas y calendario de ejecución.",
+    },
+  ],
+
+  oficinaTag: "VISÍTANOS",
+  oficinaTitulo: "Nuestra oficina",
+  oficinaImagen: "/oficinas.jpg",
+};

@@ -3,6 +3,7 @@ import { Clock, Mail, MapPin, MessageCircle, Phone, type LucideIcon } from "luci
 import Container from "@/components/ui/Container";
 import ContactForm from "@/components/ui/ContactForm";
 import { getSectors, getSettings } from "@/lib/wordpress";
+import { getDbContactoPageContent } from "@/lib/db/mysql";
 
 export const revalidate = 60;
 
@@ -36,7 +37,11 @@ interface Channel {
 }
 
 export default async function ContactoPage() {
-  const [settings, sectors] = await Promise.all([getSettings(), getSectors()]);
+  const [settings, sectors, pageContent] = await Promise.all([
+    getSettings(),
+    getSectors(),
+    getDbContactoPageContent(),
+  ]);
 
   const telHref = `tel:${settings.telefono.replace(/[^+\d]/g, "")}`;
   const whatsappHref = `https://wa.me/${settings.whatsapp.replace(/[^\d]/g, "")}`;
@@ -57,7 +62,7 @@ export default async function ContactoPage() {
     <main className="bg-white text-stone-900">
       <header className="relative isolate flex min-h-[640px] sm:min-h-[720px] lg:min-h-[82vh] items-end overflow-hidden bg-stone-950 text-white pt-36 sm:pt-44 pb-16 sm:pb-20">
         <Image
-          src="/cta-bg.jpg"
+          src={pageContent.headerBgImage || "/cta-bg.jpg"}
           alt=""
           fill
           priority
@@ -70,16 +75,16 @@ export default async function ContactoPage() {
 
         <Container className="relative">
           <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-white/70 uppercase mb-4">
-            CONTACTO
+            {pageContent.headerBadge || "CONTACTO"}
           </span>
           <h1 className="font-display font-light text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-[-0.03em] leading-[1.02] drop-shadow-[0_2px_20px_rgba(0,0,0,0.35)]">
-            Hablemos de tu
-            <br />
-            próximo proyecto.
+            <span className="whitespace-pre-line">{pageContent.headerTitulo}</span>
+
+
           </h1>
           <p className="mt-6 max-w-xl text-base sm:text-lg text-white/85 font-light leading-relaxed">
-            Cuéntanos tus necesidades y te proponemos un planteamiento técnico claro, con plazos
-            definidos y sin sorpresas.
+            <span className="whitespace-pre-line">{pageContent.headerDescripcion}</span>
+
           </p>
           <div className="mt-10 flex flex-wrap gap-3">
             <a href="#formulario" className={`${pill} border-amber-700 bg-amber-700 text-white hover:bg-amber-800`}>
@@ -120,14 +125,13 @@ export default async function ContactoPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-14 lg:gap-16">
             <aside className="lg:col-span-5 lg:sticky lg:top-32 lg:self-start reveal-item">
               <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase mb-3">
-                ALKO MADRID
+                {pageContent.canalesTag || "ALKO MADRID"}
               </span>
               <h2 className="font-serif font-light text-3xl sm:text-4xl lg:text-5xl text-stone-900 tracking-tight leading-tight">
-                Un único interlocutor, desde la primera llamada.
+                {pageContent.canalesTitulo || "Un único interlocutor, desde la primera llamada."}
               </h2>
               <p className="mt-5 max-w-md text-base sm:text-lg text-stone-600 font-light leading-relaxed">
-                Elige el canal que prefieras. Te atenderá directamente el equipo técnico que llevará tu
-                obra.
+                {pageContent.canalesDescripcion || "Elige el canal que prefieras. Te atenderá directamente el equipo técnico que llevará tu obra."}
               </p>
 
               <ul className="mt-10 border-t border-stone-300">
@@ -184,15 +188,13 @@ export default async function ContactoPage() {
                 <div className="flex items-start justify-between gap-6 mb-12">
                   <div>
                     <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-white/50 uppercase mb-3">
-                      SOLICITUD DE PRESUPUESTO
+                      {pageContent.formTag || "SOLICITUD DE PRESUPUESTO"}
                     </span>
                     <h2
                       id="form-title"
                       className="font-serif font-light text-3xl sm:text-4xl lg:text-5xl tracking-tight leading-none"
                     >
-                      Cuéntanos tu
-                      <br />
-                      proyecto
+                      {pageContent.formTitulo || "Cuéntanos tu proyecto"}
                     </h2>
                   </div>
                   <div className="hidden sm:flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-amber-700 mt-2">
@@ -216,10 +218,10 @@ export default async function ContactoPage() {
         <Container className="py-16 sm:py-24">
           <div className="reveal-item mb-12 sm:mb-16">
             <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase mb-2">
-              DESPUÉS DE ESCRIBIRNOS
+              {pageContent.pasosTag || "DESPUÉS DE ESCRIBIRNOS"}
             </span>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-light text-stone-900 tracking-tight leading-none">
-              Qué pasa a continuación
+              {pageContent.pasosTitulo || "Qué pasa a continuación"}
             </h2>
           </div>
           <ol className="relative grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-10 lg:gap-14">
@@ -227,7 +229,7 @@ export default async function ContactoPage() {
               aria-hidden="true"
               className="absolute left-2.5 top-2.5 bottom-0 w-px bg-stone-900/15 md:left-0 md:right-0 md:bottom-auto md:h-px md:w-auto"
             />
-            {NEXT_STEPS.map((step, i) => (
+            {(pageContent.pasos && pageContent.pasos.length > 0 ? pageContent.pasos : NEXT_STEPS).map((step, i) => (
               <li key={step.title} className="reveal-item relative pl-12 md:pl-0 md:pt-12" style={{ transitionDelay: `${i * 120}ms` }}>
                 <span className="absolute left-0 top-0 flex h-5 w-5 items-center justify-center rounded-full border border-amber-700 bg-stone-100">
                   <span className="h-1.5 w-1.5 rounded-full bg-amber-700" />
@@ -252,7 +254,7 @@ export default async function ContactoPage() {
             <div className="lg:col-span-7 reveal-item">
               <div data-parallax="8" className="relative overflow-hidden aspect-[16/10] bg-stone-200">
                 <Image
-                  src="/oficinas.jpg"
+                  src={pageContent.oficinaImagen || "/oficinas.jpg"}
                   alt="Oficina de ALKO en Madrid"
                   fill
                   sizes="(max-width: 1024px) 100vw, 58vw"
@@ -262,10 +264,10 @@ export default async function ContactoPage() {
             </div>
             <div className="lg:col-span-5 reveal-item" style={{ transitionDelay: "120ms" }}>
               <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase mb-3">
-                VISÍTANOS
+                {pageContent.oficinaTag || "VISÍTANOS"}
               </span>
               <h2 className="font-serif font-light text-3xl sm:text-4xl lg:text-5xl text-stone-900 tracking-tight leading-tight">
-                Nuestra oficina
+                {pageContent.oficinaTitulo || "Nuestra oficina"}
               </h2>
               <div className="mt-8 space-y-5 border-t border-stone-300 pt-8">
                 <p className="flex items-start gap-4 text-lg text-stone-900 font-light leading-snug">
