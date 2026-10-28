@@ -74,6 +74,11 @@ export default async function ProjectDetail({
   const fotoAntes = project.fotoAntes || project.galeria[1] || "/start-research-1.jpg";
   const fotoDespues = project.fotoDespues || project.imagen || "/p1.jpg";
 
+  // Galería de imágenes adicionales del proyecto
+  const galeriaImagenes = [project.imagen, ...project.galeria].filter(
+    (src, i, arr) => arr.indexOf(src) === i
+  );
+
   // Lista de datos del proyecto para la columna izquierda
   const infoResumida = [
     { label: "Cliente", value: project.cliente },
@@ -188,57 +193,93 @@ export default async function ProjectDetail({
               </div>
             </div>
 
-            {/* Columna Derecha: Fotos Antes y Después */}
-            <div className="lg:col-span-8 reveal-item" style={{ transitionDelay: "120ms" }}>
-              <div className="mb-6 flex items-center gap-4">
-                <span className="font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase">
-                  Registro fotográfico · Antes y Después
-                </span>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
-                {/* Foto ANTES */}
-                <div className="group relative overflow-hidden bg-stone-100 border border-stone-200/80 rounded-sm">
-                  <div className="relative aspect-[4/3] w-full overflow-hidden">
-                    <Image
-                      src={fotoAntes}
-                      alt={`Estado inicial / antes de ${project.title}`}
-                      fill
-                      sizes="(max-width: 768px) 100vw, 500px"
-                      className="object-cover object-center grayscale contrast-125 transition duration-500 group-hover:scale-105"
-                    />
-                  </div>
-                  <div className="p-4 bg-stone-900 text-white flex items-center justify-between">
-                    <span className="font-mono text-[11px] tracking-[0.25em] uppercase text-stone-400">
-                      Estado Inicial
-                    </span>
-                    <span className="font-serif text-sm font-light uppercase tracking-wider text-amber-500">
-                      Antes
-                    </span>
-                  </div>
+            {/* Columna Derecha: Fotos Antes/Después + Galería Integrada */}
+            <div className="lg:col-span-8 reveal-item space-y-12 sm:space-y-16" style={{ transitionDelay: "120ms" }}>
+              {/* Bloque 1: Comparativa Antes y Después */}
+              <div>
+                <div className="mb-6 flex items-center gap-4">
+                  <span className="font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase">
+                    Registro fotográfico · Antes y Después
+                  </span>
                 </div>
 
-                {/* Foto DESPUÉS */}
-                <div className="group relative overflow-hidden bg-stone-100 border border-stone-200/80 rounded-sm shadow-md">
-                  <div className="relative aspect-[4/3] w-full overflow-hidden">
-                    <Image
-                      src={fotoDespues}
-                      alt={`Resultado / después de ${project.title}`}
-                      fill
-                      sizes="(max-width: 768px) 100vw, 500px"
-                      className="object-cover object-center transition duration-500 group-hover:scale-105"
-                    />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
+                  {/* Foto ANTES */}
+                  <div className="group relative overflow-hidden bg-stone-100 border border-stone-200/80 rounded-sm">
+                    <div className="relative aspect-[4/3] w-full overflow-hidden">
+                      <Image
+                        src={fotoAntes}
+                        alt={`Estado inicial / antes de ${project.title}`}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 500px"
+                        className="object-cover object-center grayscale contrast-125 transition duration-500 group-hover:scale-105"
+                      />
+                    </div>
+                    <div className="p-4 bg-stone-900 text-white flex items-center justify-between">
+                      <span className="font-mono text-[11px] tracking-[0.25em] uppercase text-stone-400">
+                        Estado Inicial
+                      </span>
+                      <span className="font-serif text-sm font-light uppercase tracking-wider text-amber-500">
+                        Antes
+                      </span>
+                    </div>
                   </div>
-                  <div className="p-4 bg-amber-700 text-white flex items-center justify-between">
-                    <span className="font-mono text-[11px] tracking-[0.25em] uppercase text-amber-200">
-                      Obra Entregada
-                    </span>
-                    <span className="font-serif text-sm font-light uppercase tracking-wider text-white">
-                      Después
-                    </span>
+
+                  {/* Foto DESPUÉS */}
+                  <div className="group relative overflow-hidden bg-stone-100 border border-stone-200/80 rounded-sm shadow-md">
+                    <div className="relative aspect-[4/3] w-full overflow-hidden">
+                      <Image
+                        src={fotoDespues}
+                        alt={`Resultado / después de ${project.title}`}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 500px"
+                        className="object-cover object-center transition duration-500 group-hover:scale-105"
+                      />
+                    </div>
+                    <div className="p-4 bg-amber-700 text-white flex items-center justify-between">
+                      <span className="font-mono text-[11px] tracking-[0.25em] uppercase text-amber-200">
+                        Obra Entregada
+                      </span>
+                      <span className="font-serif text-sm font-light uppercase tracking-wider text-white">
+                        Después
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
+
+              {/* Bloque 2: Galería de Imágenes dentro de la misma sección */}
+              {galeriaImagenes.length > 0 && (
+                <div className="pt-10 border-t border-stone-200">
+                  <div className="mb-6 flex items-center justify-between">
+                    <span className="font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase">
+                      Galería del proyecto · {galeriaImagenes.length} imágenes
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                    {galeriaImagenes.map((src, i, all) => {
+                      const wide = i === 0 || (all.length % 2 === 1 && i === all.length - 1);
+                      return (
+                        <figure
+                          key={`${src}-${i}`}
+                          className={`relative overflow-hidden bg-stone-200 border border-stone-200/80 rounded-sm group ${
+                            wide ? "sm:col-span-2 aspect-[16/9]" : "aspect-[4/3]"
+                          }`}
+                        >
+                          <Image
+                            src={src}
+                            alt={`${project.title} — imagen ${i + 1}`}
+                            fill
+                            sizes={wide ? "(max-width: 1280px) 100vw, 1000px" : "(max-width: 640px) 100vw, 500px"}
+                            className="object-cover object-center transition duration-700 ease-out group-hover:scale-105"
+                          />
+                        </figure>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </Container>
