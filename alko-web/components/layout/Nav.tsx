@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown, Mail, MessageCircle, Phone, X } from "lucide-react";
 import ContactTrigger from "@/components/contact/ContactTrigger";
 import {
   buildMainNav,
@@ -15,16 +14,47 @@ import {
 } from "@/lib/site";
 import type { SiteSettings } from "@/lib/types";
 
-/**
- * Cabecera fija compartida por todas las rutas.
- *
- * - Transparente al inicio en páginas con hero oscuro (rutas en
- *   TRANSPARENT_HEADER_ROUTES); sólida en el resto.
- * - En móvil y tableta el menú es un panel lateral (MobileDrawer). Va fuera de
- *   #site-nav porque el backdrop-filter de la cabecera la convierte en el bloque
- *   contenedor de sus hijos `fixed` y el panel quedaría recortado a su altura.
- * - El estado del panel lo gestiona React, de modo que se cierra al navegar.
- */
+// Metadatos visuales y descriptivos para transformar los dropdowns en Mega Menús
+interface MegaMenuConfig {
+  tag: string;
+  title: string;
+  description: string;
+  featuredImage: string;
+  featuredLabel: string;
+  featuredTitle: string;
+  featuredHref: string;
+}
+
+const MEGA_MENUS: Record<string, MegaMenuConfig> = {
+  [ROUTES.sectors]: {
+    tag: "Especialidades",
+    title: "Servicios y Sectores",
+    description: "Dirección técnica unificada para proyectos corporativos y residenciales de alta exigencia.",
+    featuredImage: "/oficinas.jpg",
+    featuredLabel: "Destacado",
+    featuredTitle: "Reformas de Oficinas",
+    featuredHref: "/servicios/oficinas",
+  },
+  [ROUTES.company]: {
+    tag: "Sobre Nosotros",
+    title: "Estudio & Equipo",
+    description: "Desde 1996 construyendo y reformando en Madrid con rigor constructivo y un solo interlocutor.",
+    featuredImage: "/proceso-coordinacion.jpg",
+    featuredLabel: "Cultura ALKO",
+    featuredTitle: "Un solo equipo de principio a fin",
+    featuredHref: ROUTES.company,
+  },
+  [ROUTES.articles]: {
+    tag: "Recursos Técnicos",
+    title: "Biblioteca y Conocimiento",
+    description: "Guías, normativas, especificaciones y criterios constructivos para proyectar y construir mejor.",
+    featuredImage: "/start-research-1.jpg",
+    featuredLabel: "Guía recomendada",
+    featuredTitle: "Planificar una reforma integral",
+    featuredHref: `${ROUTES.guides}/planificar-reforma-integral`,
+  },
+};
+
 export default function Nav({
   settings,
   services,
@@ -82,12 +112,14 @@ export default function Nav({
           </Link>
 
           <div className="hidden lg:flex items-center gap-8 xl:gap-10">
-            {items.map((link) =>
-              link.children ? (
-                <div key={link.href} className="group relative">
+            {items.map((link) => {
+              const megaConfig = MEGA_MENUS[link.href];
+
+              return link.children ? (
+                <div key={link.href} className="group static">
                   <Link
                     href={link.href}
-                    className={`inline-flex items-center gap-1.5 text-xs tracking-[0.2em] uppercase font-light transition-colors ${
+                    className={`inline-flex items-center gap-1.5 text-xs tracking-[0.2em] uppercase font-light transition-colors py-2 ${
                       isActive(link.href) ? "text-white" : "text-white/75 group-hover:text-white"
                     }`}
                   >
@@ -104,21 +136,89 @@ export default function Nav({
                       <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </Link>
-                  <div className="invisible absolute left-1/2 top-full z-50 -translate-x-1/2 pt-4 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
-                    <div className="min-w-[11rem] rounded-xl border border-white/10 bg-stone-950/95 p-2 shadow-2xl backdrop-blur-md">
-                      {link.children.map((child) => (
-                        <Link
-                          key={child.href}
-                          href={child.href}
-                          className={`block whitespace-nowrap rounded-lg px-4 py-2.5 text-xs tracking-[0.16em] uppercase font-light transition-colors ${
-                            pathname === child.href
-                              ? "text-white"
-                              : "text-white/70 hover:text-white hover:bg-white/5"
-                          }`}
-                        >
-                          {child.label}
-                        </Link>
-                      ))}
+
+                  {/* Mega Menú Flotante */}
+                  <div className="invisible absolute left-6 right-6 top-full z-50 pt-3 opacity-0 transition-all duration-300 transform -translate-y-2 group-hover:visible group-hover:opacity-100 group-hover:translate-y-0 group-focus-within:visible group-focus-within:opacity-100 group-focus-within:translate-y-0">
+                    <div className="max-w-7xl mx-auto overflow-hidden rounded-2xl border border-white/15 bg-stone-950/95 shadow-2xl backdrop-blur-xl p-6 sm:p-8">
+                      <div className="grid grid-cols-12 gap-8 items-stretch">
+                        {/* Columna 1: Presentación / Encabezado del Mega Menú */}
+                        <div className="col-span-3 border-r border-white/10 pr-6 flex flex-col justify-between">
+                          <div>
+                            <span className="font-mono text-[10px] sm:text-[11px] tracking-[0.25em] text-amber-500 uppercase">
+                              {megaConfig?.tag || "Navegación"}
+                            </span>
+                            <h3 className="mt-2 text-xl font-serif font-light text-white leading-snug">
+                              {megaConfig?.title || link.label}
+                            </h3>
+                            <p className="mt-3 text-xs text-white/60 font-light leading-relaxed">
+                              {megaConfig?.description || "Explora las secciones y contenidos disponibles."}
+                            </p>
+                          </div>
+
+                          <Link
+                            href={link.href}
+                            className="inline-flex items-center gap-2 text-xs font-mono tracking-wider uppercase text-amber-500 hover:text-amber-400 transition-colors pt-4"
+                          >
+                            <span>Ver todo</span>
+                            <span>→</span>
+                          </Link>
+                        </div>
+
+                        {/* Columna 2: Enlaces Organizadores */}
+                        <div className="col-span-5 flex flex-col justify-center">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            {link.children.map((child, idx) => (
+                              <Link
+                                key={child.href}
+                                href={child.href}
+                                className={`group/item flex items-center justify-between rounded-xl px-4 py-3 text-xs tracking-wider uppercase font-light transition-all ${
+                                  pathname === child.href
+                                    ? "bg-amber-700/20 text-amber-400 border border-amber-700/30"
+                                    : "text-white/80 hover:text-white hover:bg-white/10"
+                                }`}
+                              >
+                                <span className="truncate pr-2">{child.label}</span>
+                                <span className="opacity-0 -translate-x-2 group-hover/item:opacity-100 group-hover/item:translate-x-0 transition-all text-amber-500 text-xs">
+                                  →
+                                </span>
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Columna 3: Tarjeta con Imagen Destacada */}
+                        <div className="col-span-4 pl-4 border-l border-white/10">
+                          {megaConfig ? (
+                            <Link
+                              href={megaConfig.featuredHref}
+                              className="group/card relative block h-full min-h-[180px] rounded-xl overflow-hidden border border-white/15 bg-stone-900"
+                            >
+                              <Image
+                                src={megaConfig.featuredImage}
+                                alt={megaConfig.featuredTitle}
+                                fill
+                                sizes="(max-width: 1280px) 300px, 400px"
+                                className="object-cover object-center transition-transform duration-700 ease-out group-hover/card:scale-105 opacity-60 group-hover/card:opacity-80"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-stone-950/90 via-stone-950/40 to-transparent" />
+                              <div className="absolute inset-x-0 bottom-0 p-5">
+                                <span className="font-mono text-[9px] tracking-[0.25em] uppercase text-amber-400 block mb-1">
+                                  {megaConfig.featuredLabel}
+                                </span>
+                                <h4 className="font-serif text-base text-white font-light leading-snug group-hover/card:text-amber-200 transition-colors">
+                                  {megaConfig.featuredTitle}
+                                </h4>
+                              </div>
+                            </Link>
+                          ) : (
+                            <div className="h-full flex items-center justify-center p-6 rounded-xl border border-white/10 bg-white/5">
+                              <span className="text-xs text-white/50 font-mono uppercase tracking-widest">
+                                ALKO Arquitectura
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -126,19 +226,22 @@ export default function Nav({
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`text-xs tracking-[0.2em] uppercase font-light transition-colors ${
+                  className={`text-xs tracking-[0.2em] uppercase font-light transition-colors py-2 ${
                     isActive(link.href) ? "text-white" : "text-white/75 hover:text-white"
                   }`}
                 >
                   {link.label}
                 </Link>
-              ),
-            )}
+              );
+            })}
           </div>
 
           <div className="flex items-center gap-4">
-            {/* En móvil el botón va dentro del panel lateral, para no saturar la barra. */}
-            <ContactTrigger mode="rapido" source="Cabecera" className="hidden sm:inline-flex items-center justify-center px-6 sm:px-7 py-2.5 rounded-full bg-amber-700 hover:bg-amber-800 text-white text-[11px] sm:text-xs font-light tracking-[0.16em] uppercase active:scale-95 transition-all shadow-md">
+            <ContactTrigger
+              mode="rapido"
+              source="Cabecera"
+              className="hidden sm:inline-flex items-center justify-center px-6 sm:px-7 py-2.5 rounded-full bg-amber-700 hover:bg-amber-800 text-white text-[11px] sm:text-xs font-light tracking-[0.16em] uppercase active:scale-95 transition-all shadow-md"
+            >
               Contactar
             </ContactTrigger>
             <button
@@ -193,204 +296,137 @@ function MobileDrawer({
   items: NavItem[];
 }) {
   const closeRef = useRef<HTMLButtonElement>(null);
-  // Submenú desplegado: al abrir, el de la sección en la que estamos.
   const [expanded, setExpanded] = useState<string | null>(null);
 
   useEffect(() => {
     if (!open) return;
-    setExpanded(items.find((link) => link.children && isActive(link.href))?.href ?? null);
+    const current = items.find((item) => item.children && isActive(item.href));
+    setExpanded(current?.href ?? null);
+  }, [open, items, isActive]);
 
-    // Bloquea el scroll de la página, cierra con Escape y lleva el foco al panel.
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    closeRef.current?.focus();
-
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+      closeRef.current?.focus();
+    } else {
+      document.body.style.overflow = "";
+    }
     return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", onKey);
-      document.getElementById("mobile-menu-btn")?.focus({ preventScroll: true });
+      document.body.style.overflow = "";
     };
-    // Solo al abrir o cerrar: isActive y onClose se recrean en cada render.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  const telHref = settings?.telefono ? `tel:${settings.telefono.replace(/[^+\d]/g, "")}` : null;
-  const waHref = settings?.whatsapp ? `https://wa.me/${settings.whatsapp.replace(/[^\d]/g, "")}` : null;
-
   return (
-    <div className={`lg:hidden ${open ? "" : "pointer-events-none"}`}>
-      {/* Velo */}
+    <div
+      id="mobile-menu"
+      aria-hidden={!open}
+      className={`fixed inset-0 z-50 transition-opacity duration-300 lg:hidden ${
+        open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+      }`}
+    >
       <div
-        aria-hidden="true"
-        className={`fixed inset-0 z-[60] bg-stone-950/60 backdrop-blur-sm transition-opacity duration-300 ${
-          open ? "opacity-100" : "opacity-0"
-        }`}
+        className="absolute inset-0 bg-stone-950/70 backdrop-blur-sm transition-opacity"
         onClick={onClose}
+        aria-hidden="true"
       />
 
-      {/* Panel */}
       <div
-        id="mobile-menu"
-        role="dialog"
-        aria-modal="true"
-        aria-label="Menú"
-        aria-hidden={!open}
-        inert={!open}
-        className={`fixed inset-y-0 right-0 z-[70] flex w-[86%] max-w-sm flex-col bg-stone-950 text-white shadow-2xl transition-transform duration-300 ease-out ${
+        className={`absolute inset-y-0 right-0 w-full max-w-sm bg-stone-950 text-white p-6 sm:p-8 flex flex-col justify-between overflow-y-auto transform transition-transform duration-300 ease-out border-l border-white/10 ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="flex items-center justify-between border-b border-white/10 px-6 py-5">
-          <Link href={ROUTES.home} onClick={onClose} className="flex items-center">
-            <Image src="/logo.webp" alt="ALKO" width={500} height={130} sizes="140px" className="h-8 w-auto" />
-          </Link>
-          <button
-            ref={closeRef}
-            type="button"
-            onClick={onClose}
-            aria-label="Cerrar menú"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/20 text-white/90 transition hover:bg-white/10 hover:text-white"
-          >
-            <X className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
-          </button>
-        </div>
+        <div>
+          <div className="flex items-center justify-between pb-6 border-b border-white/10">
+            <Image
+              src="/logo.webp"
+              alt="ALKO"
+              width={140}
+              height={36}
+              className="h-8 w-auto object-contain"
+            />
+            <button
+              ref={closeRef}
+              type="button"
+              aria-label="Cerrar menú"
+              onClick={onClose}
+              className="p-2 rounded-full hover:bg-white/10 text-white/80 hover:text-white transition"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 384 512"
+                className="w-5 h-5"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
+              </svg>
+            </button>
+          </div>
 
-        <nav className="flex-1 overflow-y-auto px-6 py-4" aria-label="Principal">
-          <ul className="divide-y divide-white/10">
-            {items.map((link, i) => {
-              const numero = String(i + 1).padStart(2, "0");
-              const active = isActive(link.href);
-              const isOpen = expanded === link.href;
-
-              return (
-                <li key={link.href} className="py-1">
-                  {link.children ? (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => setExpanded(isOpen ? null : link.href)}
-                        aria-expanded={isOpen}
-                        className="flex w-full items-center gap-4 py-4 text-left"
-                      >
-                        <span className="font-mono text-[10px] tracking-[0.2em] text-amber-600">{numero}</span>
-                        <span
-                          className={`flex-1 font-serif font-light text-2xl tracking-tight ${
-                            active ? "text-white" : "text-white/80"
+          <nav className="mt-8 space-y-4">
+            {items.map((item) =>
+              item.children ? (
+                <div key={item.href} className="border-b border-white/10 pb-4">
+                  <button
+                    type="button"
+                    onClick={() => setExpanded(expanded === item.href ? null : item.href)}
+                    className="flex w-full items-center justify-between py-2 text-sm uppercase tracking-[0.2em] font-light text-white/90 hover:text-white"
+                  >
+                    <span>{item.label}</span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      className={`h-4 w-4 transition-transform duration-200 ${
+                        expanded === item.href ? "rotate-180" : ""
+                      }`}
+                    >
+                      <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </button>
+                  {expanded === item.href && (
+                    <div className="mt-2 space-y-2 pl-4 border-l border-amber-700/50">
+                      {item.children.map((child) => (
+                        <Link
+                          key={child.href}
+                          href={child.href}
+                          onClick={onClose}
+                          className={`block py-1.5 text-xs uppercase tracking-wider font-light ${
+                            pathname === child.href ? "text-amber-500" : "text-white/70 hover:text-white"
                           }`}
                         >
-                          {link.label}
-                        </span>
-                        <ChevronDown
-                          className={`h-5 w-5 text-white/60 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
-                          strokeWidth={1.5}
-                          aria-hidden="true"
-                        />
-                      </button>
-                      <div
-                        className={`grid transition-[grid-template-rows] duration-300 ease-out ${
-                          isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
-                        }`}
-                      >
-                        <ul className="overflow-hidden" inert={!isOpen}>
-                          {link.children.map((child) => (
-                            <li key={child.href}>
-                              <Link
-                                href={child.href}
-                                onClick={onClose}
-                                aria-current={pathname === child.href ? "page" : undefined}
-                                className={`flex items-center gap-3 py-2.5 pl-10 text-sm tracking-[0.12em] uppercase transition-colors ${
-                                  pathname === child.href ? "text-amber-500" : "text-white/60 hover:text-white"
-                                }`}
-                              >
-                                <span
-                                  aria-hidden="true"
-                                  className={`h-px w-4 ${pathname === child.href ? "bg-amber-500" : "bg-white/30"}`}
-                                />
-                                {child.label}
-                              </Link>
-                            </li>
-                          ))}
-                          <li className="h-3" aria-hidden="true" />
-                        </ul>
-                      </div>
-                    </>
-                  ) : (
-                    <Link
-                      href={link.href}
-                      onClick={onClose}
-                      aria-current={active ? "page" : undefined}
-                      className="flex items-center gap-4 py-4"
-                    >
-                      <span className="font-mono text-[10px] tracking-[0.2em] text-amber-600">{numero}</span>
-                      <span
-                        className={`flex-1 font-serif font-light text-2xl tracking-tight ${
-                          active ? "text-white" : "text-white/80"
-                        }`}
-                      >
-                        {link.label}
-                      </span>
-                      {active && <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-amber-500" />}
-                    </Link>
+                          {child.label}
+                        </Link>
+                      ))}
+                    </div>
                   )}
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
+                </div>
+              ) : (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={onClose}
+                  className={`block py-2 text-sm uppercase tracking-[0.2em] font-light border-b border-white/10 ${
+                    isActive(item.href) ? "text-amber-500" : "text-white/90 hover:text-white"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              ),
+            )}
+          </nav>
+        </div>
 
-        <div className="border-t border-white/10 px-6 pb-8 pt-6">
-          <ContactTrigger mode="avanzado" source="Menú móvil" onClick={onClose} className="flex w-full items-center justify-center gap-2 rounded-full bg-amber-700 px-6 py-3.5 text-xs font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-amber-800">
-            Solicitar presupuesto
-            <span aria-hidden="true">→</span>
-          </ContactTrigger>
+        <div className="pt-8">
           <ContactTrigger
             mode="rapido"
-            source="Menú móvil"
-            onClick={onClose}
-            className="mt-3 flex w-full items-center justify-center rounded-full border border-white/30 px-6 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-white/10"
+            source="Cabecera Móvil"
+            className="w-full flex items-center justify-center py-3.5 rounded-full bg-amber-700 hover:bg-amber-800 text-white text-xs uppercase tracking-widest font-light shadow-lg"
           >
             Contactar
           </ContactTrigger>
-          {settings && (
-            <ul className="mt-6 space-y-3 text-sm font-light text-white/70">
-              {telHref && (
-                <li>
-                  <a href={telHref} className="flex items-center gap-3 transition-colors hover:text-white">
-                    <Phone className="h-4 w-4 text-amber-600" strokeWidth={1.5} aria-hidden="true" />
-                    {settings.telefono}
-                  </a>
-                </li>
-              )}
-              {settings.email && (
-                <li>
-                  <a
-                    href={`mailto:${settings.email}`}
-                    className="flex items-center gap-3 transition-colors hover:text-white"
-                  >
-                    <Mail className="h-4 w-4 text-amber-600" strokeWidth={1.5} aria-hidden="true" />
-                    {settings.email}
-                  </a>
-                </li>
-              )}
-              {waHref && (
-                <li>
-                  <a
-                    href={waHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 transition-colors hover:text-white"
-                  >
-                    <MessageCircle className="h-4 w-4 text-amber-600" strokeWidth={1.5} aria-hidden="true" />
-                    WhatsApp
-                  </a>
-                </li>
-              )}
-            </ul>
-          )}
         </div>
       </div>
     </div>
