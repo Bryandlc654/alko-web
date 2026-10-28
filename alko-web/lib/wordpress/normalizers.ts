@@ -10,6 +10,7 @@ import type {
   ProjectEtapa,
   ProjectMaterial,
   Sector,
+  HomeContent,
   SiteSettings,
   Slide,
 } from "../types";
@@ -129,6 +130,8 @@ export function toProject(post: WpPost, index: number): Project {
     superficie: text(fields.superficie),
     plazo: text(fields.plazo),
     imagen: wpImageField(post, "imagen") || wpFeaturedImage(post),
+    fotoAntes: wpImageField(post, "foto_antes") || wpImageField(post, "antes"),
+    fotoDespues: wpImageField(post, "foto_despues") || wpImageField(post, "despues") || wpImageField(post, "imagen") || wpFeaturedImage(post),
     galeria: wpGalleryField(post, "galeria"),
     enlace: text(fields.enlace) || "/contacto",
     content: post.content?.rendered ?? "",
@@ -238,5 +241,47 @@ export function toDescarga(post: WpPost): Descarga {
     formato: text(fields.formato).trim() || (extension.length <= 4 ? extension.toUpperCase() : ""),
     peso: text(fields.peso).trim(),
     guia: text(fields.guia).trim(),
+  };
+}
+
+export function toHomeContent(post: WpPost): Partial<HomeContent> {
+  const fields = wpFields(post);
+  const badges = wpLinesField(post, "experiencia_badges");
+
+  return {
+    heroTitulo: text(fields.hero_titulo),
+    heroSubtitulo: text(fields.hero_subtitulo),
+    heroDescripcion: text(fields.hero_descripcion),
+    heroCtaTexto: text(fields.hero_cta_texto),
+    heroSecundarioTexto: text(fields.hero_secundario_texto),
+
+    proyectosTitulo: text(fields.proyectos_titulo),
+    proyectosSubtitulo: text(fields.proyectos_subtitulo),
+    proyectosCtaTexto: text(fields.proyectos_cta_texto),
+
+    procesoTitulo: text(fields.proceso_titulo),
+    procesoSubtitulo: text(fields.proceso_subtitulo),
+
+    serviciosTag: text(fields.servicios_tag),
+    serviciosTitulo: text(fields.servicios_titulo),
+    serviciosDescripcion: text(fields.servicios_descripcion),
+
+    workshopBadge: text(fields.workshop_badge),
+    workshopTitulo: text(fields.workshop_titulo),
+    workshopDescripcion: text(fields.workshop_descripcion),
+
+    experienciaImagen: wpImageField(post, "experiencia_imagen"),
+    experienciaBadges: badges.length > 0 ? badges : undefined,
+
+    materialesTag: text(fields.materiales_tag),
+    materialesTitulo: text(fields.materiales_titulo),
+    materialesDescripcion: text(fields.materiales_descripcion),
+
+    articulosTag: text(fields.articulos_tag),
+    articulosTitulo: text(fields.articulos_titulo),
+    articulosCtaTexto: text(fields.articulos_cta_texto),
+
+    contactoTitulo: text(fields.contacto_titulo),
+    contactoDescripcion: text(fields.contacto_descripcion),
   };
 }

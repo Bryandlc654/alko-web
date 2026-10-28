@@ -1,3 +1,4 @@
+import { getDbHomeContent, getFeaturedProjectIds } from "../db/mysql";
 import {
   DEFAULT_ARTICLES,
   DEFAULT_DESCARGAS,
@@ -5,6 +6,7 @@ import {
   DEFAULT_FASES,
   DEFAULT_GUIDES,
   DEFAULT_HERO_SLIDES,
+  DEFAULT_HOME_CONTENT,
   DEFAULT_PROJECTS,
   DEFAULT_SECTORS,
   DEFAULT_SETTINGS,
@@ -16,6 +18,7 @@ import type {
   Fabricante,
   Fase,
   Guide,
+  HomeContent,
   HomeData,
   Project,
   Sector,
@@ -31,6 +34,7 @@ import {
   toGuide,
   toProject,
   toSector,
+  toHomeContent,
   toSettings,
   toSlide,
 } from "./normalizers";
@@ -38,9 +42,8 @@ import {
 /**
  * Consultas públicas de contenido.
  *
- * Cada función intenta primero WordPress y, si no hay CMS o no hay datos,
- * devuelve el contenido por defecto. De este modo las páginas no necesitan
- * saber de dónde viene el contenido.
+ * Prioriza los datos de MySQL / Editor visual. Si no están configurados,
+ * consulta WordPress o recurre al contenido por defecto.
  */
 
 const SLIDES_QUERY = "slides?per_page=50&orderby=menu_order&order=asc&_embed";
@@ -58,6 +61,15 @@ function withFallbackImage<T extends { imagen: string }>(item: T, fallback?: str
 /* --------------------------------- Slides --------------------------------- */
 
 export async function getHeroSlides(): Promise<Slide[]> {
+  try {
+    const dbContent = await getDbHomeContent();
+    if (dbContent.heroSlides && dbContent.heroSlides.length > 0) {
+      return dbContent.heroSlides;
+    }
+  } catch (e) {
+    // Continuar a fallback
+  }
+
   const posts = await collection(SLIDES_QUERY);
   const hero = (posts ?? []).filter((p) => (p.acf ?? p.scf)?.grupo !== "showcase");
   if (hero.length === 0) return DEFAULT_HERO_SLIDES;
@@ -65,6 +77,15 @@ export async function getHeroSlides(): Promise<Slide[]> {
 }
 
 export async function getShowcaseSlides(): Promise<Slide[]> {
+  try {
+    const dbContent = await getDbHomeContent();
+    if (dbContent.workshopSlides && dbContent.workshopSlides.length > 0) {
+      return dbContent.workshopSlides;
+    }
+  } catch (e) {
+    // Continuar a fallback
+  }
+
   const posts = await collection(SLIDES_QUERY);
   const showcase = (posts ?? []).filter((p) => (p.acf ?? p.scf)?.grupo === "showcase");
   if (showcase.length === 0) return DEFAULT_SHOWCASE_SLIDES;
@@ -81,10 +102,39 @@ export async function getProjects(): Promise<Project[]> {
   );
 }
 
+/**
+ * Obtiene los proyectos que deben mostrarse en la portada:
+ * Filtra por los que el usuario haya seleccionado en el módulo de proyectos (máx 3).
+ * Si aún no ha seleccionado ninguno, muestra los primeros 3.
+ */
+export async function getFeaturedHomeProjects(): Promise<Project[]> {
+  const allProjects = await getProjects();
+  try {
+    const featuredIds = await getFeaturedProjectIds();
+    if (featuredIds.length > 0) {
+      const selected = allProjects.filter((p) =>
+        featuredIds.includes(String(p.id)) || featuredIds.includes(p.slug)
+      );
+      if (selected.length > 0) {
+        return selected.slice(0, 3);
+      }
+    }
+  } catch (err) {
+    console.warn("Aviso: Error filtrando proyectos destacados de home:", err);
+  }
+
+  return allProjects.slice(0, 3);
+}
+
 export async function getProjectBySlug(slug: string): Promise<Project | null> {
   const posts = await wpGet<WpPost[]>(`proyectos?slug=${encodeURIComponent(slug)}&_embed`);
   if (posts && posts.length > 0) return toProject(posts[0], 0);
   return DEFAULT_PROJECTS.find((project) => project.slug === slug) ?? null;
+}
+
+export async function getProjectsBySector(sectorSlug: string): Promise<Project[]> {
+  const all = await getProjects();
+  return all.filter((p) => p.servicio === sectorSlug);
 }
 
 /* -------------------------------- Sectores -------------------------------- */
@@ -103,15 +153,17 @@ export async function getSectorBySlug(slug: string): Promise<Sector | null> {
   return DEFAULT_SECTORS.find((sector) => sector.slug === slug) ?? null;
 }
 
-/* --------------------------------- Fases ---------------------------------- */
+/* ---------------------------------- Fases --------------------------------- */
 
 export async function getFases(): Promise<Fase[]> {
   const posts = await collection(`fases?${COLLECTION_ORDER}`);
   if (!posts || posts.length === 0) return DEFAULT_FASES;
-  return posts.map(toFase);
+  return posts.map((post, i) =>
+    withFallbackImage(toFase(post, i), DEFAULT_FASES[i % DEFAULT_FASES.length]?.imagen),
+  );
 }
 
-/* ------------------------------ Fabricantes ------------------------------- */
+/* ------------------------------- Fabricantes ------------------------------ */
 
 export async function getFabricantes(): Promise<Fabricante[]> {
   const posts = await collection(`fabricantes?${COLLECTION_ORDER}`);
@@ -179,7 +231,7 @@ export async function getGuideBySlug(slug: string): Promise<Guide | null> {
   return DEFAULT_GUIDES.find((guide) => guide.slug === slug) ?? null;
 }
 
-/* ------------------------------- Ajustes ---------------------------------- */
+/* -------------------------------- Ajustes --------------------------------- */
 
 export async function getSettings(): Promise<SiteSettings> {
   const posts = await wpGet<WpPost[]>("ajustes?per_page=1");
@@ -197,20 +249,75 @@ export async function getSettings(): Promise<SiteSettings> {
   };
 }
 
-/* --------------------------------- Inicio --------------------------------- */
+/* -------------------------- Portada Completa ------------------------------ */
+
+export async function getHomeContent(): Promise<HomeContent> {
+  const dbHome = await getDbHomeContent();
+  if (dbHome && Object.keys(dbHome).length > 0) {
+    return dbHome;
+  }
+
+  const post = await wpGet<WpPost>("paginas/inicio");
+  if (!post) return DEFAULT_HOME_CONTENT;
+  const remote = toHomeContent(post);
+
+  return {
+    heroTitulo: remote.heroTitulo || DEFAULT_HOME_CONTENT.heroTitulo,
+    heroSubtitulo: remote.heroSubtitulo || DEFAULT_HOME_CONTENT.heroSubtitulo,
+    heroDescripcion: remote.heroDescripcion || DEFAULT_HOME_CONTENT.heroDescripcion,
+    heroCtaTexto: remote.heroCtaTexto || DEFAULT_HOME_CONTENT.heroCtaTexto,
+    heroSecundarioTexto: remote.heroSecundarioTexto || DEFAULT_HOME_CONTENT.heroSecundarioTexto,
+    heroSlides: DEFAULT_HERO_SLIDES,
+
+    proyectosTitulo: remote.proyectosTitulo || DEFAULT_HOME_CONTENT.proyectosTitulo,
+    proyectosSubtitulo: remote.proyectosSubtitulo || DEFAULT_HOME_CONTENT.proyectosSubtitulo,
+    proyectosCtaTexto: remote.proyectosCtaTexto || DEFAULT_HOME_CONTENT.proyectosCtaTexto,
+
+    procesoTitulo: remote.procesoTitulo || DEFAULT_HOME_CONTENT.procesoTitulo,
+    procesoSubtitulo: remote.procesoSubtitulo || DEFAULT_HOME_CONTENT.procesoSubtitulo,
+
+    serviciosTag: remote.serviciosTag || DEFAULT_HOME_CONTENT.serviciosTag,
+    serviciosTitulo: remote.serviciosTitulo || DEFAULT_HOME_CONTENT.serviciosTitulo,
+    serviciosDescripcion: remote.serviciosDescripcion || DEFAULT_HOME_CONTENT.serviciosDescripcion,
+
+    workshopBadge: remote.workshopBadge || DEFAULT_HOME_CONTENT.workshopBadge,
+    workshopTitulo: remote.workshopTitulo || DEFAULT_HOME_CONTENT.workshopTitulo,
+    workshopDescripcion: remote.workshopDescripcion || DEFAULT_HOME_CONTENT.workshopDescripcion,
+    workshopSlides: DEFAULT_SHOWCASE_SLIDES,
+
+    experienciaImagen: remote.experienciaImagen || DEFAULT_HOME_CONTENT.experienciaImagen,
+    experienciaBadges:
+      remote.experienciaBadges && remote.experienciaBadges.length > 0
+        ? remote.experienciaBadges
+        : DEFAULT_HOME_CONTENT.experienciaBadges,
+
+    materialesTag: remote.materialesTag || DEFAULT_HOME_CONTENT.materialesTag,
+    materialesTitulo: remote.materialesTitulo || DEFAULT_HOME_CONTENT.materialesTitulo,
+    materialesDescripcion: remote.materialesDescripcion || DEFAULT_HOME_CONTENT.materialesDescripcion,
+
+    articulosTag: remote.articulosTag || DEFAULT_HOME_CONTENT.articulosTag,
+    articulosTitulo: remote.articulosTitulo || DEFAULT_HOME_CONTENT.articulosTitulo,
+    articulosCtaTexto: remote.articulosCtaTexto || DEFAULT_HOME_CONTENT.articulosCtaTexto,
+
+    contactoTitulo: remote.contactoTitulo || DEFAULT_HOME_CONTENT.contactoTitulo,
+    contactoDescripcion: remote.contactoDescripcion || DEFAULT_HOME_CONTENT.contactoDescripcion,
+    contactoBgImagen: DEFAULT_HOME_CONTENT.contactoBgImagen,
+  };
+}
 
 export async function getHomeData(): Promise<HomeData> {
-  const [heroSlides, showcaseSlides, projects, sectors, fases, fabricantes, articles, settings] =
+  const [heroSlides, showcaseSlides, projects, sectors, fases, fabricantes, articles, settings, homeContent] =
     await Promise.all([
       getHeroSlides(),
       getShowcaseSlides(),
-      getProjects(),
+      getFeaturedHomeProjects(),
       getSectors(),
       getFases(),
       getFabricantes(),
       getArticles(),
       getSettings(),
+      getHomeContent(),
     ]);
 
-  return { heroSlides, showcaseSlides, projects, sectors, fases, fabricantes, articles, settings };
+  return { heroSlides, showcaseSlides, projects, sectors, fases, fabricantes, articles, settings, homeContent };
 }

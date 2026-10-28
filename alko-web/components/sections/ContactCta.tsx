@@ -1,8 +1,8 @@
 import Image from "next/image";
 import ContactTrigger from "@/components/contact/ContactTrigger";
-import type { SiteSettings } from "@/lib/types";
+import type { HomeContent, SiteSettings } from "@/lib/types";
 
-export default function ContactCta({ settings }: { settings: SiteSettings }) {
+export default function ContactCta({ settings, content }: { settings: SiteSettings; content?: HomeContent }) {
   const telHref = `tel:${settings.telefono.replace(/[^+\d]/g, "")}`;
   const mailto = `mailto:${settings.email}?subject=Nueva%20Consulta%20Tecnica%20ALKO`;
 
@@ -10,7 +10,7 @@ export default function ContactCta({ settings }: { settings: SiteSettings }) {
     <section id="contacto" className="relative w-full overflow-hidden bg-stone-950 group">
       <div className="relative w-full h-[520px] sm:h-[580px] md:h-[640px] lg:h-[700px] overflow-hidden">
         <Image
-          src="/cta-bg.jpg"
+          src={content?.contactoBgImagen || "/cta-bg.jpg"}
           alt="Hablemos de tu próximo proyecto"
           fill
           sizes="100vw"
@@ -20,16 +20,26 @@ export default function ContactCta({ settings }: { settings: SiteSettings }) {
         <div className="absolute inset-0 z-10 flex flex-col justify-between max-w-7xl mx-auto px-6 sm:px-12 lg:px-16 py-12 sm:py-16 md:py-20 lg:py-24">
           <div className="pt-8 sm:pt-14 md:pt-18 lg:pt-20">
             <h2 className="text-3xl sm:text-5xl md:text-6xl lg:text-[68px] font-light font-display text-white tracking-[-0.03em] leading-[1.08] select-text">
-              Hablemos de tu
-              <br />
-              próximo proyecto.
+              {content?.contactoTitulo ? (
+                content.contactoTitulo.split('\n').map((line, i) => (
+                  <span key={i}>
+                    {line}
+                    {i === 0 && <br />}
+                  </span>
+                ))
+              ) : (
+                <>
+                  Hablemos de tu
+                  <br />
+                  próximo proyecto.
+                </>
+              )}
             </h2>
           </div>
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 pt-6">
             <div className="space-y-5 max-w-xl">
               <p className="text-base sm:text-lg font-sans text-stone-200/90 font-light leading-relaxed max-w-lg drop-shadow-sm">
-                Una única interlocución para coordinar arquitectura, compras, instalaciones y obra completa.
-                Sin intermediarios ni imprevistos.
+                {content?.contactoDescripcion ?? "Una única interlocución para coordinar arquitectura, compras, instalaciones y obra completa. Sin intermediarios ni imprevistos."}
               </p>
               <div className="flex flex-wrap items-center gap-x-5 sm:gap-x-7 gap-y-2.5 pt-1 text-xs font-light text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]">
                 <a href={telHref} className="inline-flex items-center gap-2 hover:text-white transition-colors">

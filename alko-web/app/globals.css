@@ -52,9 +52,13 @@ html {
 /* Marcado por el script en línea del layout antes de hidratar: lo que ya está en
    pantalla aparece sin esperar a React ni a GSAP (mejora el LCP). */
 .reveal-item[data-inview],
-.reveal-scale[data-inview] {
-  opacity: 1;
-  transform: none;
+.reveal-scale[data-inview],
+.admin-root .reveal-item,
+.admin-root .reveal-scale,
+.live-editor .reveal-item,
+.live-editor .reveal-scale {
+  opacity: 1 !important;
+  transform: none !important;
 }
 
 /* Servicios Interactivo Dual-State - Transición Cinemática Ultra-Suave */

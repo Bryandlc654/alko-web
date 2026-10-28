@@ -16,5 +16,6 @@ export {
   getGuides,
   getGuideBySlug,
   getSettings,
+  getHomeContent,
   getHomeData,
 } from "./queries";

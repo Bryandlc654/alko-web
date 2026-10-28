@@ -16,15 +16,15 @@ export default async function Home() {
 
   return (
     <main>
-      <Hero slides={data.heroSlides} />
-      <ProjectsSection projects={data.projects} />
-      <Process fases={data.fases} />
-      <ServicesSection sectors={data.sectors} />
-      <Workshop slides={data.showcaseSlides} />
-      <Experience />
-      <Materials fabricantes={data.fabricantes} />
-      <ArticlesSection articles={data.articles} />
-      <ContactCta settings={data.settings} />
+      <Hero slides={data.heroSlides} content={data.homeContent} />
+      <ProjectsSection projects={data.projects} content={data.homeContent} />
+      <Process fases={data.fases} content={data.homeContent} />
+      <ServicesSection sectors={data.sectors} content={data.homeContent} />
+      <Workshop slides={data.showcaseSlides} content={data.homeContent} />
+      <Experience content={data.homeContent} />
+      <Materials fabricantes={data.fabricantes} content={data.homeContent} />
+      <ArticlesSection articles={data.articles} content={data.homeContent} />
+      <ContactCta settings={data.settings} content={data.homeContent} />
     </main>
   );
 }

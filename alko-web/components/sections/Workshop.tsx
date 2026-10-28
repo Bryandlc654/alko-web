@@ -1,7 +1,7 @@
 import Image from "next/image";
-import type { Slide } from "@/lib/types";
+import type { HomeContent, Slide } from "@/lib/types";
 
-export default function Workshop({ slides }: { slides: Slide[] }) {
+export default function Workshop({ slides, content }: { slides: Slide[]; content?: HomeContent }) {
   const first = slides[0];
   const second = slides[1];
 
@@ -49,14 +49,13 @@ export default function Workshop({ slides }: { slides: Slide[] }) {
       >
         <div className="relative bg-white/95 backdrop-blur-sm px-6 sm:px-8 py-7 sm:py-9 shadow-2xl border border-white/60">
           <span className="block font-mono text-[10px] sm:text-[11px] tracking-[0.28em] text-stone-600 uppercase mb-3">
-            START RESEARCH
+            {content?.workshopBadge ?? "START RESEARCH"}
           </span>
           <h3 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-light text-stone-900 tracking-tight leading-snug">
-            Soluciones arquitectónicas y técnicas con criterio constructivo.
+            {content?.workshopTitulo ?? "Soluciones arquitectónicas y técnicas con criterio constructivo."}
           </h3>
           <p className="mt-4 text-sm sm:text-base text-stone-700 font-light leading-relaxed max-w-lg">
-            Investigar, coordinar y ejecutar: cada detalle responde a una exigencia funcional,
-            constructiva y estética.
+            {content?.workshopDescripcion ?? "Investigar, coordinar y ejecutar: cada detalle responde a una exigencia funcional, constructiva y estética."}
           </p>
           <div className="mt-6 sm:mt-8">
             <a

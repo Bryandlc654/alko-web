@@ -1,0 +1,66 @@
+{
+  "home": {
+    "heroTitulo": "Construcción",
+    "heroSubtitulo": "y reformas integrales en Madrid.",
+    "heroDescripcion": "Ejecutamos proyectos residenciales y corporativos de alta exigencia, coordinando construcción, instalaciones, acabados y gestión técnica hasta la entrega final.",
+    "heroCtaTexto": "SOLICITAR PRESUPUESTO",
+    "heroSecundarioTexto": "Explorar",
+    "heroSlides": [
+      {
+        "id": "hero-1",
+        "image": "/slide1.jpg",
+        "alt": "Proyecto de Arquitectura y Reforma 1"
+      },
+      {
+        "id": "hero-2",
+        "image": "/slide2.jpg",
+        "alt": "Proyecto de Arquitectura y Reforma 2"
+      }
+    ],
+    "proyectosTitulo": "PROYECTOS",
+    "proyectosSubtitulo": "Cada proyecto rige planificación, ejecución, coordinación técnica y control hasta la entrega.",
+    "proyectosCtaTexto": "DESCUBRIR PROYECTOS",
+    "procesoTitulo": "Nuestro proceso",
+    "procesoSubtitulo": "SECUENCIA DE COORDINACIÓN INTEGRAL · 6 FASES · 1 EQUIPO",
+    "serviciosTag": "SERVICIOS Y SECTORES",
+    "serviciosTitulo": "ESPECIALIDADES",
+    "serviciosDescripcion": "Actuamos de forma transversal en rehabilitación, reforma integral, obra nueva y gestión de instalaciones técnicas con un único responsable de proyecto.",
+    "workshopBadge": "START RESEARCH",
+    "workshopTitulo": "Soluciones arquitectónicas y técnicas con criterio constructivo.",
+    "workshopDescripcion": "Investigar, coordinar y ejecutar: cada detalle responde a una exigencia funcional, constructiva y estética.",
+    "workshopSlides": [
+      {
+        "id": "showcase-1",
+        "image": "/start-research-1.jpg",
+        "alt": "START RESEARCH - Chimenea suspendida, hormigón visto y carpinterías a medida"
+      },
+      {
+        "id": "showcase-2",
+        "image": "/start-research-2.jpg",
+        "alt": "START RESEARCH - Ventanales panorámicos y apertura a terraza"
+      }
+    ],
+    "experienciaImagen": "/90dias.jpg",
+    "experienciaBadges": [
+      "Climatización",
+      "Ventilación",
+      "Red de Datos",
+      "Acabados H2"
+    ],
+    "materialesTag": "ESPECIFICACIÓN TÉCNICA & CALIDAD",
+    "materialesTitulo": "Materiales y fabricantes",
+    "materialesDescripcion": "Soluciones y materiales seleccionados según las necesidades técnicas de cada proyecto.",
+    "articulosTag": "BIBLIOTECA TÉCNICA",
+    "articulosTitulo": "Conocimiento",
+    "articulosCtaTexto": "Ver todo",
+    "contactoTitulo": "Hablemos de tu\npróximo proyecto.",
+    "contactoDescripcion": "Una única interlocución para coordinar arquitectura, compras, instalaciones y obra completa. Sin intermediarios ni imprevistos.",
+    "contactoBgImagen": "/cta-bg.jpg"
+  },
+  "slides": [],
+  "featuredProjectIds": [
+    "18",
+    "17",
+    "16"
+  ]
+}

@@ -1,8 +1,11 @@
 import Image from "next/image";
+import type { HomeContent } from "@/lib/types";
 
 const RETO_BADGES = ["Climatización", "Ventilación", "Red de Datos", "Acabados H2"];
 
-export default function Experience() {
+export default function Experience({ content }: { content?: HomeContent } = {}) {
+  const badges = content?.experienciaBadges && content.experienciaBadges.length > 0 ? content.experienciaBadges : RETO_BADGES;
+  const imageSrc = content?.experienciaImagen || "/90dias.jpg";
   return (
     <section
       id="experiencia"
@@ -45,7 +48,7 @@ export default function Experience() {
             >
               <Image
                 id="expand-target-image"
-                src="/90dias.jpg"
+                src={imageSrc}
                 alt="ALKO Terraza y horizonte arquitectónico"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -90,7 +93,7 @@ export default function Experience() {
                       cableado de datos en alturas de falso techo limitadas.
                     </p>
                     <div className="flex flex-wrap gap-2 pt-2">
-                      {RETO_BADGES.map((badge) => (
+                      {badges.map((badge) => (
                         <span
                           key={badge}
                           className="px-2.5 py-1 text-[10px] uppercase font-sans border border-stone-300 rounded-full text-stone-700 bg-stone-100/60"

@@ -1,7 +1,7 @@
-import type { Sector } from "@/lib/types";
+import type { HomeContent, Sector } from "@/lib/types";
 import SectorsList from "@/components/ui/SectorsList";
 
-export default function ServicesSection({ sectors }: { sectors: Sector[] }) {
+export default function ServicesSection({ sectors, content }: { sectors: Sector[]; content?: HomeContent }) {
   return (
     <section
       id="servicios"
@@ -12,15 +12,14 @@ export default function ServicesSection({ sectors }: { sectors: Sector[] }) {
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
             <div>
               <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase mb-3">
-                SERVICIOS Y SECTORES
+                {content?.serviciosTag ?? "SERVICIOS Y SECTORES"}
               </span>
               <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-light text-stone-900 tracking-tight leading-none">
-                ESPECIALIDADES
+                {content?.serviciosTitulo ?? "ESPECIALIDADES"}
               </h2>
             </div>
             <p className="max-w-xl text-base sm:text-lg text-stone-600 font-light leading-relaxed font-sans">
-              Actuamos de forma transversal en rehabilitación, reforma integral, obra nueva y gestión
-              de instalaciones técnicas con un único responsable de proyecto.
+              {content?.serviciosDescripcion ?? "Actuamos de forma transversal en rehabilitación, reforma integral, obra nueva y gestión de instalaciones técnicas con un único responsable de proyecto."}
             </p>
           </div>
         </div>

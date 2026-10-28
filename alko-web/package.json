@@ -15,14 +15,18 @@
     "safari >= 16.4"
   ],
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "gsap": "^3.12.5",
+    "jose": "^6.2.13",
     "lucide-react": "^1.57.0",
+    "mysql2": "^3.24.6",
     "next": "^15.1.6",
     "openai": "^7.42.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^22.10.7",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",

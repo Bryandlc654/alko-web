@@ -1,8 +1,8 @@
 import Image from "next/image";
 import ContactTrigger from "@/components/contact/ContactTrigger";
-import type { Slide } from "@/lib/types";
+import type { HomeContent, Slide } from "@/lib/types";
 
-export default function Hero({ slides }: { slides: Slide[] }) {
+export default function Hero({ slides, content }: { slides: Slide[]; content?: HomeContent }) {
   return (
     <header className="hero relative min-h-screen w-full flex flex-col justify-between overflow-hidden">
       {/* Slider de fondo con overlay cinematográfico arquitectónico */}
@@ -39,17 +39,15 @@ export default function Hero({ slides }: { slides: Slide[] }) {
         <div className="max-w-3xl">
           <div className="space-y-1 sm:space-y-2 drop-shadow-[0_4px_24px_rgba(0,0,0,0.85)]">
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light tracking-tight text-white leading-none font-display">
-              Construcción
+              {content?.heroTitulo ?? "Construcción"}
             </h1>
             <p className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light text-white tracking-tight font-display font-sans">
-              y reformas integrales en Madrid.
+              {content?.heroSubtitulo ?? "y reformas integrales en Madrid."}
             </p>
           </div>
 
           <p className="mt-8 sm:mt-10 max-w-xl text-base sm:text-lg font-normal text-white leading-relaxed tracking-normal font-sans drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">
-            Ejecutamos proyectos residenciales y corporativos de alta exigencia,
-            coordinando construcción, instalaciones, acabados y gestión técnica hasta
-            la entrega final.
+            {content?.heroDescripcion ?? "Ejecutamos proyectos residenciales y corporativos de alta exigencia, coordinando construcción, instalaciones, acabados y gestión técnica hasta la entrega final."}
           </p>
         </div>
       </div>
@@ -58,14 +56,14 @@ export default function Hero({ slides }: { slides: Slide[] }) {
       <div className="relative z-20 w-full max-w-7xl mx-auto px-6 sm:px-10 pb-8 sm:pb-10 pt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mt-16 sm:mt-20 lg:mt-24">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-8">
           <ContactTrigger mode="avanzado" source="Portada" className="inline-flex items-center justify-center px-7 py-3 rounded-full border border-white/60 bg-stone-900/30 hover:bg-white/15 backdrop-blur-md text-white text-xs font-semibold tracking-[0.18em] uppercase transition duration-300 shadow-sm active:scale-95">
-            SOLICITAR PRESUPUESTO
+            {content?.heroCtaTexto ?? "SOLICITAR PRESUPUESTO"}
           </ContactTrigger>
 
           <a
             href="#proyectos"
             className="group flex items-center gap-2 text-xs font-normal tracking-wide text-white/80 hover:text-white transition"
           >
-            <span>Explorar</span>
+            <span>{content?.heroSecundarioTexto ?? "Explorar"}</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 448 512"

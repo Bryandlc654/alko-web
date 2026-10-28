@@ -1,9 +1,9 @@
 import Link from "next/link";
-import type { Project } from "@/lib/types";
+import type { HomeContent, Project } from "@/lib/types";
 import { ROUTES } from "@/lib/site";
 import ProjectsList from "@/components/ui/ProjectsList";
 
-export default function ProjectsSection({ projects }: { projects: Project[] }) {
+export default function ProjectsSection({ projects, content }: { projects: Project[]; content?: HomeContent }) {
   return (
     <section
       id="proyectos"
@@ -14,14 +14,14 @@ export default function ProjectsSection({ projects }: { projects: Project[] }) {
           <div className="max-w-3xl">
             <div className="reveal-item flex items-center flex-wrap gap-x-4 gap-y-2">
               <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-light text-stone-900 tracking-tight leading-none">
-                PROYECTOS
+                {content?.proyectosTitulo ?? "PROYECTOS"}
               </h2>
             </div>
             <p
               className="reveal-item mt-6 text-base sm:text-lg text-stone-600 font-light leading-relaxed max-w-xl font-sans"
               style={{ transitionDelay: "150ms" }}
             >
-              Cada proyecto rige planificación, ejecución, coordinación técnica y control hasta la entrega.
+              {content?.proyectosSubtitulo ?? "Cada proyecto rige planificación, ejecución, coordinación técnica y control hasta la entrega."}
             </p>
             <div className="reveal-item mt-8" style={{ transitionDelay: "250ms" }}>
               <Link
@@ -31,7 +31,7 @@ export default function ProjectsSection({ projects }: { projects: Project[] }) {
                 <span className="text-base transition-transform group-hover:translate-x-1 group-hover:-translate-y-1">
                   ↗
                 </span>
-                <span>DESCUBRIR PROYECTOS</span>
+                <span>{content?.proyectosCtaTexto ?? "DESCUBRIR PROYECTOS"}</span>
               </Link>
             </div>
           </div>

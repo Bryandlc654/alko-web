@@ -8,6 +8,7 @@ import ChatWidget from "@/components/chat/ChatWidget";
 import ContactModalProvider from "@/components/contact/ContactModalProvider";
 import SiteScripts from "@/components/SiteScripts";
 import RouteLoader from "@/components/RouteLoader";
+import SiteShell from "@/components/layout/SiteShell";
 import { getSectors, getSettings } from "@/lib/wordpress";
 import { SITE } from "@/lib/site";
 
@@ -55,19 +56,28 @@ export default async function RootLayout({
           email={settings.email}
           whatsappHref={`https://wa.me/${settings.whatsapp.replace(/[^\d]/g, "")}`}
         >
-          <Nav
-            settings={settings}
-            services={sectors.map(({ slug, title }) => ({ slug, title }))}
-          />
-          {children}
-          {process.env.NODE_ENV === "production" && (
-            <script dangerouslySetInnerHTML={{ __html: REVEAL_IN_VIEW_SCRIPT }} />
-          )}
-          <Footer settings={settings} />
-          <WhatsAppFloat settings={settings} />
-          <ChatWidget />
-          <RouteLoader />
-          <SiteScripts />
+          <SiteShell
+            nav={
+              <Nav
+                settings={settings}
+                services={sectors.map(({ slug, title }) => ({ slug, title }))}
+              />
+            }
+            footer={<Footer settings={settings} />}
+            whatsapp={<WhatsAppFloat settings={settings} />}
+            chat={<ChatWidget />}
+            scripts={
+              <>
+                {process.env.NODE_ENV === "production" && (
+                  <script dangerouslySetInnerHTML={{ __html: REVEAL_IN_VIEW_SCRIPT }} />
+                )}
+                <RouteLoader />
+                <SiteScripts />
+              </>
+            }
+          >
+            {children}
+          </SiteShell>
         </ContactModalProvider>
       </body>
     </html>

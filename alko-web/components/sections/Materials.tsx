@@ -1,7 +1,7 @@
 import Image from "next/image";
-import type { Fabricante } from "@/lib/types";
+import type { Fabricante, HomeContent } from "@/lib/types";
 
-export default function Materials({ fabricantes }: { fabricantes: Fabricante[] }) {
+export default function Materials({ fabricantes, content }: { fabricantes: Fabricante[]; content?: HomeContent }) {
   const doubled = [...fabricantes, ...fabricantes];
 
   return (
@@ -13,15 +13,15 @@ export default function Materials({ fabricantes }: { fabricantes: Fabricante[] }
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-stone-300/70">
           <div className="max-w-2xl reveal-item">
             <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase mb-3">
-              ESPECIFICACIÓN TÉCNICA & CALIDAD
+              {content?.materialesTag ?? "ESPECIFICACIÓN TÉCNICA & CALIDAD"}
             </span>
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-light text-stone-900 tracking-tight leading-none">
-              Materiales y fabricantes
+              {content?.materialesTitulo ?? "Materiales y fabricantes"}
             </h2>
           </div>
           <div className="max-w-md reveal-item">
             <p className="font-sans text-xs sm:text-sm text-stone-600 leading-relaxed font-normal">
-              Soluciones y materiales seleccionados según las necesidades técnicas de cada proyecto.
+              {content?.materialesDescripcion ?? "Soluciones y materiales seleccionados según las necesidades técnicas de cada proyecto."}
             </p>
           </div>
         </div>

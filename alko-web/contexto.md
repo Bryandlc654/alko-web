@@ -31,7 +31,7 @@ alko-web/
 ## 3. Archivos importantes
 - `lib/wordpress/queries.ts`: cada `getX()` intenta primero WP y, si falla o viene vacío, devuelve `DEFAULT_X`. `getHomeData()` agrega todo para la home. `getSettings()` mezcla los campos campo a campo con los valores por defecto.
 - `lib/wordpress/client.ts`: `wpGet` hace un GET a `${WP_API_URL}/wp-json/wp/v2/…` y devuelve `null` si hay error o no hay URL.
-- `wordpress/alko-content-model.php`: CPTs `proyecto`, `sector`, `fase`, `fabricante`, `slide`, `ajuste` y sus campos en `acf`. Endpoints REST: `proyectos`, `sectores`, `fases`, `fabricantes`, `slides`, `ajustes`. Los artículos usan los `posts` nativos.
+- `wordpress/alko-content-model.php`: CPTs `inicio` (Página de Inicio con 9 pestañas de bloques), `slide` (anidado en Inicio), `sector` (etiquetado como Servicios), `proyecto`, `fase`, `fabricante`, `guia`, `descarga`, `ajuste`. Endpoints REST: `inicio`, `slides`, `sectores`, `proyectos`, `fases`, `fabricantes`, `guias`, `descargas`, `ajustes`. Los artículos usan los `posts` nativos.
 - `next.config.mjs`: añade el host de `WP_API_URL` (y su variante `www.`) a `images.remotePatterns`. AVIF/WebP.
 - `app/layout.tsx`: Nav, Footer, WhatsAppFloat, RouteLoader y SiteScripts globales; carga `getSettings()`.
 - `.env.example`: `WP_API_URL`. `lib/site.ts` también lee `NEXT_PUBLIC_SITE_URL` (por defecto `https://www.alko.es`).

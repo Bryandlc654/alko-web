@@ -4,6 +4,7 @@ import Container from "@/components/ui/Container";
 import ProjectsGallery from "@/components/ui/ProjectsGallery";
 import ContactCta from "@/components/sections/ContactCta";
 import { getProjects, getSettings } from "@/lib/wordpress";
+import { getDbProjectsPageContent } from "@/lib/db/mysql";
 import { splitLead } from "@/lib/utils";
 
 export const revalidate = 60;
@@ -15,7 +16,11 @@ export const metadata = {
 };
 
 export default async function ProyectosPage() {
-  const [projects, settings] = await Promise.all([getProjects(), getSettings()]);
+  const [projects, settings, pageContent] = await Promise.all([
+    getProjects(),
+    getSettings(),
+    getDbProjectsPageContent(),
+  ]);
   const summaries = projects.map((project) => ({
     ...project,
     extracto: splitLead(project.content).lead,
@@ -35,7 +40,7 @@ export default async function ProyectosPage() {
         : "—",
     },
   ];
-  const heroImage = projects[0]?.imagen || "/start-research-1.jpg";
+  const heroImage = pageContent.headerBgImage || projects[0]?.imagen || "/start-research-1.jpg";
 
   return (
     <main className="bg-white text-stone-900">
@@ -48,16 +53,13 @@ export default async function ProyectosPage() {
         <Container className="relative">
           <Breadcrumbs items={[{ label: "Proyectos" }]} className="mb-8" />
           <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-white/70 uppercase mb-4">
-            PROYECTOS
+            {pageContent.headerBadge || "PROYECTOS"}
           </span>
-          <h1 className="font-display font-light text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-[-0.03em] leading-[1.02] drop-shadow-[0_2px_20px_rgba(0,0,0,0.35)]">
-            Obra hecha,
-            <br />
-            obra entregada.
+          <h1 className="font-display font-light text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-[-0.03em] leading-[1.02] drop-shadow-[0_2px_20px_rgba(0,0,0,0.35)] whitespace-pre-line">
+            {pageContent.headerTitulo}
           </h1>
-          <p className="mt-6 max-w-xl text-base sm:text-lg text-white/85 font-light leading-relaxed">
-            Una selección de obras donde la planificación, la coordinación y la ejecución garantizan
-            los objetivos de plazo y calidad.
+          <p className="mt-6 max-w-xl text-base sm:text-lg text-white/85 font-light leading-relaxed whitespace-pre-line">
+            {pageContent.headerDescripcion}
           </p>
 
           <dl className="mt-12 sm:mt-16 grid grid-cols-1 sm:grid-cols-3 border-t border-white/20">

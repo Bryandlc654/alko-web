@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name:       ALKO Content Model (Headless)
- * Description:       Registra los tipos de contenido (CPT) y los campos SCF/ACF que consume el front-end Next.js de ALKO.
- * Version:           1.4.0
+ * Description:       Registra la gestión de Página de Inicio, CPTs y campos SCF/ACF que consume el front-end Next.js de ALKO.
+ * Version:           1.5.0
  * Author:            ALKO
  *
  * Requiere "Secure Custom Fields" o "Advanced Custom Fields" activo (no se usa la
@@ -10,17 +10,18 @@
  *
  * INSTALACIÓN
  * -----------
- * 1. Coloca este archivo en  wp-content/mu-plugins/  (recomendado) o actívalo como plugin normal.
+ * 1. Coloca este archivo en wp-content/mu-plugins/ (recomendado) o actívalo como plugin normal.
  * 2. Asegúrate de que el plugin "Secure Custom Fields" (SCF) o Advanced Custom Fields está activo.
- * 3. Ve a  Ajustes → Enlaces permanentes  y pulsa "Guardar" una vez (para refrescar las rutas REST).
+ * 3. Ve a Ajustes → Enlaces permanentes y pulsa "Guardar" una vez (para refrescar las rutas REST).
  * 4. En el front-end, define la variable WP_API_URL con la URL de este WordPress.
  *
  * Los campos están expuestos en la REST API (show_in_rest) bajo la clave "acf" de cada entrada:
- *   GET /wp-json/wp/v2/proyectos?_embed
+ *   GET /wp-json/wp/v2/inicio?per_page=1
+ *   GET /wp-json/wp/v2/slides?_embed
  *   GET /wp-json/wp/v2/sectores?_embed
+ *   GET /wp-json/wp/v2/proyectos?_embed
  *   GET /wp-json/wp/v2/fases?_embed
  *   GET /wp-json/wp/v2/fabricantes?_embed
- *   GET /wp-json/wp/v2/slides?_embed
  *   GET /wp-json/wp/v2/guias?_embed
  *   GET /wp-json/wp/v2/descargas?_embed
  *   GET /wp-json/wp/v2/ajustes?per_page=1
@@ -31,10 +32,70 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Tipos de contenido personalizados.
+ * Tipos de contenido personalizados y estructuración del panel.
  */
 add_action( 'init', function () {
 
+	// 1. PÁGINA DE INICIO (Menú principal dedicado)
+	register_post_type( 'inicio', array(
+		'labels'              => array(
+			'name'               => 'Página de Inicio',
+			'singular_name'      => 'Bloques de Inicio',
+			'add_new_item'       => 'Configurar Inicio',
+			'edit_item'          => 'Editar Página de Inicio',
+			'new_item'           => 'Nueva Configuración de Inicio',
+			'view_item'          => 'Ver Inicio',
+			'all_items'          => 'Bloques y Textos de Inicio',
+			'menu_name'          => 'Página de Inicio',
+		),
+		'public'              => true,
+		'publicly_queryable'  => false,
+		'exclude_from_search' => true,
+		'has_archive'         => false,
+		'show_ui'             => true,
+		'show_in_rest'        => true,
+		'rest_base'           => 'inicio',
+		'menu_icon'           => 'dashicons-admin-home',
+		'menu_position'       => 19,
+		'supports'            => array( 'title' ),
+	) );
+
+	// 2. DIAPOSITIVAS (Anidadas como submenú dentro de Página de Inicio)
+	register_post_type( 'slide', array(
+		'labels'        => array(
+			'name'          => 'Diapositivas (Hero y Showcase)',
+			'singular_name' => 'Diapositiva',
+			'add_new_item'  => 'Añadir Diapositiva',
+			'edit_item'     => 'Editar Diapositiva',
+			'all_items'     => 'Diapositivas (Imágenes)',
+			'menu_name'     => 'Diapositivas',
+		),
+		'public'        => true,
+		'show_in_rest'  => true,
+		'rest_base'     => 'slides',
+		'show_in_menu'  => 'edit.php?post_type=inicio',
+		'supports'      => array( 'title', 'thumbnail', 'page-attributes' ),
+	) );
+
+	// 3. SERVICIOS (Renombrado desde Sectores para coherencia con la web)
+	register_post_type( 'sector', array(
+		'labels'        => array(
+			'name'          => 'Servicios',
+			'singular_name' => 'Servicio',
+			'add_new_item'  => 'Añadir Servicio',
+			'edit_item'     => 'Editar Servicio',
+			'all_items'     => 'Todos los Servicios',
+			'menu_name'     => 'Servicios',
+		),
+		'public'        => true,
+		'show_in_rest'  => true,
+		'rest_base'     => 'sectores',
+		'menu_icon'     => 'dashicons-hammer',
+		'menu_position' => 20,
+		'supports'      => array( 'title', 'editor', 'thumbnail', 'page-attributes' ),
+	) );
+
+	// 4. PROYECTOS
 	register_post_type( 'proyecto', array(
 		'labels'       => array(
 			'name'          => 'Proyectos',
@@ -42,39 +103,26 @@ add_action( 'init', function () {
 			'add_new_item'  => 'Añadir Proyecto',
 			'edit_item'     => 'Editar Proyecto',
 			'all_items'     => 'Todos los Proyectos',
+			'menu_name'     => 'Proyectos',
 		),
 		'public'        => true,
 		'show_in_rest'  => true,
 		'has_archive'   => true,
 		'rest_base'     => 'proyectos',
 		'menu_icon'     => 'dashicons-building',
-		'menu_position' => 20,
+		'menu_position' => 21,
 		'supports'      => array( 'title', 'editor', 'thumbnail', 'excerpt', 'page-attributes' ),
 	) );
 
-	register_post_type( 'sector', array(
-		'labels'        => array(
-			'name'          => 'Sectores',
-			'singular_name' => 'Sector',
-			'add_new_item'  => 'Añadir Sector',
-			'edit_item'     => 'Editar Sector',
-			'all_items'     => 'Todos los Sectores',
-		),
-		'public'        => true,
-		'show_in_rest'  => true,
-		'rest_base'     => 'sectores',
-		'menu_icon'     => 'dashicons-category',
-		'menu_position' => 21,
-		'supports'      => array( 'title', 'editor', 'thumbnail', 'page-attributes' ),
-	) );
-
+	// 5. MÉTODO Y FASES
 	register_post_type( 'fase', array(
 		'labels'        => array(
-			'name'          => 'Fases del proceso',
+			'name'          => 'Método (Fases)',
 			'singular_name' => 'Fase',
 			'add_new_item'  => 'Añadir Fase',
 			'edit_item'     => 'Editar Fase',
 			'all_items'     => 'Todas las Fases',
+			'menu_name'     => 'Método (Fases)',
 		),
 		'public'        => true,
 		'show_in_rest'  => true,
@@ -84,13 +132,15 @@ add_action( 'init', function () {
 		'supports'      => array( 'title', 'editor', 'thumbnail', 'page-attributes' ),
 	) );
 
+	// 6. MATERIALES Y FABRICANTES
 	register_post_type( 'fabricante', array(
 		'labels'        => array(
-			'name'          => 'Materiales y fabricantes',
+			'name'          => 'Materiales y Fabricantes',
 			'singular_name' => 'Fabricante',
 			'add_new_item'  => 'Añadir Fabricante',
 			'edit_item'     => 'Editar Fabricante',
 			'all_items'     => 'Todos los Fabricantes',
+			'menu_name'     => 'Fabricantes',
 		),
 		'public'        => true,
 		'show_in_rest'  => true,
@@ -100,22 +150,7 @@ add_action( 'init', function () {
 		'supports'      => array( 'title', 'thumbnail', 'page-attributes' ),
 	) );
 
-	register_post_type( 'slide', array(
-		'labels'        => array(
-			'name'          => 'Slides (Hero y Showcase)',
-			'singular_name' => 'Slide',
-			'add_new_item'  => 'Añadir Slide',
-			'edit_item'     => 'Editar Slide',
-			'all_items'     => 'Todos los Slides',
-		),
-		'public'        => true,
-		'show_in_rest'  => true,
-		'rest_base'     => 'slides',
-		'menu_icon'     => 'dashicons-images-alt2',
-		'menu_position' => 24,
-		'supports'      => array( 'title', 'thumbnail', 'page-attributes' ),
-	) );
-
+	// 7. GUÍAS
 	register_post_type( 'guia', array(
 		'labels'        => array(
 			'name'          => 'Guías',
@@ -123,15 +158,17 @@ add_action( 'init', function () {
 			'add_new_item'  => 'Añadir Guía',
 			'edit_item'     => 'Editar Guía',
 			'all_items'     => 'Todas las Guías',
+			'menu_name'     => 'Guías',
 		),
 		'public'        => true,
 		'show_in_rest'  => true,
 		'rest_base'     => 'guias',
 		'menu_icon'     => 'dashicons-book-alt',
-		'menu_position' => 26,
+		'menu_position' => 24,
 		'supports'      => array( 'title', 'editor', 'thumbnail', 'excerpt', 'page-attributes' ),
 	) );
 
+	// 8. DESCARGAS
 	register_post_type( 'descarga', array(
 		'labels'        => array(
 			'name'          => 'Descargas',
@@ -139,33 +176,36 @@ add_action( 'init', function () {
 			'add_new_item'  => 'Añadir Descarga',
 			'edit_item'     => 'Editar Descarga',
 			'all_items'     => 'Todas las Descargas',
+			'menu_name'     => 'Descargas',
 		),
 		'public'        => true,
 		'show_in_rest'  => true,
 		'rest_base'     => 'descargas',
 		'menu_icon'     => 'dashicons-download',
-		'menu_position' => 27,
+		'menu_position' => 25,
 		'supports'      => array( 'title', 'page-attributes' ),
 	) );
 
+	// 9. AJUSTES DEL SITIO (Contacto, horario, redes)
 	register_post_type( 'ajuste', array(
-		'labels'        => array(
+		'labels'              => array(
 			'name'          => 'Ajustes del sitio',
 			'singular_name' => 'Ajuste',
 			'add_new_item'  => 'Añadir Ajuste',
 			'edit_item'     => 'Editar Ajuste',
 			'all_items'     => 'Ajustes del sitio',
+			'menu_name'     => 'Ajustes del sitio',
 		),
-		'public'             => true,
-		'publicly_queryable' => false,
+		'public'              => true,
+		'publicly_queryable'  => false,
 		'exclude_from_search' => true,
-		'has_archive'        => false,
-		'show_ui'            => true,
-		'show_in_rest'       => true,
-		'rest_base'          => 'ajustes',
-		'menu_icon'          => 'dashicons-admin-generic',
-		'menu_position'      => 25,
-		'supports'           => array( 'title' ),
+		'has_archive'         => false,
+		'show_ui'             => true,
+		'show_in_rest'        => true,
+		'rest_base'           => 'ajustes',
+		'menu_icon'           => 'dashicons-admin-generic',
+		'menu_position'       => 26,
+		'supports'            => array( 'title' ),
 	) );
 } );
 
@@ -178,7 +218,73 @@ add_action( 'acf/include_fields', function () {
 		return;
 	}
 
-	// Proyectos.
+	// -------------------------------------------------------------------------
+	// 1. CONFIGURACIÓN DE LA PÁGINA DE INICIO (Hero y Bloques)
+	// -------------------------------------------------------------------------
+	acf_add_local_field_group( array(
+		'key'          => 'group_inicio',
+		'title'        => 'Contenido y Bloques de la Página de Inicio',
+		'show_in_rest' => 1,
+		'location'     => array( array( array( 'param' => 'post_type', 'operator' => '==', 'value' => 'inicio' ) ) ),
+		'fields'       => array(
+			// Pestaña 1: Hero
+			array( 'key' => 'tab_inicio_hero', 'label' => '1. Hero Principal', 'type' => 'tab' ),
+			array( 'key' => 'field_inicio_hero_titulo', 'label' => 'Título principal', 'name' => 'hero_titulo', 'type' => 'text', 'default_value' => 'Construcción', 'wrapper' => array( 'width' => '50' ) ),
+			array( 'key' => 'field_inicio_hero_subtitulo', 'label' => 'Subtítulo', 'name' => 'hero_subtitulo', 'type' => 'text', 'default_value' => 'y reformas integrales en Madrid.', 'wrapper' => array( 'width' => '50' ) ),
+			array( 'key' => 'field_inicio_hero_descripcion', 'label' => 'Descripción del Hero', 'name' => 'hero_descripcion', 'type' => 'textarea', 'rows' => 3, 'default_value' => 'Ejecutamos proyectos residenciales y corporativos de alta exigencia, coordinando construcción, instalaciones, acabados y gestión técnica hasta la entrega final.' ),
+			array( 'key' => 'field_inicio_hero_cta_texto', 'label' => 'Texto botón CTA', 'name' => 'hero_cta_texto', 'type' => 'text', 'default_value' => 'SOLICITAR PRESUPUESTO', 'wrapper' => array( 'width' => '50' ) ),
+			array( 'key' => 'field_inicio_hero_secundario_texto', 'label' => 'Texto enlace secundario', 'name' => 'hero_secundario_texto', 'type' => 'text', 'default_value' => 'Explorar', 'wrapper' => array( 'width' => '50' ) ),
+
+			// Pestaña 2: Proyectos
+			array( 'key' => 'tab_inicio_proyectos', 'label' => '2. Bloque Proyectos', 'type' => 'tab' ),
+			array( 'key' => 'field_inicio_proyectos_titulo', 'label' => 'Título de sección', 'name' => 'proyectos_titulo', 'type' => 'text', 'default_value' => 'PROYECTOS', 'wrapper' => array( 'width' => '50' ) ),
+			array( 'key' => 'field_inicio_proyectos_cta_texto', 'label' => 'Texto botón catálogo', 'name' => 'proyectos_cta_texto', 'type' => 'text', 'default_value' => 'DESCUBRIR PROYECTOS', 'wrapper' => array( 'width' => '50' ) ),
+			array( 'key' => 'field_inicio_proyectos_subtitulo', 'label' => 'Subtítulo / Entradilla', 'name' => 'proyectos_subtitulo', 'type' => 'textarea', 'rows' => 2, 'default_value' => 'Cada proyecto rige planificación, ejecución, coordinación técnica y control hasta la entrega.', 'instructions' => 'Nota: Cada obra individual se gestiona en el menú lateral "Proyectos".' ),
+
+			// Pestaña 3: Proceso / Método
+			array( 'key' => 'tab_inicio_proceso', 'label' => '3. Bloque Método', 'type' => 'tab' ),
+			array( 'key' => 'field_inicio_proceso_titulo', 'label' => 'Título de sección', 'name' => 'proceso_titulo', 'type' => 'text', 'default_value' => 'Nuestro proceso', 'wrapper' => array( 'width' => '50' ) ),
+			array( 'key' => 'field_inicio_proceso_subtitulo', 'label' => 'Subtítulo / Etiqueta', 'name' => 'proceso_subtitulo', 'type' => 'text', 'default_value' => 'SECUENCIA DE COORDINACIÓN INTEGRAL · 6 FASES · 1 EQUIPO', 'wrapper' => array( 'width' => '50' ), 'instructions' => 'Nota: Las fases individuales se gestionan en el menú lateral "Método (Fases)".' ),
+
+			// Pestaña 4: Servicios
+			array( 'key' => 'tab_inicio_servicios', 'label' => '4. Bloque Servicios', 'type' => 'tab' ),
+			array( 'key' => 'field_inicio_servicios_tag', 'label' => 'Etiqueta superior', 'name' => 'servicios_tag', 'type' => 'text', 'default_value' => 'SERVICIOS Y SECTORES', 'wrapper' => array( 'width' => '50' ) ),
+			array( 'key' => 'field_inicio_servicios_titulo', 'label' => 'Título de sección', 'name' => 'servicios_titulo', 'type' => 'text', 'default_value' => 'ESPECIALIDADES', 'wrapper' => array( 'width' => '50' ) ),
+			array( 'key' => 'field_inicio_servicios_descripcion', 'label' => 'Descripción', 'name' => 'servicios_descripcion', 'type' => 'textarea', 'rows' => 2, 'default_value' => 'Actuamos de forma transversal en rehabilitación, reforma integral, obra nueva y gestión de instalaciones técnicas con un único responsable de proyecto.', 'instructions' => 'Nota: Los servicios individuales se gestionan en el menú lateral "Servicios".' ),
+
+			// Pestaña 5: Showcase (Taller de Soluciones)
+			array( 'key' => 'tab_inicio_workshop', 'label' => '5. Bloque Showcase / Taller', 'type' => 'tab' ),
+			array( 'key' => 'field_inicio_workshop_badge', 'label' => 'Etiqueta / Badge', 'name' => 'workshop_badge', 'type' => 'text', 'default_value' => 'START RESEARCH', 'wrapper' => array( 'width' => '50' ) ),
+			array( 'key' => 'field_inicio_workshop_titulo', 'label' => 'Titular destacado', 'name' => 'workshop_titulo', 'type' => 'text', 'default_value' => 'Soluciones arquitectónicas y técnicas con criterio constructivo.', 'wrapper' => array( 'width' => '50' ) ),
+			array( 'key' => 'field_inicio_workshop_descripcion', 'label' => 'Descripción', 'name' => 'workshop_descripcion', 'type' => 'textarea', 'rows' => 3, 'default_value' => 'Investigar, coordinar y ejecutar: cada detalle responde a una exigencia funcional, constructiva y estética.', 'instructions' => 'Nota: Las imágenes de fondo se gestionan en "Página de Inicio → Diapositivas" con grupo Showcase.' ),
+
+			// Pestaña 6: Experiencia (90 días)
+			array( 'key' => 'tab_inicio_experiencia', 'label' => '6. Bloque Experiencia (90 Días)', 'type' => 'tab' ),
+			array( 'key' => 'field_inicio_experiencia_imagen', 'label' => 'Imagen de obra interactiva', 'name' => 'experiencia_imagen', 'type' => 'image', 'return_format' => 'url', 'instructions' => 'Imagen arquitectónica que se expande al hacer scroll (por defecto: /90dias.jpg).' ),
+			array( 'key' => 'field_inicio_experiencia_badges', 'label' => 'Etiquetas técnicas / Badges', 'name' => 'experiencia_badges', 'type' => 'textarea', 'rows' => 4, 'instructions' => 'Una etiqueta por línea. Ej: Climatización, Ventilación, Red de Datos, Acabados H2.' ),
+
+			// Pestaña 7: Materiales y Fabricantes
+			array( 'key' => 'tab_inicio_materiales', 'label' => '7. Bloque Materiales', 'type' => 'tab' ),
+			array( 'key' => 'field_inicio_materiales_tag', 'label' => 'Etiqueta superior', 'name' => 'materiales_tag', 'type' => 'text', 'default_value' => 'ESPECIFICACIÓN TÉCNICA & CALIDAD', 'wrapper' => array( 'width' => '50' ) ),
+			array( 'key' => 'field_inicio_materiales_titulo', 'label' => 'Título de sección', 'name' => 'materiales_titulo', 'type' => 'text', 'default_value' => 'Materiales y fabricantes', 'wrapper' => array( 'width' => '50' ) ),
+			array( 'key' => 'field_inicio_materiales_descripcion', 'label' => 'Descripción', 'name' => 'materiales_descripcion', 'type' => 'textarea', 'rows' => 2, 'default_value' => 'Soluciones y materiales seleccionados según las necesidades técnicas de cada proyecto.', 'instructions' => 'Nota: Los logotipos de fabricantes colaboradores se gestionan en "Fabricantes".' ),
+
+			// Pestaña 8: Artículos de Conocimiento
+			array( 'key' => 'tab_inicio_articulos', 'label' => '8. Bloque Artículos', 'type' => 'tab' ),
+			array( 'key' => 'field_inicio_articulos_tag', 'label' => 'Etiqueta superior', 'name' => 'articulos_tag', 'type' => 'text', 'default_value' => 'BIBLIOTECA TÉCNICA', 'wrapper' => array( 'width' => '33' ) ),
+			array( 'key' => 'field_inicio_articulos_titulo', 'label' => 'Título de sección', 'name' => 'articulos_titulo', 'type' => 'text', 'default_value' => 'Conocimiento', 'wrapper' => array( 'width' => '33' ) ),
+			array( 'key' => 'field_inicio_articulos_cta_texto', 'label' => 'Texto botón enlace', 'name' => 'articulos_cta_texto', 'type' => 'text', 'default_value' => 'Ver todo', 'wrapper' => array( 'width' => '33' ), 'instructions' => 'Nota: Las publicaciones se redactan en el menú "Entradas".' ),
+
+			// Pestaña 9: Contacto Final
+			array( 'key' => 'tab_inicio_contacto', 'label' => '9. Bloque Contacto Final', 'type' => 'tab' ),
+			array( 'key' => 'field_inicio_contacto_titulo', 'label' => 'Título de la llamada a la acción', 'name' => 'contacto_titulo', 'type' => 'textarea', 'rows' => 2, 'default_value' => "Hablemos de tu\npróximo proyecto." ),
+			array( 'key' => 'field_inicio_contacto_descripcion', 'label' => 'Descripción', 'name' => 'contacto_descripcion', 'type' => 'textarea', 'rows' => 3, 'default_value' => 'Una única interlocución para coordinar arquitectura, compras, instalaciones y obra completa. Sin intermediarios ni imprevistos.', 'instructions' => 'Nota: Los teléfonos, email y dirección se configuran en "Ajustes del sitio".' ),
+		),
+	) );
+
+	// -------------------------------------------------------------------------
+	// 2. PROYECTOS
+	// -------------------------------------------------------------------------
 	acf_add_local_field_group( array(
 		'key'          => 'group_proyecto',
 		'title'        => 'Datos del Proyecto',
@@ -206,21 +312,25 @@ add_action( 'acf/include_fields', function () {
 		),
 	) );
 
-	// Sectores.
+	// -------------------------------------------------------------------------
+	// 3. SERVICIOS (Sectores)
+	// -------------------------------------------------------------------------
 	acf_add_local_field_group( array(
 		'key'          => 'group_sector',
-		'title'        => 'Datos del Sector',
+		'title'        => 'Datos del Servicio',
 		'show_in_rest' => 1,
 		'location'     => array( array( array( 'param' => 'post_type', 'operator' => '==', 'value' => 'sector' ) ) ),
 		'fields'       => array(
 			array( 'key' => 'field_sector_numero', 'label' => 'Número (p. ej. 01)', 'name' => 'numero', 'type' => 'text', 'wrapper' => array( 'width' => '25' ) ),
 			array( 'key' => 'field_sector_enlace', 'label' => 'Enlace', 'name' => 'enlace', 'type' => 'url', 'wrapper' => array( 'width' => '75' ) ),
 			array( 'key' => 'field_sector_descripcion', 'label' => 'Descripción', 'name' => 'descripcion', 'type' => 'textarea' ),
-			array( 'key' => 'field_sector_imagen', 'label' => 'Imagen del sector', 'name' => 'imagen', 'type' => 'image', 'return_format' => 'url' ),
+			array( 'key' => 'field_sector_imagen', 'label' => 'Imagen del servicio', 'name' => 'imagen', 'type' => 'image', 'return_format' => 'url' ),
 		),
 	) );
 
-	// Fases.
+	// -------------------------------------------------------------------------
+	// 4. FASES DEL MÉTODO
+	// -------------------------------------------------------------------------
 	acf_add_local_field_group( array(
 		'key'          => 'group_fase',
 		'title'        => 'Datos de la Fase',
@@ -233,7 +343,9 @@ add_action( 'acf/include_fields', function () {
 		),
 	) );
 
-	// Fabricantes.
+	// -------------------------------------------------------------------------
+	// 5. FABRICANTES Y MATERIALES
+	// -------------------------------------------------------------------------
 	acf_add_local_field_group( array(
 		'key'          => 'group_fabricante',
 		'title'        => 'Datos del Fabricante',
@@ -245,20 +357,24 @@ add_action( 'acf/include_fields', function () {
 		),
 	) );
 
-	// Slides.
+	// -------------------------------------------------------------------------
+	// 6. SLIDES (Hero / Showcase)
+	// -------------------------------------------------------------------------
 	acf_add_local_field_group( array(
 		'key'          => 'group_slide',
-		'title'        => 'Datos del Slide',
+		'title'        => 'Datos de la Diapositiva',
 		'show_in_rest' => 1,
 		'location'     => array( array( array( 'param' => 'post_type', 'operator' => '==', 'value' => 'slide' ) ) ),
 		'fields'       => array(
-			array( 'key' => 'field_slide_grupo', 'label' => 'Grupo', 'name' => 'grupo', 'type' => 'select', 'choices' => array( 'hero' => 'Hero', 'showcase' => 'Showcase' ), 'default_value' => 'hero', 'wrapper' => array( 'width' => '25' ) ),
+			array( 'key' => 'field_slide_grupo', 'label' => 'Grupo en la Portada', 'name' => 'grupo', 'type' => 'select', 'choices' => array( 'hero' => 'Hero (Carrusel de entrada)', 'showcase' => 'Showcase (Taller de soluciones)' ), 'default_value' => 'hero', 'wrapper' => array( 'width' => '25' ) ),
 			array( 'key' => 'field_slide_alt', 'label' => 'Texto alternativo', 'name' => 'alt', 'type' => 'text', 'wrapper' => array( 'width' => '75' ) ),
 			array( 'key' => 'field_slide_imagen', 'label' => 'Imagen', 'name' => 'imagen', 'type' => 'image', 'return_format' => 'url' ),
 		),
 	) );
 
-	// Guías.
+	// -------------------------------------------------------------------------
+	// 7. GUÍAS
+	// -------------------------------------------------------------------------
 	acf_add_local_field_group( array(
 		'key'          => 'group_guia',
 		'title'        => 'Datos de la Guía',
@@ -273,7 +389,9 @@ add_action( 'acf/include_fields', function () {
 		),
 	) );
 
-	// Descargas.
+	// -------------------------------------------------------------------------
+	// 8. DESCARGAS
+	// -------------------------------------------------------------------------
 	acf_add_local_field_group( array(
 		'key'          => 'group_descarga',
 		'title'        => 'Datos de la Descarga',
@@ -288,7 +406,9 @@ add_action( 'acf/include_fields', function () {
 		),
 	) );
 
-	// Ajustes del sitio.
+	// -------------------------------------------------------------------------
+	// 9. AJUSTES DEL SITIO
+	// -------------------------------------------------------------------------
 	acf_add_local_field_group( array(
 		'key'          => 'group_ajuste',
 		'title'        => 'Datos de contacto y marca',

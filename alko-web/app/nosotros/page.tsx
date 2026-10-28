@@ -8,6 +8,7 @@ import Materials from "@/components/sections/Materials";
 import Process from "@/components/sections/Process";
 import { METHOD_HREF, ROUTES } from "@/lib/site";
 import { getFabricantes, getFases, getProjects, getSectors, getSettings } from "@/lib/wordpress";
+import { getDbNosotrosPageContent } from "@/lib/db/mysql";
 
 export const revalidate = 60;
 
@@ -25,69 +26,20 @@ export const metadata = {
   },
 };
 
-const pilares = [
-  {
-    numero: "01",
-    titulo: "Arquitectura",
-    texto:
-      "Partimos del proyecto y de su viabilidad técnica: mediciones, soluciones constructivas y materiales definidos antes de empezar la obra.",
-    imagen: "/proceso-control.jpg",
-  },
-  {
-    numero: "02",
-    titulo: "Construcción",
-    texto:
-      "Ejecutamos la obra civil, las instalaciones y los acabados con una secuencia por fases y control de tolerancias en cada partida.",
-    imagen: "/proceso-construccion.jpg",
-  },
-  {
-    numero: "03",
-    titulo: "Dirección integrada",
-    texto:
-      "Un mismo equipo coordina compras, gremios y plazos, de modo que proyecto y obra responden a una sola dirección técnica.",
-    imagen: "/proceso-coordinacion.jpg",
-  },
-];
-
-const valores = [
-  {
-    numero: "01",
-    titulo: "Un interlocutor",
-    texto:
-      "Una sola dirección técnica responde de proyecto, compras, gremios y obra. Sin intermediarios ni versiones contradictorias.",
-    Icon: Handshake,
-  },
-  {
-    numero: "02",
-    titulo: "Plazos controlados",
-    texto: "Planificación por fases con hitos claros y seguimiento continuo del avance de la obra.",
-    Icon: CalendarClock,
-  },
-  {
-    numero: "03",
-    titulo: "Costes previsibles",
-    texto: "Partidas definidas desde el presupuesto y compras anticipadas para reducir imprevistos.",
-    Icon: Wallet,
-  },
-  {
-    numero: "04",
-    titulo: "Calidad verificada",
-    texto: "Control técnico en cada fase, pruebas y revisión de acabados hasta la entrega.",
-    Icon: BadgeCheck,
-  },
-];
+const VALOR_ICONS = [Handshake, CalendarClock, Wallet, BadgeCheck];
 
 export default async function NosotrosPage() {
-  const [settings, projects, sectors, fases, fabricantes] = await Promise.all([
+  const [settings, projects, sectors, fases, fabricantes, pageContent] = await Promise.all([
     getSettings(),
     getProjects(),
     getSectors(),
     getFases(),
     getFabricantes(),
+    getDbNosotrosPageContent(),
   ]);
 
   const destacado = projects[0];
-  const cifras = [
+  const cifras = pageContent.cifras && pageContent.cifras.length > 0 ? pageContent.cifras : [
     { valor: "1996", etiqueta: "Construyendo y reformando en Madrid" },
     { valor: "1", etiqueta: "Interlocutor para todo el proyecto" },
     sectors.length > 0 && { valor: String(sectors.length), etiqueta: "Servicios y sectores especializados" },
@@ -97,31 +49,33 @@ export default async function NosotrosPage() {
   const enlaces = [
     {
       href: ROUTES.team,
-      etiqueta: "Equipo",
-      titulo: "Las personas detrás de cada obra",
-      imagen: "/proceso-entrega.jpg",
+      etiqueta: pageContent.enlaceEquipoEtiqueta || "Equipo",
+      titulo: pageContent.enlaceEquipoTitulo || "Las personas detrás de cada obra",
+      imagen: pageContent.enlaceEquipoImagen || "/proceso-entrega.jpg",
     },
     {
       href: ROUTES.careers,
-      etiqueta: "Trabaja con nosotros",
-      titulo: "Buscamos profesionales con criterio",
-      imagen: "/proceso-instalaciones.jpg",
+      etiqueta: pageContent.enlaceEmpleoEtiqueta || "Trabaja con nosotros",
+      titulo: pageContent.enlaceEmpleoTitulo || "Buscamos profesionales con criterio",
+      imagen: pageContent.enlaceEmpleoImagen || "/proceso-instalaciones.jpg",
     },
   ];
 
   return (
     <main className="bg-white text-stone-900">
       <PageHero
-        eyebrow="NOSOTROS"
+        eyebrow={pageContent.headerBadge || "NOSOTROS"}
         title={
-          <>
-            Arquitectura.
-            <br className="hidden sm:block" /> Construcción.
-            <br className="hidden sm:block" /> Dirección integrada.
-          </>
+          <span className="whitespace-pre-line">
+            {pageContent.headerTitulo}
+          </span>
         }
-        description="Estudio de construcción y reformas integrales en Madrid. Menos interfaces, más control."
-        image="/oficinas.jpg"
+        description={
+          <span className="whitespace-pre-line">
+            {pageContent.headerDescripcion}
+          </span>
+        }
+        image={pageContent.headerBgImage || "/oficinas.jpg"}
       />
 
       {/* Introducción */}
@@ -146,27 +100,24 @@ export default async function NosotrosPage() {
                   <span className="h-1.5 w-1.5 rounded-full bg-amber-700" />
                 </span>
                 <span className="font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase">
-                  Sobre ALKO · Desde 1996
+                  {pageContent.introTag}
                 </span>
               </div>
-              <h2 className="mt-8 font-serif font-light text-4xl sm:text-5xl lg:text-6xl text-stone-900 leading-[1.05] tracking-tight">
-                Un criterio único para cada obra.
+              <h2 className="mt-8 font-serif font-light text-4xl sm:text-5xl lg:text-6xl text-stone-900 leading-[1.05] tracking-tight whitespace-pre-line">
+                {pageContent.introTitulo}
               </h2>
             </div>
 
             <div className="reveal-item lg:col-span-7 lg:pt-14" style={{ transitionDelay: "120ms" }}>
-              <p className="font-serif font-light text-2xl sm:text-3xl text-stone-900 leading-snug tracking-tight">
-                Construimos y reformamos espacios en los que querrías vivir y trabajar, con un único
-                responsable desde la primera visita hasta la entrega.
+              <p className="font-serif font-light text-2xl sm:text-3xl text-stone-900 leading-snug tracking-tight whitespace-pre-line">
+                {pageContent.introLead}
               </p>
               <div className="mt-10 grid grid-cols-1 gap-6 border-t border-stone-900/15 pt-10 sm:grid-cols-2">
-                <p className="text-base sm:text-lg font-light text-stone-600 leading-relaxed">
-                  Coordinamos proyecto, compras, instalaciones y acabados bajo una misma dirección
-                  técnica. Así cada decisión se toma con toda la obra a la vista.
+                <p className="text-base sm:text-lg font-light text-stone-600 leading-relaxed whitespace-pre-line">
+                  {pageContent.introCol1}
                 </p>
-                <p className="text-base sm:text-lg font-light text-stone-600 leading-relaxed">
-                  Reformas integrales, obra nueva y adecuaciones de viviendas, oficinas y espacios
-                  comerciales, sin intermediarios ni imprevistos.
+                <p className="text-base sm:text-lg font-light text-stone-600 leading-relaxed whitespace-pre-line">
+                  {pageContent.introCol2}
                 </p>
               </div>
               <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
@@ -230,7 +181,7 @@ export default async function NosotrosPage() {
           >
             {cifras.map((cifra, i) => (
               <div
-                key={cifra.etiqueta}
+                key={cifra.etiqueta + i}
                 className="reveal-item flex flex-col-reverse justify-end border-t border-white/20 pt-6"
                 style={{ transitionDelay: `${i * 90}ms` }}
               >
@@ -246,28 +197,27 @@ export default async function NosotrosPage() {
         </Container>
       </section>
 
-      {/* Cómo trabajamos */}
+      {/* Cómo trabajamos (Pilares) */}
       <section className="py-20 sm:py-28">
         <Container>
           <div className="flex flex-col gap-6 border-b border-stone-900/15 pb-10 md:flex-row md:items-end md:justify-between">
             <div className="reveal-item max-w-2xl">
               <span className="font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase">
-                Cómo trabajamos
+                {pageContent.pilaresTag}
               </span>
-              <h2 className="mt-6 font-serif font-light text-3xl sm:text-4xl lg:text-5xl text-stone-900 leading-tight tracking-tight">
-                Tres disciplinas, una sola dirección.
+              <h2 className="mt-6 font-serif font-light text-3xl sm:text-4xl lg:text-5xl text-stone-900 leading-tight tracking-tight whitespace-pre-line">
+                {pageContent.pilaresTitulo}
               </h2>
             </div>
-            <p className="reveal-item max-w-md text-base font-light text-stone-600 leading-relaxed">
-              Lo que en otras obras son tres empresas distintas, en ALKO es un mismo equipo que responde
-              de principio a fin.
+            <p className="reveal-item max-w-md text-base font-light text-stone-600 leading-relaxed whitespace-pre-line">
+              {pageContent.pilaresDescripcion}
             </p>
           </div>
 
           <div className="mt-12 grid grid-cols-1 gap-12 md:grid-cols-3 md:gap-8">
-            {pilares.map((pilar, i) => (
+            {(pageContent.pilares || []).map((pilar, i) => (
               <article
-                key={pilar.numero}
+                key={pilar.numero + i}
                 className="reveal-item"
                 style={{ transitionDelay: `${i * 120}ms` }}
               >
@@ -283,10 +233,10 @@ export default async function NosotrosPage() {
                 <span className="mt-6 block font-mono text-[11px] tracking-[0.2em] text-amber-700">
                   {pilar.numero}
                 </span>
-                <h3 className="mt-3 font-serif font-light text-2xl sm:text-3xl text-stone-900">
+                <h3 className="mt-3 font-serif font-light text-2xl sm:text-3xl text-stone-900 whitespace-pre-line">
                   {pilar.titulo}
                 </h3>
-                <p className="mt-3 text-base font-light text-stone-600 leading-relaxed">{pilar.texto}</p>
+                <p className="mt-3 text-base font-light text-stone-600 leading-relaxed whitespace-pre-line">{pilar.texto}</p>
               </article>
             ))}
           </div>
@@ -304,29 +254,24 @@ export default async function NosotrosPage() {
                     <span className="h-1.5 w-1.5 rounded-full bg-amber-700" />
                   </span>
                   <span className="font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase">
-                    El método ALKO
+                    {pageContent.metodoTag}
                   </span>
                 </div>
-                <h2 className="mt-8 font-serif font-light text-4xl sm:text-5xl text-stone-900 leading-[1.05] tracking-tight">
-                  Una dirección, muchas manos.
+                <h2 className="mt-8 font-serif font-light text-4xl sm:text-5xl text-stone-900 leading-[1.05] tracking-tight whitespace-pre-line">
+                  {pageContent.metodoTitulo}
                 </h2>
               </div>
 
               <div className="reveal-item lg:col-span-7 lg:pt-4" style={{ transitionDelay: "120ms" }}>
-                <p className="font-serif font-light text-2xl sm:text-3xl text-stone-900 leading-snug tracking-tight">
-                  Coordinar antes que ejecutar: un único equipo mantiene construcción, instalaciones,
-                  compras y gestión técnica bajo control de principio a fin.
+                <p className="font-serif font-light text-2xl sm:text-3xl text-stone-900 leading-snug tracking-tight whitespace-pre-line">
+                  {pageContent.metodoLead}
                 </p>
                 <div className="mt-10 grid grid-cols-1 gap-6 border-t border-stone-900/15 pt-10 sm:grid-cols-2">
-                  <p className="text-base sm:text-lg font-light text-stone-600 leading-relaxed">
-                    Trabajamos como un solo equipo, no como departamentos aislados. Antes de empezar la
-                    obra definimos la secuencia, el calendario y las compras críticas para que cada
-                    oficio entre en el momento exacto.
+                  <p className="text-base sm:text-lg font-light text-stone-600 leading-relaxed whitespace-pre-line">
+                    {pageContent.metodoCol1}
                   </p>
-                  <p className="text-base sm:text-lg font-light text-stone-600 leading-relaxed">
-                    Esa coordinación reduce interfaces, acelera decisiones y mantiene la coherencia
-                    técnica del proyecto. El resultado es una ejecución previsible, sin sorpresas de plazo
-                    ni de coste.
+                  <p className="text-base sm:text-lg font-light text-stone-600 leading-relaxed whitespace-pre-line">
+                    {pageContent.metodoCol2}
                   </p>
                 </div>
               </div>
@@ -334,7 +279,7 @@ export default async function NosotrosPage() {
 
             <div className="reveal-scale relative mt-14 aspect-[16/9] w-full overflow-hidden bg-stone-200 sm:mt-20 sm:aspect-[16/7]">
               <Image
-                src="/proceso-compras.jpg"
+                src={pageContent.metodoImagen || "/proceso-compras.jpg"}
                 alt="Compras y planificación de la obra por el equipo de ALKO"
                 fill
                 sizes="(max-width: 1280px) 100vw, 1200px"
@@ -344,7 +289,7 @@ export default async function NosotrosPage() {
           </Container>
         </section>
 
-        {/* Las fases del proceso (id propio: "metodo" es el de este contenedor) */}
+        {/* Las fases del proceso */}
         <Process fases={fases} id="fases" />
       </div>
 
@@ -354,33 +299,36 @@ export default async function NosotrosPage() {
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-16">
             <div className="reveal-item lg:col-span-4">
               <span className="font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase">
-                Valores
+                {pageContent.valoresTag}
               </span>
-              <h2 className="mt-6 font-serif font-light text-3xl sm:text-4xl lg:text-5xl text-stone-900 leading-tight tracking-tight">
-                Lo que marca la diferencia.
+              <h2 className="mt-6 font-serif font-light text-3xl sm:text-4xl lg:text-5xl text-stone-900 leading-tight tracking-tight whitespace-pre-line">
+                {pageContent.valoresTitulo}
               </h2>
-              <p className="mt-6 max-w-sm text-base font-light text-stone-600 leading-relaxed">
-                Cuatro compromisos que aplicamos igual en una vivienda que en una sede corporativa.
+              <p className="mt-6 max-w-sm text-base font-light text-stone-600 leading-relaxed whitespace-pre-line">
+                {pageContent.valoresDescripcion}
               </p>
             </div>
 
             <div className="grid grid-cols-1 gap-px bg-stone-900/15 border border-stone-900/15 sm:grid-cols-2 lg:col-span-8">
-              {valores.map((valor, i) => (
-                <div
-                  key={valor.numero}
-                  className="reveal-item flex flex-col bg-stone-100 p-8 sm:p-10"
-                  style={{ transitionDelay: `${i * 90}ms` }}
-                >
-                  <div className="flex items-center justify-between">
-                    <valor.Icon className="h-7 w-7 text-amber-700" strokeWidth={1.25} aria-hidden="true" />
-                    <span className="font-mono text-[11px] tracking-[0.2em] text-stone-500">{valor.numero}</span>
+              {(pageContent.valores || []).map((valor, i) => {
+                const IconComponent = VALOR_ICONS[i % VALOR_ICONS.length];
+                return (
+                  <div
+                    key={valor.numero + i}
+                    className="reveal-item flex flex-col bg-stone-100 p-8 sm:p-10"
+                    style={{ transitionDelay: `${i * 90}ms` }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <IconComponent className="h-7 w-7 text-amber-700" strokeWidth={1.25} aria-hidden="true" />
+                      <span className="font-mono text-[11px] tracking-[0.2em] text-stone-500">{valor.numero}</span>
+                    </div>
+                    <h3 className="mt-8 font-serif font-light text-2xl sm:text-3xl text-stone-900 whitespace-pre-line">
+                      {valor.titulo}
+                    </h3>
+                    <p className="mt-3 text-base font-light text-stone-600 leading-relaxed whitespace-pre-line">{valor.texto}</p>
                   </div>
-                  <h3 className="mt-8 font-serif font-light text-2xl sm:text-3xl text-stone-900">
-                    {valor.titulo}
-                  </h3>
-                  <p className="mt-3 text-base font-light text-stone-600 leading-relaxed">{valor.texto}</p>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </Container>

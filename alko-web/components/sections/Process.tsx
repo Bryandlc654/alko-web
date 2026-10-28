@@ -1,5 +1,5 @@
 import Image from "next/image";
-import type { Fase } from "@/lib/types";
+import type { Fase, HomeContent } from "@/lib/types";
 
 /** Extrae el número de fase (p. ej. "(01)") a partir del tag o del índice. */
 function phaseNumber(fase: Fase, index: number) {
@@ -7,7 +7,7 @@ function phaseNumber(fase: Fase, index: number) {
   return (match ? match[0] : String(index + 1)).padStart(2, "0");
 }
 
-export default function Process({ fases, id = "metodo" }: { fases: Fase[]; id?: string }) {
+export default function Process({ fases, id = "metodo", content }: { fases: Fase[]; id?: string; content?: HomeContent }) {
   const first = fases[0];
 
   return (
@@ -20,10 +20,10 @@ export default function Process({ fases, id = "metodo" }: { fases: Fase[]; id?: 
         <div className="reveal-item flex items-baseline justify-between pb-12 sm:pb-16 border-b border-stone-300/60">
           <div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-light text-stone-900 tracking-tight leading-none">
-              Nuestro proceso
+              {content?.procesoTitulo ?? "Nuestro proceso"}
             </h2>
             <span className="block mt-2 font-mono text-[11px] tracking-[0.25em] text-stone-500 uppercase">
-              SECUENCIA DE COORDINACIÓN INTEGRAL · 6 FASES · 1 EQUIPO
+              {content?.procesoSubtitulo ?? "SECUENCIA DE COORDINACIÓN INTEGRAL · 6 FASES · 1 EQUIPO"}
             </span>
           </div>
         </div>

@@ -8,11 +8,13 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        // Una única tipografía para todo el sitio: EB Garamond.
+        // Tipografía para el sitio público: EB Garamond
         sans: ["var(--font-eb-garamond)", "Georgia", "serif"],
         display: ["var(--font-eb-garamond)", "Georgia", "serif"],
         serif: ["var(--font-eb-garamond)", "Georgia", "serif"],
         mono: ["var(--font-eb-garamond)", "Georgia", "serif"],
+        // Tipografía exclusiva para el panel de administración: Poppins
+        poppins: ["var(--font-poppins)", "sans-serif"],
       },
       colors: {
         // Paleta única del sitio: #c98300 · #e1e1df · #545454 · #000 · #ffffff
@@ -56,4 +58,3 @@ const config: Config = {
 };
 
 export default config;
-

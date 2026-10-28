@@ -57,6 +57,8 @@ export interface Project {
   /** Duración de la obra (p. ej. «20 semanas»). */
   plazo: string;
   imagen: string;
+  fotoAntes?: string;
+  fotoDespues?: string;
   /** Imágenes adicionales para la galería del detalle (puede estar vacía). */
   galeria: string[];
   enlace: string;
@@ -159,6 +161,56 @@ export interface SiteSettings {
   instagram: string;
 }
 
+/** Contenido editable de los bloques y textos de la página de inicio. */
+export interface HomeContent {
+  // Hero
+  heroTitulo: string;
+  heroSubtitulo: string;
+  heroDescripcion: string;
+  heroCtaTexto: string;
+  heroSecundarioTexto: string;
+  heroSlides?: Slide[];
+
+  // Bloque Proyectos
+  proyectosTitulo: string;
+  proyectosSubtitulo: string;
+  proyectosCtaTexto: string;
+
+  // Bloque Proceso / Método
+  procesoTitulo: string;
+  procesoSubtitulo: string;
+
+  // Bloque Servicios
+  serviciosTag: string;
+  serviciosTitulo: string;
+  serviciosDescripcion: string;
+
+  // Bloque Showcase / Taller
+  workshopBadge: string;
+  workshopTitulo: string;
+  workshopDescripcion: string;
+  workshopSlides?: Slide[];
+
+  // Bloque Experiencia (90 días)
+  experienciaImagen: string;
+  experienciaBadges: string[];
+
+  // Bloque Materiales y Fabricantes
+  materialesTag: string;
+  materialesTitulo: string;
+  materialesDescripcion: string;
+
+  // Bloque Artículos
+  articulosTag: string;
+  articulosTitulo: string;
+  articulosCtaTexto: string;
+
+  // Bloque Contacto Final
+  contactoTitulo: string;
+  contactoDescripcion: string;
+  contactoBgImagen?: string;
+}
+
 /** Datos agregados que consume la página de inicio. */
 export interface HomeData {
   heroSlides: Slide[];
@@ -169,4 +221,77 @@ export interface HomeData {
   fabricantes: Fabricante[];
   articles: Article[];
   settings: SiteSettings;
+  homeContent: HomeContent;
+}
+
+export interface ProjectsPageContent {
+  headerBadge: string;
+  headerTitulo: string;
+  headerDescripcion: string;
+  headerBgImage: string;
+  portfolioTag: string;
+  portfolioTitulo: string;
+}
+
+export interface PilarNosotros {
+  numero: string;
+  titulo: string;
+  texto: string;
+  imagen: string;
+}
+
+export interface ValorNosotros {
+  numero: string;
+  titulo: string;
+  texto: string;
+}
+
+export interface CifraNosotros {
+  valor: string;
+  etiqueta: string;
+}
+
+export interface NosotrosPageContent {
+  headerBadge: string;
+  headerTitulo: string;
+  headerDescripcion: string;
+  headerBgImage: string;
+
+  // Intro
+  introTag: string;
+  introTitulo: string;
+  introLead: string;
+  introCol1: string;
+  introCol2: string;
+
+  // Cifras
+  cifras: CifraNosotros[];
+
+  // Pilares (Cómo trabajamos)
+  pilaresTag: string;
+  pilaresTitulo: string;
+  pilaresDescripcion: string;
+  pilares: PilarNosotros[];
+
+  // Método ALKO
+  metodoTag: string;
+  metodoTitulo: string;
+  metodoLead: string;
+  metodoCol1: string;
+  metodoCol2: string;
+  metodoImagen: string;
+
+  // Valores
+  valoresTag: string;
+  valoresTitulo: string;
+  valoresDescripcion: string;
+  valores: ValorNosotros[];
+
+  // Enlaces inferiores (Equipo y Empleo)
+  enlaceEquipoEtiqueta: string;
+  enlaceEquipoTitulo: string;
+  enlaceEquipoImagen: string;
+  enlaceEmpleoEtiqueta: string;
+  enlaceEmpleoTitulo: string;
+  enlaceEmpleoImagen: string;
 }

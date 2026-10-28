@@ -23,6 +23,7 @@ if (wpUrl) {
 const nextConfig = {
   reactStrictMode: true,
   outputFileTracingRoot: __dirname,
+  serverExternalPackages: ["mysql2", "bcryptjs"],
   poweredByHeader: false,
   images: {
     // Solo WebP: AVIF pesa algo menos, pero codificarlo es varias veces más lento y la
