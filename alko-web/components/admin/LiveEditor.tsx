@@ -11,8 +11,6 @@ import {
   Eye,
   Plus,
   CheckCircle2,
-  Smartphone,
-  Tablet,
   Monitor,
 } from "lucide-react";
 import type {
@@ -100,8 +98,6 @@ export default function LiveEditor({
   const [activeShowcaseSlideIndex, setActiveShowcaseSlideIndex] = useState(0);
   const [activeFaseIndex, setActiveFaseIndex] = useState(0);
   const [activeNosotrosFaseIndex, setActiveNosotrosFaseIndex] = useState(0);
-
-  const [device, setDevice] = useState<"desktop" | "tablet" | "mobile">("desktop");
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -319,44 +315,12 @@ export default function LiveEditor({
           </div>
         </div>
 
-        {/* Centro: Selector de Dispositivo Responsive */}
+        {/* Centro: Vista Escritorio */}
         <div className="hidden lg:flex items-center bg-slate-100/90 p-1 rounded-xl border border-slate-200">
-          <button
-            type="button"
-            onClick={() => setDevice("desktop")}
-            className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium transition ${
-              device === "desktop"
-                ? "bg-white text-blue-600 shadow-sm font-semibold"
-                : "text-slate-600 hover:text-slate-900"
-            }`}
-          >
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-white text-blue-600 shadow-xs">
             <Monitor className="w-3.5 h-3.5" />
             <span>Escritorio</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setDevice("tablet")}
-            className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium transition ${
-              device === "tablet"
-                ? "bg-white text-blue-600 shadow-sm font-semibold"
-                : "text-slate-600 hover:text-slate-900"
-            }`}
-          >
-            <Tablet className="w-3.5 h-3.5" />
-            <span>Tablet</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setDevice("mobile")}
-            className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium transition ${
-              device === "mobile"
-                ? "bg-white text-blue-600 shadow-sm font-semibold"
-                : "text-slate-600 hover:text-slate-900"
-            }`}
-          >
-            <Smartphone className="w-3.5 h-3.5" />
-            <span>Móvil</span>
-          </button>
+          </div>
         </div>
 
         {/* Derecha: Estado, Enlace a Web y Publicar */}
@@ -424,15 +388,7 @@ export default function LiveEditor({
           LIENZO DE EDICIÓN EN VIVO A PANTALLA COMPLETA
           ======================================================== */}
       <div className="flex-1 overflow-y-auto flex justify-center p-0 lg:p-6 bg-slate-200/80">
-        <div
-          className={`w-full transition-all duration-300 bg-black text-white shadow-2xl relative ${
-            device === "desktop"
-              ? "max-w-full lg:rounded-2xl overflow-hidden border border-slate-300/80"
-              : device === "tablet"
-              ? "max-w-[768px] my-4 rounded-2xl overflow-hidden border-8 border-slate-800"
-              : "max-w-[420px] my-4 rounded-3xl overflow-hidden border-8 border-slate-800"
-          }`}
-        >
+        <div className="w-full transition-all duration-300 bg-black text-white shadow-2xl relative max-w-full lg:rounded-2xl overflow-hidden border border-slate-300/80">
           {/* ========================================================
               NAV HEADER (RÉPLICA VISUAL COMPLETA CON LOGO)
               ======================================================== */}
