@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import { Camera, Upload, Trash2, Loader2, Sparkles } from "lucide-react";
 
@@ -33,6 +33,11 @@ export default function InlineImage({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [loadError, setLoadError] = useState(false);
+
+  useEffect(() => {
+    setLoadError(false);
+  }, [src]);
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -51,6 +56,7 @@ export default function InlineImage({
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Error al subir imagen");
 
+      setLoadError(false);
       onImageChange(data.url);
     } catch (err: any) {
       alert("Error subiendo imagen: " + (err.message || "Error desconocido"));
@@ -62,29 +68,34 @@ export default function InlineImage({
     }
   };
 
+  const isPositioned = className.includes("absolute") || className.includes("fixed");
+
   return (
     <div
-      className={`relative group/image-edit overflow-hidden cursor-pointer ${className}`}
+      className={`${isPositioned ? "" : "relative"} group/image-edit overflow-hidden cursor-pointer ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => fileInputRef.current?.click()}
     >
       {/* Imagen real */}
-      {src ? (
+      {src && !loadError ? (
         <Image
           src={src}
           alt={alt || "Imagen de portada ALKO"}
           fill={fill}
           priority={priority}
           sizes="100vw"
+          onError={() => setLoadError(true)}
           className={`transition duration-300 ${imageClassName} ${
             isHovered ? "filter brightness-90 scale-[1.01]" : ""
           }`}
         />
       ) : (
-        <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900/60 text-slate-300 border-2 border-dashed border-slate-600/60 p-6 text-center">
+        <div className="w-full h-full flex flex-col items-center justify-center bg-stone-900/80 text-stone-300 border-2 border-dashed border-stone-600/60 p-6 text-center">
           <Camera className="w-10 h-10 mb-2 opacity-50" />
-          <span className="text-xs font-poppins font-medium">Sin imagen (Clic para subir)</span>
+          <span className="text-xs font-poppins font-medium">
+            {loadError ? "Error al cargar imagen (Clic para reemplazar)" : "Sin imagen (Clic para subir)"}
+          </span>
         </div>
       )}
 

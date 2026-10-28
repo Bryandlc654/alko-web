@@ -1114,18 +1114,21 @@ export default function LiveEditor({
             <div className="bg-white text-stone-900 w-full">
               {/* Header Hero de Proyectos con edición en vivo */}
               <header className="relative isolate flex min-h-[640px] sm:min-h-[720px] lg:min-h-[86vh] items-end overflow-hidden bg-stone-950 text-white pt-36 sm:pt-44 pb-12 sm:pb-16 group">
-                <InlineImage
-                  src={projectsContent.headerBgImage || projects[0]?.imagen || "/start-research-1.jpg"}
-                  alt="Fondo de cabecera de proyectos"
-                  label="Cambiar imagen de fondo de proyectos"
-                  onImageChange={(newUrl) => updateProjectsField("headerBgImage", newUrl)}
-                  className="w-full h-full"
-                  imageClassName="object-cover object-center"
-                />
+                <div className="absolute inset-0 z-0 overflow-hidden">
+                  <InlineImage
+                    src={projectsContent.headerBgImage || projects[0]?.imagen || "/start-research-1.jpg"}
+                    alt="Fondo de cabecera de proyectos"
+                    label="Cambiar imagen de fondo de proyectos"
+                    onImageChange={(newUrl) => updateProjectsField("headerBgImage", newUrl)}
+                    className="w-full h-full"
+                    imageClassName="object-cover object-center"
+                    priority
+                  />
 
-                <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-stone-950/85 via-stone-950/45 to-stone-950/5" />
-                <div className="absolute inset-x-0 bottom-0 pointer-events-none h-2/3 bg-gradient-to-t from-stone-950/90 via-stone-950/40 to-transparent" />
-                <div className="absolute inset-x-0 top-0 pointer-events-none h-40 bg-gradient-to-b from-stone-950/70 to-transparent" />
+                  <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-stone-950/85 via-stone-950/45 to-stone-950/5" />
+                  <div className="absolute inset-x-0 bottom-0 pointer-events-none h-2/3 bg-gradient-to-t from-stone-950/90 via-stone-950/40 to-transparent" />
+                  <div className="absolute inset-x-0 top-0 pointer-events-none h-40 bg-gradient-to-b from-stone-950/70 to-transparent" />
+                </div>
 
                 <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-12 lg:px-16 w-full">
                   <div className="mb-8">
@@ -1187,18 +1190,21 @@ export default function LiveEditor({
             <div className="bg-white text-stone-900 w-full">
               {/* 1. Header Hero de Nosotros */}
               <header className="relative isolate flex min-h-[560px] sm:min-h-[620px] lg:min-h-[72vh] items-end overflow-hidden bg-stone-950 text-white pt-36 sm:pt-44 pb-14 sm:pb-20 group">
-                <InlineImage
-                  src={nosotrosContent.headerBgImage || "/oficinas.jpg"}
-                  alt="Fondo de cabecera Nosotros"
-                  label="Cambiar imagen de cabecera"
-                  onImageChange={(newUrl) => updateNosotrosField("headerBgImage", newUrl)}
-                  className="w-full h-full"
-                  imageClassName="object-cover object-center"
-                />
+                <div className="absolute inset-0 z-0 overflow-hidden">
+                  <InlineImage
+                    src={nosotrosContent.headerBgImage || "/oficinas.jpg"}
+                    alt="Fondo de cabecera Nosotros"
+                    label="Cambiar imagen de cabecera"
+                    onImageChange={(newUrl) => updateNosotrosField("headerBgImage", newUrl)}
+                    className="w-full h-full"
+                    imageClassName="object-cover object-center"
+                    priority
+                  />
 
-                <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-stone-950/90 via-stone-950/55 to-stone-950/10" />
-                <div className="absolute inset-x-0 bottom-0 pointer-events-none h-2/3 bg-gradient-to-t from-stone-950/90 via-stone-950/40 to-transparent" />
-                <div className="absolute inset-x-0 top-0 pointer-events-none h-40 bg-gradient-to-b from-stone-950/70 to-transparent" />
+                  <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-stone-950/90 via-stone-950/55 to-stone-950/10" />
+                  <div className="absolute inset-x-0 bottom-0 pointer-events-none h-2/3 bg-gradient-to-t from-stone-950/90 via-stone-950/40 to-transparent" />
+                  <div className="absolute inset-x-0 top-0 pointer-events-none h-40 bg-gradient-to-b from-stone-950/70 to-transparent" />
+                </div>
 
                 <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 w-full">
                   <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-white/70 uppercase mb-4">
@@ -1579,15 +1585,17 @@ export default function LiveEditor({
                 <div className="grid grid-cols-1 md:grid-cols-2">
                   {/* Tarjeta 1: Equipo */}
                   <div className="relative isolate flex min-h-[320px] items-end overflow-hidden bg-stone-950 p-6 text-white sm:min-h-[380px] sm:p-10 lg:p-12 group">
-                    <InlineImage
-                      src={nosotrosContent.enlaceEquipoImagen || "/proceso-entrega.jpg"}
-                      alt="Equipo ALKO"
-                      label="Cambiar foto de equipo"
-                      onImageChange={(newUrl) => updateNosotrosField("enlaceEquipoImagen", newUrl)}
-                      className="w-full h-full"
-                      imageClassName="object-cover object-center opacity-60 group-hover:scale-105 group-hover:opacity-75 transition duration-700 ease-out"
-                    />
-                    <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-stone-950/90 via-stone-950/30 to-transparent" />
+                    <div className="absolute inset-0 z-0 overflow-hidden">
+                      <InlineImage
+                        src={nosotrosContent.enlaceEquipoImagen || "/proceso-entrega.jpg"}
+                        alt="Equipo ALKO"
+                        label="Cambiar foto de equipo"
+                        onImageChange={(newUrl) => updateNosotrosField("enlaceEquipoImagen", newUrl)}
+                        className="w-full h-full"
+                        imageClassName="object-cover object-center opacity-60 group-hover:scale-105 group-hover:opacity-75 transition duration-700 ease-out"
+                      />
+                      <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-stone-950/90 via-stone-950/30 to-transparent" />
+                    </div>
                     <div className="relative z-10 w-full">
                       <span className="font-mono text-[11px] tracking-[0.25em] uppercase text-white/70">
                         <InlineText
@@ -1610,15 +1618,17 @@ export default function LiveEditor({
 
                   {/* Tarjeta 2: Empleo */}
                   <div className="relative isolate flex min-h-[320px] items-end overflow-hidden bg-stone-950 p-6 text-white sm:min-h-[380px] sm:p-10 lg:p-12 group">
-                    <InlineImage
-                      src={nosotrosContent.enlaceEmpleoImagen || "/proceso-instalaciones.jpg"}
-                      alt="Empleo ALKO"
-                      label="Cambiar foto de empleo"
-                      onImageChange={(newUrl) => updateNosotrosField("enlaceEmpleoImagen", newUrl)}
-                      className="w-full h-full"
-                      imageClassName="object-cover object-center opacity-60 group-hover:scale-105 group-hover:opacity-75 transition duration-700 ease-out"
-                    />
-                    <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-stone-950/90 via-stone-950/30 to-transparent" />
+                    <div className="absolute inset-0 z-0 overflow-hidden">
+                      <InlineImage
+                        src={nosotrosContent.enlaceEmpleoImagen || "/proceso-instalaciones.jpg"}
+                        alt="Empleo ALKO"
+                        label="Cambiar foto de empleo"
+                        onImageChange={(newUrl) => updateNosotrosField("enlaceEmpleoImagen", newUrl)}
+                        className="w-full h-full"
+                        imageClassName="object-cover object-center opacity-60 group-hover:scale-105 group-hover:opacity-75 transition duration-700 ease-out"
+                      />
+                      <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-stone-950/90 via-stone-950/30 to-transparent" />
+                    </div>
                     <div className="relative z-10 w-full">
                       <span className="font-mono text-[11px] tracking-[0.25em] uppercase text-white/70">
                         <InlineText
