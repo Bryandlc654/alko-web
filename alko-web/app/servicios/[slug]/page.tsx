@@ -97,9 +97,19 @@ export default async function SectorDetail({
   ]);
   if (!sector) return notFound();
 
-  const { lead, sections } = parseService(sector.content);
-  const includes = sections.find((s) => s.items.length > 0 && /incluye/i.test(s.title)) ?? sections.find((s) => s.items.length > 0);
-  const others = sections.filter((s) => s !== includes);
+  const { lead: parsedLead, sections } = parseService(sector.content);
+  const parsedIncludes = sections.find((s) => s.items.length > 0 && /incluye/i.test(s.title)) ?? sections.find((s) => s.items.length > 0);
+  const others = sections.filter((s) => s !== parsedIncludes);
+
+  // Datos estructurados de la landing (editables desde el admin) con fallback
+  const landing = sector.landing;
+  const lead = landing?.lead || parsedLead || sector.descripcion;
+  const commitments = landing?.commitments && landing.commitments.length > 0 ? landing.commitments : COMMITMENTS;
+  const problems = landing?.problems && landing.problems.length > 0 ? landing.problems : PROBLEMS;
+  const includesItems = landing?.includes && landing.includes.length > 0 ? landing.includes : (parsedIncludes?.items || []);
+  const includesHeadline = landing?.includesHeadline || "Todo en un mismo equipo.";
+  const includesSubtitle = landing?.includesSubtitle || parsedIncludes?.title || "Qué incluye";
+  const faqList = landing?.faqs && landing.faqs.length > 0 ? landing.faqs : FAQ;
 
   // Obras de este servicio primero; si faltan, se completan con las demás.
   const own = projects.filter((project) => project.servicio === sector.slug);
@@ -111,6 +121,7 @@ export default async function SectorDetail({
   const mosaic = [
     ...new Set(
       [
+        ...(landing?.resultsImages && landing.resultsImages.length > 0 ? landing.resultsImages : []),
         sector.imagen,
         ...own.flatMap((project) => [project.imagen, ...project.galeria]),
         ...projects.flatMap((project) => [project.imagen, ...project.galeria]),
@@ -118,7 +129,8 @@ export default async function SectorDetail({
       ].filter(Boolean),
     ),
   ].slice(0, 5);
-  const supportImage = own[0]?.imagen || projects[0]?.imagen || sector.imagen;
+  const includesImage = landing?.includesImage || mosaic[1] || sector.imagen;
+  const supportImage = landing?.supportImage || own[0]?.imagen || projects[0]?.imagen || sector.imagen;
 
   const whatsappHref = `https://wa.me/${settings.whatsapp.replace(/[^\d]/g, "")}`;
   const telHref = `tel:${settings.telefono.replace(/[^+\d]/g, "")}`;
@@ -126,8 +138,8 @@ export default async function SectorDetail({
     "inline-flex items-center justify-center gap-2 rounded-full bg-amber-700 px-8 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-white shadow-xl transition hover:bg-white hover:text-stone-900 active:scale-95";
 
   const stats = [
-    { value: String(projects.length).padStart(2, "0"), label: "Proyectos entregados" },
-    ...COMMITMENTS.map((item) => ({ value: item.title, label: item.text })),
+    { value: String(projects.length).padStart(2, "0"), label: landing?.statsTitle || "Proyectos entregados" },
+    ...commitments.map((item) => ({ value: item.title, label: item.text })),
   ];
 
   const jsonLd = [
@@ -180,14 +192,14 @@ export default async function SectorDetail({
                 Servicio {sector.numero}
               </span>
               <h1 className="font-display text-4xl font-light leading-[1.03] tracking-tight drop-shadow-[0_2px_20px_rgba(0,0,0,0.35)] sm:text-5xl md:text-6xl lg:text-7xl">
-                {sector.title}
+                {landing?.heroHeadline || sector.title}
               </h1>
               <p className="mt-6 max-w-xl font-sans text-lg font-light leading-relaxed text-white/85 sm:line-clamp-3 sm:text-xl">
                 {lead || sector.descripcion}
               </p>
 
               <ul className="mt-8 grid max-w-2xl grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-6">
-                {COMMITMENTS.map((item) => (
+                {commitments.map((item) => (
                   <li key={item.title} className="flex items-start gap-3 text-sm font-light text-white/85">
                     <span aria-hidden="true" className="mt-1 text-amber-500">
                       ✓
@@ -258,19 +270,19 @@ export default async function SectorDetail({
               Por qué ALKO
             </span>
             <h2 className="mt-5 font-serif text-3xl font-light leading-tight tracking-tight sm:text-4xl lg:text-5xl">
-              Una obra sin sorpresas.
+              {landing?.problemsHeadline || "Una obra sin sorpresas."}
             </h2>
           </div>
 
           <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-3">
-            {PROBLEMS.map((item, index) => (
+            {problems.map((item, index) => (
               <div
                 key={item.promise}
                 className="group reveal-item relative isolate flex aspect-[4/5] flex-col justify-between overflow-hidden bg-stone-900 p-6 text-white sm:p-8 md:aspect-[3/4]"
                 style={{ transitionDelay: `${index * 90}ms` }}
               >
                 <Image
-                  src={phaseImage(item.phase)}
+                  src={phaseImage(item.phase ?? index)}
                   alt=""
                   fill
                   sizes="(max-width: 768px) 100vw, 33vw"
@@ -295,12 +307,12 @@ export default async function SectorDetail({
       </section>
 
       {/* 4. Deseo: qué incluye, con imagen grande */}
-      {includes && (
+      {(includesItems.length > 0 || parsedIncludes) && (
         <section id="incluye" className="bg-stone-950 text-white">
           <div className="grid grid-cols-1 lg:grid-cols-2">
             <div className="relative min-h-[320px] sm:min-h-[420px] lg:min-h-[640px]">
               <Image
-                src={mosaic[1] ?? sector.imagen}
+                src={includesImage}
                 alt={sector.title}
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -311,13 +323,13 @@ export default async function SectorDetail({
 
             <div className="reveal-item flex flex-col justify-center px-6 py-14 sm:px-12 lg:px-16 lg:py-24">
               <span className="font-mono text-[11px] uppercase tracking-[0.25em] text-white/60 sm:text-xs">
-                {includes.title}
+                {includesSubtitle}
               </span>
               <h2 className="mt-5 font-serif text-3xl font-light leading-tight tracking-tight sm:text-4xl lg:text-5xl">
-                Todo en un mismo equipo.
+                {includesHeadline}
               </h2>
               <ul className="mt-10 grid grid-cols-1 gap-x-8 gap-y-5 sm:grid-cols-2">
-                {includes.items.map((item) => (
+                {includesItems.map((item) => (
                   <li key={item} className="flex items-start gap-3 text-base font-light leading-snug text-white/90">
                     <span aria-hidden="true" className="mt-0.5 text-amber-500">
                       ✓
@@ -373,7 +385,7 @@ export default async function SectorDetail({
                   Cómo trabajamos
                 </span>
                 <h2 className="mt-5 font-serif text-3xl font-light leading-tight tracking-tight sm:text-4xl lg:text-5xl">
-                  {fases.length} fases, un solo equipo.
+                  {landing?.processHeadline || `${fases.length} fases, un solo equipo.`}
                 </h2>
               </div>
               <ContactTrigger mode="rapido" source={`Servicio ${sector.title} (cómo trabajamos)`} className={`${cta} self-start bg-stone-900 hover:bg-amber-700 hover:text-white`}>
@@ -410,20 +422,35 @@ export default async function SectorDetail({
       )}
 
       {/* Texto de apoyo del servicio (el resto de apartados del CMS), junto a una imagen */}
-      {others.length > 0 && (
+      {(others.length > 0 || landing?.supportTitle) && (
         <section className="border-t border-stone-200 bg-stone-50">
           <div className="grid grid-cols-1 lg:grid-cols-2">
             <div className="reveal-item flex flex-col justify-center gap-10 px-6 py-14 sm:px-12 lg:px-16 lg:py-24">
-              {others.map((section) => (
-                <div key={section.title}>
+              {landing?.supportTitle ? (
+                <div>
                   <h2 className="font-serif text-3xl font-light leading-tight tracking-tight sm:text-4xl">
-                    {section.title}
+                    {landing.supportTitle}
                   </h2>
-                  <div className="mt-5">
-                    <Prose html={section.html} />
-                  </div>
+                  {landing.supportContent && (
+                    <div className="mt-5 font-sans font-light text-stone-600 leading-relaxed space-y-4">
+                      {landing.supportContent.split('\n\n').map((paragraph, pIdx) => (
+                        <p key={pIdx}>{paragraph}</p>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              ))}
+              ) : (
+                others.map((section) => (
+                  <div key={section.title}>
+                    <h2 className="font-serif text-3xl font-light leading-tight tracking-tight sm:text-4xl">
+                      {section.title}
+                    </h2>
+                    <div className="mt-5">
+                      <Prose html={section.html} />
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
             <div className="relative min-h-[300px] sm:min-h-[420px] lg:min-h-[520px]">
               <Image
@@ -505,12 +532,12 @@ export default async function SectorDetail({
                 Preguntas frecuentes
               </span>
               <h2 className="mt-5 font-serif text-3xl font-light leading-tight tracking-tight sm:text-4xl">
-                Lo que suelen preguntarnos antes de empezar.
+                {landing?.faqHeadline || "Lo que suelen preguntarnos antes de empezar."}
               </h2>
             </div>
             <div className="reveal-item lg:col-span-8">
               <div className="border-t border-stone-300">
-                {FAQ.map((item) => (
+                {faqList.map((item) => (
                   <details key={item.q} className="group border-b border-stone-300">
                     <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-6 text-lg font-normal leading-snug text-stone-900 transition-colors hover:text-amber-700 sm:text-xl">
                       {item.q}
@@ -539,11 +566,10 @@ export default async function SectorDetail({
               Siguiente paso
             </span>
             <h2 className="mt-5 font-serif text-4xl font-light leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-              Hablemos de tu proyecto de {sector.title.toLowerCase()}.
+              {landing?.ctaHeadline || `Hablemos de tu proyecto de ${sector.title.toLowerCase()}.`}
             </h2>
             <p className="mx-auto mt-6 max-w-xl text-lg font-light leading-relaxed text-white/75">
-              Cuéntanos qué necesitas y el equipo técnico te responderá con una valoración del alcance, el plazo y
-              el presupuesto.
+              {landing?.ctaText || "Cuéntanos qué necesitas y el equipo técnico te responderá con una valoración del alcance, el plazo y el presupuesto."}
             </p>
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <ContactTrigger mode="avanzado" source={`Servicio ${sector.title} (cierre)`} tipo={sector.title} className={cta}>

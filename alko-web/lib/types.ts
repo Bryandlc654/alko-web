@@ -80,6 +80,45 @@ export interface Project {
   resultado: string;
 }
 
+export interface SectorCommitment {
+  title: string;
+  text: string;
+}
+
+export interface SectorProblem {
+  avoid: string;
+  promise: string;
+  phase?: number;
+}
+
+export interface SectorFaq {
+  q: string;
+  a: string;
+}
+
+export interface SectorLandingData {
+  heroTagline?: string;
+  heroHeadline?: string;
+  lead?: string;
+  commitments?: SectorCommitment[];
+  statsTitle?: string;
+  problemsHeadline?: string;
+  problems?: SectorProblem[];
+  includesHeadline?: string;
+  includesSubtitle?: string;
+  includes?: string[];
+  includesImage?: string;
+  processHeadline?: string;
+  supportTitle?: string;
+  supportContent?: string;
+  supportImage?: string;
+  resultsImages?: string[];
+  faqHeadline?: string;
+  faqs?: SectorFaq[];
+  ctaHeadline?: string;
+  ctaText?: string;
+}
+
 export interface Sector {
   id: string;
   slug: string;
@@ -89,6 +128,7 @@ export interface Sector {
   imagen: string;
   enlace: string;
   content: string;
+  landing?: SectorLandingData;
 }
 
 export interface Fase {

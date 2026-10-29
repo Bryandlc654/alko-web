@@ -754,6 +754,7 @@ export async function saveDbSector(sectorData: Partial<Sector>): Promise<Sector>
     imagen: sectorData.imagen || baseSector?.imagen || "/p1.jpg",
     enlace: sectorData.enlace || baseSector?.enlace || ("/servicios/" + slug),
     content: sectorData.content ?? baseSector?.content ?? "",
+    landing: sectorData.landing ?? baseSector?.landing,
   };
 
   if (existingIndex >= 0) {
