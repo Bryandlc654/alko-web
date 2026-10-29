@@ -18,16 +18,17 @@ import {
 } from "lucide-react";
 import LogoutButton from "@/components/admin/LogoutButton";
 import AdminSidebar from "@/components/admin/AdminSidebar";
-import { getProjects, getSectors, getArticles, getHomeContent } from "@/lib/wordpress";
+import { getProjects, getSectors, getArticles, getGuides, getHomeContent } from "@/lib/wordpress";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboardPage() {
   const session = await getSession();
-  const [projects, sectors, articles, homeContent] = await Promise.all([
+  const [projects, sectors, articles, guides, homeContent] = await Promise.all([
     getProjects(),
     getSectors(),
     getArticles(),
+    getGuides(),
     getHomeContent(),
   ]);
 
@@ -125,18 +126,21 @@ export default async function AdminDashboardPage() {
 
           {/* Tarjetas de Estadísticas Principales */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            <div className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs flex items-center justify-between">
+            <Link
+              href="/admin/proyectos"
+              className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs hover:border-blue-500 hover:shadow-md transition flex items-center justify-between group"
+            >
               <div>
-                <span className="text-xs font-medium text-slate-500 block">Proyectos Activos</span>
+                <span className="text-xs font-medium text-slate-500 block">Proyectos y Obras</span>
                 <span className="text-2xl font-bold text-slate-900 mt-1 block">{projects.length}</span>
                 <span className="text-[11px] text-emerald-600 font-medium flex items-center gap-1 mt-1">
-                  <CheckCircle2 className="w-3 h-3" /> Fichas completas
+                  <CheckCircle2 className="w-3 h-3" /> Fichas completas →
                 </span>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-200/80">
+              <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-200/80 group-hover:scale-105 transition-transform">
                 <Building2 className="w-6 h-6" />
               </div>
-            </div>
+            </Link>
 
             <Link
               href="/admin/servicios"
@@ -161,8 +165,8 @@ export default async function AdminDashboardPage() {
               <div>
                 <span className="text-xs font-medium text-slate-500 block">Artículos Técnicos</span>
                 <span className="text-2xl font-bold text-slate-900 mt-1 block">{articles.length}</span>
-                <span className="text-[11px] text-blue-600 font-medium flex items-center gap-1 mt-1">
-                  <BookOpen className="w-3 h-3" /> Gestionar artículos →
+                <span className="text-[11px] text-indigo-600 font-medium flex items-center gap-1 mt-1">
+                  <BookOpen className="w-3 h-3" /> Gestionar blog →
                 </span>
               </div>
               <div className="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-200/80 group-hover:scale-105 transition-transform">
@@ -170,16 +174,21 @@ export default async function AdminDashboardPage() {
               </div>
             </Link>
 
-            <div className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs flex items-center justify-between">
+            <Link
+              href="/admin/guias"
+              className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs hover:border-blue-500 hover:shadow-md transition flex items-center justify-between group"
+            >
               <div>
-                <span className="text-xs font-medium text-slate-500 block">Estado del Motor</span>
-                <span className="text-sm font-bold text-emerald-600 mt-2 block">MySQL Hostinger</span>
-                <span className="text-[11px] text-slate-400 font-mono block mt-0.5">3306 Conectado</span>
+                <span className="text-xs font-medium text-slate-500 block">Guías Técnicas</span>
+                <span className="text-2xl font-bold text-slate-900 mt-1 block">{guides.length}</span>
+                <span className="text-[11px] text-amber-600 font-medium flex items-center gap-1 mt-1">
+                  <FileText className="w-3 h-3" /> Ver guías técnicas →
+                </span>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-200/80">
-                <Database className="w-6 h-6" />
+              <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center border border-amber-200/80 group-hover:scale-105 transition-transform">
+                <FileText className="w-6 h-6" />
               </div>
-            </div>
+            </Link>
           </div>
 
           {/* Módulos de Edición y Accesos Rápidos */}
@@ -188,7 +197,7 @@ export default async function AdminDashboardPage() {
               Módulos Disponibles
             </h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {/* Card 1: Portada en Vivo */}
               <Link
                 href="/admin/editor"
@@ -202,7 +211,7 @@ export default async function AdminDashboardPage() {
                     Página de Inicio (Editor en Vivo)
                   </h3>
                   <p className="text-xs text-slate-500 mt-2 leading-relaxed">
-                    Edición visual de Hero, fotografías de portada, proyectos, proceso de 6 fases, especialidades y llamada de contacto.
+                    Edición visual de Hero, fotografías de portada, proyectos, proceso de 6 fases y especialidades.
                   </p>
                 </div>
 
@@ -230,33 +239,56 @@ export default async function AdminDashboardPage() {
                 </div>
 
                 <div className="mt-6 flex items-center justify-between text-xs font-semibold text-emerald-600 pt-4 border-t border-slate-100">
-                  <span>Gestionar destacados en Home</span>
+                  <span>Gestionar obras</span>
                   <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                 </div>
               </Link>
 
               {/* Card 3: Artículos de Blog */}
-              <div
-                id="articulos"
-                className="p-6 rounded-2xl bg-white border border-slate-200/90 flex flex-col justify-between shadow-xs"
+              <Link
+                href="/admin/articulos"
+                className="group p-6 rounded-2xl bg-white border border-slate-200/90 hover:border-indigo-500 hover:shadow-lg hover:shadow-indigo-500/5 transition-all duration-300 flex flex-col justify-between shadow-xs"
               >
                 <div>
                   <div className="w-12 h-12 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-600 flex items-center justify-center mb-5 shadow-xs">
                     <BookOpen className="w-6 h-6" />
                   </div>
                   <h3 className="text-base font-bold text-slate-900">
-                    Artículos y Biblioteca
+                    Artículos y Blog
                   </h3>
                   <p className="text-xs text-slate-500 mt-2 leading-relaxed">
                     Contenido técnico especializado para clientes: aerotermia, planificación de reformas y acabados.
                   </p>
                 </div>
 
-                <div className="mt-6 flex items-center justify-between text-xs text-slate-500 pt-4 border-t border-slate-100">
-                  <span className="font-medium text-slate-600">{articles.length} Artículos publicados</span>
-                  <span className="text-indigo-600 font-semibold">Publicado</span>
+                <div className="mt-6 flex items-center justify-between text-xs font-semibold text-indigo-600 pt-4 border-t border-slate-100">
+                  <span>Gestionar {articles.length} artículos</span>
+                  <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                 </div>
-              </div>
+              </Link>
+
+              {/* Card 4: Guías Técnicas */}
+              <Link
+                href="/admin/guias"
+                className="group p-6 rounded-2xl bg-white border border-slate-200/90 hover:border-amber-500 hover:shadow-lg hover:shadow-amber-500/5 transition-all duration-300 flex flex-col justify-between shadow-xs"
+              >
+                <div>
+                  <div className="w-12 h-12 rounded-xl bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center mb-5 shadow-xs">
+                    <FileText className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-base font-bold text-slate-900">
+                    Guías Técnicas
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-2 leading-relaxed">
+                    Guías paso a paso para trámites, licencias, eficiencia energética y normativas de edificación.
+                  </p>
+                </div>
+
+                <div className="mt-6 flex items-center justify-between text-xs font-semibold text-amber-600 pt-4 border-t border-slate-100">
+                  <span>Gestionar {guides.length} guías</span>
+                  <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                </div>
+              </Link>
             </div>
           </div>
 

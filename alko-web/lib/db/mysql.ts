@@ -1,8 +1,8 @@
 import mysql, { Pool } from "mysql2/promise";
 import fs from "fs";
 import path from "path";
-import { DEFAULT_HOME_CONTENT, DEFAULT_PROJECTS_PAGE_CONTENT, DEFAULT_NOSOTROS_PAGE_CONTENT, DEFAULT_CONTACTO_PAGE_CONTENT, DEFAULT_SERVICIOS_PAGE_CONTENT, DEFAULT_EQUIPO_PAGE_CONTENT, DEFAULT_EMPLEO_PAGE_CONTENT, DEFAULT_OFICINAS_PAGE_CONTENT, DEFAULT_ARTICULOS_PAGE_CONTENT, DEFAULT_GUIAS_PAGE_CONTENT, DEFAULT_PROJECTS, DEFAULT_SECTORS, DEFAULT_ARTICLES } from "../content";
-import type { Project, Sector, Article, HomeContent, ProjectsPageContent, NosotrosPageContent, ContactoPageContent, ServiciosPageContent, EquipoPageContent, EmpleoPageContent, OficinasPageContent, ArticulosPageContent, GuiasPageContent, Slide } from "../types";
+import { DEFAULT_HOME_CONTENT, DEFAULT_PROJECTS_PAGE_CONTENT, DEFAULT_NOSOTROS_PAGE_CONTENT, DEFAULT_CONTACTO_PAGE_CONTENT, DEFAULT_SERVICIOS_PAGE_CONTENT, DEFAULT_EQUIPO_PAGE_CONTENT, DEFAULT_EMPLEO_PAGE_CONTENT, DEFAULT_OFICINAS_PAGE_CONTENT, DEFAULT_ARTICULOS_PAGE_CONTENT, DEFAULT_GUIAS_PAGE_CONTENT, DEFAULT_PROJECTS, DEFAULT_SECTORS, DEFAULT_ARTICLES, DEFAULT_GUIDES } from "../content";
+import type { Project, Sector, Article, Guide, HomeContent, ProjectsPageContent, NosotrosPageContent, ContactoPageContent, ServiciosPageContent, EquipoPageContent, EmpleoPageContent, OficinasPageContent, ArticulosPageContent, GuiasPageContent, Slide } from "../types";
 
 let pool: Pool | null = null;
 
@@ -45,6 +45,7 @@ interface LocalStoreData {
   customSectors?: Sector[];
   customArticles?: Article[];
   customCategories?: string[];
+  customGuides?: Guide[];
 }
 
 function getLocalContent(): LocalStoreData {
@@ -958,4 +959,101 @@ export async function saveDbArticleCategories(categories: string[]): Promise<str
   }
 
   return cleaned;
+}
+
+/**
+ * Obtiene la lista completa de guías desde MySQL con respaldo local/defaults.
+ */
+export async function getDbGuides(): Promise<Guide[]> {
+  try {
+    const db = getDbPool();
+    const [rows] = await db.execute<any[]>(
+      "SELECT data FROM alko_site_content WHERE id = 'guides_list' LIMIT 1"
+    );
+    if (rows && rows.length > 0) {
+      const data = typeof rows[0].data === "string" ? JSON.parse(rows[0].data) : rows[0].data;
+      if (Array.isArray(data) && data.length > 0) {
+        return data;
+      }
+    }
+  } catch (err: any) {
+    console.warn("Aviso: Error obteniendo guías de MySQL:", err.message);
+  }
+
+  const local = getLocalContent();
+  if (local.customGuides && local.customGuides.length > 0) {
+    return local.customGuides;
+  }
+
+  return DEFAULT_GUIDES;
+}
+
+/**
+ * Guarda o actualiza una guía técnica en MySQL y respaldo local.
+ */
+export async function saveDbGuide(guideData: Partial<Guide>): Promise<Guide> {
+  const currentGuides = await getDbGuides();
+  const slug = guideData.slug || ("guia-" + Date.now());
+  const existingIndex = currentGuides.findIndex(g => g.id === guideData.id || g.slug === slug);
+
+  let updatedList = [...currentGuides];
+  const baseGuide = existingIndex >= 0 ? currentGuides[existingIndex] : null;
+
+  const fullGuide: Guide = {
+    id: guideData.id || baseGuide?.id || ("gui-" + Date.now()),
+    slug: slug,
+    numero: guideData.numero || baseGuide?.numero || String(currentGuides.length + 1).padStart(2, "0"),
+    title: guideData.title || baseGuide?.title || "Nueva Guía Técnica",
+    tema: (guideData.tema || baseGuide?.tema || "PLANIFICACIÓN").toUpperCase(),
+    descripcion: guideData.descripcion || baseGuide?.descripcion || "",
+    lectura: guideData.lectura || baseGuide?.lectura || "8 min",
+    imagen: guideData.imagen || baseGuide?.imagen || "/p2.jpg",
+    content: guideData.content ?? baseGuide?.content ?? "",
+  };
+
+  if (existingIndex >= 0) {
+    updatedList[existingIndex] = fullGuide;
+  } else {
+    updatedList.push(fullGuide);
+  }
+
+  saveLocalContent({ customGuides: updatedList });
+
+  try {
+    const db = getDbPool();
+    await db.execute(
+      `INSERT INTO alko_site_content (id, data) 
+       VALUES ('guides_list', ?) 
+       ON DUPLICATE KEY UPDATE data = VALUES(data)`,
+      [JSON.stringify(updatedList)]
+    );
+  } catch (err: any) {
+    console.warn("Aviso: Fallo al guardar lista de guías en MySQL:", err.message);
+  }
+
+  return fullGuide;
+}
+
+/**
+ * Elimina una guía técnica por ID o Slug en MySQL.
+ */
+export async function deleteDbGuide(id: string): Promise<boolean> {
+  const currentGuides = await getDbGuides();
+  const updatedList = currentGuides.filter(g => String(g.id) !== String(id) && g.slug !== id);
+
+  saveLocalContent({ customGuides: updatedList });
+
+  try {
+    const db = getDbPool();
+    await db.execute(
+      `INSERT INTO alko_site_content (id, data) 
+       VALUES ('guides_list', ?) 
+       ON DUPLICATE KEY UPDATE data = VALUES(data)`,
+      [JSON.stringify(updatedList)]
+    );
+    return true;
+  } catch (err: any) {
+    console.warn("Aviso: Fallo al eliminar guía en MySQL:", err.message);
+    return false;
+  }
 }

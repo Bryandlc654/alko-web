@@ -1,4 +1,4 @@
-import { getDbHomeContent, getFeaturedProjectIds, getDbProjects, getDbSectors, getDbArticles } from "../db/mysql";
+import { getDbHomeContent, getFeaturedProjectIds, getDbProjects, getDbSectors, getDbArticles, getDbGuides } from "../db/mysql";
 import {
   DEFAULT_ARTICLES,
   DEFAULT_DESCARGAS,
@@ -269,6 +269,15 @@ export async function getDescargas(): Promise<Descarga[]> {
 }
 
 export async function getGuides(): Promise<Guide[]> {
+  try {
+    const dbGuides = await getDbGuides();
+    if (dbGuides && dbGuides.length > 0) {
+      return dbGuides;
+    }
+  } catch (err) {
+    console.warn("Aviso: Error obteniendo guías de MySQL:", err);
+  }
+
   const posts = await collection(`guias?${COLLECTION_ORDER}`);
   if (!posts || posts.length === 0) return DEFAULT_GUIDES;
   return posts.map((post, i) =>
@@ -277,6 +286,14 @@ export async function getGuides(): Promise<Guide[]> {
 }
 
 export async function getGuideBySlug(slug: string): Promise<Guide | null> {
+  try {
+    const dbGuides = await getDbGuides();
+    const found = dbGuides.find((g) => g.slug === slug || String(g.id) === slug);
+    if (found) return found;
+  } catch (err) {
+    console.warn("Aviso: Error buscando guía en MySQL:", err);
+  }
+
   const posts = await wpGet<WpPost[]>(`guias?slug=${encodeURIComponent(slug)}&_embed`);
   if (posts && posts.length > 0) return toGuide(posts[0], 0);
   return DEFAULT_GUIDES.find((guide) => guide.slug === slug) ?? null;
