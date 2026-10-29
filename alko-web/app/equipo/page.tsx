@@ -3,6 +3,8 @@ import ContactTrigger from "@/components/contact/ContactTrigger";
 import Container from "@/components/ui/Container";
 import PageHero from "@/components/ui/PageHero";
 import { getSettings } from "@/lib/wordpress";
+import { getDbEquipoPageContent } from "@/lib/db/mysql";
+import { DEFAULT_EQUIPO_MEMBERS } from "@/lib/content";
 import { SITE } from "@/lib/site";
 
 export const revalidate = 60;
@@ -22,59 +24,34 @@ export const metadata = {
   },
 };
 
-const equipo = [
-  {
-    nombre: "Alejandro Kort",
-    rol: "Dirección técnica",
-    foto: "/oficinas.jpg",
-  },
-  {
-    nombre: "Marta Ruiz",
-    rol: "Arquitectura",
-    foto: "/start-research-1.jpg",
-  },
-  {
-    nombre: "Javier Ortega",
-    rol: "Jefatura de obra",
-    foto: "/proceso-construccion.jpg",
-  },
-  {
-    nombre: "Laura Méndez",
-    rol: "Instalaciones",
-    foto: "/proceso-instalaciones.jpg",
-  },
-  {
-    nombre: "Diego Salas",
-    rol: "Compras y materiales",
-    foto: "/proceso-compras.jpg",
-  },
-  {
-    nombre: "Elena Castro",
-    rol: "Atención al cliente",
-    foto: "/proceso-entrega.jpg",
-  },
-];
-
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: SITE.legalName,
-  url: SITE.url,
-  address: {
-    "@type": "PostalAddress",
-    addressLocality: "Madrid",
-    addressCountry: "ES",
-  },
-  employee: equipo.map((m) => ({
-    "@type": "Person",
-    name: m.nombre,
-    jobTitle: m.rol,
-    worksFor: { "@type": "Organization", name: SITE.name },
-  })),
-};
-
 export default async function EquipoPage() {
-  const settings = await getSettings();
+  const [settings, pageContent] = await Promise.all([
+    getSettings(),
+    getDbEquipoPageContent(),
+  ]);
+
+  const listaMiembros =
+    pageContent.miembros && pageContent.miembros.length > 0
+      ? pageContent.miembros
+      : DEFAULT_EQUIPO_MEMBERS;
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: SITE.legalName,
+    url: SITE.url,
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Madrid",
+      addressCountry: "ES",
+    },
+    employee: listaMiembros.map((m) => ({
+      "@type": "Person",
+      name: m.nombre,
+      jobTitle: m.rol,
+      worksFor: { "@type": "Organization", name: SITE.name },
+    })),
+  };
 
   return (
     <main className="bg-white text-stone-900">
@@ -84,22 +61,20 @@ export default async function EquipoPage() {
       />
 
       <PageHero
-        eyebrow="EQUIPO"
-        title={
-          <>
-            Personas
-            <br className="hidden sm:block" /> detrás de cada obra
-          </>
+        eyebrow={pageContent.headerBadge || "EQUIPO"}
+        title={pageContent.headerTitulo || "Personas detrás de cada obra"}
+        description={
+          pageContent.headerDescripcion ||
+          "Un equipo multidisciplinar que comparte un mismo criterio constructivo. Dirección técnica, arquitectura, obra, instalaciones y atención al cliente."
         }
-        description="Un equipo multidisciplinar que comparte un mismo criterio constructivo. Dirección técnica, arquitectura, obra, instalaciones y atención al cliente."
-        image="/proceso-coordinacion.jpg"
+        image={pageContent.headerBgImage || "/proceso-coordinacion.jpg"}
       />
 
       {/* QUIÉNES SOMOS */}
       <section className="w-full overflow-hidden bg-stone-100">
         <div className="relative h-[380px] w-full sm:h-[460px] md:h-[540px] lg:h-[620px]">
           <Image
-            src="/90dias.jpg"
+            src={pageContent.imagenDestacada || "/90dias.jpg"}
             alt="Interior de un proyecto de ALKO"
             fill
             sizes="100vw"
@@ -110,14 +85,14 @@ export default async function EquipoPage() {
 
       <section className="flex w-full flex-col items-center bg-[#faf9f5] px-6 pb-28 pt-16 text-center md:pb-36 md:pt-24">
         <h2 className="mx-auto max-w-4xl text-5xl font-normal leading-[1.05] tracking-tight sm:text-6xl md:text-7xl lg:text-[5.5rem]">
-          Menos compartimentos. Más equipo.
+          {pageContent.filosofiaTitulo || "Menos compartimentos. Más equipo."}
         </h2>
         <div aria-hidden="true" className="my-10 flex w-full justify-center md:my-12">
           <div className="h-14 w-[1px] bg-[#d2d1cb] md:h-16" />
         </div>
         <p className="mx-auto max-w-xl px-4 text-[13px] leading-relaxed text-[#4a4a48] sm:text-[14px] md:max-w-2xl md:text-[15px]">
-          Trabajamos como un solo equipo, no como departamentos aislados. Eso reduce interfaces,
-          acelera decisiones y mantiene la coherencia del proyecto de principio a fin.
+          {pageContent.filosofiaTexto ||
+            "Trabajamos como un solo equipo, no como departamentos aislados. Eso reduce interfaces, acelera decisiones y mantiene la coherencia del proyecto de principio a fin."}
         </p>
       </section>
 
@@ -136,22 +111,23 @@ export default async function EquipoPage() {
         <Container>
           <div className="flex items-center gap-2 pb-6 text-sm text-[#403E3B] sm:pb-8 reveal-item">
             <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#403E3B]" />
-            <span>Nuestro equipo</span>
+            <span>{pageContent.gridTag || "Nuestro equipo"}</span>
           </div>
 
           <div className="max-w-4xl pt-1 md:pt-4 reveal-item">
             <h2 className="text-5xl font-normal leading-[1.05] tracking-tight sm:text-6xl md:text-7xl lg:text-[5.5rem]">
-              Nuestros profesionales
+              {pageContent.gridTitulo || "Nuestros profesionales"}
             </h2>
             <p className="mt-5 max-w-md text-sm leading-relaxed text-[#302F2C] sm:mt-6 sm:text-base">
-              Perfiles que comparten un mismo criterio constructivo y una sola dirección de obra.
+              {pageContent.gridDescripcion ||
+                "Perfiles que comparten un mismo criterio constructivo y una sola dirección de obra."}
             </p>
           </div>
 
           <div className="mt-12 grid grid-cols-1 gap-6 sm:mt-16 sm:grid-cols-2 lg:mt-20 lg:grid-cols-4 xl:gap-8">
-            {equipo.map((m, i) => (
+            {listaMiembros.map((m, i) => (
               <article
-                key={m.nombre}
+                key={m.nombre + i}
                 className="flex flex-col reveal-item"
                 style={{ transitionDelay: `${i * 80}ms` }}
               >
@@ -179,7 +155,7 @@ export default async function EquipoPage() {
         <div className="group relative w-full overflow-hidden">
           <div className="relative h-[440px] w-full overflow-hidden sm:h-[500px] md:h-[560px]">
             <Image
-              src="/cta-bg.jpg"
+              src={pageContent.ctaBgImage || "/cta-bg.jpg"}
               alt="Hablemos de tu próximo proyecto"
               fill
               sizes="100vw"
@@ -189,13 +165,14 @@ export default async function EquipoPage() {
             <div className="absolute inset-0 z-10 mx-auto flex max-w-7xl flex-col justify-between px-6 py-12 sm:px-12 sm:py-16 lg:px-16 lg:py-24">
               <div className="pt-8 sm:pt-14">
                 <h2 className="text-3xl font-light leading-tight tracking-tight text-white sm:text-5xl md:text-6xl lg:text-[68px]">
-                  ¿Sumamos tu proyecto al equipo?
+                  {pageContent.ctaTitulo || "¿Sumamos tu proyecto al equipo?"}
                 </h2>
               </div>
               <div className="flex flex-col justify-between gap-8 lg:flex-row lg:items-end">
                 <div className="max-w-xl">
                   <p className="text-sm leading-relaxed text-stone-200/85 sm:text-base">
-                    Cuéntanos qué necesitas y te ponemos en contacto con la persona adecuada.
+                    {pageContent.ctaDescripcion ||
+                      "Cuéntanos qué necesitas y te ponemos en contacto con la persona adecuada."}
                   </p>
                   <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
                     <a

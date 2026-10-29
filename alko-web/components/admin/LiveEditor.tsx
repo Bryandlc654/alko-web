@@ -14,6 +14,7 @@ import {
   Monitor,
 } from "lucide-react";
 import type {
+  EquipoPageContent,
   ServiciosPageContent,
   ContactoPageContent,
   NosotrosPageContent,
@@ -37,6 +38,8 @@ import { ROUTES } from "@/lib/site";
 import { DEFAULT_PROJECTS_PAGE_CONTENT, DEFAULT_NOSOTROS_PAGE_CONTENT,
   DEFAULT_CONTACTO_PAGE_CONTENT,
   DEFAULT_SERVICIOS_PAGE_CONTENT,
+  DEFAULT_EQUIPO_PAGE_CONTENT,
+  DEFAULT_EQUIPO_MEMBERS,
 } from "@/lib/content";
 import { Handshake, CalendarClock, Wallet, BadgeCheck, Phone, MessageCircle, Mail, MapPin, Clock } from "lucide-react";
 import Materials from "@/components/sections/Materials";
@@ -53,6 +56,7 @@ interface LiveEditorProps {
   initialNosotrosPageContent?: NosotrosPageContent;
   initialContactoPageContent?: ContactoPageContent;
   initialServiciosPageContent?: ServiciosPageContent;
+  initialEquipoPageContent?: EquipoPageContent;
   heroSlides: Slide[];
   showcaseSlides: Slide[];
   projects: Project[];
@@ -74,6 +78,7 @@ export default function LiveEditor({
   initialNosotrosPageContent,
   initialContactoPageContent,
   initialServiciosPageContent,
+  initialEquipoPageContent,
   heroSlides: initialHeroSlides,
   showcaseSlides: initialShowcaseSlides,
   projects,
@@ -84,7 +89,50 @@ export default function LiveEditor({
   settings,
 }: LiveEditorProps) {
   // Selector de página a editar: 'home' o 'projects'
-  const [activePage, setActivePage] = useState<"home" | "projects" | "nosotros" | "contacto" | "servicios">("home");
+  const [activePage, setActivePage] = useState<"home" | "projects" | "nosotros" | "contacto" | "servicios" | "equipo">("home");
+
+  // Estado de contenido editable de la página equipo
+  const [equipoContent, setEquipoContent] = useState<EquipoPageContent>(
+    initialEquipoPageContent || DEFAULT_EQUIPO_PAGE_CONTENT
+  );
+
+  const updateEquipoField = useCallback((field: keyof EquipoPageContent, value: any) => {
+    setEquipoContent((prev) => ({ ...prev, [field]: value }));
+    setHasUnsavedChanges(true);
+    setSaveSuccess(false);
+  }, []);
+
+  const updateMiembroField = useCallback((index: number, field: "nombre" | "rol" | "foto", value: string) => {
+    setEquipoContent((prev) => {
+      const miembros = [...(prev.miembros || DEFAULT_EQUIPO_MEMBERS)];
+      if (miembros[index]) {
+        miembros[index] = { ...miembros[index], [field]: value };
+      }
+      return { ...prev, miembros };
+    });
+    setHasUnsavedChanges(true);
+    setSaveSuccess(false);
+  }, []);
+
+  const handleAddMiembro = () => {
+    setEquipoContent((prev) => ({
+      ...prev,
+      miembros: [
+        ...(prev.miembros || DEFAULT_EQUIPO_MEMBERS),
+        { nombre: "Nuevo profesional", rol: "Especialidad técnica", foto: "/oficinas.jpg" },
+      ],
+    }));
+    setHasUnsavedChanges(true);
+  };
+
+  const handleRemoveMiembro = (index: number) => {
+    setEquipoContent((prev) => {
+      const miembros = [...(prev.miembros || DEFAULT_EQUIPO_MEMBERS)];
+      miembros.splice(index, 1);
+      return { ...prev, miembros };
+    });
+    setHasUnsavedChanges(true);
+  };
 
   // Estado de contenido editable de la página servicios
   const [serviciosContent, setServiciosContent] = useState<ServiciosPageContent>(
@@ -198,6 +246,17 @@ export default function LiveEditor({
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(nosotrosContent),
+        });
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.error || "Error al guardar en el servidor");
+        }
+      } else if (activePage === "equipo") {
+        const res = await fetch("/api/admin/content/equipo", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(equipoContent),
         });
 
         if (!res.ok) {
@@ -378,6 +437,17 @@ export default function LiveEditor({
               </button>
               <button
                 type="button"
+                onClick={() => setActivePage("equipo")}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition ${
+                  activePage === "equipo"
+                    ? "bg-white text-blue-700 shadow-sm"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                <span>Página Equipo</span>
+              </button>
+              <button
+                type="button"
                 onClick={() => setActivePage("servicios")}
                 className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition ${
                   activePage === "servicios"
@@ -420,7 +490,7 @@ export default function LiveEditor({
           )}
 
           <Link
-            href={activePage === "home" ? "/" : activePage === "projects" ? "/proyectos" : activePage === "nosotros" ? "/nosotros" : activePage === "contacto" ? "/contacto" : "/servicios"}
+            href={activePage === "home" ? "/" : activePage === "projects" ? "/proyectos" : activePage === "nosotros" ? "/nosotros" : activePage === "contacto" ? "/contacto" : activePage === "servicios" ? "/servicios" : "/equipo"}
             target="_blank"
             className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition shadow-sm"
           >
@@ -2193,6 +2263,267 @@ export default function LiveEditor({
               <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 py-12 sm:py-20">
                 <SectorsList sectors={sectors} />
               </div>
+            </div>
+          )}
+
+
+          {/* ========================================================
+              VISTA EDITABLE: PÁGINA EQUIPO
+              ======================================================== */}
+          {activePage === "equipo" && (
+            <div className="bg-white text-stone-900">
+              {/* HERO DE EQUIPO */}
+              <header className="relative isolate flex min-h-[560px] sm:min-h-[620px] lg:min-h-[72vh] items-end overflow-hidden bg-stone-950 text-white pt-36 sm:pt-44 pb-14 sm:pb-20">
+                <div className="absolute inset-0 z-0 overflow-hidden">
+                  <InlineImage
+                    src={equipoContent.headerBgImage || "/proceso-coordinacion.jpg"}
+                    alt="Fondo de equipo"
+                    label="Cambiar fondo de cabecera"
+                    onImageChange={(newUrl) => updateEquipoField("headerBgImage", newUrl)}
+                    className="w-full h-full"
+                    imageClassName="object-cover object-center"
+                    priority
+                  />
+                  <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-stone-950/90 via-stone-950/55 to-stone-950/10" />
+                  <div className="absolute inset-x-0 bottom-0 pointer-events-none h-2/3 bg-gradient-to-t from-stone-950/90 via-stone-950/40 to-transparent" />
+                  <div className="absolute inset-x-0 top-0 pointer-events-none h-40 bg-gradient-to-b from-stone-950/70 to-transparent" />
+                </div>
+
+                <div className="relative max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 w-full z-10">
+                  <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-white/70 uppercase mb-4">
+                    <InlineText
+                      value={equipoContent.headerBadge || "EQUIPO"}
+                      onChange={(val) => updateEquipoField("headerBadge", val)}
+                      placeholder="Badge..."
+                    />
+                  </span>
+                  <h1 className="max-w-5xl font-display font-light text-4xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tight leading-[1.02] drop-shadow-[0_2px_20px_rgba(0,0,0,0.35)]">
+                    <InlineText
+                      value={equipoContent.headerTitulo || "Personas detrás de cada obra"}
+                      onChange={(val) => updateEquipoField("headerTitulo", val)}
+                      placeholder="Título de equipo..."
+                      multiline
+                    />
+                  </h1>
+                  <div className="mt-6 max-w-2xl text-base sm:text-lg text-white/85 font-light leading-relaxed font-sans">
+                    <InlineText
+                      value={
+                        equipoContent.headerDescripcion ||
+                        "Un equipo multidisciplinar que comparte un mismo criterio constructivo. Dirección técnica, arquitectura, obra, instalaciones y atención al cliente."
+                      }
+                      onChange={(val) => updateEquipoField("headerDescripcion", val)}
+                      placeholder="Descripción de equipo..."
+                      multiline
+                    />
+                  </div>
+                </div>
+              </header>
+
+              {/* IMAGEN DESTACADA INTERMEDIA */}
+              <section className="w-full overflow-hidden bg-stone-100">
+                <div className="relative h-[380px] w-full sm:h-[460px] md:h-[540px] lg:h-[620px]">
+                  <InlineImage
+                    src={equipoContent.imagenDestacada || "/90dias.jpg"}
+                    alt="Interior de un proyecto de ALKO"
+                    label="Cambiar foto destacada"
+                    onImageChange={(newUrl) => updateEquipoField("imagenDestacada", newUrl)}
+                    className="w-full h-full"
+                    imageClassName="object-cover object-top"
+                  />
+                </div>
+              </section>
+
+              {/* FILOSOFÍA / MENOS COMPARTIMENTOS */}
+              <section className="flex w-full flex-col items-center bg-[#faf9f5] px-6 pb-28 pt-16 text-center md:pb-36 md:pt-24">
+                <h2 className="mx-auto max-w-4xl text-5xl font-normal leading-[1.05] tracking-tight sm:text-6xl md:text-7xl lg:text-[5.5rem]">
+                  <InlineText
+                    value={equipoContent.filosofiaTitulo || "Menos compartimentos. Más equipo."}
+                    onChange={(val) => updateEquipoField("filosofiaTitulo", val)}
+                    placeholder="Título filosofía..."
+                    multiline
+                  />
+                </h2>
+                <div aria-hidden="true" className="my-10 flex w-full justify-center md:my-12">
+                  <div className="h-14 w-[1px] bg-[#d2d1cb] md:h-16" />
+                </div>
+                <p className="mx-auto max-w-xl px-4 text-[13px] leading-relaxed text-[#4a4a48] sm:text-[14px] md:max-w-2xl md:text-[15px]">
+                  <InlineText
+                    value={
+                      equipoContent.filosofiaTexto ||
+                      "Trabajamos como un solo equipo, no como departamentos aislados. Eso reduce interfaces, acelera decisiones y mantiene la coherencia del proyecto de principio a fin."
+                    }
+                    onChange={(val) => updateEquipoField("filosofiaTexto", val)}
+                    placeholder="Texto filosofía..."
+                    multiline
+                  />
+                </p>
+              </section>
+
+              {/* GRID DEL EQUIPO */}
+              <section className="relative isolate py-14 sm:py-20 lg:py-24 bg-[#F6F5F2] text-[#141414] border-y border-[#E5E3DC] overflow-hidden">
+                <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-12">
+                  <div className="flex items-center justify-between pb-6 sm:pb-8">
+                    <div className="flex items-center gap-2 text-sm text-[#403E3B]">
+                      <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#403E3B]" />
+                      <span>
+                        <InlineText
+                          value={equipoContent.gridTag || "Nuestro equipo"}
+                          onChange={(val) => updateEquipoField("gridTag", val)}
+                          placeholder="Etiqueta..."
+                        />
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleAddMiembro}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-white border border-stone-300 text-stone-800 hover:bg-stone-50 transition shadow-xs"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Añadir miembro</span>
+                    </button>
+                  </div>
+
+                  <div className="max-w-4xl pt-1 md:pt-4">
+                    <h2 className="text-5xl font-normal leading-[1.05] tracking-tight sm:text-6xl md:text-7xl lg:text-[5.5rem]">
+                      <InlineText
+                        value={equipoContent.gridTitulo || "Nuestros profesionales"}
+                        onChange={(val) => updateEquipoField("gridTitulo", val)}
+                        placeholder="Título profesionales..."
+                      />
+                    </h2>
+                    <p className="mt-5 max-w-md text-sm leading-relaxed text-[#302F2C] sm:mt-6 sm:text-base">
+                      <InlineText
+                        value={
+                          equipoContent.gridDescripcion ||
+                          "Perfiles que comparten un mismo criterio constructivo y una sola dirección de obra."
+                        }
+                        onChange={(val) => updateEquipoField("gridDescripcion", val)}
+                        placeholder="Descripción..."
+                        multiline
+                      />
+                    </p>
+                  </div>
+
+                  <div className="mt-12 grid grid-cols-1 gap-6 sm:mt-16 sm:grid-cols-2 lg:mt-20 lg:grid-cols-4 xl:gap-8">
+                    {(equipoContent.miembros || DEFAULT_EQUIPO_MEMBERS).map((m, i) => (
+                      <article key={i} className="flex flex-col relative group/card border border-stone-200/80 bg-white p-3 rounded-none shadow-xs">
+                        <div className="relative aspect-[4/5] w-full overflow-hidden bg-neutral-200">
+                          <InlineImage
+                            src={m.foto || "/oficinas.jpg"}
+                            alt={m.nombre}
+                            label="Foto"
+                            onImageChange={(newUrl) => updateMiembroField(i, "foto", newUrl)}
+                            className="w-full h-full"
+                            imageClassName="object-cover object-center grayscale"
+                          />
+                        </div>
+                        <div className="pt-4 flex items-start justify-between">
+                          <div className="flex-1 min-w-0 pr-2">
+                            <h3 className="text-xl font-normal tracking-tight">
+                              <InlineText
+                                value={m.nombre}
+                                onChange={(val) => updateMiembroField(i, "nombre", val)}
+                                placeholder="Nombre..."
+                              />
+                            </h3>
+                            <p className="mt-0.5 text-sm text-[#686663]">
+                              <InlineText
+                                value={m.rol}
+                                onChange={(val) => updateMiembroField(i, "rol", val)}
+                                placeholder="Rol o cargo..."
+                              />
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveMiembro(i)}
+                            className="text-stone-400 hover:text-red-600 transition p-1 text-xs"
+                            title="Eliminar miembro"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                </div>
+              </section>
+
+              {/* CTA FINAL DE EQUIPO */}
+              <section className="bg-stone-950 text-white">
+                <div className="group relative w-full overflow-hidden">
+                  <div className="relative h-[440px] w-full overflow-hidden sm:h-[500px] md:h-[560px]">
+                    <div className="absolute inset-0 z-0">
+                      <InlineImage
+                        src={equipoContent.ctaBgImage || "/cta-bg.jpg"}
+                        alt="Fondo CTA equipo"
+                        label="Cambiar fondo CTA"
+                        onImageChange={(newUrl) => updateEquipoField("ctaBgImage", newUrl)}
+                        className="w-full h-full"
+                        imageClassName="object-cover object-top"
+                      />
+                    </div>
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-stone-950/95 via-stone-950/50 to-transparent" />
+                    <div className="absolute inset-0 z-10 mx-auto flex max-w-7xl flex-col justify-between px-6 py-12 sm:px-12 sm:py-16 lg:px-16 lg:py-24">
+                      <div className="pt-8 sm:pt-14">
+                        <h2 className="text-3xl font-light leading-tight tracking-tight text-white sm:text-5xl md:text-6xl lg:text-[68px]">
+                          <InlineText
+                            value={equipoContent.ctaTitulo || "¿Sumamos tu proyecto al equipo?"}
+                            onChange={(val) => updateEquipoField("ctaTitulo", val)}
+                            placeholder="Título CTA..."
+                            multiline
+                          />
+                        </h2>
+                      </div>
+                      <div className="flex flex-col justify-between gap-8 lg:flex-row lg:items-end">
+                        <div className="max-w-xl">
+                          <p className="text-sm leading-relaxed text-stone-200/85 sm:text-base">
+                            <InlineText
+                              value={
+                                equipoContent.ctaDescripcion ||
+                                "Cuéntanos qué necesitas y te ponemos en contacto con la persona adecuada."
+                              }
+                              onChange={(val) => updateEquipoField("ctaDescripcion", val)}
+                              placeholder="Descripción CTA..."
+                              multiline
+                            />
+                          </p>
+                          <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
+                            <div className="inline-flex items-center gap-2">
+                              <span className="font-mono text-[10px] uppercase tracking-wider text-white/70">
+                                TEL
+                              </span>
+                              <span className="tracking-wide">{settings.telefono}</span>
+                            </div>
+                            <span className="hidden text-white/40 sm:inline">•</span>
+                            <div className="inline-flex items-center gap-2">
+                              <span className="font-mono text-[10px] uppercase tracking-wider text-white/70">
+                                ESCRÍBENOS
+                              </span>
+                              <span className="underline decoration-white/50 underline-offset-4">
+                                {settings.email}
+                              </span>
+                            </div>
+                            <span className="hidden text-white/40 sm:inline">•</span>
+                            <div className="inline-flex items-center gap-2">
+                              <span className="font-mono text-[10px] uppercase tracking-wider text-white/70">
+                                VISÍTANOS
+                              </span>
+                              <span>{settings.direccion}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="shrink-0 pointer-events-none opacity-85">
+                          <span className="inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-amber-700 px-8 py-3.5 text-[11px] font-semibold uppercase tracking-wider text-white shadow-xl sm:py-4 sm:text-xs">
+                            <span>SOLICITAR CONSULTORÍA</span>
+                            <span>→</span>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
             </div>
           )}
 

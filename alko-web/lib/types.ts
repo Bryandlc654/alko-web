@@ -337,3 +337,31 @@ export interface ServiciosPageContent {
   headerDescripcion: string;
   headerBgImage: string;
 }
+
+
+export interface MiembroEquipo {
+  nombre: string;
+  rol: string;
+  foto: string;
+}
+
+export interface EquipoPageContent {
+  headerBadge: string;
+  headerTitulo: string;
+  headerDescripcion: string;
+  headerBgImage: string;
+
+  imagenDestacada: string;
+
+  filosofiaTitulo: string;
+  filosofiaTexto: string;
+
+  gridTag: string;
+  gridTitulo: string;
+  gridDescripcion: string;
+  miembros: MiembroEquipo[];
+
+  ctaTitulo: string;
+  ctaDescripcion: string;
+  ctaBgImage: string;
+}

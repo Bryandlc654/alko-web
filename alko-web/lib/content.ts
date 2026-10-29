@@ -516,3 +516,58 @@ export const DEFAULT_SERVICIOS_PAGE_CONTENT: import('./types').ServiciosPageCont
   headerDescripcion: "Actuamos de forma transversal para reducir interfaces y garantizar la coherencia entre proyecto y obra.",
   headerBgImage: "/sector-oficinas.jpg",
 };
+
+
+export const DEFAULT_EQUIPO_MEMBERS: import('./types').MiembroEquipo[] = [
+  {
+    nombre: "Alejandro Kort",
+    rol: "Dirección técnica",
+    foto: "/oficinas.jpg",
+  },
+  {
+    nombre: "Marta Ruiz",
+    rol: "Arquitectura",
+    foto: "/start-research-1.jpg",
+  },
+  {
+    nombre: "Javier Ortega",
+    rol: "Jefatura de obra",
+    foto: "/proceso-construccion.jpg",
+  },
+  {
+    nombre: "Laura Méndez",
+    rol: "Instalaciones",
+    foto: "/proceso-instalaciones.jpg",
+  },
+  {
+    nombre: "Diego Salas",
+    rol: "Compras y materiales",
+    foto: "/proceso-compras.jpg",
+  },
+  {
+    nombre: "Elena Castro",
+    rol: "Atención al cliente",
+    foto: "/proceso-entrega.jpg",
+  },
+];
+
+export const DEFAULT_EQUIPO_PAGE_CONTENT: import('./types').EquipoPageContent = {
+  headerBadge: "EQUIPO",
+  headerTitulo: "Personas detrás de cada obra",
+  headerDescripcion: "Un equipo multidisciplinar que comparte un mismo criterio constructivo. Dirección técnica, arquitectura, obra, instalaciones y atención al cliente.",
+  headerBgImage: "/proceso-coordinacion.jpg",
+
+  imagenDestacada: "/90dias.jpg",
+
+  filosofiaTitulo: "Menos compartimentos. Más equipo.",
+  filosofiaTexto: "Trabajamos como un solo equipo, no como departamentos aislados. Eso reduce interfaces, acelera decisiones y mantiene la coherencia del proyecto de principio a fin.",
+
+  gridTag: "Nuestro equipo",
+  gridTitulo: "Nuestros profesionales",
+  gridDescripcion: "Perfiles que comparten un mismo criterio constructivo y una sola dirección de obra.",
+  miembros: DEFAULT_EQUIPO_MEMBERS,
+
+  ctaTitulo: "¿Sumamos tu proyecto al equipo?",
+  ctaDescripcion: "Cuéntanos qué necesitas y te ponemos en contacto con la persona adecuada.",
+  ctaBgImage: "/cta-bg.jpg",
+};

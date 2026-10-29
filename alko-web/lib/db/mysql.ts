@@ -1,8 +1,8 @@
 import mysql, { Pool } from "mysql2/promise";
 import fs from "fs";
 import path from "path";
-import { DEFAULT_HOME_CONTENT, DEFAULT_PROJECTS_PAGE_CONTENT, DEFAULT_NOSOTROS_PAGE_CONTENT, DEFAULT_CONTACTO_PAGE_CONTENT, DEFAULT_SERVICIOS_PAGE_CONTENT, DEFAULT_PROJECTS } from "../content";
-import type { Project, HomeContent, ProjectsPageContent, NosotrosPageContent, ContactoPageContent, ServiciosPageContent, Slide } from "../types";
+import { DEFAULT_HOME_CONTENT, DEFAULT_PROJECTS_PAGE_CONTENT, DEFAULT_NOSOTROS_PAGE_CONTENT, DEFAULT_CONTACTO_PAGE_CONTENT, DEFAULT_SERVICIOS_PAGE_CONTENT, DEFAULT_EQUIPO_PAGE_CONTENT, DEFAULT_PROJECTS } from "../content";
+import type { Project, HomeContent, ProjectsPageContent, NosotrosPageContent, ContactoPageContent, ServiciosPageContent, EquipoPageContent, Slide } from "../types";
 
 let pool: Pool | null = null;
 
@@ -34,6 +34,7 @@ interface LocalStoreData {
   nosotrosPage?: NosotrosPageContent;
   contactoPage?: ContactoPageContent;
   serviciosPage?: ServiciosPageContent;
+  equipoPage?: EquipoPageContent;
   slides: Slide[];
   featuredProjectIds?: string[];
   customProjects?: Project[];
@@ -54,6 +55,7 @@ function getLocalContent(): LocalStoreData {
     nosotrosPage: DEFAULT_NOSOTROS_PAGE_CONTENT,
     contactoPage: DEFAULT_CONTACTO_PAGE_CONTENT,
     serviciosPage: DEFAULT_SERVICIOS_PAGE_CONTENT,
+    equipoPage: DEFAULT_EQUIPO_PAGE_CONTENT,
     slides: [],
     featuredProjectIds: [],
   };
@@ -73,6 +75,7 @@ function saveLocalContent(data: Partial<LocalStoreData>) {
       nosotrosPage: data.nosotrosPage ? { ...(current.nosotrosPage || DEFAULT_NOSOTROS_PAGE_CONTENT), ...data.nosotrosPage } : current.nosotrosPage,
       contactoPage: data.contactoPage ? { ...(current.contactoPage || DEFAULT_CONTACTO_PAGE_CONTENT), ...data.contactoPage } : current.contactoPage,
       serviciosPage: data.serviciosPage ? { ...(current.serviciosPage || DEFAULT_SERVICIOS_PAGE_CONTENT), ...data.serviciosPage } : current.serviciosPage,
+      equipoPage: data.equipoPage ? { ...(current.equipoPage || DEFAULT_EQUIPO_PAGE_CONTENT), ...data.equipoPage } : current.equipoPage,
     };
     fs.writeFileSync(LOCAL_STORAGE_FILE, JSON.stringify(merged, null, 2), "utf-8");
   } catch (e) {
@@ -460,6 +463,51 @@ export async function saveDbServiciosPageContent(content: Partial<ServiciosPageC
     );
   } catch (err: any) {
     console.warn("Aviso: Fallo al guardar página servicios en MySQL:", err.message);
+  }
+
+  return updated;
+}
+
+/**
+ * Obtiene el contenido de la Página de Equipo (/equipo) desde MySQL.
+ */
+export async function getDbEquipoPageContent(): Promise<EquipoPageContent> {
+  try {
+    const db = getDbPool();
+    const [rows] = await db.execute<any[]>(
+      "SELECT data FROM alko_site_content WHERE id = 'equipo_page' LIMIT 1"
+    );
+    if (rows && rows.length > 0) {
+      const data = typeof rows[0].data === "string" ? JSON.parse(rows[0].data) : rows[0].data;
+      return { ...DEFAULT_EQUIPO_PAGE_CONTENT, ...data };
+    }
+  } catch (err: any) {
+    console.warn("Aviso: Error obteniendo contenido de página equipo:", err.message);
+  }
+
+  const local = getLocalContent();
+  return { ...DEFAULT_EQUIPO_PAGE_CONTENT, ...(local.equipoPage || {}) };
+}
+
+/**
+ * Guarda el contenido de la Página de Equipo (/equipo) en MySQL.
+ */
+export async function saveDbEquipoPageContent(content: Partial<EquipoPageContent>): Promise<EquipoPageContent> {
+  const current = await getDbEquipoPageContent();
+  const updated: EquipoPageContent = { ...current, ...content };
+
+  saveLocalContent({ equipoPage: updated });
+
+  try {
+    const db = getDbPool();
+    await db.execute(
+      `INSERT INTO alko_site_content (id, data) 
+       VALUES ('equipo_page', ?) 
+       ON DUPLICATE KEY UPDATE data = VALUES(data)`,
+      [JSON.stringify(updated)]
+    );
+  } catch (err: any) {
+    console.warn("Aviso: Fallo al guardar página equipo en MySQL:", err.message);
   }
 
   return updated;

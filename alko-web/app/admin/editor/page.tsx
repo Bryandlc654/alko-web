@@ -14,6 +14,7 @@ import {
   getDbNosotrosPageContent,
   getDbContactoPageContent,
   getDbServiciosPageContent,
+  getDbEquipoPageContent,
 } from "@/lib/db/mysql";
 import LiveEditor from "@/components/admin/LiveEditor";
 
@@ -26,6 +27,7 @@ export default async function AdminEditorPage() {
     nosotrosPageContent,
     contactoPageContent,
     serviciosPageContent,
+    equipoPageContent,
     heroSlides,
     showcaseSlides,
     projects,
@@ -40,6 +42,7 @@ export default async function AdminEditorPage() {
     getDbNosotrosPageContent(),
     getDbContactoPageContent(),
     getDbServiciosPageContent(),
+    getDbEquipoPageContent(),
     getHeroSlides(),
     getShowcaseSlides(),
     getProjects(),
@@ -57,6 +60,7 @@ export default async function AdminEditorPage() {
       initialNosotrosPageContent={nosotrosPageContent}
       initialContactoPageContent={contactoPageContent}
       initialServiciosPageContent={serviciosPageContent}
+      initialEquipoPageContent={equipoPageContent}
       heroSlides={heroSlides}
       showcaseSlides={showcaseSlides}
       projects={projects}
