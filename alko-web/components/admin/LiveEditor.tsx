@@ -12,6 +12,7 @@ import {
   Plus,
   CheckCircle2,
   Monitor,
+  ChevronDown,
 } from "lucide-react";
 import type {
   GuiasPageContent,
@@ -59,6 +60,19 @@ import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import ProjectsGallery from "@/components/ui/ProjectsGallery";
 import { splitLead } from "@/lib/utils";
 import { Layers } from "lucide-react";
+
+const PAGES_LIST = [
+  { id: "home", label: "Inicio (Home)", path: "/", group: "Principal" },
+  { id: "projects", label: "Proyectos", path: "/proyectos", group: "Portfolio" },
+  { id: "nosotros", label: "Nosotros", path: "/nosotros", group: "Corporativo" },
+  { id: "servicios", label: "Servicios", path: "/servicios", group: "Servicios" },
+  { id: "oficinas", label: "Oficinas", path: "/oficinas", group: "Servicios" },
+  { id: "equipo", label: "Equipo", path: "/equipo", group: "Corporativo" },
+  { id: "empleo", label: "Trabaja con nosotros", path: "/trabaja-con-nosotros", group: "Corporativo" },
+  { id: "articulos", label: "Artículos (Blog)", path: "/conocimiento/articulos", group: "Conocimiento" },
+  { id: "guias", label: "Guías Técnicas", path: "/conocimiento/guias", group: "Conocimiento" },
+  { id: "contacto", label: "Contacto", path: "/contacto", group: "Contacto" },
+] as const;
 
 interface LiveEditorProps {
   initialContent: HomeContent;
@@ -108,6 +122,7 @@ export default function LiveEditor({
 }: LiveEditorProps) {
   // Selector de página a editar: 'home' o 'projects'
   const [activePage, setActivePage] = useState<"home" | "projects" | "nosotros" | "contacto" | "servicios" | "equipo" | "empleo" | "oficinas" | "articulos" | "guias">("home");
+  const [isPageSelectorOpen, setIsPageSelectorOpen] = useState(false);
 
   // Estado de contenido editable de la página articulos
   const [articulosContent, setArticulosContent] = useState<ArticulosPageContent>(
@@ -557,118 +572,67 @@ export default function LiveEditor({
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
             <span className="text-xs font-semibold text-slate-900 tracking-tight hidden sm:inline">Editor Visual En Vivo</span>
             
-            {/* Selector de Página a Editar */}
-            <div className="flex items-center bg-slate-100 p-0.5 rounded-xl border border-slate-300 ml-1">
+            {/* Selector de Página Rediseñado (Dropdown Elegante & Compacto) */}
+            <div className="relative ml-1">
               <button
                 type="button"
-                onClick={() => setActivePage("home")}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition ${
-                  activePage === "home"
-                    ? "bg-white text-blue-700 shadow-sm"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
+                onClick={() => setIsPageSelectorOpen((prev) => !prev)}
+                className="flex items-center gap-2.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-white border border-slate-300/90 text-slate-800 shadow-xs hover:border-slate-400 hover:bg-slate-50/80 transition focus:outline-none"
               >
-                <span>Inicio (Home)</span>
+                <span className="text-slate-400 font-normal">Editando:</span>
+                <span className="text-blue-700 font-bold">
+                  {PAGES_LIST.find((p) => p.id === activePage)?.label || "Página"}
+                </span>
+                <ChevronDown className={`w-3.5 h-3.5 text-slate-500 transition-transform duration-200 ${isPageSelectorOpen ? "rotate-180 text-blue-600" : ""}`} />
               </button>
-              <button
-                type="button"
-                onClick={() => setActivePage("projects")}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition ${
-                  activePage === "projects"
-                    ? "bg-white text-blue-700 shadow-sm"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                <span>Página Proyectos</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setActivePage("nosotros")}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition ${
-                  activePage === "nosotros"
-                    ? "bg-white text-blue-700 shadow-sm"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                <span>Página Nosotros</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setActivePage("articulos")}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition ${
-                  activePage === "articulos"
-                    ? "bg-white text-blue-700 shadow-sm"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                <span>Página Artículos</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setActivePage("guias")}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition ${
-                  activePage === "guias"
-                    ? "bg-white text-blue-700 shadow-sm"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                <span>Página Guías</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setActivePage("oficinas")}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition ${
-                  activePage === "oficinas"
-                    ? "bg-white text-blue-700 shadow-sm"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                <span>Página Oficinas</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setActivePage("empleo")}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition ${
-                  activePage === "empleo"
-                    ? "bg-white text-blue-700 shadow-sm"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                <span>Página Empleo</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setActivePage("equipo")}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition ${
-                  activePage === "equipo"
-                    ? "bg-white text-blue-700 shadow-sm"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                <span>Página Equipo</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setActivePage("servicios")}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition ${
-                  activePage === "servicios"
-                    ? "bg-white text-blue-700 shadow-sm"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                <span>Página Servicios</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setActivePage("contacto")}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition ${
-                  activePage === "contacto"
-                    ? "bg-white text-blue-700 shadow-sm"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                <span>Página Contacto</span>
-              </button>
+
+              {/* Menú Flotante Dropdown */}
+              {isPageSelectorOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setIsPageSelectorOpen(false)}
+                  />
+                  <div className="absolute left-0 top-full mt-2 w-72 bg-white rounded-2xl border border-slate-200/90 shadow-xl z-50 py-2 divide-y divide-slate-100 animate-in fade-in zoom-in-95 duration-150">
+                    <div className="px-3 py-1.5">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                        Selecciona página a editar ({PAGES_LIST.length})
+                      </span>
+                    </div>
+
+                    <div className="p-1.5 max-h-[75vh] overflow-y-auto space-y-0.5">
+                      {PAGES_LIST.map((page) => {
+                        const isCurrent = activePage === page.id;
+                        return (
+                          <button
+                            key={page.id}
+                            type="button"
+                            onClick={() => {
+                              setActivePage(page.id as any);
+                              setIsPageSelectorOpen(false);
+                            }}
+                            className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition text-left ${
+                              isCurrent
+                                ? "bg-blue-50 text-blue-700 font-bold"
+                                : "text-slate-700 hover:bg-slate-100/80 font-medium"
+                            }`}
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${
+                                isCurrent ? "bg-blue-600 ring-2 ring-blue-200" : "bg-slate-300"
+                              }`} />
+                              <span className="truncate">{page.label}</span>
+                            </div>
+                            <span className="font-mono text-[10px] text-slate-400 ml-2 shrink-0">
+                              {page.path}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
