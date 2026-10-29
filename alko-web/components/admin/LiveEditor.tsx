@@ -14,6 +14,7 @@ import {
   Monitor,
 } from "lucide-react";
 import type {
+  ServiciosPageContent,
   ContactoPageContent,
   NosotrosPageContent,
   ProjectsPageContent,
@@ -35,6 +36,7 @@ import Footer from "@/components/layout/Footer";
 import { ROUTES } from "@/lib/site";
 import { DEFAULT_PROJECTS_PAGE_CONTENT, DEFAULT_NOSOTROS_PAGE_CONTENT,
   DEFAULT_CONTACTO_PAGE_CONTENT,
+  DEFAULT_SERVICIOS_PAGE_CONTENT,
 } from "@/lib/content";
 import { Handshake, CalendarClock, Wallet, BadgeCheck, Phone, MessageCircle, Mail, MapPin, Clock } from "lucide-react";
 import Materials from "@/components/sections/Materials";
@@ -50,6 +52,7 @@ interface LiveEditorProps {
   initialProjectsPageContent?: ProjectsPageContent;
   initialNosotrosPageContent?: NosotrosPageContent;
   initialContactoPageContent?: ContactoPageContent;
+  initialServiciosPageContent?: ServiciosPageContent;
   heroSlides: Slide[];
   showcaseSlides: Slide[];
   projects: Project[];
@@ -70,6 +73,7 @@ export default function LiveEditor({
   initialProjectsPageContent,
   initialNosotrosPageContent,
   initialContactoPageContent,
+  initialServiciosPageContent,
   heroSlides: initialHeroSlides,
   showcaseSlides: initialShowcaseSlides,
   projects,
@@ -80,7 +84,18 @@ export default function LiveEditor({
   settings,
 }: LiveEditorProps) {
   // Selector de página a editar: 'home' o 'projects'
-  const [activePage, setActivePage] = useState<"home" | "projects" | "nosotros" | "contacto">("home");
+  const [activePage, setActivePage] = useState<"home" | "projects" | "nosotros" | "contacto" | "servicios">("home");
+
+  // Estado de contenido editable de la página servicios
+  const [serviciosContent, setServiciosContent] = useState<ServiciosPageContent>(
+    initialServiciosPageContent || DEFAULT_SERVICIOS_PAGE_CONTENT
+  );
+
+  const updateServiciosField = useCallback((field: keyof ServiciosPageContent, value: any) => {
+    setServiciosContent((prev) => ({ ...prev, [field]: value }));
+    setHasUnsavedChanges(true);
+    setSaveSuccess(false);
+  }, []);
 
   // Estado de contenido editable de la página contacto
   const [contactoContent, setContactoContent] = useState<ContactoPageContent>(
@@ -183,6 +198,17 @@ export default function LiveEditor({
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(nosotrosContent),
+        });
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.error || "Error al guardar en el servidor");
+        }
+      } else if (activePage === "servicios") {
+        const res = await fetch("/api/admin/content/servicios", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(serviciosContent),
         });
 
         if (!res.ok) {
@@ -352,6 +378,17 @@ export default function LiveEditor({
               </button>
               <button
                 type="button"
+                onClick={() => setActivePage("servicios")}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition ${
+                  activePage === "servicios"
+                    ? "bg-white text-blue-700 shadow-sm"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                <span>Página Servicios</span>
+              </button>
+              <button
+                type="button"
                 onClick={() => setActivePage("contacto")}
                 className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition ${
                   activePage === "contacto"
@@ -383,7 +420,7 @@ export default function LiveEditor({
           )}
 
           <Link
-            href={activePage === "home" ? "/" : activePage === "projects" ? "/proyectos" : activePage === "nosotros" ? "/nosotros" : "/contacto"}
+            href={activePage === "home" ? "/" : activePage === "projects" ? "/proyectos" : activePage === "nosotros" ? "/nosotros" : activePage === "contacto" ? "/contacto" : "/servicios"}
             target="_blank"
             className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition shadow-sm"
           >
@@ -2095,6 +2132,67 @@ export default function LiveEditor({
                   </div>
                 </div>
               </section>
+            </div>
+          )}
+
+
+          {/* ========================================================
+              VISTA EDITABLE: PÁGINA SERVICIOS
+              ======================================================== */}
+          {activePage === "servicios" && (
+            <div className="bg-white text-stone-900">
+              {/* HERO DE SERVICIOS */}
+              <header className="relative isolate flex min-h-[560px] sm:min-h-[620px] lg:min-h-[72vh] items-end overflow-hidden bg-stone-950 text-white pt-36 sm:pt-44 pb-14 sm:pb-20">
+                <div className="absolute inset-0 z-0 overflow-hidden">
+                  <InlineImage
+                    src={serviciosContent.headerBgImage || "/sector-oficinas.jpg"}
+                    alt="Fondo de servicios"
+                    label="Cambiar fondo de cabecera"
+                    onImageChange={(newUrl) => updateServiciosField("headerBgImage", newUrl)}
+                    className="w-full h-full"
+                    imageClassName="object-cover object-center"
+                    priority
+                  />
+                  <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-stone-950/90 via-stone-950/55 to-stone-950/10" />
+                  <div className="absolute inset-x-0 bottom-0 pointer-events-none h-2/3 bg-gradient-to-t from-stone-950/90 via-stone-950/40 to-transparent" />
+                  <div className="absolute inset-x-0 top-0 pointer-events-none h-40 bg-gradient-to-b from-stone-950/70 to-transparent" />
+                </div>
+
+                <div className="relative max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 w-full z-10">
+                  <Breadcrumbs items={[{ label: "Servicios" }]} className="mb-8" />
+                  <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-white/70 uppercase mb-4">
+                    <InlineText
+                      value={serviciosContent.headerBadge || "SERVICIOS"}
+                      onChange={(val) => updateServiciosField("headerBadge", val)}
+                      placeholder="Badge..."
+                    />
+                  </span>
+                  <h1 className="max-w-5xl font-display font-light text-4xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tight leading-[1.02] drop-shadow-[0_2px_20px_rgba(0,0,0,0.35)]">
+                    <InlineText
+                      value={serviciosContent.headerTitulo || "Especialidades"}
+                      onChange={(val) => updateServiciosField("headerTitulo", val)}
+                      placeholder="Título de servicios..."
+                      multiline
+                    />
+                  </h1>
+                  <div className="mt-6 max-w-2xl text-base sm:text-lg text-white/85 font-light leading-relaxed font-sans">
+                    <InlineText
+                      value={
+                        serviciosContent.headerDescripcion ||
+                        "Actuamos de forma transversal para reducir interfaces y garantizar la coherencia entre proyecto y obra."
+                      }
+                      onChange={(val) => updateServiciosField("headerDescripcion", val)}
+                      placeholder="Descripción de servicios..."
+                      multiline
+                    />
+                  </div>
+                </div>
+              </header>
+
+              {/* LISTADO DE SECTORES / SERVICIOS */}
+              <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 py-12 sm:py-20">
+                <SectorsList sectors={sectors} />
+              </div>
             </div>
           )}
 

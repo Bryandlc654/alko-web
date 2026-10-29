@@ -329,3 +329,11 @@ export interface ContactoPageContent {
   oficinaTitulo: string;
   oficinaImagen: string;
 }
+
+
+export interface ServiciosPageContent {
+  headerBadge: string;
+  headerTitulo: string;
+  headerDescripcion: string;
+  headerBgImage: string;
+}

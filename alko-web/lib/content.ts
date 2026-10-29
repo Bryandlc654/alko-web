@@ -508,3 +508,11 @@ export const DEFAULT_CONTACTO_PAGE_CONTENT: import('./types').ContactoPageConten
   oficinaTitulo: "Nuestra oficina",
   oficinaImagen: "/oficinas.jpg",
 };
+
+
+export const DEFAULT_SERVICIOS_PAGE_CONTENT: import('./types').ServiciosPageContent = {
+  headerBadge: "SERVICIOS",
+  headerTitulo: "Especialidades",
+  headerDescripcion: "Actuamos de forma transversal para reducir interfaces y garantizar la coherencia entre proyecto y obra.",
+  headerBgImage: "/sector-oficinas.jpg",
+};

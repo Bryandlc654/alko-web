@@ -2,6 +2,7 @@ import Container from "@/components/ui/Container";
 import PageHero from "@/components/ui/PageHero";
 import SectorsList from "@/components/ui/SectorsList";
 import { getSectors } from "@/lib/wordpress";
+import { getDbServiciosPageContent } from "@/lib/db/mysql";
 
 export const revalidate = 60;
 
@@ -12,16 +13,22 @@ export const metadata = {
 };
 
 export default async function ServiciosPage() {
-  const sectors = await getSectors();
+  const [sectors, pageContent] = await Promise.all([
+    getSectors(),
+    getDbServiciosPageContent(),
+  ]);
 
   return (
     <main className="bg-white text-stone-900">
       <PageHero
         breadcrumbs={[{ label: "Servicios" }]}
-        eyebrow="SERVICIOS"
-        title="Especialidades"
-        description="Actuamos de forma transversal para reducir interfaces y garantizar la coherencia entre proyecto y obra."
-        image={sectors[0]?.imagen || "/sector-oficinas.jpg"}
+        eyebrow={pageContent.headerBadge || "SERVICIOS"}
+        title={pageContent.headerTitulo || "Especialidades"}
+        description={
+          pageContent.headerDescripcion ||
+          "Actuamos de forma transversal para reducir interfaces y garantizar la coherencia entre proyecto y obra."
+        }
+        image={pageContent.headerBgImage || sectors[0]?.imagen || "/sector-oficinas.jpg"}
       />
       <Container className="py-12 sm:py-20">
         <SectorsList sectors={sectors} />
@@ -29,5 +36,3 @@ export default async function ServiciosPage() {
     </main>
   );
 }
-
-
