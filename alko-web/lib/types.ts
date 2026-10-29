@@ -411,11 +411,28 @@ export interface EquipoPageContent {
 
 
 export interface PosicionEmpleo {
+  id?: string;
   titulo: string;
   departamento: string;
   ubicacion: string;
   tipo: string;
   resumen: string;
+  activa?: boolean;
+}
+
+export type CandidaturaEstado = "nueva" | "en_revision" | "entrevista" | "descartada";
+
+export interface Candidatura {
+  id: string;
+  nombre: string;
+  email: string;
+  telefono: string;
+  puesto: string;
+  mensaje?: string;
+  cvUrl?: string;
+  cvNombre?: string;
+  estado: CandidaturaEstado;
+  fecha: string;
 }
 
 export interface EmpleoPageContent {

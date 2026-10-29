@@ -62,5 +62,19 @@
     "18",
     "17",
     "16"
+  ],
+  "customCandidaturas": [
+    {
+      "nombre": "Laura Martínez",
+      "email": "laura.martinez@ejemplo.com",
+      "telefono": "+34 611 223 344",
+      "puesto": "Jefatura de obra",
+      "mensaje": "Cuento con 7 años de experiencia dirigiendo obras residenciales de alto standing en Madrid.",
+      "cvUrl": "/uploads/cvs/cv-cv_laura_martinez-1793307722267.pdf",
+      "cvNombre": "cv_laura_martinez.pdf",
+      "estado": "en_revision",
+      "id": "cand_1793307722840_aicqm",
+      "fecha": "2026-10-29T21:02:02.840Z"
+    }
   ]
 }

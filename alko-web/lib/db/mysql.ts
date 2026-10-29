@@ -1,8 +1,8 @@
 import mysql, { Pool } from "mysql2/promise";
 import fs from "fs";
 import path from "path";
-import { DEFAULT_HOME_CONTENT, DEFAULT_PROJECTS_PAGE_CONTENT, DEFAULT_NOSOTROS_PAGE_CONTENT, DEFAULT_CONTACTO_PAGE_CONTENT, DEFAULT_SERVICIOS_PAGE_CONTENT, DEFAULT_EQUIPO_PAGE_CONTENT, DEFAULT_EMPLEO_PAGE_CONTENT, DEFAULT_OFICINAS_PAGE_CONTENT, DEFAULT_ARTICULOS_PAGE_CONTENT, DEFAULT_GUIAS_PAGE_CONTENT, DEFAULT_PROJECTS, DEFAULT_SECTORS, DEFAULT_ARTICLES, DEFAULT_GUIDES, DEFAULT_SETTINGS } from "../content";
-import type { Project, Sector, Article, Guide, HomeContent, ProjectsPageContent, NosotrosPageContent, ContactoPageContent, ServiciosPageContent, EquipoPageContent, EmpleoPageContent, OficinasPageContent, ArticulosPageContent, GuiasPageContent, Slide, SiteSettings } from "../types";
+import { DEFAULT_HOME_CONTENT, DEFAULT_PROJECTS_PAGE_CONTENT, DEFAULT_NOSOTROS_PAGE_CONTENT, DEFAULT_CONTACTO_PAGE_CONTENT, DEFAULT_SERVICIOS_PAGE_CONTENT, DEFAULT_EQUIPO_PAGE_CONTENT, DEFAULT_EMPLEO_PAGE_CONTENT, DEFAULT_OFICINAS_PAGE_CONTENT, DEFAULT_ARTICULOS_PAGE_CONTENT, DEFAULT_GUIAS_PAGE_CONTENT, DEFAULT_PROJECTS, DEFAULT_SECTORS, DEFAULT_ARTICLES, DEFAULT_GUIDES, DEFAULT_SETTINGS, DEFAULT_POSICIONES_EMPLEO } from "../content";
+import type { Project, Sector, Article, Guide, HomeContent, ProjectsPageContent, NosotrosPageContent, ContactoPageContent, ServiciosPageContent, EquipoPageContent, EmpleoPageContent, OficinasPageContent, ArticulosPageContent, GuiasPageContent, Slide, SiteSettings, Candidatura, CandidaturaEstado, PosicionEmpleo } from "../types";
 
 let pool: Pool | null = null;
 
@@ -46,6 +46,7 @@ interface LocalStoreData {
   customArticles?: Article[];
   customCategories?: string[];
   customGuides?: Guide[];
+  customCandidaturas?: Candidatura[];
   settings?: SiteSettings;
 }
 
@@ -95,6 +96,7 @@ function saveLocalContent(data: Partial<LocalStoreData>) {
       articulosPage: data.articulosPage ? { ...(current.articulosPage || DEFAULT_ARTICULOS_PAGE_CONTENT), ...data.articulosPage } : current.articulosPage,
       guiasPage: data.guiasPage ? { ...(current.guiasPage || DEFAULT_GUIAS_PAGE_CONTENT), ...data.guiasPage } : current.guiasPage,
       settings: data.settings ? { ...(current.settings || DEFAULT_SETTINGS), ...data.settings } : current.settings,
+      customCandidaturas: data.customCandidaturas ? data.customCandidaturas : current.customCandidaturas,
     };
     fs.writeFileSync(LOCAL_STORAGE_FILE, JSON.stringify(merged, null, 2), "utf-8");
   } catch (e) {
@@ -1103,4 +1105,172 @@ export async function saveDbSettings(settings: Partial<SiteSettings>): Promise<S
   }
 
   return updated;
+}
+
+/* -------------------------------------------------------------------------- */
+/*                 GESTIÓN DE EMPLEO Y POSTULACIONES (CANDIDATURAS)          */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Obtiene la lista de vacantes activas y configuradas de la empresa.
+ */
+export async function getDbVacancies(): Promise<PosicionEmpleo[]> {
+  const pageContent = await getDbEmpleoPageContent();
+  if (pageContent.posiciones && pageContent.posiciones.length > 0) {
+    return pageContent.posiciones.map((p, idx) => ({
+      ...p,
+      id: p.id || `vacante-${idx + 1}`,
+      activa: p.activa !== false,
+    }));
+  }
+
+  return DEFAULT_POSICIONES_EMPLEO.map((p, idx) => ({
+    ...p,
+    id: `vacante-${idx + 1}`,
+    activa: true,
+  }));
+}
+
+/**
+ * Guarda o actualiza una vacante de empleo.
+ */
+export async function saveDbVacancy(vacancy: PosicionEmpleo): Promise<PosicionEmpleo[]> {
+  const currentVacancies = await getDbVacancies();
+  let updatedList: PosicionEmpleo[];
+
+  if (vacancy.id) {
+    const exists = currentVacancies.some((v) => v.id === vacancy.id);
+    if (exists) {
+      updatedList = currentVacancies.map((v) => (v.id === vacancy.id ? { ...v, ...vacancy } : v));
+    } else {
+      updatedList = [{ ...vacancy }, ...currentVacancies];
+    }
+  } else {
+    const newId = `vacante-${Date.now()}`;
+    updatedList = [{ ...vacancy, id: newId, activa: vacancy.activa !== false }, ...currentVacancies];
+  }
+
+  await saveDbEmpleoPageContent({ posiciones: updatedList });
+  return updatedList;
+}
+
+/**
+ * Elimina una vacante de empleo por ID o por título.
+ */
+export async function deleteDbVacancy(idOrTitulo: string): Promise<PosicionEmpleo[]> {
+  const currentVacancies = await getDbVacancies();
+  const updatedList = currentVacancies.filter(
+    (v) => v.id !== idOrTitulo && v.titulo.toLowerCase() !== idOrTitulo.toLowerCase()
+  );
+
+  await saveDbEmpleoPageContent({ posiciones: updatedList });
+  return updatedList;
+}
+
+/**
+ * Obtiene todas las postulaciones / candidaturas recibidas.
+ */
+export async function getDbJobApplications(): Promise<Candidatura[]> {
+  try {
+    const db = getDbPool();
+    const [rows] = await db.execute<any[]>(
+      "SELECT data FROM alko_site_content WHERE id = 'job_applications' LIMIT 1"
+    );
+    if (rows && rows.length > 0) {
+      const data = typeof rows[0].data === "string" ? JSON.parse(rows[0].data) : rows[0].data;
+      if (Array.isArray(data)) {
+        return data;
+      }
+    }
+  } catch (err: any) {
+    console.warn("Aviso: Error obteniendo candidaturas de MySQL:", err.message);
+  }
+
+  const local = getLocalContent();
+  return local.customCandidaturas || [];
+}
+
+/**
+ * Guarda una nueva postulación / candidatura enviada por un candidato.
+ */
+export async function saveDbJobApplication(
+  candidatura: Omit<Candidatura, "id" | "fecha"> & { id?: string; fecha?: string }
+): Promise<Candidatura> {
+  const current = await getDbJobApplications();
+  const newCandidatura: Candidatura = {
+    ...candidatura,
+    id: candidatura.id || `cand_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+    fecha: candidatura.fecha || new Date().toISOString(),
+    estado: candidatura.estado || "nueva",
+  };
+
+  const updatedList = [newCandidatura, ...current];
+  saveLocalContent({ customCandidaturas: updatedList });
+
+  try {
+    const db = getDbPool();
+    await db.execute(
+      `INSERT INTO alko_site_content (id, data) 
+       VALUES ('job_applications', ?) 
+       ON DUPLICATE KEY UPDATE data = VALUES(data)`,
+      [JSON.stringify(updatedList)]
+    );
+  } catch (err: any) {
+    console.warn("Aviso: Fallo al guardar candidatura en MySQL:", err.message);
+  }
+
+  return newCandidatura;
+}
+
+/**
+ * Actualiza el estado de una candidatura (nueva, en_revision, entrevista, descartada).
+ */
+export async function updateDbJobApplicationStatus(
+  id: string,
+  estado: CandidaturaEstado
+): Promise<boolean> {
+  const current = await getDbJobApplications();
+  const index = current.findIndex((c) => c.id === id);
+  if (index === -1) return false;
+
+  current[index].estado = estado;
+  saveLocalContent({ customCandidaturas: current });
+
+  try {
+    const db = getDbPool();
+    await db.execute(
+      `INSERT INTO alko_site_content (id, data) 
+       VALUES ('job_applications', ?) 
+       ON DUPLICATE KEY UPDATE data = VALUES(data)`,
+      [JSON.stringify(current)]
+    );
+    return true;
+  } catch (err: any) {
+    console.warn("Aviso: Fallo al actualizar estado de candidatura en MySQL:", err.message);
+    return false;
+  }
+}
+
+/**
+ * Elimina una candidatura por ID.
+ */
+export async function deleteDbJobApplication(id: string): Promise<boolean> {
+  const current = await getDbJobApplications();
+  const updatedList = current.filter((c) => c.id !== id);
+
+  saveLocalContent({ customCandidaturas: updatedList });
+
+  try {
+    const db = getDbPool();
+    await db.execute(
+      `INSERT INTO alko_site_content (id, data) 
+       VALUES ('job_applications', ?) 
+       ON DUPLICATE KEY UPDATE data = VALUES(data)`,
+      [JSON.stringify(updatedList)]
+    );
+    return true;
+  } catch (err: any) {
+    console.warn("Aviso: Fallo al eliminar candidatura en MySQL:", err.message);
+    return false;
+  }
 }
