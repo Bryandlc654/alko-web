@@ -76,5 +76,58 @@
       "id": "cand_1793307722840_aicqm",
       "fecha": "2026-10-29T21:02:02.840Z"
     }
-  ]
+  ],
+  "equipoPage": {
+    "headerBadge": "EQUIPO",
+    "headerTitulo": "Personas detrás de cada obra",
+    "headerDescripcion": "Un equipo multidisciplinar que comparte un mismo criterio constructivo. Dirección técnica, arquitectura, obra, instalaciones y atención al cliente.",
+    "headerBgImage": "/proceso-coordinacion.jpg",
+    "imagenDestacada": "/90dias.jpg",
+    "filosofiaTitulo": "Menos compartimentos. Más equipo.",
+    "filosofiaTexto": "Trabajamos como un solo equipo, no como departamentos aislados. Eso reduce interfaces, acelera decisiones y mantiene la coherencia del proyecto de principio a fin.",
+    "gridTag": "Nuestro equipo",
+    "gridTitulo": "Nuestros profesionales",
+    "gridDescripcion": "Perfiles que comparten un mismo criterio constructivo y una sola dirección de obra.",
+    "miembros": [
+      {
+        "nombre": "Alejandro Kort",
+        "rol": "Dirección técnica",
+        "foto": "/oficinas.jpg",
+        "id": "miembro-1"
+      },
+      {
+        "nombre": "Marta Ruiz",
+        "rol": "Arquitectura",
+        "foto": "/start-research-1.jpg",
+        "id": "miembro-2"
+      },
+      {
+        "nombre": "Javier Ortega",
+        "rol": "Jefatura de obra",
+        "foto": "/proceso-construccion.jpg",
+        "id": "miembro-3"
+      },
+      {
+        "nombre": "Laura Méndez",
+        "rol": "Instalaciones",
+        "foto": "/proceso-instalaciones.jpg",
+        "id": "miembro-4"
+      },
+      {
+        "nombre": "Diego Salas",
+        "rol": "Compras y materiales",
+        "foto": "/proceso-compras.jpg",
+        "id": "miembro-5"
+      },
+      {
+        "nombre": "Elena Castro",
+        "rol": "Atención al cliente",
+        "foto": "/proceso-entrega.jpg",
+        "id": "miembro-6"
+      }
+    ],
+    "ctaTitulo": "¿Sumamos tu proyecto al equipo?",
+    "ctaDescripcion": "Cuéntanos qué necesitas y te ponemos en contacto con la persona adecuada.",
+    "ctaBgImage": "/cta-bg.jpg"
+  }
 }

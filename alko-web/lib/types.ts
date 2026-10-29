@@ -383,9 +383,14 @@ export interface ServiciosPageContent {
 
 
 export interface MiembroEquipo {
+  id?: string;
   nombre: string;
   rol: string;
   foto: string;
+  email?: string;
+  linkedin?: string;
+  bio?: string;
+  orden?: number;
 }
 
 export interface EquipoPageContent {

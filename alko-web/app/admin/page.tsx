@@ -20,19 +20,20 @@ import {
 import LogoutButton from "@/components/admin/LogoutButton";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import { getProjects, getSectors, getArticles, getGuides, getHomeContent } from "@/lib/wordpress";
-import { getDbJobApplications, getDbVacancies } from "@/lib/db/mysql";
+import { getDbJobApplications, getDbVacancies, getDbTeamMembers } from "@/lib/db/mysql";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboardPage() {
   const session = await getSession();
-  const [projects, sectors, articles, guides, candidaturas, vacantes, homeContent] = await Promise.all([
+  const [projects, sectors, articles, guides, candidaturas, vacantes, teamMembers, homeContent] = await Promise.all([
     getProjects(),
     getSectors(),
     getArticles(),
     getGuides(),
     getDbJobApplications(),
     getDbVacancies(),
+    getDbTeamMembers(),
     getHomeContent(),
   ]);
 
@@ -296,14 +297,14 @@ export default async function AdminDashboardPage() {
             </div>
           </div>
 
-          {/* Fila de Módulos Operativos: Empleo y Ajustes */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {/* Fila de Módulos Operativos: Empleo, Equipo y Ajustes */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
             {/* Card Empleo y Candidaturas */}
             <Link
               href="/admin/empleo"
-              className="group rounded-2xl bg-white border border-slate-200/90 p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs hover:border-amber-500 hover:shadow-md transition"
+              className="group rounded-2xl bg-white border border-slate-200/90 p-6 flex flex-col justify-between gap-4 shadow-xs hover:border-amber-500 hover:shadow-md transition"
             >
-              <div className="flex items-center gap-4">
+              <div className="flex items-start gap-4">
                 <div className="w-12 h-12 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
                   <Briefcase className="w-6 h-6" />
                 </div>
@@ -314,18 +315,43 @@ export default async function AdminDashboardPage() {
                     </h3>
                     {candidaturas.filter((c) => c.estado === "nueva").length > 0 && (
                       <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700">
-                        {candidaturas.filter((c) => c.estado === "nueva").length} nuevas
+                        {candidaturas.filter((c) => c.estado === "nueva").length}
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    {vacantes.length} vacantes activas &middot; {candidaturas.length} postulaciones recibidas con CV.
+                  <p className="text-xs text-slate-500 mt-1">
+                    {vacantes.length} vacantes &middot; {candidaturas.length} postulaciones con CV.
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 text-xs font-semibold text-amber-700 shrink-0">
+              <div className="flex items-center justify-between text-xs font-semibold text-amber-700 pt-2 border-t border-slate-100">
                 <span>Gestionar empleo</span>
+                <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+              </div>
+            </Link>
+
+            {/* Card Equipo Técnico */}
+            <Link
+              href="/admin/equipo"
+              className="group rounded-2xl bg-white border border-slate-200/90 p-6 flex flex-col justify-between gap-4 shadow-xs hover:border-blue-500 hover:shadow-md transition"
+            >
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
+                  <Users className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
+                    Equipo Técnico
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-1">
+                    {teamMembers.length} profesionales en plantilla: Dirección, Arquitectura y Obra.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between text-xs font-semibold text-blue-600 pt-2 border-t border-slate-100">
+                <span>Gestionar equipo</span>
                 <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </div>
             </Link>
@@ -333,23 +359,23 @@ export default async function AdminDashboardPage() {
             {/* Card Ajustes de Empresa */}
             <Link
               href="/admin/ajustes"
-              className="group rounded-2xl bg-white border border-slate-200/90 p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs hover:border-blue-500 hover:shadow-md transition"
+              className="group rounded-2xl bg-white border border-slate-200/90 p-6 flex flex-col justify-between gap-4 shadow-xs hover:border-blue-500 hover:shadow-md transition"
             >
-              <div className="flex items-center gap-4">
+              <div className="flex items-start gap-4">
                 <div className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-blue-50 group-hover:text-blue-600 transition">
                   <Settings className="w-6 h-6" />
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
-                    Ajustes Globales y Contacto
+                    Ajustes de Empresa
                   </h3>
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    Teléfono, WhatsApp directo, correo de atención, dirección y redes sociales.
+                  <p className="text-xs text-slate-500 mt-1">
+                    Teléfono, WhatsApp directo, correo de atención, dirección y redes.
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 text-xs font-semibold text-blue-600 shrink-0">
+              <div className="flex items-center justify-between text-xs font-semibold text-slate-700 group-hover:text-blue-600 pt-2 border-t border-slate-100">
                 <span>Configurar empresa</span>
                 <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </div>

@@ -1,8 +1,8 @@
 import mysql, { Pool } from "mysql2/promise";
 import fs from "fs";
 import path from "path";
-import { DEFAULT_HOME_CONTENT, DEFAULT_PROJECTS_PAGE_CONTENT, DEFAULT_NOSOTROS_PAGE_CONTENT, DEFAULT_CONTACTO_PAGE_CONTENT, DEFAULT_SERVICIOS_PAGE_CONTENT, DEFAULT_EQUIPO_PAGE_CONTENT, DEFAULT_EMPLEO_PAGE_CONTENT, DEFAULT_OFICINAS_PAGE_CONTENT, DEFAULT_ARTICULOS_PAGE_CONTENT, DEFAULT_GUIAS_PAGE_CONTENT, DEFAULT_PROJECTS, DEFAULT_SECTORS, DEFAULT_ARTICLES, DEFAULT_GUIDES, DEFAULT_SETTINGS, DEFAULT_POSICIONES_EMPLEO } from "../content";
-import type { Project, Sector, Article, Guide, HomeContent, ProjectsPageContent, NosotrosPageContent, ContactoPageContent, ServiciosPageContent, EquipoPageContent, EmpleoPageContent, OficinasPageContent, ArticulosPageContent, GuiasPageContent, Slide, SiteSettings, Candidatura, CandidaturaEstado, PosicionEmpleo } from "../types";
+import { DEFAULT_HOME_CONTENT, DEFAULT_PROJECTS_PAGE_CONTENT, DEFAULT_NOSOTROS_PAGE_CONTENT, DEFAULT_CONTACTO_PAGE_CONTENT, DEFAULT_SERVICIOS_PAGE_CONTENT, DEFAULT_EQUIPO_PAGE_CONTENT, DEFAULT_EMPLEO_PAGE_CONTENT, DEFAULT_OFICINAS_PAGE_CONTENT, DEFAULT_ARTICULOS_PAGE_CONTENT, DEFAULT_GUIAS_PAGE_CONTENT, DEFAULT_PROJECTS, DEFAULT_SECTORS, DEFAULT_ARTICLES, DEFAULT_GUIDES, DEFAULT_SETTINGS, DEFAULT_POSICIONES_EMPLEO, DEFAULT_EQUIPO_MEMBERS } from "../content";
+import type { Project, Sector, Article, Guide, HomeContent, ProjectsPageContent, NosotrosPageContent, ContactoPageContent, ServiciosPageContent, EquipoPageContent, EmpleoPageContent, OficinasPageContent, ArticulosPageContent, GuiasPageContent, Slide, SiteSettings, Candidatura, CandidaturaEstado, PosicionEmpleo, MiembroEquipo } from "../types";
 
 let pool: Pool | null = null;
 
@@ -1273,4 +1273,87 @@ export async function deleteDbJobApplication(id: string): Promise<boolean> {
     console.warn("Aviso: Fallo al eliminar candidatura en MySQL:", err.message);
     return false;
   }
+}
+
+/* -------------------------------------------------------------------------- */
+/*                 GESTIÓN DE MIEMBROS DEL EQUIPO TÉCNICO                     */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Obtiene la lista de miembros del equipo de la empresa.
+ */
+export async function getDbTeamMembers(): Promise<MiembroEquipo[]> {
+  const pageContent = await getDbEquipoPageContent();
+  if (pageContent.miembros && pageContent.miembros.length > 0) {
+    return pageContent.miembros.map((m, idx) => ({
+      ...m,
+      id: m.id || `miembro-${idx + 1}`,
+    }));
+  }
+
+  return DEFAULT_EQUIPO_MEMBERS.map((m, idx) => ({
+    ...m,
+    id: `miembro-${idx + 1}`,
+  }));
+}
+
+/**
+ * Guarda o actualiza un miembro del equipo.
+ */
+export async function saveDbTeamMember(member: MiembroEquipo): Promise<MiembroEquipo[]> {
+  const currentMembers = await getDbTeamMembers();
+  let updatedList: MiembroEquipo[];
+
+  if (member.id) {
+    const exists = currentMembers.some((m) => m.id === member.id);
+    if (exists) {
+      updatedList = currentMembers.map((m) => (m.id === member.id ? { ...m, ...member } : m));
+    } else {
+      updatedList = [{ ...member }, ...currentMembers];
+    }
+  } else {
+    const newId = `miembro-${Date.now()}`;
+    updatedList = [...currentMembers, { ...member, id: newId }];
+  }
+
+  await saveDbEquipoPageContent({ miembros: updatedList });
+  return updatedList;
+}
+
+/**
+ * Elimina un miembro del equipo por ID o nombre.
+ */
+export async function deleteDbTeamMember(idOrNombre: string): Promise<MiembroEquipo[]> {
+  const currentMembers = await getDbTeamMembers();
+  const updatedList = currentMembers.filter(
+    (m) => m.id !== idOrNombre && m.nombre.toLowerCase() !== idOrNombre.toLowerCase()
+  );
+
+  await saveDbEquipoPageContent({ miembros: updatedList });
+  return updatedList;
+}
+
+/**
+ * Reordena la lista de miembros del equipo según el orden de IDs proporcionado.
+ */
+export async function reorderDbTeamMembers(ids: string[]): Promise<MiembroEquipo[]> {
+  const currentMembers = await getDbTeamMembers();
+  const memberMap = new Map(currentMembers.map((m) => [m.id, m]));
+  const orderedList: MiembroEquipo[] = [];
+
+  for (const id of ids) {
+    const member = memberMap.get(id);
+    if (member) {
+      orderedList.push(member);
+      memberMap.delete(id);
+    }
+  }
+
+  // Agregar los que falten por si acaso
+  for (const remaining of memberMap.values()) {
+    orderedList.push(remaining);
+  }
+
+  await saveDbEquipoPageContent({ miembros: orderedList });
+  return orderedList;
 }
