@@ -12,33 +12,36 @@ import {
   Loader2,
   Upload,
   BookOpen,
-  Calendar,
-  Tag,
+  Plus,
   ExternalLink,
 } from "lucide-react";
 import type { Article } from "@/lib/types";
+import { slugify } from "@/lib/utils";
 
 interface ArticleEditFormProps {
   initialArticle?: Article | null;
+  initialCategories?: string[];
   isNew?: boolean;
 }
 
-const CATEGORIES = [
-  "Metodología",
-  "Instalaciones",
-  "Materiales",
-  "Normativa",
-  "Estructuras",
-  "General",
-];
-
-export default function ArticleEditForm({ initialArticle, isNew = false }: ArticleEditFormProps) {
+export default function ArticleEditForm({
+  initialArticle,
+  initialCategories = ["Metodología", "Instalaciones", "Materiales", "Normativa", "Estructuras", "General"],
+  isNew = false,
+}: ArticleEditFormProps) {
   const router = useRouter();
+  const [categories, setCategories] = useState<string[]>(initialCategories);
+  const [newCatName, setNewCatName] = useState("");
+  const [isAddingCat, setIsAddingCat] = useState(false);
+
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successToast, setSuccessToast] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const imageInputRef = useRef<HTMLInputElement>(null);
+
+  // Controlar si el slug fue modificado manualmente por el usuario
+  const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(!isNew);
 
   const [article, setArticle] = useState<Partial<Article>>(() => {
     if (initialArticle) return initialArticle;
@@ -46,13 +49,57 @@ export default function ArticleEditForm({ initialArticle, isNew = false }: Artic
       id: "art-" + Date.now(),
       title: "",
       slug: "",
-      category: "Metodología",
+      category: categories[0] || "Metodología",
       excerpt: "",
       content: "<p>Entradilla técnica del artículo explicando los condicionantes y objetivos...</p>\n\n<h2>1. Criterios de partida</h2>\n<p>Detalle técnico de los factores clave a considerar durante la ejecución de obra...</p>\n\n<h2>2. Recomendaciones de los técnicos</h2>\n<p>Puntos de control recomendados para garantizar la calidad y durabilidad...</p>",
       image: "/art1.jpg",
       date: new Date().toISOString().split("T")[0],
     };
   });
+
+  // Generación automática del slug cuando cambia el título (a menos que se haya modificado a mano)
+  const handleTitleChange = (newTitle: string) => {
+    const updated = { ...article, title: newTitle };
+    if (!isSlugManuallyEdited) {
+      updated.slug = slugify(newTitle);
+    }
+    setArticle(updated);
+  };
+
+  const handleSlugChange = (newSlug: string) => {
+    setIsSlugManuallyEdited(true);
+    setArticle({ ...article, slug: newSlug });
+  };
+
+  // Crear nueva categoría
+  const handleCreateCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = newCatName.trim();
+    if (!trimmed) return;
+
+    if (categories.some((c) => c.toLowerCase() === trimmed.toLowerCase())) {
+      setArticle((prev) => ({ ...prev, category: trimmed }));
+      setNewCatName("");
+      setIsAddingCat(false);
+      return;
+    }
+
+    const updated = [...categories, trimmed];
+    setCategories(updated);
+    setArticle((prev) => ({ ...prev, category: trimmed }));
+    setNewCatName("");
+    setIsAddingCat(false);
+
+    try {
+      await fetch("/api/admin/articulos/categorias", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ categories: updated }),
+      });
+    } catch (err) {
+      console.warn("Error guardando categoría:", err);
+    }
+  };
 
   const handleUploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -88,19 +135,12 @@ export default function ArticleEditForm({ initialArticle, isNew = false }: Artic
     setIsSaving(true);
     setErrorMessage("");
 
-    const slug =
-      article.slug?.trim() ||
-      article.title
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)+/g, "");
+    const finalSlug = (article.slug?.trim() || slugify(article.title)) || "articulo-" + Date.now();
 
     const toSave: Article = {
       id: article.id || "art-" + Date.now(),
       title: article.title.trim(),
-      slug: slug,
+      slug: finalSlug,
       category: article.category || "Metodología",
       excerpt: article.excerpt || "",
       content: article.content || "",
@@ -212,46 +252,90 @@ export default function ArticleEditForm({ initialArticle, isNew = false }: Artic
               type="text"
               required
               value={article.title || ""}
-              onChange={(e) => setArticle({ ...article, title: e.target.value })}
+              onChange={(e) => handleTitleChange(e.target.value)}
               placeholder="Ej. Cómo planificar una reforma integral en Madrid sin desviaciones"
               className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-blue-600 text-sm font-medium transition bg-white"
             />
           </div>
 
           <div className="md:col-span-4">
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-              Categoría Temática
-            </label>
-            <select
-              value={article.category || "Metodología"}
-              onChange={(e) => setArticle({ ...article, category: e.target.value })}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-blue-600 text-xs font-medium transition bg-white"
-            >
-              {CATEGORIES.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </select>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs font-semibold text-slate-700">
+                Categoría Temática
+              </label>
+              <button
+                type="button"
+                onClick={() => setIsAddingCat(!isAddingCat)}
+                className="text-[11px] font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-0.5"
+              >
+                <Plus className="w-3 h-3" />
+                <span>Nueva categoría</span>
+              </button>
+            </div>
+
+            {isAddingCat ? (
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={newCatName}
+                  onChange={(e) => setNewCatName(e.target.value)}
+                  placeholder="Nombre categoría..."
+                  className="flex-1 px-3 py-2 rounded-xl border border-blue-400 text-xs focus:outline-none bg-blue-50/20"
+                />
+                <button
+                  type="button"
+                  onClick={handleCreateCategory}
+                  className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl"
+                >
+                  Añadir
+                </button>
+              </div>
+            ) : (
+              <select
+                value={article.category || categories[0] || "Metodología"}
+                onChange={(e) => setArticle({ ...article, category: e.target.value })}
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-blue-600 text-xs font-medium transition bg-white"
+              >
+                {categories.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
         </div>
 
-        {/* Fila 2: Slug y Fecha */}
+        {/* Fila 2: Slug automático y Fecha */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
           <div className="md:col-span-8">
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-              Slug Personalizado (URL pública)
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs font-semibold text-slate-700">
+                Slug Personalizado (Generado automáticamente desde el título)
+              </label>
+              {isSlugManuallyEdited && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsSlugManuallyEdited(false);
+                    setArticle({ ...article, slug: slugify(article.title || "") });
+                  }}
+                  className="text-[11px] text-blue-600 hover:underline"
+                >
+                  Regenerar desde título
+                </button>
+              )}
+            </div>
             <div className="flex items-center">
-              <span className="px-3.5 py-2 bg-slate-100 border border-r-0 border-slate-200 text-xs text-slate-500 rounded-l-xl font-mono">
+              <span className="px-3.5 py-2.5 bg-slate-100 border border-r-0 border-slate-200 text-xs text-slate-500 rounded-l-xl font-mono">
                 /conocimiento/
               </span>
               <input
                 type="text"
                 value={article.slug || ""}
-                onChange={(e) => setArticle({ ...article, slug: e.target.value })}
+                onChange={(e) => handleSlugChange(e.target.value)}
                 placeholder="como-planificar-una-reforma-integral"
-                className="w-full px-3.5 py-2 rounded-r-xl border border-slate-200 text-xs font-mono text-slate-800 focus:outline-none focus:border-blue-600 transition"
+                className="w-full px-3.5 py-2.5 rounded-r-xl border border-slate-200 text-xs font-mono text-slate-800 focus:outline-none focus:border-blue-600 transition"
               />
             </div>
           </div>
@@ -264,7 +348,7 @@ export default function ArticleEditForm({ initialArticle, isNew = false }: Artic
               type="date"
               value={article.date ? article.date.split("T")[0] : ""}
               onChange={(e) => setArticle({ ...article, date: e.target.value })}
-              className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs text-slate-800 focus:outline-none focus:border-blue-600 transition"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-slate-800 focus:outline-none focus:border-blue-600 transition"
             />
           </div>
         </div>

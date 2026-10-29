@@ -12,24 +12,30 @@ import {
   Search,
   CheckCircle2,
   Calendar,
-  Tag,
+  X,
+  Layers,
 } from "lucide-react";
 import type { Article } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
 
 interface ArticlesManagerProps {
   articles: Article[];
+  initialCategories?: string[];
 }
 
-export default function ArticlesManager({ articles }: ArticlesManagerProps) {
+export default function ArticlesManager({
+  articles,
+  initialCategories = ["Metodología", "Instalaciones", "Materiales", "Normativa", "Estructuras", "General"],
+}: ArticlesManagerProps) {
   const [articlesList, setArticlesList] = useState<Article[]>(articles);
+  const [categories, setCategories] = useState<string[]>(initialCategories);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("TODAS");
   const [successToast, setSuccessToast] = useState("");
 
-  const categories = Array.from(
-    new Set(articlesList.map((a) => a.category).filter(Boolean))
-  );
+  // Modal para gestionar / crear categorías
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [newCatInput, setNewCatInput] = useState("");
 
   const filteredArticles = articlesList.filter((a) => {
     const q = searchTerm.toLowerCase();
@@ -41,6 +47,56 @@ export default function ArticlesManager({ articles }: ArticlesManagerProps) {
       selectedCategory === "TODAS" || a.category === selectedCategory;
     return matchesSearch && matchesCat;
   });
+
+  const handleAddCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = newCatInput.trim();
+    if (!trimmed) return;
+    if (categories.some((c) => c.toLowerCase() === trimmed.toLowerCase())) {
+      setNewCatInput("");
+      return;
+    }
+
+    const updated = [...categories, trimmed];
+    setCategories(updated);
+    setNewCatInput("");
+
+    try {
+      await fetch("/api/admin/articulos/categorias", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ categories: updated }),
+      });
+      setSuccessToast(`Categoría "${trimmed}" creada con éxito`);
+      setTimeout(() => setSuccessToast(""), 3000);
+    } catch (err) {
+      console.warn("Error guardando categoría:", err);
+    }
+  };
+
+  const handleDeleteCategory = async (catToDelete: string) => {
+    if (!confirm(`¿Eliminar la categoría "${catToDelete}"? Los artículos asignados no se borrarán.`)) {
+      return;
+    }
+
+    const updated = categories.filter((c) => c !== catToDelete);
+    setCategories(updated);
+    if (selectedCategory === catToDelete) {
+      setSelectedCategory("TODAS");
+    }
+
+    try {
+      await fetch("/api/admin/articulos/categorias", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ categories: updated }),
+      });
+      setSuccessToast(`Categoría "${catToDelete}" eliminada`);
+      setTimeout(() => setSuccessToast(""), 3000);
+    } catch (err) {
+      console.warn("Error eliminando categoría:", err);
+    }
+  };
 
   const handleDelete = async (id: string, title: string) => {
     if (!confirm(`¿Estás seguro de que deseas eliminar permanentemente el artículo "${title}"?`)) {
@@ -88,6 +144,15 @@ export default function ArticlesManager({ articles }: ArticlesManagerProps) {
         </div>
 
         <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setIsCategoryModalOpen(true)}
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl border border-slate-200 transition"
+          >
+            <Layers className="w-4 h-4 text-slate-500" />
+            <span>Gestionar Categorías ({categories.length})</span>
+          </button>
+
           <Link
             href="/admin/articulos/nuevo"
             className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl shadow-sm transition active:scale-95"
@@ -243,6 +308,85 @@ export default function ArticlesManager({ articles }: ArticlesManagerProps) {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Modal para Gestionar y Crear Categorías */}
+      {isCategoryModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-md w-full overflow-hidden animate-in zoom-in-95 duration-150">
+            <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                  <Layers className="w-4 h-4" />
+                </div>
+                <h3 className="text-sm font-bold text-slate-900">Categorías del Blog</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsCategoryModalOpen(false)}
+                className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-5">
+              {/* Formulario para añadir nueva */}
+              <form onSubmit={handleAddCategory} className="flex items-center gap-2">
+                <input
+                  type="text"
+                  required
+                  value={newCatInput}
+                  onChange={(e) => setNewCatInput(e.target.value)}
+                  placeholder="Nombre de nueva categoría..."
+                  className="flex-1 px-3.5 py-2 rounded-xl border border-slate-300 text-xs focus:outline-none focus:border-blue-600"
+                />
+                <button
+                  type="submit"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl shadow-xs transition"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Crear</span>
+                </button>
+              </form>
+
+              {/* Listado de categorías existentes */}
+              <div className="space-y-2">
+                <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">
+                  Categorías Disponibles ({categories.length})
+                </span>
+                <div className="max-h-56 overflow-y-auto space-y-1.5 pr-1">
+                  {categories.map((cat) => (
+                    <div
+                      key={cat}
+                      className="flex items-center justify-between px-3 py-2 bg-slate-50 border border-slate-200/80 rounded-xl text-xs font-medium text-slate-800"
+                    >
+                      <span>{cat}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteCategory(cat)}
+                        className="text-slate-400 hover:text-rose-600 p-1 rounded-lg transition"
+                        title="Eliminar categoría"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="px-6 py-3 border-t border-slate-100 bg-slate-50/50 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setIsCategoryModalOpen(false)}
+                className="px-4 py-2 bg-slate-900 hover:bg-black text-white text-xs font-semibold rounded-xl transition"
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

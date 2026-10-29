@@ -44,6 +44,7 @@ interface LocalStoreData {
   customProjects?: Project[];
   customSectors?: Sector[];
   customArticles?: Article[];
+  customCategories?: string[];
 }
 
 function getLocalContent(): LocalStoreData {
@@ -899,4 +900,62 @@ export async function deleteDbArticle(id: string): Promise<boolean> {
     console.warn("Aviso: Fallo al eliminar artículo en MySQL:", err.message);
     return false;
   }
+}
+
+const DEFAULT_ARTICLE_CATEGORIES = [
+  "Metodología",
+  "Instalaciones",
+  "Materiales",
+  "Normativa",
+  "Estructuras",
+  "General",
+];
+
+/**
+ * Obtiene las categorías de artículos desde MySQL con respaldo local.
+ */
+export async function getDbArticleCategories(): Promise<string[]> {
+  try {
+    const db = getDbPool();
+    const [rows] = await db.execute<any[]>(
+      "SELECT data FROM alko_site_content WHERE id = 'article_categories' LIMIT 1"
+    );
+    if (rows && rows.length > 0) {
+      const data = typeof rows[0].data === "string" ? JSON.parse(rows[0].data) : rows[0].data;
+      if (Array.isArray(data) && data.length > 0) {
+        return data;
+      }
+    }
+  } catch (err: any) {
+    console.warn("Aviso: Error obteniendo categorías de MySQL:", err.message);
+  }
+
+  const local = getLocalContent();
+  if (local.customCategories && local.customCategories.length > 0) {
+    return local.customCategories;
+  }
+
+  return DEFAULT_ARTICLE_CATEGORIES;
+}
+
+/**
+ * Guarda la lista de categorías en MySQL y local.
+ */
+export async function saveDbArticleCategories(categories: string[]): Promise<string[]> {
+  const cleaned = Array.from(new Set(categories.map(c => c.trim()).filter(Boolean)));
+  saveLocalContent({ customCategories: cleaned });
+
+  try {
+    const db = getDbPool();
+    await db.execute(
+      `INSERT INTO alko_site_content (id, data) 
+       VALUES ('article_categories', ?) 
+       ON DUPLICATE KEY UPDATE data = VALUES(data)`,
+      [JSON.stringify(cleaned)]
+    );
+  } catch (err: any) {
+    console.warn("Aviso: Fallo al guardar categorías en MySQL:", err.message);
+  }
+
+  return cleaned;
 }

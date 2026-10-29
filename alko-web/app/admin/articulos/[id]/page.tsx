@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getSession } from "@/lib/auth/session";
 import { getArticleBySlug } from "@/lib/wordpress";
+import { getDbArticleCategories } from "@/lib/db/mysql";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import LogoutButton from "@/components/admin/LogoutButton";
 import ArticleEditForm from "@/components/admin/ArticleEditForm";
@@ -18,7 +19,10 @@ export default async function AdminArticleEditPage({
   const { id } = await params;
   const isNew = id === "nuevo";
 
-  const article = isNew ? null : await getArticleBySlug(id);
+  const [article, categories] = await Promise.all([
+    isNew ? null : getArticleBySlug(id),
+    getDbArticleCategories(),
+  ]);
 
   if (!isNew && !article) {
     return notFound();
@@ -74,7 +78,7 @@ export default async function AdminArticleEditPage({
 
         {/* Zona de Trabajo */}
         <main className="p-8 max-w-5xl w-full mx-auto">
-          <ArticleEditForm initialArticle={article} isNew={isNew} />
+          <ArticleEditForm initialArticle={article} initialCategories={categories} isNew={isNew} />
         </main>
       </div>
     </div>

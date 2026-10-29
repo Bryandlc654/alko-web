@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getSession } from "@/lib/auth/session";
 import { getArticles } from "@/lib/wordpress";
+import { getDbArticleCategories } from "@/lib/db/mysql";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import LogoutButton from "@/components/admin/LogoutButton";
 import ArticlesManager from "@/components/admin/ArticlesManager";
@@ -10,7 +11,10 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminArticlesPage() {
   const session = await getSession();
-  const allArticles = await getArticles(100);
+  const [allArticles, categories] = await Promise.all([
+    getArticles(100),
+    getDbArticleCategories(),
+  ]);
 
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-poppins flex">
@@ -60,7 +64,7 @@ export default async function AdminArticlesPage() {
 
         {/* Zona de Trabajo */}
         <main className="p-8 max-w-7xl w-full mx-auto">
-          <ArticlesManager articles={allArticles} />
+          <ArticlesManager articles={allArticles} initialCategories={categories} />
         </main>
       </div>
     </div>
