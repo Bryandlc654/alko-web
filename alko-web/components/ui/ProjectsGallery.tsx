@@ -2,11 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { ROUTES } from "@/lib/site";
 import type { Project } from "@/lib/types";
+import { Loader2 } from "lucide-react";
 
 const ALL = "Todos";
+const INITIAL_PAGE_SIZE = 4;
+const LOAD_MORE_STEP = 3;
 
 export interface ProjectSummary extends Project {
   /** Primer párrafo del contenido, sin HTML. */
@@ -14,13 +17,14 @@ export interface ProjectSummary extends Project {
 }
 
 /**
- * Listado de /proyectos: filas editoriales alternadas con filtro por tipología.
- *
- * Igual que en ArticlesIndex, las filas no usan `reveal-item` (SiteScripts solo
- * anima lo que existe al cargar la ruta y las filas nuevas quedarían ocultas).
+ * Listado de /proyectos: filas editoriales alternadas con filtro por tipología
+ * y carga progresiva (paginación infinita por scroll + botón de "Mostrar más obras").
  */
 export default function ProjectsGallery({ projects }: { projects: ProjectSummary[] }) {
   const [active, setActive] = useState(ALL);
+  const [visibleCount, setVisibleCount] = useState(INITIAL_PAGE_SIZE);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
   const types = useMemo(() => {
     const counts = new Map<string, number>();
@@ -31,7 +35,53 @@ export default function ProjectsGallery({ projects }: { projects: ProjectSummary
     return Array.from(counts, ([name, count]) => ({ name, count }));
   }, [projects]);
 
-  const visible = active === ALL ? projects : projects.filter((p) => p.tipologia === active);
+  const filtered = useMemo(() => {
+    return active === ALL ? projects : projects.filter((p) => p.tipologia === active);
+  }, [active, projects]);
+
+  // Al cambiar de categoría restablecer el contador
+  const handleFilterChange = (filterName: string) => {
+    setActive(filterName);
+    setVisibleCount(INITIAL_PAGE_SIZE);
+  };
+
+  const visibleProjects = filtered.slice(0, visibleCount);
+  const hasMore = visibleCount < filtered.length;
+
+  const loadMore = () => {
+    if (isLoadingMore || !hasMore) return;
+    setIsLoadingMore(true);
+    // Simular una ligera pausa fluida para renderizado elegante
+    setTimeout(() => {
+      setVisibleCount((prev) => Math.min(prev + LOAD_MORE_STEP, filtered.length));
+      setIsLoadingMore(false);
+    }, 300);
+  };
+
+  // IntersectionObserver para cargar automáticamente con scroll cuando el usuario llega al final
+  useEffect(() => {
+    if (!hasMore) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const first = entries[0];
+        if (first && first.isIntersecting) {
+          loadMore();
+        }
+      },
+      { rootMargin: "250px 0px" }
+    );
+
+    const currentSentinel = sentinelRef.current;
+    if (currentSentinel) {
+      observer.observe(currentSentinel);
+    }
+
+    return () => {
+      if (currentSentinel) observer.unobserve(currentSentinel);
+    };
+  }, [hasMore, visibleCount, filtered.length, isLoadingMore]);
+
   const filters = [{ name: ALL, count: projects.length }, ...types];
 
   return (
@@ -55,7 +105,7 @@ export default function ProjectsGallery({ projects }: { projects: ProjectSummary
                   key={filter.name}
                   type="button"
                   aria-pressed={selected}
-                  onClick={() => setActive(filter.name)}
+                  onClick={() => handleFilterChange(filter.name)}
                   className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-[11px] font-light uppercase tracking-[0.16em] transition-colors ${
                     selected
                       ? "border-stone-900 bg-stone-900 text-white"
@@ -74,10 +124,10 @@ export default function ProjectsGallery({ projects }: { projects: ProjectSummary
       </div>
 
       <ul>
-        {visible.map((project, i) => {
+        {visibleProjects.map((project, i) => {
           const reversed = i % 2 === 1;
           return (
-            <li key={project.id} className="border-b border-stone-300 last:border-b-0">
+            <li key={project.id} className="border-b border-stone-300 last:border-b-0 animate-in fade-in duration-500">
               <Link
                 href={`${ROUTES.projects}/${project.slug}`}
                 className="group grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 py-14 sm:py-20 items-center"
@@ -146,6 +196,45 @@ export default function ProjectsGallery({ projects }: { projects: ProjectSummary
           );
         })}
       </ul>
+
+      {/* Centinela de Scroll y Botón Mostrar Más */}
+      <div ref={sentinelRef} className="pt-12 pb-4 flex flex-col items-center justify-center">
+        {hasMore ? (
+          <div className="flex flex-col items-center gap-4">
+            <button
+              type="button"
+              onClick={loadMore}
+              disabled={isLoadingMore}
+              className="group inline-flex items-center gap-3 rounded-full border border-stone-900 bg-white px-8 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] text-stone-900 transition hover:bg-stone-900 hover:text-white active:scale-95 disabled:opacity-50"
+            >
+              {isLoadingMore ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin text-amber-700 group-hover:text-amber-400" />
+                  <span>Cargando más obras...</span>
+                </>
+              ) : (
+                <>
+                  <span>Mostrar más obras</span>
+                  <span aria-hidden="true" className="transition-transform group-hover:translate-y-0.5">
+                    ↓
+                  </span>
+                </>
+              )}
+            </button>
+            <span className="font-mono text-[11px] text-stone-500 uppercase tracking-widest">
+              Mostrando {visibleProjects.length} de {filtered.length} proyectos
+            </span>
+          </div>
+        ) : (
+          filtered.length > 0 && (
+            <div className="text-center py-6 border-t border-stone-200 w-full max-w-xs mx-auto">
+              <span className="font-mono text-[11px] text-stone-600 uppercase tracking-[0.2em]">
+                Has visto todas las obras ({filtered.length})
+              </span>
+            </div>
+          )
+        )}
+      </div>
     </div>
   );
 }
