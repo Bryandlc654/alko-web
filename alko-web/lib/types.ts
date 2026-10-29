@@ -190,6 +190,17 @@ export interface Descarga {
   guia: string;
 }
 
+export interface SmtpConfig {
+  enabled?: boolean;
+  host?: string;
+  port?: number | string;
+  user?: string;
+  password?: string;
+  from?: string;
+  to?: string;
+  secure?: boolean;
+}
+
 export interface SiteSettings {
   telefono: string;
   email: string;
@@ -199,6 +210,35 @@ export interface SiteSettings {
   linkedin: string;
   facebook: string;
   instagram: string;
+  smtp?: SmtpConfig;
+}
+
+export type LeadEstado =
+  | "nuevo"
+  | "contactado"
+  | "en_estudio"
+  | "presupuestado"
+  | "ganado"
+  | "descartado";
+
+export interface Lead {
+  id: string;
+  tipoFormulario: "rapido" | "presupuesto" | "general";
+  nombre: string;
+  email?: string;
+  telefono?: string;
+  contacto?: string;
+  tipo?: string;
+  ubicacion?: string;
+  superficie?: string;
+  situacion?: string;
+  fecha?: string;
+  presupuesto?: string;
+  mensaje?: string;
+  origen?: string;
+  estado: LeadEstado;
+  notas?: string;
+  creadoEn: string;
 }
 
 /** Contenido editable de los bloques y textos de la página de inicio. */

@@ -2,7 +2,7 @@ import mysql, { Pool } from "mysql2/promise";
 import fs from "fs";
 import path from "path";
 import { DEFAULT_HOME_CONTENT, DEFAULT_PROJECTS_PAGE_CONTENT, DEFAULT_NOSOTROS_PAGE_CONTENT, DEFAULT_CONTACTO_PAGE_CONTENT, DEFAULT_SERVICIOS_PAGE_CONTENT, DEFAULT_EQUIPO_PAGE_CONTENT, DEFAULT_EMPLEO_PAGE_CONTENT, DEFAULT_OFICINAS_PAGE_CONTENT, DEFAULT_ARTICULOS_PAGE_CONTENT, DEFAULT_GUIAS_PAGE_CONTENT, DEFAULT_PROJECTS, DEFAULT_SECTORS, DEFAULT_ARTICLES, DEFAULT_GUIDES, DEFAULT_SETTINGS, DEFAULT_POSICIONES_EMPLEO, DEFAULT_EQUIPO_MEMBERS } from "../content";
-import type { Project, Sector, Article, Guide, HomeContent, ProjectsPageContent, NosotrosPageContent, ContactoPageContent, ServiciosPageContent, EquipoPageContent, EmpleoPageContent, OficinasPageContent, ArticulosPageContent, GuiasPageContent, Slide, SiteSettings, Candidatura, CandidaturaEstado, PosicionEmpleo, MiembroEquipo } from "../types";
+import type { Project, Sector, Article, Guide, HomeContent, ProjectsPageContent, NosotrosPageContent, ContactoPageContent, ServiciosPageContent, EquipoPageContent, EmpleoPageContent, OficinasPageContent, ArticulosPageContent, GuiasPageContent, Slide, SiteSettings, Candidatura, CandidaturaEstado, PosicionEmpleo, MiembroEquipo, Lead, LeadEstado } from "../types";
 
 let pool: Pool | null = null;
 
@@ -47,6 +47,7 @@ interface LocalStoreData {
   customCategories?: string[];
   customGuides?: Guide[];
   customCandidaturas?: Candidatura[];
+  customLeads?: Lead[];
   settings?: SiteSettings;
 }
 
@@ -97,6 +98,7 @@ function saveLocalContent(data: Partial<LocalStoreData>) {
       guiasPage: data.guiasPage ? { ...(current.guiasPage || DEFAULT_GUIAS_PAGE_CONTENT), ...data.guiasPage } : current.guiasPage,
       settings: data.settings ? { ...(current.settings || DEFAULT_SETTINGS), ...data.settings } : current.settings,
       customCandidaturas: data.customCandidaturas ? data.customCandidaturas : current.customCandidaturas,
+      customLeads: data.customLeads ? data.customLeads : current.customLeads,
     };
     fs.writeFileSync(LOCAL_STORAGE_FILE, JSON.stringify(merged, null, 2), "utf-8");
   } catch (e) {
@@ -1356,4 +1358,113 @@ export async function reorderDbTeamMembers(ids: string[]): Promise<MiembroEquipo
 
   await saveDbEquipoPageContent({ miembros: orderedList });
   return orderedList;
+}
+
+/* -------------------------------------------------------------------------- */
+/*                     GESTIÓN DE CRM Y LEADS DE CONTACTO                    */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Obtiene todos los leads y solicitudes de presupuesto recibidos.
+ */
+export async function getDbLeads(): Promise<Lead[]> {
+  try {
+    const db = getDbPool();
+    const [rows] = await db.execute<any[]>(
+      "SELECT data FROM alko_site_content WHERE id = 'crm_leads' LIMIT 1"
+    );
+    if (rows && rows.length > 0) {
+      const data = typeof rows[0].data === "string" ? JSON.parse(rows[0].data) : rows[0].data;
+      if (Array.isArray(data)) {
+        return data;
+      }
+    }
+  } catch (err: any) {
+    console.warn("Aviso: Error obteniendo leads de MySQL:", err.message);
+  }
+
+  const local = getLocalContent();
+  return local.customLeads || [];
+}
+
+/**
+ * Guarda un nuevo lead recibido desde cualquier formulario web.
+ */
+export async function saveDbLead(
+  lead: Omit<Lead, "id" | "creadoEn"> & { id?: string; creadoEn?: string }
+): Promise<Lead> {
+  const current = await getDbLeads();
+  const newLead: Lead = {
+    ...lead,
+    id: lead.id || `lead_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+    creadoEn: lead.creadoEn || new Date().toISOString(),
+    estado: lead.estado || "nuevo",
+  };
+
+  const updatedList = [newLead, ...current];
+  saveLocalContent({ customLeads: updatedList });
+
+  try {
+    const db = getDbPool();
+    await db.execute(
+      `INSERT INTO alko_site_content (id, data) 
+       VALUES ('crm_leads', ?) 
+       ON DUPLICATE KEY UPDATE data = VALUES(data)`,
+      [JSON.stringify(updatedList)]
+    );
+  } catch (err: any) {
+    console.warn("Aviso: Fallo al guardar lead en MySQL:", err.message);
+  }
+
+  return newLead;
+}
+
+/**
+ * Actualiza los datos o estado de un lead (notas, estado, etc.).
+ */
+export async function updateDbLead(id: string, updates: Partial<Lead>): Promise<boolean> {
+  const current = await getDbLeads();
+  const index = current.findIndex((l) => l.id === id);
+  if (index === -1) return false;
+
+  current[index] = { ...current[index], ...updates };
+  saveLocalContent({ customLeads: current });
+
+  try {
+    const db = getDbPool();
+    await db.execute(
+      `INSERT INTO alko_site_content (id, data) 
+       VALUES ('crm_leads', ?) 
+       ON DUPLICATE KEY UPDATE data = VALUES(data)`,
+      [JSON.stringify(current)]
+    );
+    return true;
+  } catch (err: any) {
+    console.warn("Aviso: Fallo al actualizar lead en MySQL:", err.message);
+    return false;
+  }
+}
+
+/**
+ * Elimina un lead por ID.
+ */
+export async function deleteDbLead(id: string): Promise<boolean> {
+  const current = await getDbLeads();
+  const updatedList = current.filter((l) => l.id !== id);
+
+  saveLocalContent({ customLeads: updatedList });
+
+  try {
+    const db = getDbPool();
+    await db.execute(
+      `INSERT INTO alko_site_content (id, data) 
+       VALUES ('crm_leads', ?) 
+       ON DUPLICATE KEY UPDATE data = VALUES(data)`,
+      [JSON.stringify(updatedList)]
+    );
+    return true;
+  } catch (err: any) {
+    console.warn("Aviso: Fallo al eliminar lead en MySQL:", err.message);
+    return false;
+  }
 }

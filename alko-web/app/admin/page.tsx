@@ -14,19 +14,20 @@ import {
   FileText,
   Briefcase,
   Users,
+  Inbox,
   Settings,
   ChevronRight,
 } from "lucide-react";
 import LogoutButton from "@/components/admin/LogoutButton";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import { getProjects, getSectors, getArticles, getGuides, getHomeContent } from "@/lib/wordpress";
-import { getDbJobApplications, getDbVacancies, getDbTeamMembers } from "@/lib/db/mysql";
+import { getDbJobApplications, getDbVacancies, getDbTeamMembers, getDbLeads } from "@/lib/db/mysql";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboardPage() {
   const session = await getSession();
-  const [projects, sectors, articles, guides, candidaturas, vacantes, teamMembers, homeContent] = await Promise.all([
+  const [projects, sectors, articles, guides, candidaturas, vacantes, teamMembers, leads, homeContent] = await Promise.all([
     getProjects(),
     getSectors(),
     getArticles(),
@@ -34,6 +35,7 @@ export default async function AdminDashboardPage() {
     getDbJobApplications(),
     getDbVacancies(),
     getDbTeamMembers(),
+    getDbLeads(),
     getHomeContent(),
   ]);
 
@@ -297,8 +299,40 @@ export default async function AdminDashboardPage() {
             </div>
           </div>
 
-          {/* Fila de Módulos Operativos: Empleo, Equipo y Ajustes */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          {/* Fila de Módulos Operativos: CRM, Empleo, Equipo y Ajustes */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {/* Card CRM y Leads */}
+            <Link
+              href="/admin/leads"
+              className="group rounded-2xl bg-white border border-slate-200/90 p-6 flex flex-col justify-between gap-4 shadow-xs hover:border-emerald-500 hover:shadow-md transition"
+            >
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
+                  <Inbox className="w-6 h-6" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-bold text-slate-900 group-hover:text-emerald-800 transition-colors">
+                      CRM y Leads
+                    </h3>
+                    {leads.filter((l) => l.estado === "nuevo").length > 0 && (
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                        {leads.filter((l) => l.estado === "nuevo").length} nuevos
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-slate-500 mt-1">
+                    {leads.length} solicitudes &middot; Contactos y presupuestos recibidos.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between text-xs font-semibold text-emerald-700 pt-2 border-t border-slate-100">
+                <span>Gestionar CRM</span>
+                <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+              </div>
+            </Link>
+
             {/* Card Empleo y Candidaturas */}
             <Link
               href="/admin/empleo"

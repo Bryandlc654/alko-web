@@ -52,11 +52,56 @@ export default function CompanySettingsForm({ initialSettings }: CompanySettings
   const [saving, setSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [testingSmtp, setTestingSmtp] = useState(false);
+  const [smtpTestResult, setSmtpTestResult] = useState<{ success: boolean; message: string } | null>(null);
 
   const handleChange = (field: keyof SiteSettings, value: string) => {
     setSettings((prev) => ({ ...prev, [field]: value }));
     setSavedSuccess(false);
     setErrorMessage("");
+  };
+
+  const handleChangeSmtp = (field: string, value: any) => {
+    setSettings((prev) => ({
+      ...prev,
+      smtp: {
+        ...(prev.smtp || {}),
+        [field]: value,
+      },
+    }));
+    setSavedSuccess(false);
+    setSmtpTestResult(null);
+  };
+
+  const handleTestSmtp = async () => {
+    setTestingSmtp(true);
+    setSmtpTestResult(null);
+    try {
+      const res = await fetch("/api/admin/ajustes/test-smtp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(settings.smtp || {}),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        setSmtpTestResult({
+          success: false,
+          message: data.error || "Fallo en la prueba de conexión con el servidor SMTP",
+        });
+      } else {
+        setSmtpTestResult({
+          success: true,
+          message: "¡Conexión SMTP exitosa! El servidor de correo responde correctamente.",
+        });
+      }
+    } catch (err: any) {
+      setSmtpTestResult({
+        success: false,
+        message: err.message || "Error al conectar con el servidor SMTP",
+      });
+    } finally {
+      setTestingSmtp(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -309,6 +354,159 @@ export default function CompanySettingsForm({ initialSettings }: CompanySettings
                   className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                 />
               </div>
+            </div>
+          </div>
+
+          {/* Bloque 4: Configuración del Servidor SMTP (Notificaciones de Leads) */}
+          <div className="bg-white rounded-2xl border border-slate-200/90 p-6 shadow-xs space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                  <Mail className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">
+                    Notificaciones por Correo (Servidor SMTP)
+                  </h3>
+                  <p className="text-[11px] text-slate-400">
+                    Envía avisos inmediatos al equipo cada vez que un cliente solicita presupuesto
+                  </p>
+                </div>
+              </div>
+
+              {/* Interruptor de activación */}
+              <label className="inline-flex items-center gap-2 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={settings.smtp?.enabled || false}
+                  onChange={(e) => handleChangeSmtp("enabled", e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600 relative" />
+                <span className="text-xs font-semibold text-slate-700">
+                  {settings.smtp?.enabled ? "SMTP Activo" : "Desactivado"}
+                </span>
+              </label>
+            </div>
+
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                    Servidor Host SMTP *
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="smtp.hostinger.com o smtp.gmail.com"
+                    value={settings.smtp?.host || ""}
+                    onChange={(e) => handleChangeSmtp("host", e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                    Puerto SMTP *
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="465 (SSL) o 587 (TLS)"
+                    value={settings.smtp?.port || ""}
+                    onChange={(e) => handleChangeSmtp("port", e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                    Usuario / Correo Emisor *
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="notificaciones@alkoreformas.com"
+                    value={settings.smtp?.user || ""}
+                    onChange={(e) => handleChangeSmtp("user", e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                    Contraseña del Correo *
+                  </label>
+                  <input
+                    type="password"
+                    placeholder="••••••••••••"
+                    value={settings.smtp?.password || ""}
+                    onChange={(e) => handleChangeSmtp("password", e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                    Nombre del Remitente (From)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder='"ALKO Reformas" <notificaciones@alko.es>'
+                    value={settings.smtp?.from || ""}
+                    onChange={(e) => handleChangeSmtp("from", e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                    Enviar Notificación A (Destinatario) *
+                  </label>
+                  <input
+                    type="email"
+                    placeholder="info@alkoreformas.com"
+                    value={settings.smtp?.to || ""}
+                    onChange={(e) => handleChangeSmtp("to", e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                  />
+                </div>
+              </div>
+
+              {/* Botón de prueba SMTP */}
+              <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-slate-100">
+                <span className="text-[11px] text-slate-400">
+                  Prueba la autenticación y conectividad con tu proveedor antes de guardar.
+                </span>
+
+                <button
+                  type="button"
+                  disabled={testingSmtp || !settings.smtp?.host || !settings.smtp?.user}
+                  onClick={handleTestSmtp}
+                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-slate-200 hover:border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-semibold text-slate-700 transition disabled:opacity-40"
+                >
+                  <Mail className="w-3.5 h-3.5 text-slate-500" />
+                  <span>{testingSmtp ? "Verificando conexión..." : "Probar Conexión SMTP"}</span>
+                </button>
+              </div>
+
+              {smtpTestResult && (
+                <div
+                  className={`p-3.5 rounded-xl text-xs flex items-center gap-2 border animate-in fade-in ${
+                    smtpTestResult.success
+                      ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+                      : "bg-red-50 border-red-200 text-red-700"
+                  }`}
+                >
+                  {smtpTestResult.success ? (
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  ) : (
+                    <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
+                  )}
+                  <span>{smtpTestResult.message}</span>
+                </div>
+              )}
             </div>
           </div>
         </div>

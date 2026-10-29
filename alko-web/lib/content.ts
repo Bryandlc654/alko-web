@@ -333,6 +333,16 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   linkedin: "#",
   facebook: "#",
   instagram: "#",
+  smtp: {
+    enabled: false,
+    host: "smtp.hostinger.com",
+    port: 465,
+    user: "notificaciones@alkoreformas.com",
+    password: "",
+    from: '"ALKO Reformas" <notificaciones@alkoreformas.com>',
+    to: "info@alkoreformas.com",
+    secure: true,
+  },
 };
 
 export const DEFAULT_HOME_CONTENT: HomeContent = {
