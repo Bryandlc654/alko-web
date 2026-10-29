@@ -1,4 +1,4 @@
-import { getDbHomeContent, getFeaturedProjectIds, getDbProjects, getDbSectors, getDbArticles, getDbGuides } from "../db/mysql";
+import { getDbHomeContent, getFeaturedProjectIds, getDbProjects, getDbSectors, getDbArticles, getDbGuides, getDbSettings } from "../db/mysql";
 import {
   DEFAULT_ARTICLES,
   DEFAULT_DESCARGAS,
@@ -302,6 +302,15 @@ export async function getGuideBySlug(slug: string): Promise<Guide | null> {
 /* -------------------------------- Ajustes --------------------------------- */
 
 export async function getSettings(): Promise<SiteSettings> {
+  try {
+    const dbSettings = await getDbSettings();
+    if (dbSettings && Object.keys(dbSettings).length > 0) {
+      return dbSettings;
+    }
+  } catch (err) {
+    console.warn("Aviso: Error obteniendo ajustes de MySQL:", err);
+  }
+
   const posts = await wpGet<WpPost[]>("ajustes?per_page=1");
   if (!posts || posts.length === 0) return DEFAULT_SETTINGS;
   const remote = toSettings(posts[0]);

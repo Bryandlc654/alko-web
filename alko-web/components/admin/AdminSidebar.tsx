@@ -94,7 +94,7 @@ const MENU_ITEMS: MenuGroup[] = [
       },
       {
         name: "Ajustes de Empresa",
-        href: "/admin#ajustes",
+        href: "/admin/ajustes",
         icon: Settings,
         badge: null,
       },

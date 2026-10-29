@@ -292,6 +292,31 @@ export default async function AdminDashboardPage() {
             </div>
           </div>
 
+          {/* Card Ajustes de Empresa */}
+          <Link
+            href="/admin/ajustes"
+            className="group rounded-2xl bg-white border border-slate-200/90 p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs hover:border-blue-500 hover:shadow-md transition"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-blue-50 group-hover:text-blue-600 transition">
+                <Settings className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
+                  Ajustes Globales y Datos de Contacto
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Teléfono, WhatsApp directo, correo de atención, dirección física de oficina central y redes sociales.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 text-xs font-semibold text-blue-600 shrink-0">
+              <span>Configurar empresa</span>
+              <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+            </div>
+          </Link>
+
           {/* Información del Sistema y Base de Datos */}
           <div className="rounded-2xl bg-white border border-slate-200/90 p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
             <div className="flex items-center gap-3">
