@@ -90,5 +90,13 @@ export async function verifyToken(token: string): Promise<AdminUser | null> {
 
 export async function destroySession() {
   const cookieStore = await cookies();
+  cookieStore.set(COOKIE_NAME, "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    expires: new Date(0),
+    maxAge: 0,
+    path: "/",
+  });
   cookieStore.delete(COOKIE_NAME);
 }

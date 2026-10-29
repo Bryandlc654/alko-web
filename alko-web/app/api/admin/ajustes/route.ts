@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getDbSettings, saveDbSettings } from "@/lib/db/mysql";
-import { cookies } from "next/headers";
+import { getSession } from "@/lib/auth/session";
 
 export async function GET() {
   const settings = await getDbSettings();
@@ -8,10 +8,8 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const cookieStore = await cookies();
-  const auth = cookieStore.get("alko_admin_auth");
-
-  if (!auth || auth.value !== "true") {
+  const session = await getSession();
+  if (!session) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
 

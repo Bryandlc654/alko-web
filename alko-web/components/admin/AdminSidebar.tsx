@@ -13,6 +13,7 @@ import {
   ExternalLink,
   LucideIcon,
 } from "lucide-react";
+import LogoutButton from "./LogoutButton";
 
 interface AdminSidebarProps {
   userEmail?: string;
@@ -174,19 +175,20 @@ export default function AdminSidebar({ userEmail, userName }: AdminSidebarProps)
 
       {/* Footer del Sidebar con Usuario e Info de Base de Datos */}
       <div className="p-4 border-t border-slate-200/90 space-y-3 bg-slate-50/50">
-        <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-white border border-slate-200 shadow-xs">
-          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-          <div className="overflow-hidden">
-            <span className="text-[11px] font-bold text-slate-800 block truncate">
-              {userName || "Administrador"}
-            </span>
-            <span className="text-[10px] text-slate-500 block truncate">
-              {userEmail || "admin@alkoreformas.com"}
-            </span>
+        <div className="flex items-center justify-between gap-2.5 px-3 py-2 rounded-xl bg-white border border-slate-200 shadow-xs">
+          <div className="flex items-center gap-2.5 overflow-hidden">
+            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+            <div className="overflow-hidden">
+              <span className="text-[11px] font-bold text-slate-800 block truncate">
+                {userName || "Administrador"}
+              </span>
+              <span className="text-[10px] text-slate-500 block truncate">
+                {userEmail || "admin@alkoreformas.com"}
+              </span>
+            </div>
           </div>
+          <LogoutButton />
         </div>
-
-        
       </div>
     </aside>
   );
