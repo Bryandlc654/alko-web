@@ -721,3 +721,18 @@ export const DEFAULT_OFICINAS_PAGE_CONTENT: import('./types').OficinasPageConten
   metodologiaSubtitulo: "Metodología secuencial para cumplir plazos sin sorpresas de presupuesto.",
   metodologia: DEFAULT_OFICINAS_METODOLOGIA,
 };
+
+
+export const DEFAULT_ARTICULOS_PAGE_CONTENT: import('./types').ArticulosPageContent = {
+  headerBadge: "CONOCIMIENTO · ARTÍCULOS",
+  headerTitulo: "Criterio técnico,\npor escrito.",
+  headerDescripcion: "Detalles constructivos, instalaciones y gestión de obra explicados por el equipo que los ejecuta cada día.",
+  headerBgImage: "/proceso-instalaciones.jpg",
+};
+
+export const DEFAULT_GUIAS_PAGE_CONTENT: import('./types').GuiasPageContent = {
+  headerBadge: "CONOCIMIENTO · GUÍAS",
+  headerTitulo: "Guías",
+  headerDescripcion: "Recorridos paso a paso por las decisiones clave de una obra: planificación, presupuesto, materiales y entrega.",
+  headerBgImage: "/proceso-control.jpg",
+};

@@ -438,3 +438,18 @@ export interface OficinasPageContent {
   metodologiaSubtitulo: string;
   metodologia: OficinasMetodologia[];
 }
+
+
+export interface ArticulosPageContent {
+  headerBadge: string;
+  headerTitulo: string;
+  headerDescripcion: string;
+  headerBgImage: string;
+}
+
+export interface GuiasPageContent {
+  headerBadge: string;
+  headerTitulo: string;
+  headerDescripcion: string;
+  headerBgImage: string;
+}

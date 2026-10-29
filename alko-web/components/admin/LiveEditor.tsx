@@ -14,6 +14,8 @@ import {
   Monitor,
 } from "lucide-react";
 import type {
+  GuiasPageContent,
+  ArticulosPageContent,
   OficinasPageContent,
   EmpleoPageContent,
   EquipoPageContent,
@@ -46,6 +48,8 @@ import { DEFAULT_PROJECTS_PAGE_CONTENT, DEFAULT_NOSOTROS_PAGE_CONTENT,
   DEFAULT_POSICIONES_EMPLEO,
   DEFAULT_OFICINAS_PAGE_CONTENT,
   DEFAULT_OFICINAS_METRICAS,
+  DEFAULT_ARTICULOS_PAGE_CONTENT,
+  DEFAULT_GUIAS_PAGE_CONTENT,
 } from "@/lib/content";
 import { ArrowRight, Handshake, CalendarClock, Wallet, BadgeCheck, Phone, MessageCircle, Mail, MapPin, Clock } from "lucide-react";
 import Materials from "@/components/sections/Materials";
@@ -65,6 +69,8 @@ interface LiveEditorProps {
   initialEquipoPageContent?: EquipoPageContent;
   initialEmpleoPageContent?: EmpleoPageContent;
   initialOficinasPageContent?: OficinasPageContent;
+  initialArticulosPageContent?: ArticulosPageContent;
+  initialGuiasPageContent?: GuiasPageContent;
   heroSlides: Slide[];
   showcaseSlides: Slide[];
   projects: Project[];
@@ -89,6 +95,8 @@ export default function LiveEditor({
   initialEquipoPageContent,
   initialEmpleoPageContent,
   initialOficinasPageContent,
+  initialArticulosPageContent,
+  initialGuiasPageContent,
   heroSlides: initialHeroSlides,
   showcaseSlides: initialShowcaseSlides,
   projects,
@@ -99,7 +107,29 @@ export default function LiveEditor({
   settings,
 }: LiveEditorProps) {
   // Selector de página a editar: 'home' o 'projects'
-  const [activePage, setActivePage] = useState<"home" | "projects" | "nosotros" | "contacto" | "servicios" | "equipo" | "empleo" | "oficinas">("home");
+  const [activePage, setActivePage] = useState<"home" | "projects" | "nosotros" | "contacto" | "servicios" | "equipo" | "empleo" | "oficinas" | "articulos" | "guias">("home");
+
+  // Estado de contenido editable de la página articulos
+  const [articulosContent, setArticulosContent] = useState<ArticulosPageContent>(
+    initialArticulosPageContent || DEFAULT_ARTICULOS_PAGE_CONTENT
+  );
+
+  const updateArticulosField = useCallback((field: keyof ArticulosPageContent, value: any) => {
+    setArticulosContent((prev) => ({ ...prev, [field]: value }));
+    setHasUnsavedChanges(true);
+    setSaveSuccess(false);
+  }, []);
+
+  // Estado de contenido editable de la página guías
+  const [guiasContent, setGuiasContent] = useState<GuiasPageContent>(
+    initialGuiasPageContent || DEFAULT_GUIAS_PAGE_CONTENT
+  );
+
+  const updateGuiasField = useCallback((field: keyof GuiasPageContent, value: any) => {
+    setGuiasContent((prev) => ({ ...prev, [field]: value }));
+    setHasUnsavedChanges(true);
+    setSaveSuccess(false);
+  }, []);
 
   // Estado de contenido editable de la página oficinas
   const [oficinasContent, setOficinasContent] = useState<OficinasPageContent>(
@@ -334,6 +364,28 @@ export default function LiveEditor({
           const errorData = await res.json();
           throw new Error(errorData.error || "Error al guardar en el servidor");
         }
+      } else if (activePage === "articulos") {
+        const res = await fetch("/api/admin/content/articulos", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(articulosContent),
+        });
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.error || "Error al guardar en el servidor");
+        }
+      } else if (activePage === "guias") {
+        const res = await fetch("/api/admin/content/guias", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(guiasContent),
+        });
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.error || "Error al guardar en el servidor");
+        }
       } else if (activePage === "oficinas") {
         const res = await fetch("/api/admin/content/oficinas", {
           method: "POST",
@@ -541,6 +593,28 @@ export default function LiveEditor({
               </button>
               <button
                 type="button"
+                onClick={() => setActivePage("articulos")}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition ${
+                  activePage === "articulos"
+                    ? "bg-white text-blue-700 shadow-sm"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                <span>Página Artículos</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setActivePage("guias")}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition ${
+                  activePage === "guias"
+                    ? "bg-white text-blue-700 shadow-sm"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                <span>Página Guías</span>
+              </button>
+              <button
+                type="button"
                 onClick={() => setActivePage("oficinas")}
                 className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition ${
                   activePage === "oficinas"
@@ -616,7 +690,7 @@ export default function LiveEditor({
           )}
 
           <Link
-            href={activePage === "home" ? "/" : activePage === "projects" ? "/proyectos" : activePage === "nosotros" ? "/nosotros" : activePage === "contacto" ? "/contacto" : activePage === "servicios" ? "/servicios" : activePage === "equipo" ? "/equipo" : activePage === "empleo" ? "/trabaja-con-nosotros" : "/oficinas"}
+            href={activePage === "home" ? "/" : activePage === "projects" ? "/proyectos" : activePage === "nosotros" ? "/nosotros" : activePage === "contacto" ? "/contacto" : activePage === "servicios" ? "/servicios" : activePage === "equipo" ? "/equipo" : activePage === "empleo" ? "/trabaja-con-nosotros" : activePage === "oficinas" ? "/oficinas" : activePage === "articulos" ? "/conocimiento/articulos" : "/conocimiento/guias"}
             target="_blank"
             className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition shadow-sm"
           >
@@ -3040,6 +3114,139 @@ export default function LiveEditor({
                   </div>
                 </div>
               </section>
+            </div>
+          )}
+
+
+          {/* ========================================================
+              VISTA EDITABLE: PÁGINA ARTÍCULOS (/conocimiento/articulos)
+              ======================================================== */}
+          {activePage === "articulos" && (
+            <div className="bg-white text-stone-900">
+              <header className="relative isolate flex min-h-[560px] sm:min-h-[620px] lg:min-h-[72vh] items-end overflow-hidden bg-stone-950 text-white pt-36 sm:pt-44 pb-14 sm:pb-20">
+                <div className="absolute inset-0 z-0 overflow-hidden">
+                  <InlineImage
+                    src={articulosContent.headerBgImage || "/proceso-instalaciones.jpg"}
+                    alt="Fondo artículos"
+                    label="Cambiar fondo de cabecera"
+                    onImageChange={(newUrl) => updateArticulosField("headerBgImage", newUrl)}
+                    className="w-full h-full"
+                    imageClassName="object-cover object-center"
+                    priority
+                  />
+                  <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-stone-950/90 via-stone-950/55 to-stone-950/10" />
+                  <div className="absolute inset-x-0 bottom-0 pointer-events-none h-2/3 bg-gradient-to-t from-stone-950/90 via-stone-950/40 to-transparent" />
+                  <div className="absolute inset-x-0 top-0 pointer-events-none h-40 bg-gradient-to-b from-stone-950/70 to-transparent" />
+                </div>
+
+                <div className="relative max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 w-full z-10">
+                  <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-white/70 uppercase mb-4">
+                    <InlineText
+                      value={articulosContent.headerBadge || "CONOCIMIENTO · ARTÍCULOS"}
+                      onChange={(val) => updateArticulosField("headerBadge", val)}
+                      placeholder="Badge..."
+                    />
+                  </span>
+                  <h1 className="max-w-5xl font-display font-light text-4xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tight leading-[1.02] drop-shadow-[0_2px_20px_rgba(0,0,0,0.35)]">
+                    <InlineText
+                      value={articulosContent.headerTitulo || "Criterio técnico,\npor escrito."}
+                      onChange={(val) => updateArticulosField("headerTitulo", val)}
+                      placeholder="Título artículos..."
+                      multiline
+                    />
+                  </h1>
+                  <div className="mt-6 max-w-2xl text-base sm:text-lg text-white/85 font-light leading-relaxed font-sans">
+                    <InlineText
+                      value={
+                        articulosContent.headerDescripcion ||
+                        "Detalles constructivos, instalaciones y gestión de obra explicados por el equipo que los ejecuta cada día."
+                      }
+                      onChange={(val) => updateArticulosField("headerDescripcion", val)}
+                      placeholder="Descripción artículos..."
+                      multiline
+                    />
+                  </div>
+                </div>
+              </header>
+
+              {/* LISTADO DE ARTÍCULOS */}
+              <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 py-12 sm:py-20">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {articles.map((art) => (
+                    <ArticleCard key={art.id} article={art} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ========================================================
+              VISTA EDITABLE: PÁGINA GUÍAS (/conocimiento/guias)
+              ======================================================== */}
+          {activePage === "guias" && (
+            <div className="bg-white text-stone-900">
+              <header className="relative isolate flex min-h-[560px] sm:min-h-[620px] lg:min-h-[72vh] items-end overflow-hidden bg-stone-950 text-white pt-36 sm:pt-44 pb-14 sm:pb-20">
+                <div className="absolute inset-0 z-0 overflow-hidden">
+                  <InlineImage
+                    src={guiasContent.headerBgImage || "/proceso-control.jpg"}
+                    alt="Fondo guías"
+                    label="Cambiar fondo de cabecera"
+                    onImageChange={(newUrl) => updateGuiasField("headerBgImage", newUrl)}
+                    className="w-full h-full"
+                    imageClassName="object-cover object-center"
+                    priority
+                  />
+                  <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-stone-950/90 via-stone-950/55 to-stone-950/10" />
+                  <div className="absolute inset-x-0 bottom-0 pointer-events-none h-2/3 bg-gradient-to-t from-stone-950/90 via-stone-950/40 to-transparent" />
+                  <div className="absolute inset-x-0 top-0 pointer-events-none h-40 bg-gradient-to-b from-stone-950/70 to-transparent" />
+                </div>
+
+                <div className="relative max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 w-full z-10">
+                  <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-white/70 uppercase mb-4">
+                    <InlineText
+                      value={guiasContent.headerBadge || "CONOCIMIENTO · GUÍAS"}
+                      onChange={(val) => updateGuiasField("headerBadge", val)}
+                      placeholder="Badge..."
+                    />
+                  </span>
+                  <h1 className="max-w-5xl font-display font-light text-4xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tight leading-[1.02] drop-shadow-[0_2px_20px_rgba(0,0,0,0.35)]">
+                    <InlineText
+                      value={guiasContent.headerTitulo || "Guías"}
+                      onChange={(val) => updateGuiasField("headerTitulo", val)}
+                      placeholder="Título guías..."
+                    />
+                  </h1>
+                  <div className="mt-6 max-w-2xl text-base sm:text-lg text-white/85 font-light leading-relaxed font-sans">
+                    <InlineText
+                      value={
+                        guiasContent.headerDescripcion ||
+                        "Recorridos paso a paso por las decisiones clave de una obra: planificación, presupuesto, materiales y entrega."
+                      }
+                      onChange={(val) => updateGuiasField("headerDescripcion", val)}
+                      placeholder="Descripción guías..."
+                      multiline
+                    />
+                  </div>
+                </div>
+              </header>
+
+              {/* LISTADO DE CONTENIDO GUÍAS */}
+              <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 py-16 sm:py-24">
+                <div className="space-y-6">
+                  <div className="p-8 border border-stone-200 bg-stone-50">
+                    <h3 className="font-serif text-2xl font-light text-stone-900">01 — Planificar una reforma integral</h3>
+                    <p className="mt-2 text-stone-600 font-light text-sm">Fases, licencias, plazos reales y coordinación técnica de gremios.</p>
+                  </div>
+                  <div className="p-8 border border-stone-200 bg-stone-50">
+                    <h3 className="font-serif text-2xl font-light text-stone-900">02 — Presupuesto y contrato de obra</h3>
+                    <p className="mt-2 text-stone-600 font-light text-sm">Cómo interpretar partidas, calidades, imprevistos y condiciones de pago.</p>
+                  </div>
+                  <div className="p-8 border border-stone-200 bg-stone-50">
+                    <h3 className="font-serif text-2xl font-light text-stone-900">03 — Materiales y acabados arquitectónicos</h3>
+                    <p className="mt-2 text-stone-600 font-light text-sm">Criterios de durabilidad, mantenimiento y compatibilidad técnica.</p>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 

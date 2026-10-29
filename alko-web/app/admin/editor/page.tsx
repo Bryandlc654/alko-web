@@ -17,6 +17,8 @@ import {
   getDbEquipoPageContent,
   getDbEmpleoPageContent,
   getDbOficinasPageContent,
+  getDbArticulosPageContent,
+  getDbGuiasPageContent,
 } from "@/lib/db/mysql";
 import LiveEditor from "@/components/admin/LiveEditor";
 
@@ -32,6 +34,8 @@ export default async function AdminEditorPage() {
     equipoPageContent,
     empleoPageContent,
     oficinasPageContent,
+    articulosPageContent,
+    guiasPageContent,
     heroSlides,
     showcaseSlides,
     projects,
@@ -49,6 +53,8 @@ export default async function AdminEditorPage() {
     getDbEquipoPageContent(),
     getDbEmpleoPageContent(),
     getDbOficinasPageContent(),
+    getDbArticulosPageContent(),
+    getDbGuiasPageContent(),
     getHeroSlides(),
     getShowcaseSlides(),
     getProjects(),
@@ -69,6 +75,8 @@ export default async function AdminEditorPage() {
       initialEquipoPageContent={equipoPageContent}
       initialEmpleoPageContent={empleoPageContent}
       initialOficinasPageContent={oficinasPageContent}
+      initialArticulosPageContent={articulosPageContent}
+      initialGuiasPageContent={guiasPageContent}
       heroSlides={heroSlides}
       showcaseSlides={showcaseSlides}
       projects={projects}

@@ -6,6 +6,7 @@ import ArticlesIndex from "@/components/ui/ArticlesIndex";
 import ContactCta from "@/components/sections/ContactCta";
 import { ROUTES } from "@/lib/site";
 import { getArticles, getSettings } from "@/lib/wordpress";
+import { getDbArticulosPageContent } from "@/lib/db/mysql";
 import { formatDate } from "@/lib/utils";
 
 export const revalidate = 60;
@@ -17,7 +18,7 @@ export const metadata = {
 };
 
 export default async function ArticulosPage() {
-  const [allArticles, settings] = await Promise.all([getArticles(50), getSettings()]);
+  const [allArticles, settings, pageContent] = await Promise.all([getArticles(50), getSettings(), getDbArticulosPageContent()]);
   const articles = [...allArticles].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
   );
@@ -34,7 +35,7 @@ export default async function ArticulosPage() {
     <main className="bg-white text-stone-900">
       <PageHero
         breadcrumbs={[{ label: "Artículos" }]}
-        eyebrow="CONOCIMIENTO · ARTÍCULOS"
+        eyebrow={pageContent.headerBadge || "CONOCIMIENTO · ARTÍCULOS"}
         title={
           <>
             Criterio técnico,
@@ -42,8 +43,8 @@ export default async function ArticulosPage() {
             por escrito.
           </>
         }
-        description="Detalles constructivos, instalaciones y gestión de obra explicados por el equipo que los ejecuta cada día."
-        image={featured?.image || "/proceso-instalaciones.jpg"}
+        description={pageContent.headerDescripcion || "Detalles constructivos, instalaciones y gestión de obra explicados por el equipo que los ejecuta cada día."}
+        image={pageContent.headerBgImage || featured?.image || "/proceso-instalaciones.jpg"}
       >
         <dl className="mt-12 sm:mt-16 grid grid-cols-1 sm:grid-cols-3 border-t border-white/15">
           {stats.map((stat) => (

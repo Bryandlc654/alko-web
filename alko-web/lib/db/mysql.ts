@@ -1,8 +1,8 @@
 import mysql, { Pool } from "mysql2/promise";
 import fs from "fs";
 import path from "path";
-import { DEFAULT_HOME_CONTENT, DEFAULT_PROJECTS_PAGE_CONTENT, DEFAULT_NOSOTROS_PAGE_CONTENT, DEFAULT_CONTACTO_PAGE_CONTENT, DEFAULT_SERVICIOS_PAGE_CONTENT, DEFAULT_EQUIPO_PAGE_CONTENT, DEFAULT_EMPLEO_PAGE_CONTENT, DEFAULT_OFICINAS_PAGE_CONTENT, DEFAULT_PROJECTS } from "../content";
-import type { Project, HomeContent, ProjectsPageContent, NosotrosPageContent, ContactoPageContent, ServiciosPageContent, EquipoPageContent, EmpleoPageContent, OficinasPageContent, Slide } from "../types";
+import { DEFAULT_HOME_CONTENT, DEFAULT_PROJECTS_PAGE_CONTENT, DEFAULT_NOSOTROS_PAGE_CONTENT, DEFAULT_CONTACTO_PAGE_CONTENT, DEFAULT_SERVICIOS_PAGE_CONTENT, DEFAULT_EQUIPO_PAGE_CONTENT, DEFAULT_EMPLEO_PAGE_CONTENT, DEFAULT_OFICINAS_PAGE_CONTENT, DEFAULT_ARTICULOS_PAGE_CONTENT, DEFAULT_GUIAS_PAGE_CONTENT, DEFAULT_PROJECTS } from "../content";
+import type { Project, HomeContent, ProjectsPageContent, NosotrosPageContent, ContactoPageContent, ServiciosPageContent, EquipoPageContent, EmpleoPageContent, OficinasPageContent, ArticulosPageContent, GuiasPageContent, Slide } from "../types";
 
 let pool: Pool | null = null;
 
@@ -37,6 +37,8 @@ interface LocalStoreData {
   equipoPage?: EquipoPageContent;
   empleoPage?: EmpleoPageContent;
   oficinasPage?: OficinasPageContent;
+  articulosPage?: ArticulosPageContent;
+  guiasPage?: GuiasPageContent;
   slides: Slide[];
   featuredProjectIds?: string[];
   customProjects?: Project[];
@@ -60,6 +62,8 @@ function getLocalContent(): LocalStoreData {
     equipoPage: DEFAULT_EQUIPO_PAGE_CONTENT,
     empleoPage: DEFAULT_EMPLEO_PAGE_CONTENT,
     oficinasPage: DEFAULT_OFICINAS_PAGE_CONTENT,
+    articulosPage: DEFAULT_ARTICULOS_PAGE_CONTENT,
+    guiasPage: DEFAULT_GUIAS_PAGE_CONTENT,
     slides: [],
     featuredProjectIds: [],
   };
@@ -82,6 +86,8 @@ function saveLocalContent(data: Partial<LocalStoreData>) {
       equipoPage: data.equipoPage ? { ...(current.equipoPage || DEFAULT_EQUIPO_PAGE_CONTENT), ...data.equipoPage } : current.equipoPage,
       empleoPage: data.empleoPage ? { ...(current.empleoPage || DEFAULT_EMPLEO_PAGE_CONTENT), ...data.empleoPage } : current.empleoPage,
       oficinasPage: data.oficinasPage ? { ...(current.oficinasPage || DEFAULT_OFICINAS_PAGE_CONTENT), ...data.oficinasPage } : current.oficinasPage,
+      articulosPage: data.articulosPage ? { ...(current.articulosPage || DEFAULT_ARTICULOS_PAGE_CONTENT), ...data.articulosPage } : current.articulosPage,
+      guiasPage: data.guiasPage ? { ...(current.guiasPage || DEFAULT_GUIAS_PAGE_CONTENT), ...data.guiasPage } : current.guiasPage,
     };
     fs.writeFileSync(LOCAL_STORAGE_FILE, JSON.stringify(merged, null, 2), "utf-8");
   } catch (e) {
@@ -604,6 +610,96 @@ export async function saveDbOficinasPageContent(content: Partial<OficinasPageCon
     );
   } catch (err: any) {
     console.warn("Aviso: Fallo al guardar página oficinas en MySQL:", err.message);
+  }
+
+  return updated;
+}
+
+/**
+ * Obtiene el contenido de la Página de Artículos (/conocimiento/articulos) desde MySQL.
+ */
+export async function getDbArticulosPageContent(): Promise<ArticulosPageContent> {
+  try {
+    const db = getDbPool();
+    const [rows] = await db.execute<any[]>(
+      "SELECT data FROM alko_site_content WHERE id = 'articulos_page' LIMIT 1"
+    );
+    if (rows && rows.length > 0) {
+      const data = typeof rows[0].data === "string" ? JSON.parse(rows[0].data) : rows[0].data;
+      return { ...DEFAULT_ARTICULOS_PAGE_CONTENT, ...data };
+    }
+  } catch (err: any) {
+    console.warn("Aviso: Error obteniendo contenido de página artículos:", err.message);
+  }
+
+  const local = getLocalContent();
+  return { ...DEFAULT_ARTICULOS_PAGE_CONTENT, ...(local.articulosPage || {}) };
+}
+
+/**
+ * Guarda el contenido de la Página de Artículos (/conocimiento/articulos) en MySQL.
+ */
+export async function saveDbArticulosPageContent(content: Partial<ArticulosPageContent>): Promise<ArticulosPageContent> {
+  const current = await getDbArticulosPageContent();
+  const updated: ArticulosPageContent = { ...current, ...content };
+
+  saveLocalContent({ articulosPage: updated });
+
+  try {
+    const db = getDbPool();
+    await db.execute(
+      `INSERT INTO alko_site_content (id, data) 
+       VALUES ('articulos_page', ?) 
+       ON DUPLICATE KEY UPDATE data = VALUES(data)`,
+      [JSON.stringify(updated)]
+    );
+  } catch (err: any) {
+    console.warn("Aviso: Fallo al guardar página artículos en MySQL:", err.message);
+  }
+
+  return updated;
+}
+
+/**
+ * Obtiene el contenido de la Página de Guías (/conocimiento/guias) desde MySQL.
+ */
+export async function getDbGuiasPageContent(): Promise<GuiasPageContent> {
+  try {
+    const db = getDbPool();
+    const [rows] = await db.execute<any[]>(
+      "SELECT data FROM alko_site_content WHERE id = 'guias_page' LIMIT 1"
+    );
+    if (rows && rows.length > 0) {
+      const data = typeof rows[0].data === "string" ? JSON.parse(rows[0].data) : rows[0].data;
+      return { ...DEFAULT_GUIAS_PAGE_CONTENT, ...data };
+    }
+  } catch (err: any) {
+    console.warn("Aviso: Error obteniendo contenido de página guías:", err.message);
+  }
+
+  const local = getLocalContent();
+  return { ...DEFAULT_GUIAS_PAGE_CONTENT, ...(local.guiasPage || {}) };
+}
+
+/**
+ * Guarda el contenido de la Página de Guías (/conocimiento/guias) en MySQL.
+ */
+export async function saveDbGuiasPageContent(content: Partial<GuiasPageContent>): Promise<GuiasPageContent> {
+  const current = await getDbGuiasPageContent();
+  const updated: GuiasPageContent = { ...current, ...content };
+
+  saveLocalContent({ guiasPage: updated });
+
+  try {
+    const db = getDbPool();
+    await db.execute(
+      `INSERT INTO alko_site_content (id, data) 
+       VALUES ('guias_page', ?) 
+       ON DUPLICATE KEY UPDATE data = VALUES(data)`,
+      [JSON.stringify(updated)]
+    );
+  } catch (err: any) {
+    console.warn("Aviso: Fallo al guardar página guías en MySQL:", err.message);
   }
 
   return updated;

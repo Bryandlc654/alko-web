@@ -6,6 +6,7 @@ import PageHero from "@/components/ui/PageHero";
 import ContactCta from "@/components/sections/ContactCta";
 import { ROUTES } from "@/lib/site";
 import { getDescargas, getGuides, getNews, getSettings } from "@/lib/wordpress";
+import { getDbGuiasPageContent } from "@/lib/db/mysql";
 import { formatDate } from "@/lib/utils";
 
 export const revalidate = 60;
@@ -17,7 +18,8 @@ export const metadata = {
 };
 
 export default async function GuiasPage() {
-  const [guides, descargas, news, settings] = await Promise.all([
+  const [pageContent, guides, descargas, news, settings] = await Promise.all([
+    getDbGuiasPageContent(),
     getGuides(),
     getDescargas(),
     getNews(4),
@@ -37,10 +39,10 @@ export default async function GuiasPage() {
   return (
     <main className="bg-white text-stone-900">
       <PageHero
-        eyebrow="CONOCIMIENTO · GUÍAS"
-        title="Guías"
-        description="Recorridos paso a paso por las decisiones clave de una obra: planificación, presupuesto, materiales y entrega."
-        image={guides[0]?.imagen || "/proceso-control.jpg"}
+        eyebrow={pageContent.headerBadge || "CONOCIMIENTO · GUÍAS"}
+        title={pageContent.headerTitulo || "Guías"}
+        description={pageContent.headerDescripcion || "Recorridos paso a paso por las decisiones clave de una obra: planificación, presupuesto, materiales y entrega."}
+        image={pageContent.headerBgImage || guides[0]?.imagen || "/proceso-control.jpg"}
       >
         {anchors.length > 1 && (
           <nav aria-label="En esta página" className="mt-10 flex flex-wrap gap-3">
