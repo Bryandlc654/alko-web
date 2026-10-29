@@ -182,10 +182,7 @@ export default function AdminSidebar({ userEmail, userName }: AdminSidebarProps)
           </div>
         </div>
 
-        <div className="flex items-center justify-between px-2 text-[10px] text-slate-400">
-          <span>MySQL Hostinger</span>
-          <span className="text-emerald-600 font-semibold">193.203.175.226</span>
-        </div>
+        
       </div>
     </aside>
   );
