@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Lock, User, ArrowRight, ShieldCheck, AlertCircle, Eye, EyeOff } from "lucide-react";
@@ -123,12 +124,16 @@ export default function AdminLoginPage() {
         <div className="bg-white border border-slate-200/90 rounded-3xl p-8 sm:p-10 shadow-xl shadow-slate-200/60">
           {/* Logo y Encabezado */}
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-blue-50 border border-blue-200 text-blue-600 mb-5 shadow-sm">
-              <ShieldCheck className="w-7 h-7" />
+            <div className="flex justify-center mb-5">
+              <Image
+                src="/logo-alko-footer.webp"
+                alt="ALKO"
+                width={170}
+                height={45}
+                priority
+                className="h-10 w-auto object-contain"
+              />
             </div>
-            <span className="block text-[11px] font-mono tracking-[0.25em] text-blue-600 uppercase font-semibold mb-2">
-              ALKO Studio CMS
-            </span>
             <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
               Panel Administrador
             </h1>

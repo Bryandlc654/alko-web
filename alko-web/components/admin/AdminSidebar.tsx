@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -111,16 +112,15 @@ export default function AdminSidebar({ userEmail, userName }: AdminSidebarProps)
       <div>
         {/* Logo / Encabezado de la barra lateral */}
         <div className="h-16 px-6 border-b border-slate-200/90 flex items-center justify-between">
-          <Link href="/admin" className="flex items-center gap-3 group">
-            <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-sm tracking-wider shadow-sm group-hover:scale-105 transition-transform">
-              A
-            </div>
-            <div>
-              <span className="font-bold text-sm text-slate-900 tracking-tight block">ALKO Studio</span>
-              <span className="text-[10px] text-blue-600 font-mono block leading-none font-semibold">
-                Control Panel
-              </span>
-            </div>
+          <Link href="/admin" className="flex items-center group py-1">
+            <Image
+              src="/logo-alko-footer.webp"
+              alt="ALKO"
+              width={140}
+              height={36}
+              priority
+              className="h-7 w-auto object-contain transition-transform group-hover:scale-105 duration-200"
+            />
           </Link>
         </div>
 
