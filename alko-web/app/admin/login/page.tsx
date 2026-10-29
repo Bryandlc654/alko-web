@@ -1,16 +1,16 @@
 "use client";
 
 import { Suspense, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Lock, User, ArrowRight, ShieldCheck, AlertCircle } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { Lock, User, ArrowRight, ShieldCheck, AlertCircle, Eye, EyeOff } from "lucide-react";
 
 function LoginForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const from = searchParams.get("from") || "/admin";
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -32,8 +32,7 @@ function LoginForm() {
         throw new Error(data.error || "Credenciales incorrectas");
       }
 
-      router.push(from);
-      router.refresh();
+      window.location.href = from;
     } catch (err: any) {
       setError(err.message || "Ocurrió un error al iniciar sesión");
     } finally {
@@ -78,13 +77,26 @@ function LoginForm() {
             <Lock className="w-4 h-4" />
           </div>
           <input
-            type="password"
+            type={showPassword ? "text" : "password"}
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
-            className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-100 transition duration-200"
+            className="w-full pl-10 pr-11 py-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-100 transition duration-200"
           />
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none transition-colors"
+            title={showPassword ? "Ocultar contraseña" : "Ver contraseña"}
+            aria-label={showPassword ? "Ocultar contraseña" : "Ver contraseña"}
+          >
+            {showPassword ? (
+              <EyeOff className="w-4 h-4" />
+            ) : (
+              <Eye className="w-4 h-4" />
+            )}
+          </button>
         </div>
       </div>
 
@@ -102,7 +114,7 @@ function LoginForm() {
 
 export default function AdminLoginPage() {
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-[#f8fafc] px-4 py-12 relative overflow-hidden font-sans">
+    <div className="min-h-screen w-full flex items-center justify-center bg-[#f8fafc] px-4 py-12 relative overflow-hidden font-poppins">
       {/* Gradientes arquitectónicos de fondo sutiles */}
       <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-100/60 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-slate-200/50 rounded-full blur-[100px] pointer-events-none" />
