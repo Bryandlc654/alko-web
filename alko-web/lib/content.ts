@@ -625,3 +625,99 @@ export const DEFAULT_EMPLEO_PAGE_CONTENT: import('./types').EmpleoPageContent = 
   ctaDescripcion: "Envíanos una candidatura espontánea. Nos interesa conocer perfiles con criterio técnico, aunque no haya una posición abierta.",
   ctaBgImage: "/cta-bg.jpg",
 };
+
+
+export const DEFAULT_OFICINAS_METRICAS: import('./types').OficinasMetrica[] = [
+  { valor: "0 días", label: "de interrupción en la actividad de la empresa" },
+  { valor: "100%", label: "cumplimiento de cronogramas cerrados" },
+  { valor: "1", label: "único interlocutor técnico para compras, diseño y obra" },
+  { valor: "+15.000 m²", label: "de superficie de trabajo ejecutada en Madrid" },
+];
+
+export const DEFAULT_OFICINAS_CAPACIDADES: import('./types').OficinasCapacidad[] = [
+  {
+    codigo: "01",
+    titulo: "Climatización VRF & IAQ",
+    metrica: "VRF 3 tubos · Caudal IDA 2",
+    resumen: "Sistemas zonificados con recuperación de calor, filtración F7/F9 y microdifusión lineal invisible.",
+  },
+  {
+    codigo: "02",
+    titulo: "Aislamiento Acústico",
+    metrica: "Atenuación Rw 42–48 dB",
+    resumen: "Mamparas modulares de doble vidrio laminado y puertas enrasadas con junta guillotina hermética.",
+  },
+  {
+    codigo: "03",
+    titulo: "Redes, CPD & Suelo Técnico",
+    metrica: "Cat 6A / 7 · Carga 14 kN/m²",
+    resumen: "Cableado estructurado certificado, salas técnicas climatizadas y suelo registrable encapsulado.",
+  },
+  {
+    codigo: "04",
+    titulo: "Iluminación Circadiana",
+    metrica: "UGR < 19 · Protocolo DALI-2",
+    resumen: "Luminarias de bajo deslumbramiento con regulación según el aporte solar y ritmo biológico.",
+  },
+  {
+    codigo: "05",
+    titulo: "Zonas Singulares & Lounge",
+    metrica: "Diseño a medida · Piedra & Madera",
+    resumen: "Recepciones representativas, phone booths insonorizados, offices de diseño y salas polivalentes.",
+  },
+  {
+    codigo: "06",
+    titulo: "Licencias & Sostenibilidad",
+    metrica: "ECLU Madrid · BREEAM / WELL Ready",
+    resumen: "Gestión completa de licencias de actividad ante el Ayuntamiento de Madrid y cumplimiento del CTE.",
+  },
+];
+
+export const DEFAULT_OFICINAS_METODOLOGIA: import('./types').OficinasMetodologia[] = [
+  {
+    fase: "01",
+    semanas: "Sem. 1–2",
+    titulo: "Auditoría & BIM",
+    resumen: "Revisión de instalaciones del edificio, levantamiento 3D y tramitación de licencias.",
+  },
+  {
+    fase: "02",
+    semanas: "Sem. 3–4",
+    titulo: "Compras Críticas",
+    resumen: "Adquisición anticipada de climatización, mamparas y luminarias para evitar paradas.",
+  },
+  {
+    fase: "03",
+    semanas: "Sem. 5–12",
+    titulo: "Obra por Fases",
+    resumen: "Intervenciones sectorizadas nocturnas o modulares sin afectar al equipo de la empresa.",
+  },
+  {
+    fase: "04",
+    semanas: "Sem. 13+",
+    titulo: "Commissioning & Entrega",
+    resumen: "Pruebas de equilibrado hidráulico, certificación de redes y entrega llave en mano.",
+  },
+];
+
+export const DEFAULT_OFICINAS_PAGE_CONTENT: import('./types').OficinasPageContent = {
+  headerBadge: "SECTOR TERCIARIO · OFICINAS CORPORATIVAS",
+  headerTitulo: "Reformas Integrales de Oficinas en Madrid",
+  headerDescripcion: "Espacios de trabajo diseñados para el rendimiento y la acústica, ejecutados sin interrumpir la operativa diaria de tu organización.",
+  headerBgImage: "/sector-oficinas.jpg",
+
+  metricasTag: "GARANTÍAS CONTRACTUALES",
+  metricasTitulo: "Cifras que garantizan la viabilidad de la intervención",
+  metricasDescripcion: "Asumimos penalizaciones por retraso en contrato. Cuando nos comprometemos con una fecha de entrega, la operativa de tu empresa no se detiene.",
+  metricas: DEFAULT_OFICINAS_METRICAS,
+
+  capacidadesTag: "INGENIERÍA APLICADA",
+  capacidadesTitulo: "Capacidades técnicas en oficinas y sedes",
+  capacidadesSubtitulo: "Instalaciones de alto rendimiento diseñadas por nuestro propio equipo de ingeniería.",
+  capacidades: DEFAULT_OFICINAS_CAPACIDADES,
+
+  metodologiaTag: "CRONOGRAMA DE EJECUCIÓN",
+  metodologiaTitulo: "Cómo ejecutamos tu reforma de oficinas",
+  metodologiaSubtitulo: "Metodología secuencial para cumplir plazos sin sorpresas de presupuesto.",
+  metodologia: DEFAULT_OFICINAS_METODOLOGIA,
+};

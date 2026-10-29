@@ -1,8 +1,8 @@
 import mysql, { Pool } from "mysql2/promise";
 import fs from "fs";
 import path from "path";
-import { DEFAULT_HOME_CONTENT, DEFAULT_PROJECTS_PAGE_CONTENT, DEFAULT_NOSOTROS_PAGE_CONTENT, DEFAULT_CONTACTO_PAGE_CONTENT, DEFAULT_SERVICIOS_PAGE_CONTENT, DEFAULT_EQUIPO_PAGE_CONTENT, DEFAULT_EMPLEO_PAGE_CONTENT, DEFAULT_PROJECTS } from "../content";
-import type { Project, HomeContent, ProjectsPageContent, NosotrosPageContent, ContactoPageContent, ServiciosPageContent, EquipoPageContent, EmpleoPageContent, Slide } from "../types";
+import { DEFAULT_HOME_CONTENT, DEFAULT_PROJECTS_PAGE_CONTENT, DEFAULT_NOSOTROS_PAGE_CONTENT, DEFAULT_CONTACTO_PAGE_CONTENT, DEFAULT_SERVICIOS_PAGE_CONTENT, DEFAULT_EQUIPO_PAGE_CONTENT, DEFAULT_EMPLEO_PAGE_CONTENT, DEFAULT_OFICINAS_PAGE_CONTENT, DEFAULT_PROJECTS } from "../content";
+import type { Project, HomeContent, ProjectsPageContent, NosotrosPageContent, ContactoPageContent, ServiciosPageContent, EquipoPageContent, EmpleoPageContent, OficinasPageContent, Slide } from "../types";
 
 let pool: Pool | null = null;
 
@@ -36,6 +36,7 @@ interface LocalStoreData {
   serviciosPage?: ServiciosPageContent;
   equipoPage?: EquipoPageContent;
   empleoPage?: EmpleoPageContent;
+  oficinasPage?: OficinasPageContent;
   slides: Slide[];
   featuredProjectIds?: string[];
   customProjects?: Project[];
@@ -58,6 +59,7 @@ function getLocalContent(): LocalStoreData {
     serviciosPage: DEFAULT_SERVICIOS_PAGE_CONTENT,
     equipoPage: DEFAULT_EQUIPO_PAGE_CONTENT,
     empleoPage: DEFAULT_EMPLEO_PAGE_CONTENT,
+    oficinasPage: DEFAULT_OFICINAS_PAGE_CONTENT,
     slides: [],
     featuredProjectIds: [],
   };
@@ -79,6 +81,7 @@ function saveLocalContent(data: Partial<LocalStoreData>) {
       serviciosPage: data.serviciosPage ? { ...(current.serviciosPage || DEFAULT_SERVICIOS_PAGE_CONTENT), ...data.serviciosPage } : current.serviciosPage,
       equipoPage: data.equipoPage ? { ...(current.equipoPage || DEFAULT_EQUIPO_PAGE_CONTENT), ...data.equipoPage } : current.equipoPage,
       empleoPage: data.empleoPage ? { ...(current.empleoPage || DEFAULT_EMPLEO_PAGE_CONTENT), ...data.empleoPage } : current.empleoPage,
+      oficinasPage: data.oficinasPage ? { ...(current.oficinasPage || DEFAULT_OFICINAS_PAGE_CONTENT), ...data.oficinasPage } : current.oficinasPage,
     };
     fs.writeFileSync(LOCAL_STORAGE_FILE, JSON.stringify(merged, null, 2), "utf-8");
   } catch (e) {
@@ -556,6 +559,51 @@ export async function saveDbEmpleoPageContent(content: Partial<EmpleoPageContent
     );
   } catch (err: any) {
     console.warn("Aviso: Fallo al guardar página empleo en MySQL:", err.message);
+  }
+
+  return updated;
+}
+
+/**
+ * Obtiene el contenido de la Página de Oficinas (/oficinas) desde MySQL.
+ */
+export async function getDbOficinasPageContent(): Promise<OficinasPageContent> {
+  try {
+    const db = getDbPool();
+    const [rows] = await db.execute<any[]>(
+      "SELECT data FROM alko_site_content WHERE id = 'oficinas_page' LIMIT 1"
+    );
+    if (rows && rows.length > 0) {
+      const data = typeof rows[0].data === "string" ? JSON.parse(rows[0].data) : rows[0].data;
+      return { ...DEFAULT_OFICINAS_PAGE_CONTENT, ...data };
+    }
+  } catch (err: any) {
+    console.warn("Aviso: Error obteniendo contenido de página oficinas:", err.message);
+  }
+
+  const local = getLocalContent();
+  return { ...DEFAULT_OFICINAS_PAGE_CONTENT, ...(local.oficinasPage || {}) };
+}
+
+/**
+ * Guarda el contenido de la Página de Oficinas (/oficinas) en MySQL.
+ */
+export async function saveDbOficinasPageContent(content: Partial<OficinasPageContent>): Promise<OficinasPageContent> {
+  const current = await getDbOficinasPageContent();
+  const updated: OficinasPageContent = { ...current, ...content };
+
+  saveLocalContent({ oficinasPage: updated });
+
+  try {
+    const db = getDbPool();
+    await db.execute(
+      `INSERT INTO alko_site_content (id, data) 
+       VALUES ('oficinas_page', ?) 
+       ON DUPLICATE KEY UPDATE data = VALUES(data)`,
+      [JSON.stringify(updated)]
+    );
+  } catch (err: any) {
+    console.warn("Aviso: Fallo al guardar página oficinas en MySQL:", err.message);
   }
 
   return updated;

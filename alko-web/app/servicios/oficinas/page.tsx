@@ -7,6 +7,7 @@ import PageHero from "@/components/ui/PageHero";
 import ContactCta from "@/components/sections/ContactCta";
 import { ROUTES } from "@/lib/site";
 import { getSectorBySlug, getSettings } from "@/lib/wordpress";
+import { getDbOficinasPageContent } from "@/lib/db/mysql";
 import {
   ArrowRight,
   ChevronRight,
@@ -171,17 +172,17 @@ const FAQS_OFICINAS = [
 ];
 
 export default async function OficinasPage() {
-  const [settings, servicio] = await Promise.all([getSettings(), getSectorBySlug("oficinas")]);
+  const [settings, servicio, pageContent] = await Promise.all([getSettings(), getSectorBySlug("oficinas"), getDbOficinasPageContent()]);
 
   return (
     <main className="bg-white text-stone-900 selection:bg-[#c98300]/20">
       {/* Hero Principal con imagen de oficinas de alta gama */}
       <PageHero
         breadcrumbs={[{ label: "Servicios", href: ROUTES.sectors }, { label: "Reformas de oficinas" }]}
-        eyebrow="SERVICIO 02 — ESPACIOS CORPORATIVOS & HEADQUARTERS"
-        title="Reformas Integrales de Oficinas en Madrid"
-        description="Transformamos sedes corporativas y centros de trabajo con un estricto control de plazos, presupuesto cerrado y la capacidad técnica de ejecutar la obra sin detener la actividad de tu empresa."
-        image="/sector-oficinas.jpg"
+        eyebrow={pageContent.headerBadge || "SERVICIO 02 — ESPACIOS CORPORATIVOS & HEADQUARTERS"}
+        title={pageContent.headerTitulo || "Reformas Integrales de Oficinas en Madrid"}
+        description={pageContent.headerDescripcion || "Transformamos sedes corporativas y centros de trabajo con un estricto control de plazos, presupuesto cerrado y la capacidad técnica de ejecutar la obra sin detener la actividad de tu empresa."}
+        image={pageContent.headerBgImage || "/sector-oficinas.jpg"}
         imageAlt="Reforma integral de oficinas corporativas en Madrid por ALKO"
       >
         <div className="mt-8 flex flex-wrap items-center gap-4">
@@ -207,7 +208,7 @@ export default async function OficinasPage() {
       <section className="border-b border-stone-200 bg-[#fbfbfa]">
         <Container className="py-12 sm:py-16">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 divide-y sm:divide-y-0 sm:divide-x divide-stone-200">
-            {METRICAS.map((m, idx) => (
+            {(pageContent.metricas && pageContent.metricas.length > 0 ? pageContent.metricas : METRICAS).map((m, idx) => (
               <div
                 key={idx}
                 className={`pt-6 sm:pt-0 ${idx !== 0 ? "sm:pl-8 lg:pl-12" : ""}`}

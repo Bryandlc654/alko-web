@@ -396,3 +396,45 @@ export interface EmpleoPageContent {
   ctaDescripcion: string;
   ctaBgImage: string;
 }
+
+
+export interface OficinasMetrica {
+  valor: string;
+  label: string;
+}
+
+export interface OficinasCapacidad {
+  codigo: string;
+  titulo: string;
+  metrica: string;
+  resumen: string;
+}
+
+export interface OficinasMetodologia {
+  fase: string;
+  semanas: string;
+  titulo: string;
+  resumen: string;
+}
+
+export interface OficinasPageContent {
+  headerBadge: string;
+  headerTitulo: string;
+  headerDescripcion: string;
+  headerBgImage: string;
+
+  metricasTag: string;
+  metricasTitulo: string;
+  metricasDescripcion: string;
+  metricas: OficinasMetrica[];
+
+  capacidadesTag: string;
+  capacidadesTitulo: string;
+  capacidadesSubtitulo: string;
+  capacidades: OficinasCapacidad[];
+
+  metodologiaTag: string;
+  metodologiaTitulo: string;
+  metodologiaSubtitulo: string;
+  metodologia: OficinasMetodologia[];
+}

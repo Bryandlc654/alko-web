@@ -14,6 +14,7 @@ import {
   Monitor,
 } from "lucide-react";
 import type {
+  OficinasPageContent,
   EmpleoPageContent,
   EquipoPageContent,
   ServiciosPageContent,
@@ -43,6 +44,8 @@ import { DEFAULT_PROJECTS_PAGE_CONTENT, DEFAULT_NOSOTROS_PAGE_CONTENT,
   DEFAULT_EQUIPO_MEMBERS,
   DEFAULT_EMPLEO_PAGE_CONTENT,
   DEFAULT_POSICIONES_EMPLEO,
+  DEFAULT_OFICINAS_PAGE_CONTENT,
+  DEFAULT_OFICINAS_METRICAS,
 } from "@/lib/content";
 import { ArrowRight, Handshake, CalendarClock, Wallet, BadgeCheck, Phone, MessageCircle, Mail, MapPin, Clock } from "lucide-react";
 import Materials from "@/components/sections/Materials";
@@ -61,6 +64,7 @@ interface LiveEditorProps {
   initialServiciosPageContent?: ServiciosPageContent;
   initialEquipoPageContent?: EquipoPageContent;
   initialEmpleoPageContent?: EmpleoPageContent;
+  initialOficinasPageContent?: OficinasPageContent;
   heroSlides: Slide[];
   showcaseSlides: Slide[];
   projects: Project[];
@@ -84,6 +88,7 @@ export default function LiveEditor({
   initialServiciosPageContent,
   initialEquipoPageContent,
   initialEmpleoPageContent,
+  initialOficinasPageContent,
   heroSlides: initialHeroSlides,
   showcaseSlides: initialShowcaseSlides,
   projects,
@@ -94,7 +99,30 @@ export default function LiveEditor({
   settings,
 }: LiveEditorProps) {
   // Selector de página a editar: 'home' o 'projects'
-  const [activePage, setActivePage] = useState<"home" | "projects" | "nosotros" | "contacto" | "servicios" | "equipo" | "empleo">("home");
+  const [activePage, setActivePage] = useState<"home" | "projects" | "nosotros" | "contacto" | "servicios" | "equipo" | "empleo" | "oficinas">("home");
+
+  // Estado de contenido editable de la página oficinas
+  const [oficinasContent, setOficinasContent] = useState<OficinasPageContent>(
+    initialOficinasPageContent || DEFAULT_OFICINAS_PAGE_CONTENT
+  );
+
+  const updateOficinasField = useCallback((field: keyof OficinasPageContent, value: any) => {
+    setOficinasContent((prev) => ({ ...prev, [field]: value }));
+    setHasUnsavedChanges(true);
+    setSaveSuccess(false);
+  }, []);
+
+  const updateOficinasMetrica = useCallback((index: number, field: "valor" | "label", value: string) => {
+    setOficinasContent((prev) => {
+      const metricas = [...(prev.metricas || DEFAULT_OFICINAS_METRICAS)];
+      if (metricas[index]) {
+        metricas[index] = { ...metricas[index], [field]: value };
+      }
+      return { ...prev, metricas };
+    });
+    setHasUnsavedChanges(true);
+    setSaveSuccess(false);
+  }, []);
 
   // Estado de contenido editable de la página empleo (trabaja con nosotros)
   const [empleoContent, setEmpleoContent] = useState<EmpleoPageContent>(
@@ -306,6 +334,17 @@ export default function LiveEditor({
           const errorData = await res.json();
           throw new Error(errorData.error || "Error al guardar en el servidor");
         }
+      } else if (activePage === "oficinas") {
+        const res = await fetch("/api/admin/content/oficinas", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(oficinasContent),
+        });
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.error || "Error al guardar en el servidor");
+        }
       } else if (activePage === "empleo") {
         const res = await fetch("/api/admin/content/empleo", {
           method: "POST",
@@ -502,6 +541,17 @@ export default function LiveEditor({
               </button>
               <button
                 type="button"
+                onClick={() => setActivePage("oficinas")}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition ${
+                  activePage === "oficinas"
+                    ? "bg-white text-blue-700 shadow-sm"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                <span>Página Oficinas</span>
+              </button>
+              <button
+                type="button"
                 onClick={() => setActivePage("empleo")}
                 className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition ${
                   activePage === "empleo"
@@ -566,7 +616,7 @@ export default function LiveEditor({
           )}
 
           <Link
-            href={activePage === "home" ? "/" : activePage === "projects" ? "/proyectos" : activePage === "nosotros" ? "/nosotros" : activePage === "contacto" ? "/contacto" : activePage === "servicios" ? "/servicios" : activePage === "equipo" ? "/equipo" : "/trabaja-con-nosotros"}
+            href={activePage === "home" ? "/" : activePage === "projects" ? "/proyectos" : activePage === "nosotros" ? "/nosotros" : activePage === "contacto" ? "/contacto" : activePage === "servicios" ? "/servicios" : activePage === "equipo" ? "/equipo" : activePage === "empleo" ? "/trabaja-con-nosotros" : "/oficinas"}
             target="_blank"
             className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition shadow-sm"
           >
@@ -2865,6 +2915,126 @@ export default function LiveEditor({
                           <span>ENVIAR CANDIDATURA</span>
                           <span>→</span>
                         </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          )}
+
+
+          {/* ========================================================
+              VISTA EDITABLE: PÁGINA OFICINAS (/oficinas)
+              ======================================================== */}
+          {activePage === "oficinas" && (
+            <div className="bg-white text-stone-900">
+              {/* HERO DE OFICINAS */}
+              <header className="relative isolate flex min-h-[560px] sm:min-h-[620px] lg:min-h-[72vh] items-end overflow-hidden bg-stone-950 text-white pt-36 sm:pt-44 pb-14 sm:pb-20">
+                <div className="absolute inset-0 z-0 overflow-hidden">
+                  <InlineImage
+                    src={oficinasContent.headerBgImage || "/sector-oficinas.jpg"}
+                    alt="Fondo de oficinas"
+                    label="Cambiar fondo de cabecera"
+                    onImageChange={(newUrl) => updateOficinasField("headerBgImage", newUrl)}
+                    className="w-full h-full"
+                    imageClassName="object-cover object-center"
+                    priority
+                  />
+                  <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-stone-950/90 via-stone-950/55 to-stone-950/10" />
+                  <div className="absolute inset-x-0 bottom-0 pointer-events-none h-2/3 bg-gradient-to-t from-stone-950/90 via-stone-950/40 to-transparent" />
+                  <div className="absolute inset-x-0 top-0 pointer-events-none h-40 bg-gradient-to-b from-stone-950/70 to-transparent" />
+                </div>
+
+                <div className="relative max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 w-full z-10">
+                  <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-white/70 uppercase mb-4">
+                    <InlineText
+                      value={oficinasContent.headerBadge || "SECTOR TERCIARIO · OFICINAS CORPORATIVAS"}
+                      onChange={(val) => updateOficinasField("headerBadge", val)}
+                      placeholder="Badge..."
+                    />
+                  </span>
+                  <h1 className="max-w-5xl font-display font-light text-4xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tight leading-[1.02] drop-shadow-[0_2px_20px_rgba(0,0,0,0.35)]">
+                    <InlineText
+                      value={oficinasContent.headerTitulo || "Reformas Integrales de Oficinas en Madrid"}
+                      onChange={(val) => updateOficinasField("headerTitulo", val)}
+                      placeholder="Título de oficinas..."
+                      multiline
+                    />
+                  </h1>
+                  <div className="mt-6 max-w-2xl text-base sm:text-lg text-white/85 font-light leading-relaxed font-sans">
+                    <InlineText
+                      value={
+                        oficinasContent.headerDescripcion ||
+                        "Espacios de trabajo diseñados para el rendimiento y la acústica, ejecutados sin interrumpir la operativa diaria de tu organización."
+                      }
+                      onChange={(val) => updateOficinasField("headerDescripcion", val)}
+                      placeholder="Descripción de oficinas..."
+                      multiline
+                    />
+                  </div>
+                </div>
+              </header>
+
+              {/* FRANJA DE MÉTRICAS / KPIS */}
+              <section className="border-b border-stone-200 bg-[#fbfbfa]">
+                <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 py-12 sm:py-16">
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 divide-y sm:divide-y-0 sm:divide-x divide-stone-200">
+                    {(oficinasContent.metricas || DEFAULT_OFICINAS_METRICAS).map((m, idx) => (
+                      <div
+                        key={idx}
+                        className={`pt-6 sm:pt-0 ${idx !== 0 ? "sm:pl-8 lg:pl-12" : ""}`}
+                      >
+                        <span className="block font-serif text-3xl sm:text-4xl lg:text-5xl font-light text-stone-950 tracking-tight">
+                          <InlineText
+                            value={m.valor}
+                            onChange={(val) => updateOficinasMetrica(idx, "valor", val)}
+                            placeholder="Cifra..."
+                          />
+                        </span>
+                        <span className="block font-sans text-xs sm:text-sm text-stone-600 mt-2 leading-relaxed">
+                          <InlineText
+                            value={m.label}
+                            onChange={(val) => updateOficinasMetrica(idx, "label", val)}
+                            placeholder="Etiqueta..."
+                            multiline
+                          />
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
+
+              {/* PROPUESTA DE VALOR Y ENFOQUE ALKO */}
+              <section className="py-16 sm:py-24 border-b border-stone-200">
+                <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-12">
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+                    <div className="lg:col-span-6 space-y-6">
+                      <span className="font-mono text-xs text-[#c98300] uppercase tracking-[0.2em] font-semibold">
+                        EL ENFOQUE ALKO EN EL ESPACIO DE TRABAJO
+                      </span>
+                      <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-light text-stone-900 leading-tight">
+                        Espacios que potencian la cultura y retienen el talento.
+                      </h2>
+                      <p className="text-base sm:text-lg text-stone-600 leading-relaxed font-light">
+                        Una reforma de oficina no es solo una renovación estética: es una inversión estratégica
+                        en la productividad, el bienestar acústico y la imagen de marca de la organización.
+                      </p>
+                      <p className="text-sm sm:text-base text-stone-600 leading-relaxed font-light">
+                        En ALKO integramos bajo una sola dirección técnica la arquitectura interior, el cálculo
+                        de instalaciones y la gestión de compras.
+                      </p>
+                    </div>
+                    <div className="lg:col-span-6">
+                      <div className="relative aspect-[4/3] w-full overflow-hidden bg-stone-100 shadow-xl">
+                        <Image
+                          src="/oficinas.jpg"
+                          alt="Oficinas corporativas ALKO"
+                          fill
+                          sizes="(max-width: 1024px) 100vw, 50vw"
+                          className="object-cover object-center"
+                        />
                       </div>
                     </div>
                   </div>
