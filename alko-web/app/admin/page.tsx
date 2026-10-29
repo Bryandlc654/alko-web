@@ -138,18 +138,21 @@ export default async function AdminDashboardPage() {
               </div>
             </div>
 
-            <div className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs flex items-center justify-between">
+            <Link
+              href="/admin/servicios"
+              className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs hover:border-blue-500 hover:shadow-md transition flex items-center justify-between group"
+            >
               <div>
                 <span className="text-xs font-medium text-slate-500 block">Especialidades</span>
                 <span className="text-2xl font-bold text-slate-900 mt-1 block">{sectors.length}</span>
                 <span className="text-[11px] text-blue-600 font-medium flex items-center gap-1 mt-1">
-                  <Layers className="w-3 h-3" /> Sectores publicados
+                  <Layers className="w-3 h-3" /> Gestionar servicios →
                 </span>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-200/80">
+              <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-200/80 group-hover:scale-105 transition-transform">
                 <Layers className="w-6 h-6" />
               </div>
-            </div>
+            </Link>
 
             <div className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs flex items-center justify-between">
               <div>

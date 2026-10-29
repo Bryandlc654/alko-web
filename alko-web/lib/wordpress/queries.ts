@@ -1,4 +1,4 @@
-import { getDbHomeContent, getFeaturedProjectIds, getDbProjects } from "../db/mysql";
+import { getDbHomeContent, getFeaturedProjectIds, getDbProjects, getDbSectors } from "../db/mysql";
 import {
   DEFAULT_ARTICLES,
   DEFAULT_DESCARGAS,
@@ -157,6 +157,15 @@ export async function getProjectsBySector(sectorSlug: string): Promise<Project[]
 /* -------------------------------- Sectores -------------------------------- */
 
 export async function getSectors(): Promise<Sector[]> {
+  try {
+    const dbSectors = await getDbSectors();
+    if (dbSectors && dbSectors.length > 0) {
+      return dbSectors;
+    }
+  } catch (err) {
+    console.warn("Aviso: Error obteniendo sectores de MySQL:", err);
+  }
+
   const posts = await collection(`sectores?${COLLECTION_ORDER}`);
   if (!posts || posts.length === 0) return DEFAULT_SECTORS;
   return posts.map((post, i) =>
@@ -165,6 +174,14 @@ export async function getSectors(): Promise<Sector[]> {
 }
 
 export async function getSectorBySlug(slug: string): Promise<Sector | null> {
+  try {
+    const dbSectors = await getDbSectors();
+    const found = dbSectors.find((s) => s.slug === slug || String(s.id) === slug);
+    if (found) return found;
+  } catch (err) {
+    console.warn("Aviso: Error buscando sector en MySQL:", err);
+  }
+
   const posts = await wpGet<WpPost[]>(`sectores?slug=${encodeURIComponent(slug)}&_embed`);
   if (posts && posts.length > 0) return toSector(posts[0], 0);
   return DEFAULT_SECTORS.find((sector) => sector.slug === slug) ?? null;

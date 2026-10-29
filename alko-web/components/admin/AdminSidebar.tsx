@@ -63,7 +63,7 @@ const MENU_ITEMS: MenuGroup[] = [
       },
       {
         name: "Especialidades",
-        href: "/admin#servicios",
+        href: "/admin/servicios",
         icon: Layers,
         badge: "4",
         badgeColor: "bg-slate-100 text-slate-600",

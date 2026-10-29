@@ -1,8 +1,8 @@
 import mysql, { Pool } from "mysql2/promise";
 import fs from "fs";
 import path from "path";
-import { DEFAULT_HOME_CONTENT, DEFAULT_PROJECTS_PAGE_CONTENT, DEFAULT_NOSOTROS_PAGE_CONTENT, DEFAULT_CONTACTO_PAGE_CONTENT, DEFAULT_SERVICIOS_PAGE_CONTENT, DEFAULT_EQUIPO_PAGE_CONTENT, DEFAULT_EMPLEO_PAGE_CONTENT, DEFAULT_OFICINAS_PAGE_CONTENT, DEFAULT_ARTICULOS_PAGE_CONTENT, DEFAULT_GUIAS_PAGE_CONTENT, DEFAULT_PROJECTS } from "../content";
-import type { Project, HomeContent, ProjectsPageContent, NosotrosPageContent, ContactoPageContent, ServiciosPageContent, EquipoPageContent, EmpleoPageContent, OficinasPageContent, ArticulosPageContent, GuiasPageContent, Slide } from "../types";
+import { DEFAULT_HOME_CONTENT, DEFAULT_PROJECTS_PAGE_CONTENT, DEFAULT_NOSOTROS_PAGE_CONTENT, DEFAULT_CONTACTO_PAGE_CONTENT, DEFAULT_SERVICIOS_PAGE_CONTENT, DEFAULT_EQUIPO_PAGE_CONTENT, DEFAULT_EMPLEO_PAGE_CONTENT, DEFAULT_OFICINAS_PAGE_CONTENT, DEFAULT_ARTICULOS_PAGE_CONTENT, DEFAULT_GUIAS_PAGE_CONTENT, DEFAULT_PROJECTS, DEFAULT_SECTORS } from "../content";
+import type { Project, Sector, HomeContent, ProjectsPageContent, NosotrosPageContent, ContactoPageContent, ServiciosPageContent, EquipoPageContent, EmpleoPageContent, OficinasPageContent, ArticulosPageContent, GuiasPageContent, Slide } from "../types";
 
 let pool: Pool | null = null;
 
@@ -42,6 +42,7 @@ interface LocalStoreData {
   slides: Slide[];
   featuredProjectIds?: string[];
   customProjects?: Project[];
+  customSectors?: Sector[];
 }
 
 function getLocalContent(): LocalStoreData {
@@ -80,6 +81,7 @@ function saveLocalContent(data: Partial<LocalStoreData>) {
       ...data,
       home: data.home ? { ...current.home, ...data.home } : current.home,
       projectsPage: data.projectsPage ? { ...(current.projectsPage || DEFAULT_PROJECTS_PAGE_CONTENT), ...data.projectsPage } : current.projectsPage,
+      customSectors: data.customSectors ? data.customSectors : current.customSectors,
       nosotrosPage: data.nosotrosPage ? { ...(current.nosotrosPage || DEFAULT_NOSOTROS_PAGE_CONTENT), ...data.nosotrosPage } : current.nosotrosPage,
       contactoPage: data.contactoPage ? { ...(current.contactoPage || DEFAULT_CONTACTO_PAGE_CONTENT), ...data.contactoPage } : current.contactoPage,
       serviciosPage: data.serviciosPage ? { ...(current.serviciosPage || DEFAULT_SERVICIOS_PAGE_CONTENT), ...data.serviciosPage } : current.serviciosPage,
@@ -703,4 +705,100 @@ export async function saveDbGuiasPageContent(content: Partial<GuiasPageContent>)
   }
 
   return updated;
+}
+
+/**
+ * Obtiene la lista completa de sectores/servicios desde MySQL.
+ */
+export async function getDbSectors(): Promise<Sector[]> {
+  try {
+    const db = getDbPool();
+    const [rows] = await db.execute<any[]>(
+      "SELECT data FROM alko_site_content WHERE id = 'sectors_list' LIMIT 1"
+    );
+    if (rows && rows.length > 0) {
+      const data = typeof rows[0].data === "string" ? JSON.parse(rows[0].data) : rows[0].data;
+      if (Array.isArray(data) && data.length > 0) {
+        return data;
+      }
+    }
+  } catch (err: any) {
+    console.warn("Aviso: Error obteniendo sectores de MySQL:", err.message);
+  }
+
+  const local = getLocalContent();
+  if (local.customSectors && local.customSectors.length > 0) {
+    return local.customSectors;
+  }
+
+  return DEFAULT_SECTORS;
+}
+
+/**
+ * Guarda o actualiza un servicio en MySQL.
+ */
+export async function saveDbSector(sectorData: Partial<Sector>): Promise<Sector> {
+  const currentSectors = await getDbSectors();
+  const slug = sectorData.slug || ("servicio-" + Date.now());
+  const existingIndex = currentSectors.findIndex(s => s.id === sectorData.id || s.slug === slug);
+
+  let updatedList = [...currentSectors];
+  const baseSector = existingIndex >= 0 ? currentSectors[existingIndex] : null;
+
+  const fullSector: Sector = {
+    id: sectorData.id || baseSector?.id || ("sec-" + Date.now()),
+    slug: slug,
+    numero: sectorData.numero || baseSector?.numero || String(currentSectors.length + 1).padStart(2, "0"),
+    title: sectorData.title || baseSector?.title || "Nuevo Servicio",
+    descripcion: sectorData.descripcion || baseSector?.descripcion || "",
+    imagen: sectorData.imagen || baseSector?.imagen || "/p1.jpg",
+    enlace: sectorData.enlace || baseSector?.enlace || ("/servicios/" + slug),
+    content: sectorData.content ?? baseSector?.content ?? "",
+  };
+
+  if (existingIndex >= 0) {
+    updatedList[existingIndex] = fullSector;
+  } else {
+    updatedList.push(fullSector);
+  }
+
+  saveLocalContent({ customSectors: updatedList });
+
+  try {
+    const db = getDbPool();
+    await db.execute(
+      `INSERT INTO alko_site_content (id, data) 
+       VALUES ('sectors_list', ?) 
+       ON DUPLICATE KEY UPDATE data = VALUES(data)`,
+      [JSON.stringify(updatedList)]
+    );
+  } catch (err: any) {
+    console.warn("Aviso: Fallo al guardar lista de servicios en MySQL:", err.message);
+  }
+
+  return fullSector;
+}
+
+/**
+ * Elimina un servicio por ID en MySQL.
+ */
+export async function deleteDbSector(id: string): Promise<boolean> {
+  const currentSectors = await getDbSectors();
+  const updatedList = currentSectors.filter(s => String(s.id) !== String(id) && s.slug !== id);
+
+  saveLocalContent({ customSectors: updatedList });
+
+  try {
+    const db = getDbPool();
+    await db.execute(
+      `INSERT INTO alko_site_content (id, data) 
+       VALUES ('sectors_list', ?) 
+       ON DUPLICATE KEY UPDATE data = VALUES(data)`,
+      [JSON.stringify(updatedList)]
+    );
+    return true;
+  } catch (err: any) {
+    console.warn("Aviso: Fallo al eliminar servicio en MySQL:", err.message);
+    return false;
+  }
 }
