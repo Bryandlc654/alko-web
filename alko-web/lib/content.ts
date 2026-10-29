@@ -349,6 +349,9 @@ export const DEFAULT_HOME_CONTENT: HomeContent = {
 
   procesoTitulo: "Nuestro proceso",
   procesoSubtitulo: "SECUENCIA DE COORDINACIÓN INTEGRAL · 6 FASES · 1 EQUIPO",
+  procesoColHeading: "Una única dirección para todo el proyecto",
+  procesoColText: "Un único equipo coordina construcción, instalaciones, compras y gestión técnica para mantener el proyecto bajo control.",
+  fases: DEFAULT_FASES,
 
   serviciosTag: "SERVICIOS Y SECTORES",
   serviciosTitulo: "ESPECIALIDADES",

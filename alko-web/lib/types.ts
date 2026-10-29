@@ -179,6 +179,9 @@ export interface HomeContent {
   // Bloque Proceso / Método
   procesoTitulo: string;
   procesoSubtitulo: string;
+  procesoColHeading?: string;
+  procesoColText?: string;
+  fases?: Fase[];
 
   // Bloque Servicios
   serviciosTag: string;

@@ -295,6 +295,7 @@ export default function LiveEditor({
     ...initialContent,
     heroSlides: initialContent.heroSlides?.length ? initialContent.heroSlides : initialHeroSlides,
     workshopSlides: initialContent.workshopSlides?.length ? initialContent.workshopSlides : initialShowcaseSlides,
+    fases: initialContent.fases?.length ? initialContent.fases : fases,
   });
 
   const [activeHeroSlideIndex, setActiveHeroSlideIndex] = useState(0);
@@ -967,20 +968,24 @@ export default function LiveEditor({
           {/* ========================================================
               3. SECCIÓN PROCESO / MÉTODO (EDITABLE EN VIVO)
               ======================================================== */}
+          {/* ========================================================
+              3. NUESTRO PROCESO / MÉTODO (HOME - 100% EDITABLE EN VIVO)
+              ======================================================== */}
           <section id="metodo" className="relative bg-white text-stone-900 py-24 sm:py-32 px-6 sm:px-10 lg:px-12 overflow-hidden border-t border-stone-200">
             <div className="max-w-7xl mx-auto">
+              {/* Cabecera editable */}
               <div className="flex items-baseline justify-between pb-12 sm:pb-16 border-b border-stone-300/60">
                 <div>
                   <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-light text-stone-900 tracking-tight leading-none">
                     <InlineText
-                      value={content.procesoTitulo}
+                      value={content.procesoTitulo || "Nuestro proceso"}
                       onChange={(val) => updateField("procesoTitulo", val)}
                       placeholder="Título de proceso..."
                     />
                   </h2>
                   <div className="mt-2 font-mono text-[11px] tracking-[0.25em] text-stone-500 uppercase">
                     <InlineText
-                      value={content.procesoSubtitulo}
+                      value={content.procesoSubtitulo || "SECUENCIA DE COORDINACIÓN INTEGRAL · 6 FASES · 1 EQUIPO"}
                       onChange={(val) => updateField("procesoSubtitulo", val)}
                       placeholder="Subtítulo del proceso..."
                     />
@@ -988,61 +993,110 @@ export default function LiveEditor({
                 </div>
               </div>
 
+              {/* Layout de fases interactivo y editable */}
               <div className="mt-14 sm:mt-20 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-start">
-                {/* Tabs de fases */}
+                {/* Columna 1: Tabs de fases con edición de título */}
                 <div className="lg:col-span-4 flex flex-col space-y-4 sm:space-y-6">
-                  {fases.map((fase, i) => (
-                    <button
-                      key={fase.id}
-                      type="button"
+                  {(content.fases && content.fases.length > 0 ? content.fases : fases).map((fase, i, allFases) => (
+                    <div
+                      key={fase.id || i}
                       onClick={() => setActiveFaseIndex(i)}
-                      className={`text-left group flex items-baseline gap-3 transition-all duration-300 focus:outline-none ${
+                      className={`text-left group flex items-baseline gap-3 cursor-pointer transition-all duration-300 ${
                         activeFaseIndex === i ? "is-active" : ""
                       }`}
                     >
                       <span
-                        className={`phase-badge font-mono text-xs transition ${
+                        className={`phase-badge font-mono text-xs shrink-0 transition ${
                           activeFaseIndex === i ? "text-stone-900 font-bold" : "text-stone-400 group-hover:text-stone-700"
                         }`}
                       >
                         ({phaseNumber(fase, i)})
                       </span>
                       <span
-                        className={`phase-title text-3xl sm:text-4xl lg:text-5xl font-serif border-b-2 pb-1 transition-all ${
+                        className={`phase-title text-2xl sm:text-3xl lg:text-4xl font-serif border-b-2 pb-1 transition-all flex-1 ${
                           activeFaseIndex === i
                             ? "text-stone-900 border-stone-900"
                             : "text-stone-400 border-transparent group-hover:text-stone-700"
                         }`}
                       >
-                        {fase.title}
+                        <InlineText
+                          value={fase.title}
+                          onChange={(val) => {
+                            const updated = [...allFases];
+                            updated[i] = { ...updated[i], title: val };
+                            updateField("fases", updated);
+                          }}
+                          placeholder={`Título de fase ${i + 1}...`}
+                        />
                       </span>
-                    </button>
+                    </div>
                   ))}
                 </div>
 
-                {/* Vista previa de fase activa */}
-                <div className="lg:col-span-8 flex flex-col md:flex-row gap-8 items-start">
-                  {fases[activeFaseIndex] && (
+                {/* Columna 2 y 3: Imagen y textos de la fase activa con edición en línea */}
+                {(() => {
+                  const activeFases = content.fases && content.fases.length > 0 ? content.fases : fases;
+                  const activeFase = activeFases[activeFaseIndex] || activeFases[0];
+                  if (!activeFase) return null;
+
+                  return (
                     <>
-                      <div className="md:w-1/2 relative aspect-[4/3] w-full rounded-lg overflow-hidden shadow-md">
-                        <Image
-                          src={fases[activeFaseIndex].imagen}
-                          alt={fases[activeFaseIndex].title}
-                          fill
-                          className="object-cover object-center"
-                        />
+                      {/* Columna 2: Imagen editable de la fase activa */}
+                      <div className="lg:col-span-4">
+                        <div className="relative w-full aspect-[3/4] overflow-hidden bg-stone-200 shadow-md group/home-fase-img">
+                          <InlineImage
+                            src={activeFase.imagen || "/proceso-control.jpg"}
+                            alt={activeFase.title}
+                            label={`Cambiar foto fase (${phaseNumber(activeFase, activeFaseIndex)})`}
+                            onImageChange={(newUrl) => {
+                              const updated = [...activeFases];
+                              updated[activeFaseIndex] = { ...updated[activeFaseIndex], imagen: newUrl };
+                              updateField("fases", updated);
+                            }}
+                            className="w-full h-full"
+                            imageClassName="object-cover object-center"
+                          />
+                        </div>
                       </div>
-                      <div className="md:w-1/2">
-                        <h4 className="text-2xl font-serif font-light text-stone-900 mb-4">
-                          {fases[activeFaseIndex].title}
-                        </h4>
-                        <p className="text-stone-600 font-sans text-sm leading-relaxed">
-                          {fases[activeFaseIndex].texto}
-                        </p>
+
+                      {/* Columna 3: Textos editables (encabezado lateral y detalle de fase) */}
+                      <div className="lg:col-span-4 flex flex-col justify-between self-stretch space-y-8 lg:pl-6">
+                        <div>
+                          <h3 className="text-xl sm:text-2xl font-serif font-light text-stone-900 tracking-tight leading-snug">
+                            <InlineText
+                              value={content.procesoColHeading || "Una única dirección para todo el proyecto"}
+                              onChange={(val) => updateField("procesoColHeading", val)}
+                              placeholder="Encabezado lateral..."
+                            />
+                          </h3>
+                          <div className="mt-4 text-base sm:text-lg text-stone-600 font-light leading-relaxed font-sans">
+                            <InlineText
+                              value={content.procesoColText || "Un único equipo coordina construcción, instalaciones, compras y gestión técnica para mantener el proyecto bajo control."}
+                              onChange={(val) => updateField("procesoColText", val)}
+                              placeholder="Descripción lateral..."
+                              multiline
+                            />
+                          </div>
+                        </div>
+
+                        <div className="pt-6 border-t border-stone-300/60">
+                          <div className="text-base sm:text-lg text-stone-600 font-light leading-relaxed font-sans">
+                            <InlineText
+                              value={activeFase.texto}
+                              onChange={(val) => {
+                                const updated = [...activeFases];
+                                updated[activeFaseIndex] = { ...updated[activeFaseIndex], texto: val };
+                                updateField("fases", updated);
+                              }}
+                              placeholder={`Detalle explicativo de la fase ${activeFaseIndex + 1}...`}
+                              multiline
+                            />
+                          </div>
+                        </div>
                       </div>
                     </>
-                  )}
-                </div>
+                  );
+                })()}
               </div>
             </div>
           </section>
