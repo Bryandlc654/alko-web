@@ -10,14 +10,14 @@ import PageHero from "@/components/ui/PageHero";
 import Prose from "@/components/ui/Prose";
 import { prepareArticle } from "@/lib/articles";
 import { ROUTES, SITE } from "@/lib/site";
-import { getArticleBySlug, getArticles, getNews } from "@/lib/wordpress";
+import { getArticleBySlug, getArticles } from "@/lib/wordpress";
 import { formatDate } from "@/lib/utils";
 
 export const revalidate = 60;
 
 export async function generateStaticParams() {
-  const [articles, news] = await Promise.all([getArticles(50), getNews(50)]);
-  return [...articles, ...news].map((a) => ({ slug: a.slug }));
+  const articles = await getArticles(50);
+  return articles.map((a) => ({ slug: a.slug }));
 }
 
 export async function generateMetadata({
@@ -52,13 +52,13 @@ export default async function ArticleDetail({
   if (!article) return notFound();
 
   // Las novedades (categoría Actualidad) viven dentro de Guías.
-  const isNews = article.category.toLowerCase() === "actualidad";
+  const isNews = false;
   const { lead, body, toc, minutes } = prepareArticle(article.content);
   const showToc = toc.length >= 3;
   const url = `${SITE.url}${ROUTES.articles}/${article.slug}`;
 
   // Más lecturas: primero las de la misma categoría y, si faltan, las demás.
-  const pool = (await (isNews ? getNews(50) : getArticles(50))).filter((item) => item.slug !== article.slug);
+  const pool = (await getArticles(50)).filter((item) => item.slug !== article.slug);
   const related = [
     ...pool.filter((item) => item.category === article.category),
     ...pool.filter((item) => item.category !== article.category),
