@@ -1,8 +1,8 @@
 import mysql, { Pool } from "mysql2/promise";
 import fs from "fs";
 import path from "path";
-import { DEFAULT_HOME_CONTENT, DEFAULT_PROJECTS_PAGE_CONTENT, DEFAULT_NOSOTROS_PAGE_CONTENT, DEFAULT_CONTACTO_PAGE_CONTENT, DEFAULT_SERVICIOS_PAGE_CONTENT, DEFAULT_EQUIPO_PAGE_CONTENT, DEFAULT_PROJECTS } from "../content";
-import type { Project, HomeContent, ProjectsPageContent, NosotrosPageContent, ContactoPageContent, ServiciosPageContent, EquipoPageContent, Slide } from "../types";
+import { DEFAULT_HOME_CONTENT, DEFAULT_PROJECTS_PAGE_CONTENT, DEFAULT_NOSOTROS_PAGE_CONTENT, DEFAULT_CONTACTO_PAGE_CONTENT, DEFAULT_SERVICIOS_PAGE_CONTENT, DEFAULT_EQUIPO_PAGE_CONTENT, DEFAULT_EMPLEO_PAGE_CONTENT, DEFAULT_PROJECTS } from "../content";
+import type { Project, HomeContent, ProjectsPageContent, NosotrosPageContent, ContactoPageContent, ServiciosPageContent, EquipoPageContent, EmpleoPageContent, Slide } from "../types";
 
 let pool: Pool | null = null;
 
@@ -35,6 +35,7 @@ interface LocalStoreData {
   contactoPage?: ContactoPageContent;
   serviciosPage?: ServiciosPageContent;
   equipoPage?: EquipoPageContent;
+  empleoPage?: EmpleoPageContent;
   slides: Slide[];
   featuredProjectIds?: string[];
   customProjects?: Project[];
@@ -56,6 +57,7 @@ function getLocalContent(): LocalStoreData {
     contactoPage: DEFAULT_CONTACTO_PAGE_CONTENT,
     serviciosPage: DEFAULT_SERVICIOS_PAGE_CONTENT,
     equipoPage: DEFAULT_EQUIPO_PAGE_CONTENT,
+    empleoPage: DEFAULT_EMPLEO_PAGE_CONTENT,
     slides: [],
     featuredProjectIds: [],
   };
@@ -76,6 +78,7 @@ function saveLocalContent(data: Partial<LocalStoreData>) {
       contactoPage: data.contactoPage ? { ...(current.contactoPage || DEFAULT_CONTACTO_PAGE_CONTENT), ...data.contactoPage } : current.contactoPage,
       serviciosPage: data.serviciosPage ? { ...(current.serviciosPage || DEFAULT_SERVICIOS_PAGE_CONTENT), ...data.serviciosPage } : current.serviciosPage,
       equipoPage: data.equipoPage ? { ...(current.equipoPage || DEFAULT_EQUIPO_PAGE_CONTENT), ...data.equipoPage } : current.equipoPage,
+      empleoPage: data.empleoPage ? { ...(current.empleoPage || DEFAULT_EMPLEO_PAGE_CONTENT), ...data.empleoPage } : current.empleoPage,
     };
     fs.writeFileSync(LOCAL_STORAGE_FILE, JSON.stringify(merged, null, 2), "utf-8");
   } catch (e) {
@@ -508,6 +511,51 @@ export async function saveDbEquipoPageContent(content: Partial<EquipoPageContent
     );
   } catch (err: any) {
     console.warn("Aviso: Fallo al guardar página equipo en MySQL:", err.message);
+  }
+
+  return updated;
+}
+
+/**
+ * Obtiene el contenido de la Página Trabaja con Nosotros (/trabaja-con-nosotros) desde MySQL.
+ */
+export async function getDbEmpleoPageContent(): Promise<EmpleoPageContent> {
+  try {
+    const db = getDbPool();
+    const [rows] = await db.execute<any[]>(
+      "SELECT data FROM alko_site_content WHERE id = 'empleo_page' LIMIT 1"
+    );
+    if (rows && rows.length > 0) {
+      const data = typeof rows[0].data === "string" ? JSON.parse(rows[0].data) : rows[0].data;
+      return { ...DEFAULT_EMPLEO_PAGE_CONTENT, ...data };
+    }
+  } catch (err: any) {
+    console.warn("Aviso: Error obteniendo contenido de página empleo:", err.message);
+  }
+
+  const local = getLocalContent();
+  return { ...DEFAULT_EMPLEO_PAGE_CONTENT, ...(local.empleoPage || {}) };
+}
+
+/**
+ * Guarda el contenido de la Página Trabaja con Nosotros (/trabaja-con-nosotros) en MySQL.
+ */
+export async function saveDbEmpleoPageContent(content: Partial<EmpleoPageContent>): Promise<EmpleoPageContent> {
+  const current = await getDbEmpleoPageContent();
+  const updated: EmpleoPageContent = { ...current, ...content };
+
+  saveLocalContent({ empleoPage: updated });
+
+  try {
+    const db = getDbPool();
+    await db.execute(
+      `INSERT INTO alko_site_content (id, data) 
+       VALUES ('empleo_page', ?) 
+       ON DUPLICATE KEY UPDATE data = VALUES(data)`,
+      [JSON.stringify(updated)]
+    );
+  } catch (err: any) {
+    console.warn("Aviso: Fallo al guardar página empleo en MySQL:", err.message);
   }
 
   return updated;

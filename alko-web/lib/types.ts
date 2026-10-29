@@ -365,3 +365,34 @@ export interface EquipoPageContent {
   ctaDescripcion: string;
   ctaBgImage: string;
 }
+
+
+export interface PosicionEmpleo {
+  titulo: string;
+  departamento: string;
+  ubicacion: string;
+  tipo: string;
+  resumen: string;
+}
+
+export interface EmpleoPageContent {
+  headerBadge: string;
+  headerTitulo: string;
+  headerDescripcion: string;
+  headerBgImage: string;
+
+  culturaTag: string;
+  culturaTitulo: string;
+  culturaParrafo1: string;
+  culturaParrafo2: string;
+  culturaImagen: string;
+
+  posicionesTag: string;
+  posicionesTitulo: string;
+  posicionesSubtitulo: string;
+  posiciones: PosicionEmpleo[];
+
+  ctaTitulo: string;
+  ctaDescripcion: string;
+  ctaBgImage: string;
+}

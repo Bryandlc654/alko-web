@@ -14,6 +14,7 @@ import {
   Monitor,
 } from "lucide-react";
 import type {
+  EmpleoPageContent,
   EquipoPageContent,
   ServiciosPageContent,
   ContactoPageContent,
@@ -40,8 +41,10 @@ import { DEFAULT_PROJECTS_PAGE_CONTENT, DEFAULT_NOSOTROS_PAGE_CONTENT,
   DEFAULT_SERVICIOS_PAGE_CONTENT,
   DEFAULT_EQUIPO_PAGE_CONTENT,
   DEFAULT_EQUIPO_MEMBERS,
+  DEFAULT_EMPLEO_PAGE_CONTENT,
+  DEFAULT_POSICIONES_EMPLEO,
 } from "@/lib/content";
-import { Handshake, CalendarClock, Wallet, BadgeCheck, Phone, MessageCircle, Mail, MapPin, Clock } from "lucide-react";
+import { ArrowRight, Handshake, CalendarClock, Wallet, BadgeCheck, Phone, MessageCircle, Mail, MapPin, Clock } from "lucide-react";
 import Materials from "@/components/sections/Materials";
 import Process from "@/components/sections/Process";
 import { METHOD_HREF } from "@/lib/site";
@@ -57,6 +60,7 @@ interface LiveEditorProps {
   initialContactoPageContent?: ContactoPageContent;
   initialServiciosPageContent?: ServiciosPageContent;
   initialEquipoPageContent?: EquipoPageContent;
+  initialEmpleoPageContent?: EmpleoPageContent;
   heroSlides: Slide[];
   showcaseSlides: Slide[];
   projects: Project[];
@@ -79,6 +83,7 @@ export default function LiveEditor({
   initialContactoPageContent,
   initialServiciosPageContent,
   initialEquipoPageContent,
+  initialEmpleoPageContent,
   heroSlides: initialHeroSlides,
   showcaseSlides: initialShowcaseSlides,
   projects,
@@ -89,7 +94,56 @@ export default function LiveEditor({
   settings,
 }: LiveEditorProps) {
   // Selector de página a editar: 'home' o 'projects'
-  const [activePage, setActivePage] = useState<"home" | "projects" | "nosotros" | "contacto" | "servicios" | "equipo">("home");
+  const [activePage, setActivePage] = useState<"home" | "projects" | "nosotros" | "contacto" | "servicios" | "equipo" | "empleo">("home");
+
+  // Estado de contenido editable de la página empleo (trabaja con nosotros)
+  const [empleoContent, setEmpleoContent] = useState<EmpleoPageContent>(
+    initialEmpleoPageContent || DEFAULT_EMPLEO_PAGE_CONTENT
+  );
+
+  const updateEmpleoField = useCallback((field: keyof EmpleoPageContent, value: any) => {
+    setEmpleoContent((prev) => ({ ...prev, [field]: value }));
+    setHasUnsavedChanges(true);
+    setSaveSuccess(false);
+  }, []);
+
+  const updatePosicionField = useCallback((index: number, field: string, value: string) => {
+    setEmpleoContent((prev) => {
+      const posiciones = [...(prev.posiciones || DEFAULT_POSICIONES_EMPLEO)];
+      if (posiciones[index]) {
+        posiciones[index] = { ...posiciones[index], [field]: value };
+      }
+      return { ...prev, posiciones };
+    });
+    setHasUnsavedChanges(true);
+    setSaveSuccess(false);
+  }, []);
+
+  const handleAddPosicion = () => {
+    setEmpleoContent((prev) => ({
+      ...prev,
+      posiciones: [
+        ...(prev.posiciones || DEFAULT_POSICIONES_EMPLEO),
+        {
+          titulo: "Nueva posición",
+          departamento: "Técnico",
+          ubicacion: "Madrid",
+          tipo: "Jornada completa",
+          resumen: "Descripción de responsabilidades y perfil requerido...",
+        },
+      ],
+    }));
+    setHasUnsavedChanges(true);
+  };
+
+  const handleRemovePosicion = (index: number) => {
+    setEmpleoContent((prev) => {
+      const posiciones = [...(prev.posiciones || DEFAULT_POSICIONES_EMPLEO)];
+      posiciones.splice(index, 1);
+      return { ...prev, posiciones };
+    });
+    setHasUnsavedChanges(true);
+  };
 
   // Estado de contenido editable de la página equipo
   const [equipoContent, setEquipoContent] = useState<EquipoPageContent>(
@@ -246,6 +300,17 @@ export default function LiveEditor({
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(nosotrosContent),
+        });
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.error || "Error al guardar en el servidor");
+        }
+      } else if (activePage === "empleo") {
+        const res = await fetch("/api/admin/content/empleo", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(empleoContent),
         });
 
         if (!res.ok) {
@@ -437,6 +502,17 @@ export default function LiveEditor({
               </button>
               <button
                 type="button"
+                onClick={() => setActivePage("empleo")}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition ${
+                  activePage === "empleo"
+                    ? "bg-white text-blue-700 shadow-sm"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                <span>Página Empleo</span>
+              </button>
+              <button
+                type="button"
                 onClick={() => setActivePage("equipo")}
                 className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition ${
                   activePage === "equipo"
@@ -490,7 +566,7 @@ export default function LiveEditor({
           )}
 
           <Link
-            href={activePage === "home" ? "/" : activePage === "projects" ? "/proyectos" : activePage === "nosotros" ? "/nosotros" : activePage === "contacto" ? "/contacto" : activePage === "servicios" ? "/servicios" : "/equipo"}
+            href={activePage === "home" ? "/" : activePage === "projects" ? "/proyectos" : activePage === "nosotros" ? "/nosotros" : activePage === "contacto" ? "/contacto" : activePage === "servicios" ? "/servicios" : activePage === "equipo" ? "/equipo" : "/trabaja-con-nosotros"}
             target="_blank"
             className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition shadow-sm"
           >
@@ -2519,6 +2595,276 @@ export default function LiveEditor({
                             <span>→</span>
                           </span>
                         </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          )}
+
+
+          {/* ========================================================
+              VISTA EDITABLE: PÁGINA TRABAJA CON NOSOTROS (EMPLEO)
+              ======================================================== */}
+          {activePage === "empleo" && (
+            <div className="bg-white text-stone-900">
+              {/* HERO DE TRABAJA CON NOSOTROS */}
+              <header className="relative isolate flex min-h-[560px] sm:min-h-[620px] lg:min-h-[72vh] items-end overflow-hidden bg-stone-950 text-white pt-36 sm:pt-44 pb-14 sm:pb-20">
+                <div className="absolute inset-0 z-0 overflow-hidden">
+                  <InlineImage
+                    src={empleoContent.headerBgImage || "/proceso-control.jpg"}
+                    alt="Fondo de empleo"
+                    label="Cambiar fondo de cabecera"
+                    onImageChange={(newUrl) => updateEmpleoField("headerBgImage", newUrl)}
+                    className="w-full h-full"
+                    imageClassName="object-cover object-center"
+                    priority
+                  />
+                  <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-stone-950/90 via-stone-950/55 to-stone-950/10" />
+                  <div className="absolute inset-x-0 bottom-0 pointer-events-none h-2/3 bg-gradient-to-t from-stone-950/90 via-stone-950/40 to-transparent" />
+                  <div className="absolute inset-x-0 top-0 pointer-events-none h-40 bg-gradient-to-b from-stone-950/70 to-transparent" />
+                </div>
+
+                <div className="relative max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 w-full z-10">
+                  <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-white/70 uppercase mb-4">
+                    <InlineText
+                      value={empleoContent.headerBadge || "TRABAJA CON NOSOTROS"}
+                      onChange={(val) => updateEmpleoField("headerBadge", val)}
+                      placeholder="Badge..."
+                    />
+                  </span>
+                  <h1 className="max-w-5xl font-display font-light text-4xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tight leading-[1.02] drop-shadow-[0_2px_20px_rgba(0,0,0,0.35)]">
+                    <InlineText
+                      value={empleoContent.headerTitulo || "Construimos con las personas"}
+                      onChange={(val) => updateEmpleoField("headerTitulo", val)}
+                      placeholder="Título de empleo..."
+                      multiline
+                    />
+                  </h1>
+                  <div className="mt-6 max-w-2xl text-base sm:text-lg text-white/85 font-light leading-relaxed font-sans">
+                    <InlineText
+                      value={
+                        empleoContent.headerDescripcion ||
+                        "Buscamos profesionales que compartan nuestro criterio técnico y quieran crecer dentro de un equipo que trabaja como una dirección única."
+                      }
+                      onChange={(val) => updateEmpleoField("headerDescripcion", val)}
+                      placeholder="Descripción de empleo..."
+                      multiline
+                    />
+                  </div>
+                </div>
+              </header>
+
+              {/* CULTURA / EL EQUIPO ALKO */}
+              <section className="relative isolate w-full overflow-hidden bg-white text-stone-900">
+                <div className="relative z-10 mx-auto max-w-[1720px] px-6 py-16 sm:px-12 sm:py-24 lg:px-20">
+                  <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12 lg:gap-14">
+                    <div className="relative pt-1 lg:col-span-5">
+                      <span className="font-mono text-xs tracking-widest text-stone-500 uppercase">
+                        <InlineText
+                          value={empleoContent.culturaTag || "El equipo ALKO"}
+                          onChange={(val) => updateEmpleoField("culturaTag", val)}
+                          placeholder="Etiqueta cultura..."
+                        />
+                      </span>
+                    </div>
+
+                    <div className="lg:col-span-7 lg:pl-10 xl:pl-16">
+                      <h2 className="font-serif font-light text-3xl leading-tight sm:text-4xl lg:text-5xl">
+                        <InlineText
+                          value={empleoContent.culturaTitulo || "Un equipo pequeño, con criterio y sin intermediarios"}
+                          onChange={(val) => updateEmpleoField("culturaTitulo", val)}
+                          placeholder="Título cultura..."
+                          multiline
+                        />
+                      </h2>
+                      <p className="mt-5 max-w-lg text-stone-600">
+                        <InlineText
+                          value={
+                            empleoContent.culturaParrafo1 ||
+                            "En ALKO cada persona tiene responsabilidad real sobre el proyecto. Trabajamos cerca de la obra, con decisiones rápidas y una única dirección técnica."
+                          }
+                          onChange={(val) => updateEmpleoField("culturaParrafo1", val)}
+                          placeholder="Primer párrafo..."
+                          multiline
+                        />
+                      </p>
+                      <p className="mt-4 max-w-lg text-stone-600">
+                        <InlineText
+                          value={
+                            empleoContent.culturaParrafo2 ||
+                            "Buscamos perfiles con oficio y ambición de crecer: gente que disfrute resolviendo problemas constructivos y cuidando el detalle hasta la entrega."
+                          }
+                          onChange={(val) => updateEmpleoField("culturaParrafo2", val)}
+                          placeholder="Segundo párrafo..."
+                          multiline
+                        />
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="relative mt-12 aspect-[16/9] w-full overflow-hidden bg-stone-100 sm:aspect-[16/7]">
+                    <InlineImage
+                      src={empleoContent.culturaImagen || "/proceso-construccion.jpg"}
+                      alt="Equipo de obra de ALKO"
+                      label="Cambiar foto de cultura"
+                      onImageChange={(newUrl) => updateEmpleoField("culturaImagen", newUrl)}
+                      className="w-full h-full"
+                      imageClassName="object-cover object-center"
+                    />
+                  </div>
+                </div>
+              </section>
+
+              {/* POSICIONES ABIERTAS */}
+              <section className="border-t border-stone-200 bg-stone-50 py-16 sm:py-24">
+                <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-12">
+                  <div className="flex flex-col justify-between gap-8 border-b border-stone-300/70 pb-10 lg:flex-row lg:items-end">
+                    <div>
+                      <span className="font-mono text-xs tracking-widest text-stone-500 uppercase">
+                        <InlineText
+                          value={empleoContent.posicionesTag || "POSICIONES ABIERTAS"}
+                          onChange={(val) => updateEmpleoField("posicionesTag", val)}
+                          placeholder="Etiqueta..."
+                        />
+                      </span>
+                      <h2 className="mt-3 font-serif font-light text-3xl leading-tight sm:text-4xl lg:text-5xl">
+                        <InlineText
+                          value={empleoContent.posicionesTitulo || "Únete al equipo"}
+                          onChange={(val) => updateEmpleoField("posicionesTitulo", val)}
+                          placeholder="Título posiciones..."
+                        />
+                      </h2>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <p className="max-w-sm text-sm text-stone-600">
+                        <InlineText
+                          value={
+                            empleoContent.posicionesSubtitulo ||
+                            "Envíanos tu candidatura por correo. Valoramos perfiles técnicos con experiencia en obra."
+                          }
+                          onChange={(val) => updateEmpleoField("posicionesSubtitulo", val)}
+                          placeholder="Subtítulo posiciones..."
+                          multiline
+                        />
+                      </p>
+                      <button
+                        type="button"
+                        onClick={handleAddPosicion}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-white border border-stone-300 text-stone-800 hover:bg-stone-50 transition shadow-xs shrink-0"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Añadir puesto</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <ul className="mt-4 divide-y divide-stone-200 border-b border-stone-200">
+                    {(empleoContent.posiciones || DEFAULT_POSICIONES_EMPLEO).map((p, i) => (
+                      <li key={i} className="py-7 px-4 bg-white/40 my-2 rounded-lg border border-stone-200/60">
+                        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-8">
+                          <div className="min-w-0 flex-1">
+                            <h3 className="font-serif font-light text-2xl leading-snug sm:text-3xl">
+                              <InlineText
+                                value={p.titulo}
+                                onChange={(val) => updatePosicionField(i, "titulo", val)}
+                                placeholder="Título del puesto..."
+                              />
+                            </h3>
+                            <p className="mt-2 max-w-xl text-sm text-stone-600">
+                              <InlineText
+                                value={p.resumen}
+                                onChange={(val) => updatePosicionField(i, "resumen", val)}
+                                placeholder="Resumen del puesto..."
+                                multiline
+                              />
+                            </p>
+                          </div>
+                          <div className="flex shrink-0 flex-wrap items-center gap-x-4 gap-y-2 text-[11px] uppercase tracking-[0.18em] text-stone-500">
+                            <span className="font-mono">
+                              <InlineText
+                                value={p.departamento}
+                                onChange={(val) => updatePosicionField(i, "departamento", val)}
+                                placeholder="Departamento..."
+                              />
+                            </span>
+                            <span className="text-stone-300">•</span>
+                            <span className="font-mono">
+                              <InlineText
+                                value={p.ubicacion}
+                                onChange={(val) => updatePosicionField(i, "ubicacion", val)}
+                                placeholder="Ubicación..."
+                              />
+                            </span>
+                            <span className="text-stone-300">•</span>
+                            <span className="font-mono">
+                              <InlineText
+                                value={p.tipo}
+                                onChange={(val) => updatePosicionField(i, "tipo", val)}
+                                placeholder="Jornada..."
+                              />
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => handleRemovePosicion(i)}
+                              className="text-stone-400 hover:text-red-600 transition p-1 text-xs ml-3"
+                              title="Eliminar vacante"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </section>
+
+              {/* CTA FINAL DE EMPLEO */}
+              <section className="relative w-full overflow-hidden bg-stone-950 group">
+                <div className="relative h-[440px] w-full overflow-hidden sm:h-[500px] md:h-[560px]">
+                  <div className="absolute inset-0 z-0">
+                    <InlineImage
+                      src={empleoContent.ctaBgImage || "/cta-bg.jpg"}
+                      alt="Fondo CTA empleo"
+                      label="Cambiar fondo CTA"
+                      onImageChange={(newUrl) => updateEmpleoField("ctaBgImage", newUrl)}
+                      className="w-full h-full"
+                      imageClassName="object-cover object-top"
+                    />
+                  </div>
+                  <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-stone-950/95 via-stone-950/50 to-transparent" />
+                  <div className="absolute inset-0 z-10 mx-auto flex max-w-7xl flex-col justify-between px-6 py-12 sm:px-12 sm:py-16 lg:px-16 lg:py-24">
+                    <div className="pt-8 sm:pt-14">
+                      <h2 className="text-3xl font-light leading-[1.08] tracking-[-0.03em] text-white sm:text-5xl md:text-6xl lg:text-[68px]">
+                        <InlineText
+                          value={empleoContent.ctaTitulo || "¿No encuentras tu puesto ideal?"}
+                          onChange={(val) => updateEmpleoField("ctaTitulo", val)}
+                          placeholder="Título CTA..."
+                          multiline
+                        />
+                      </h2>
+                    </div>
+                    <div className="flex flex-col justify-between gap-8 lg:flex-row lg:items-end">
+                      <div className="max-w-xl">
+                        <p className="text-sm leading-relaxed text-stone-200/85 sm:text-base">
+                          <InlineText
+                            value={
+                              empleoContent.ctaDescripcion ||
+                              "Envíanos una candidatura espontánea. Nos interesa conocer perfiles con criterio técnico, aunque no haya una posición abierta."
+                            }
+                            onChange={(val) => updateEmpleoField("ctaDescripcion", val)}
+                            placeholder="Descripción CTA..."
+                            multiline
+                          />
+                        </p>
+                      </div>
+                      <div className="shrink-0 pointer-events-none opacity-85">
+                        <span className="inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-amber-700 px-8 py-3.5 text-[11px] font-semibold uppercase tracking-wider text-white shadow-xl sm:py-4 sm:text-xs">
+                          <span>ENVIAR CANDIDATURA</span>
+                          <span>→</span>
+                        </span>
                       </div>
                     </div>
                   </div>

@@ -571,3 +571,57 @@ export const DEFAULT_EQUIPO_PAGE_CONTENT: import('./types').EquipoPageContent = 
   ctaDescripcion: "Cuéntanos qué necesitas y te ponemos en contacto con la persona adecuada.",
   ctaBgImage: "/cta-bg.jpg",
 };
+
+
+export const DEFAULT_POSICIONES_EMPLEO: import('./types').PosicionEmpleo[] = [
+  {
+    titulo: "Jefatura de obra",
+    departamento: "Ejecución",
+    ubicacion: "Madrid",
+    tipo: "Jornada completa",
+    resumen: "Planificación y coordinación de oficios en obra, control de plazo y calidad por fase.",
+  },
+  {
+    titulo: "Arquitectura técnica",
+    departamento: "Proyecto",
+    ubicacion: "Madrid",
+    tipo: "Jornada completa",
+    resumen: "Desarrollo de documentación, mediciones, detalles constructivos y seguimiento técnico.",
+  },
+  {
+    titulo: "Ingeniería de instalaciones",
+    departamento: "Instalaciones",
+    ubicacion: "Madrid",
+    tipo: "Jornada completa",
+    resumen: "Diseño y coordinación de climatización, ventilación, saneamiento y redes de datos.",
+  },
+  {
+    titulo: "Compras y aprovisionamiento",
+    departamento: "Compras",
+    ubicacion: "Madrid",
+    tipo: "Jornada completa",
+    resumen: "Gestión de proveedores, compras críticas anticipadas y control de suministros en obra.",
+  },
+];
+
+export const DEFAULT_EMPLEO_PAGE_CONTENT: import('./types').EmpleoPageContent = {
+  headerBadge: "TRABAJA CON NOSOTROS",
+  headerTitulo: "Construimos con las personas",
+  headerDescripcion: "Buscamos profesionales que compartan nuestro criterio técnico y quieran crecer dentro de un equipo que trabaja como una dirección única.",
+  headerBgImage: "/proceso-control.jpg",
+
+  culturaTag: "El equipo ALKO",
+  culturaTitulo: "Un equipo pequeño, con criterio y sin intermediarios",
+  culturaParrafo1: "En ALKO cada persona tiene responsabilidad real sobre el proyecto. Trabajamos cerca de la obra, con decisiones rápidas y una única dirección técnica.",
+  culturaParrafo2: "Buscamos perfiles con oficio y ambición de crecer: gente que disfrute resolviendo problemas constructivos y cuidando el detalle hasta la entrega.",
+  culturaImagen: "/proceso-construccion.jpg",
+
+  posicionesTag: "POSICIONES ABIERTAS",
+  posicionesTitulo: "Únete al equipo",
+  posicionesSubtitulo: "Envíanos tu candidatura por correo. Valoramos perfiles técnicos con experiencia en obra.",
+  posiciones: DEFAULT_POSICIONES_EMPLEO,
+
+  ctaTitulo: "¿No encuentras tu puesto ideal?",
+  ctaDescripcion: "Envíanos una candidatura espontánea. Nos interesa conocer perfiles con criterio técnico, aunque no haya una posición abierta.",
+  ctaBgImage: "/cta-bg.jpg",
+};
