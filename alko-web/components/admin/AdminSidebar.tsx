@@ -70,10 +70,9 @@ const MENU_ITEMS: MenuGroup[] = [
       },
       {
         name: "Artículos y Blog",
-        href: "/admin#articulos",
+        href: "/admin/articulos",
         icon: BookOpen,
-        badge: "3",
-        badgeColor: "bg-slate-100 text-slate-600",
+        badge: null,
       },
     ],
   },

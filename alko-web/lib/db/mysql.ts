@@ -1,8 +1,8 @@
 import mysql, { Pool } from "mysql2/promise";
 import fs from "fs";
 import path from "path";
-import { DEFAULT_HOME_CONTENT, DEFAULT_PROJECTS_PAGE_CONTENT, DEFAULT_NOSOTROS_PAGE_CONTENT, DEFAULT_CONTACTO_PAGE_CONTENT, DEFAULT_SERVICIOS_PAGE_CONTENT, DEFAULT_EQUIPO_PAGE_CONTENT, DEFAULT_EMPLEO_PAGE_CONTENT, DEFAULT_OFICINAS_PAGE_CONTENT, DEFAULT_ARTICULOS_PAGE_CONTENT, DEFAULT_GUIAS_PAGE_CONTENT, DEFAULT_PROJECTS, DEFAULT_SECTORS } from "../content";
-import type { Project, Sector, HomeContent, ProjectsPageContent, NosotrosPageContent, ContactoPageContent, ServiciosPageContent, EquipoPageContent, EmpleoPageContent, OficinasPageContent, ArticulosPageContent, GuiasPageContent, Slide } from "../types";
+import { DEFAULT_HOME_CONTENT, DEFAULT_PROJECTS_PAGE_CONTENT, DEFAULT_NOSOTROS_PAGE_CONTENT, DEFAULT_CONTACTO_PAGE_CONTENT, DEFAULT_SERVICIOS_PAGE_CONTENT, DEFAULT_EQUIPO_PAGE_CONTENT, DEFAULT_EMPLEO_PAGE_CONTENT, DEFAULT_OFICINAS_PAGE_CONTENT, DEFAULT_ARTICULOS_PAGE_CONTENT, DEFAULT_GUIAS_PAGE_CONTENT, DEFAULT_PROJECTS, DEFAULT_SECTORS, DEFAULT_ARTICLES } from "../content";
+import type { Project, Sector, Article, HomeContent, ProjectsPageContent, NosotrosPageContent, ContactoPageContent, ServiciosPageContent, EquipoPageContent, EmpleoPageContent, OficinasPageContent, ArticulosPageContent, GuiasPageContent, Slide } from "../types";
 
 let pool: Pool | null = null;
 
@@ -43,6 +43,7 @@ interface LocalStoreData {
   featuredProjectIds?: string[];
   customProjects?: Project[];
   customSectors?: Sector[];
+  customArticles?: Article[];
 }
 
 function getLocalContent(): LocalStoreData {
@@ -800,6 +801,102 @@ export async function deleteDbSector(id: string): Promise<boolean> {
     return true;
   } catch (err: any) {
     console.warn("Aviso: Fallo al eliminar servicio en MySQL:", err.message);
+    return false;
+  }
+}
+
+/**
+ * Obtiene la lista completa de artículos desde MySQL con respaldo local/defaults.
+ */
+export async function getDbArticles(): Promise<Article[]> {
+  try {
+    const db = getDbPool();
+    const [rows] = await db.execute<any[]>(
+      "SELECT data FROM alko_site_content WHERE id = 'articles_list' LIMIT 1"
+    );
+    if (rows && rows.length > 0) {
+      const data = typeof rows[0].data === "string" ? JSON.parse(rows[0].data) : rows[0].data;
+      if (Array.isArray(data) && data.length > 0) {
+        return data;
+      }
+    }
+  } catch (err: any) {
+    console.warn("Aviso: Error obteniendo artículos de MySQL:", err.message);
+  }
+
+  const local = getLocalContent();
+  if (local.customArticles && local.customArticles.length > 0) {
+    return local.customArticles;
+  }
+
+  return DEFAULT_ARTICLES;
+}
+
+/**
+ * Guarda o actualiza un artículo en MySQL y respaldo local.
+ */
+export async function saveDbArticle(articleData: Partial<Article>): Promise<Article> {
+  const currentArticles = await getDbArticles();
+  const slug = articleData.slug || ("articulo-" + Date.now());
+  const existingIndex = currentArticles.findIndex(a => a.id === articleData.id || a.slug === slug);
+
+  let updatedList = [...currentArticles];
+  const baseArticle = existingIndex >= 0 ? currentArticles[existingIndex] : null;
+
+  const fullArticle: Article = {
+    id: articleData.id || baseArticle?.id || ("art-" + Date.now()),
+    slug: slug,
+    title: articleData.title || baseArticle?.title || "Nuevo Artículo Técnico",
+    category: articleData.category || baseArticle?.category || "Metodología",
+    excerpt: articleData.excerpt || baseArticle?.excerpt || "",
+    content: articleData.content ?? baseArticle?.content ?? "",
+    image: articleData.image || baseArticle?.image || "/art1.jpg",
+    date: articleData.date || baseArticle?.date || new Date().toISOString().split("T")[0],
+  };
+
+  if (existingIndex >= 0) {
+    updatedList[existingIndex] = fullArticle;
+  } else {
+    updatedList.unshift(fullArticle);
+  }
+
+  saveLocalContent({ customArticles: updatedList });
+
+  try {
+    const db = getDbPool();
+    await db.execute(
+      `INSERT INTO alko_site_content (id, data) 
+       VALUES ('articles_list', ?) 
+       ON DUPLICATE KEY UPDATE data = VALUES(data)`,
+      [JSON.stringify(updatedList)]
+    );
+  } catch (err: any) {
+    console.warn("Aviso: Fallo al guardar lista de artículos en MySQL:", err.message);
+  }
+
+  return fullArticle;
+}
+
+/**
+ * Elimina un artículo por ID o Slug en MySQL.
+ */
+export async function deleteDbArticle(id: string): Promise<boolean> {
+  const currentArticles = await getDbArticles();
+  const updatedList = currentArticles.filter(a => String(a.id) !== String(id) && a.slug !== id);
+
+  saveLocalContent({ customArticles: updatedList });
+
+  try {
+    const db = getDbPool();
+    await db.execute(
+      `INSERT INTO alko_site_content (id, data) 
+       VALUES ('articles_list', ?) 
+       ON DUPLICATE KEY UPDATE data = VALUES(data)`,
+      [JSON.stringify(updatedList)]
+    );
+    return true;
+  } catch (err: any) {
+    console.warn("Aviso: Fallo al eliminar artículo en MySQL:", err.message);
     return false;
   }
 }

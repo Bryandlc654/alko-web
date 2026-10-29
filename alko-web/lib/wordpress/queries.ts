@@ -1,4 +1,4 @@
-import { getDbHomeContent, getFeaturedProjectIds, getDbProjects, getDbSectors } from "../db/mysql";
+import { getDbHomeContent, getFeaturedProjectIds, getDbProjects, getDbSectors, getDbArticles } from "../db/mysql";
 import {
   DEFAULT_ARTICLES,
   DEFAULT_DESCARGAS,
@@ -219,6 +219,15 @@ async function newsCategoryId(): Promise<number | null> {
 
 /** Artículos técnicos: todas las entradas salvo las de la categoría Actualidad. */
 export async function getArticles(limit = 6): Promise<Article[]> {
+  try {
+    const dbArticles = await getDbArticles();
+    if (dbArticles && dbArticles.length > 0) {
+      return dbArticles.slice(0, limit);
+    }
+  } catch (err) {
+    console.warn("Aviso: Error obteniendo artículos de MySQL:", err);
+  }
+
   const newsId = await newsCategoryId();
   const exclude = newsId ? `&categories_exclude=${newsId}` : "";
   const posts = await wpGet<WpPost[]>(`posts?per_page=${limit}&_embed${exclude}`);
@@ -237,6 +246,14 @@ export async function getNews(limit = 4): Promise<Article[]> {
 }
 
 export async function getArticleBySlug(slug: string): Promise<Article | null> {
+  try {
+    const dbArticles = await getDbArticles();
+    const found = dbArticles.find((a) => a.slug === slug || String(a.id) === slug);
+    if (found) return found;
+  } catch (err) {
+    console.warn("Aviso: Error buscando artículo en MySQL:", err);
+  }
+
   const posts = await wpGet<WpPost[]>(`posts?slug=${encodeURIComponent(slug)}&_embed`);
   if (posts && posts.length > 0) return toArticle(posts[0]);
   return DEFAULT_ARTICLES.find((article) => article.slug === slug) ?? null;

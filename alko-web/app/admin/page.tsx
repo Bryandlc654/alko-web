@@ -154,18 +154,21 @@ export default async function AdminDashboardPage() {
               </div>
             </Link>
 
-            <div className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs flex items-center justify-between">
+            <Link
+              href="/admin/articulos"
+              className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs hover:border-blue-500 hover:shadow-md transition flex items-center justify-between group"
+            >
               <div>
                 <span className="text-xs font-medium text-slate-500 block">Artículos Técnicos</span>
                 <span className="text-2xl font-bold text-slate-900 mt-1 block">{articles.length}</span>
-                <span className="text-[11px] text-indigo-600 font-medium flex items-center gap-1 mt-1">
-                  <BookOpen className="w-3 h-3" /> Biblioteca activa
+                <span className="text-[11px] text-blue-600 font-medium flex items-center gap-1 mt-1">
+                  <BookOpen className="w-3 h-3" /> Gestionar artículos →
                 </span>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-200/80">
+              <div className="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-200/80 group-hover:scale-105 transition-transform">
                 <BookOpen className="w-6 h-6" />
               </div>
-            </div>
+            </Link>
 
             <div className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs flex items-center justify-between">
               <div>
