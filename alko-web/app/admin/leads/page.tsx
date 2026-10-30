@@ -21,6 +21,8 @@ export default async function AdminLeadsPage() {
       <AdminSidebar
         userEmail={session.email}
         userName={session.name || session.email}
+        userRole={session?.role}
+        userPermissions={session?.permissions}
       />
       <main className="flex-1 min-w-0 p-6 lg:p-10 overflow-y-auto">
         <LeadsCrmManager initialLeads={initialLeads} />

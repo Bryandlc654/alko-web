@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import { getDbPool } from "@/lib/db/mysql";
+import { getDbPool, getDbUserForAuth, saveDbUser } from "@/lib/db/mysql";
 import { createSession } from "@/lib/auth/session";
+import { ROLE_DEFINITIONS } from "@/lib/auth/rbac";
 
 export async function POST(req: Request) {
   try {
@@ -14,41 +15,62 @@ export async function POST(req: Request) {
       );
     }
 
-    let authenticatedUser = null;
+    let authenticatedUser: any = null;
 
-    // 1. Intentar validar en la base de datos MySQL
-    try {
-      const db = getDbPool();
-      const [rows] = await db.execute<any[]>(
-        "SELECT id, username, email, name, password_hash, role FROM alko_users WHERE username = ? OR email = ? LIMIT 1",
-        [username, username]
-      );
-
-      if (rows && rows.length > 0) {
-        const user = rows[0];
-        const isValid = await bcrypt.compare(password, user.password_hash);
-        if (isValid) {
-          authenticatedUser = {
-            id: user.id,
-            username: user.username,
-            name: user.name,
-            email: user.email,
-            role: user.role || "admin",
-          };
-        }
+    // 1. Buscar primero en la base de datos de usuarios administradores RBAC
+    const storedUser = await getDbUserForAuth(username);
+    if (storedUser) {
+      if (storedUser.active === false) {
+        return NextResponse.json(
+          { error: "Tu cuenta ha sido desactivada por un administrador" },
+          { status: 403 }
+        );
       }
-    } catch (dbErr: any) {
-      console.warn("Error consultando MySQL:", dbErr.message);
+
+      // Validar contraseña si tiene hash
+      if (storedUser.password_hash) {
+        const isValid = await bcrypt.compare(password, storedUser.password_hash);
+        if (isValid) {
+          const roleDef = ROLE_DEFINITIONS[storedUser.role as keyof typeof ROLE_DEFINITIONS];
+          const permissions = storedUser.permissions || (roleDef ? roleDef.permissions : []);
+
+          authenticatedUser = {
+            id: storedUser.id,
+            username: storedUser.username,
+            name: storedUser.name,
+            email: storedUser.email,
+            role: storedUser.role,
+            permissions,
+          };
+
+          // Actualizar último login
+          saveDbUser({ id: storedUser.id, last_login: new Date().toISOString() }).catch(() => {});
+        }
+      } else if (storedUser.username === "admin" && password === "alko2026!") {
+        // Inicializar contraseña por defecto para el superadmin
+        const hash = await bcrypt.hash("alko2026!", 10);
+        saveDbUser({ id: storedUser.id, password_hash: hash, last_login: new Date().toISOString() }).catch(() => {});
+
+        authenticatedUser = {
+          id: storedUser.id,
+          username: storedUser.username,
+          name: storedUser.name,
+          email: storedUser.email,
+          role: "superadmin",
+          permissions: ROLE_DEFINITIONS.superadmin.permissions,
+        };
+      }
     }
 
-    // 2. Fallback de administrador si la BD aún no está sincronizada
+    // 2. Fallback de administrador si la BD aún no tiene usuarios
     if (!authenticatedUser && username === "admin" && password === "alko2026!") {
       authenticatedUser = {
         id: 1,
         username: "admin",
         name: "Administrador ALKO",
         email: "admin@alkoreformas.com",
-        role: "admin",
+        role: "superadmin",
+        permissions: ROLE_DEFINITIONS.superadmin.permissions,
       };
     }
 
@@ -59,7 +81,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // Crear sesión HTTP-only
+    // Crear sesión HTTP-only con datos de usuario y permisos RBAC
     await createSession(authenticatedUser);
 
     return NextResponse.json({
@@ -68,6 +90,7 @@ export async function POST(req: Request) {
         username: authenticatedUser.username,
         name: authenticatedUser.name,
         email: authenticatedUser.email,
+        role: authenticatedUser.role,
       },
     });
   } catch (err: any) {

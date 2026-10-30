@@ -48,6 +48,7 @@ interface LocalStoreData {
   customGuides?: Guide[];
   customCandidaturas?: Candidatura[];
   customLeads?: Lead[];
+  customUsers?: any[];
   settings?: SiteSettings;
 }
 
@@ -1468,3 +1469,157 @@ export async function deleteDbLead(id: string): Promise<boolean> {
     return false;
   }
 }
+
+/* ========================================================
+   GESTIÓN DE USUARIOS Y ROLES (RBAC)
+   ======================================================== */
+
+export interface DbUserRecord {
+  id: string | number;
+  username: string;
+  name: string;
+  email: string;
+  password_hash?: string;
+  role: string;
+  permissions?: string[];
+  active?: boolean;
+  created_at?: string;
+  last_login?: string;
+}
+
+const DEFAULT_USERS: DbUserRecord[] = [
+  {
+    id: 1,
+    username: "admin",
+    name: "Administrador ALKO",
+    email: "admin@alkoreformas.com",
+    role: "superadmin",
+    permissions: [
+      "editor",
+      "proyectos",
+      "servicios",
+      "articulos",
+      "guias",
+      "empleo",
+      "equipo",
+      "leads",
+      "ajustes",
+      "usuarios",
+    ],
+    active: true,
+    created_at: "2026-01-01T00:00:00.000Z",
+  },
+];
+
+/**
+ * Obtiene la lista completa de usuarios del sistema (sin password_hash para seguridad).
+ */
+export async function getDbUsers(): Promise<DbUserRecord[]> {
+  try {
+    const db = getDbPool();
+    const [rows] = await db.execute<any[]>(
+      "SELECT data FROM alko_site_content WHERE id = 'admin_users' LIMIT 1"
+    );
+    if (rows && rows.length > 0) {
+      const data = typeof rows[0].data === "string" ? JSON.parse(rows[0].data) : rows[0].data;
+      if (Array.isArray(data) && data.length > 0) {
+        return data;
+      }
+    }
+  } catch (err: any) {
+    console.warn("Aviso: Error obteniendo usuarios de MySQL:", err.message);
+  }
+
+  const local = getLocalContent();
+  if (local.customUsers && local.customUsers.length > 0) {
+    return local.customUsers;
+  }
+
+  return DEFAULT_USERS;
+}
+
+/**
+ * Busca un usuario por username o email para el login (incluye password_hash).
+ */
+export async function getDbUserForAuth(identifier: string): Promise<DbUserRecord | null> {
+  const users = await getDbUsers();
+  const lower = identifier.toLowerCase();
+  const found = users.find(
+    (u) => u.username.toLowerCase() === lower || u.email.toLowerCase() === lower
+  );
+  return found || null;
+}
+
+/**
+ * Guarda o actualiza un usuario en el sistema.
+ */
+export async function saveDbUser(userData: Partial<DbUserRecord>): Promise<DbUserRecord> {
+  const current = await getDbUsers();
+  const id = userData.id || ("user-" + Date.now());
+  const index = current.findIndex((u) => String(u.id) === String(id) || u.username.toLowerCase() === (userData.username || "").toLowerCase());
+
+  const fullRecord: DbUserRecord = {
+    id: id,
+    username: userData.username || (index >= 0 ? current[index].username : "usuario"),
+    name: userData.name || (index >= 0 ? current[index].name : "Usuario ALKO"),
+    email: userData.email || (index >= 0 ? current[index].email : "usuario@alkoreformas.com"),
+    role: userData.role || (index >= 0 ? current[index].role : "editor"),
+    permissions: userData.permissions || (index >= 0 ? current[index].permissions : ["editor"]),
+    active: userData.active !== undefined ? userData.active : (index >= 0 && current[index].active !== undefined ? current[index].active : true),
+    created_at: index >= 0 && current[index].created_at ? current[index].created_at : new Date().toISOString(),
+    last_login: userData.last_login || (index >= 0 ? current[index].last_login : undefined),
+    password_hash: userData.password_hash || (index >= 0 ? current[index].password_hash : undefined),
+  };
+
+  const updatedList = [...current];
+  if (index >= 0) {
+    updatedList[index] = fullRecord;
+  } else {
+    updatedList.push(fullRecord);
+  }
+
+  saveLocalContent({ customUsers: updatedList });
+
+  try {
+    const db = getDbPool();
+    await db.execute(
+      `INSERT INTO alko_site_content (id, data) 
+       VALUES ('admin_users', ?) 
+       ON DUPLICATE KEY UPDATE data = VALUES(data)`,
+      [JSON.stringify(updatedList)]
+    );
+  } catch (err: any) {
+    console.warn("Aviso: Fallo al guardar usuario en MySQL:", err.message);
+  }
+
+  return fullRecord;
+}
+
+/**
+ * Elimina un usuario por ID. Impide eliminar al superadmin principal 'admin'.
+ */
+export async function deleteDbUser(id: string | number): Promise<boolean> {
+  const current = await getDbUsers();
+  const user = current.find((u) => String(u.id) === String(id));
+  if (user && user.username === "admin") {
+    throw new Error("No es posible eliminar el usuario administrador principal.");
+  }
+
+  const updatedList = current.filter((u) => String(u.id) !== String(id));
+  saveLocalContent({ customUsers: updatedList });
+
+  try {
+    const db = getDbPool();
+    await db.execute(
+      `INSERT INTO alko_site_content (id, data) 
+       VALUES ('admin_users', ?) 
+       ON DUPLICATE KEY UPDATE data = VALUES(data)`,
+      [JSON.stringify(updatedList)]
+    );
+    return true;
+  } catch (err: any) {
+    console.warn("Aviso: Fallo al eliminar usuario en MySQL:", err.message);
+    return false;
+  }
+}
+

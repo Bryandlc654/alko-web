@@ -30,6 +30,8 @@ export default async function AdminProjectEditPage({
       <AdminSidebar
         userName={session?.name || "Administrador"}
         userEmail={session?.email || "admin@alkoreformas.com"}
+        userRole={session?.role}
+        userPermissions={session?.permissions}
       />
 
       {/* Contenido principal */}

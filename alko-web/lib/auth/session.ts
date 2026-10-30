@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import type { Permission, RoleType } from "./rbac";
 
 const SECRET = process.env.ADMIN_JWT_SECRET || "alko-reformas-super-secret-jwt-key-2026-production";
 export const COOKIE_NAME = "alko_admin_session";
@@ -8,7 +9,8 @@ export interface AdminUser {
   username: string;
   name: string;
   email: string;
-  role: string;
+  role: RoleType | string;
+  permissions?: Permission[];
 }
 
 async function hmacSign(data: string, secret: string): Promise<string> {
@@ -81,7 +83,8 @@ export async function verifyToken(token: string): Promise<AdminUser | null> {
       username: data.username,
       name: data.name,
       email: data.email,
-      role: data.role || "admin",
+      role: data.role || "superadmin",
+      permissions: Array.isArray(data.permissions) ? data.permissions : undefined,
     };
   } catch {
     return null;

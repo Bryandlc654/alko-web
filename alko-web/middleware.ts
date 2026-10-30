@@ -1,6 +1,20 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { COOKIE_NAME, verifyToken } from "@/lib/auth/session";
+import { hasPermission, type Permission } from "@/lib/auth/rbac";
+
+const PATH_PERMISSION_MAP: Record<string, Permission> = {
+  "/admin/editor": "editor",
+  "/admin/proyectos": "proyectos",
+  "/admin/servicios": "servicios",
+  "/admin/articulos": "articulos",
+  "/admin/guias": "guias",
+  "/admin/empleo": "empleo",
+  "/admin/equipo": "equipo",
+  "/admin/leads": "leads",
+  "/admin/ajustes": "ajustes",
+  "/admin/usuarios": "usuarios",
+};
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -23,6 +37,19 @@ export async function middleware(req: NextRequest) {
       const loginUrl = new URL("/admin/login", req.url);
       loginUrl.searchParams.set("from", pathname);
       return NextResponse.redirect(loginUrl);
+    }
+
+    // Comprobar control de acceso RBAC por módulo
+    for (const [prefix, requiredPermission] of Object.entries(PATH_PERMISSION_MAP)) {
+      if (pathname === prefix || pathname.startsWith(prefix + "/")) {
+        if (!hasPermission(user, requiredPermission)) {
+          // Si no tiene permiso, redirigir al dashboard con alerta
+          const url = new URL("/admin", req.url);
+          url.searchParams.set("error", "unauthorized");
+          url.searchParams.set("modulo", requiredPermission);
+          return NextResponse.redirect(url);
+        }
+      }
     }
 
     return NextResponse.next();
