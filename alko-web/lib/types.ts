@@ -96,6 +96,14 @@ export interface SectorFaq {
   a: string;
 }
 
+export interface SectorCapacidadTecnica {
+  codigo: string;
+  titulo: string;
+  metrica: string;
+  resumen: string;
+  puntos: string[];
+}
+
 export interface SectorLandingData {
   heroTagline?: string;
   heroHeadline?: string;
@@ -108,6 +116,9 @@ export interface SectorLandingData {
   includesSubtitle?: string;
   includes?: string[];
   includesImage?: string;
+  capacidadesHeadline?: string;
+  capacidadesSubtitle?: string;
+  capacidades?: SectorCapacidadTecnica[];
   processHeadline?: string;
   supportTitle?: string;
   supportContent?: string;

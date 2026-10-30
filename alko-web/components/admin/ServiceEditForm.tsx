@@ -19,8 +19,16 @@ import {
   HelpCircle,
   ExternalLink,
   Plus,
+  Compass,
 } from "lucide-react";
-import type { Sector, SectorCommitment, SectorProblem, SectorFaq, SectorLandingData } from "@/lib/types";
+import type {
+  Sector,
+  SectorCommitment,
+  SectorProblem,
+  SectorFaq,
+  SectorLandingData,
+  SectorCapacidadTecnica,
+} from "@/lib/types";
 
 interface ServiceEditFormProps {
   initialSector?: Sector | null;
@@ -31,6 +39,51 @@ const DEFAULT_COMMITMENTS: SectorCommitment[] = [
   { title: "Presupuesto cerrado", text: "Por partidas y acordado antes de empezar" },
   { title: "Plazo por escrito", text: "Con hitos de control durante la obra" },
   { title: "Un único equipo", text: "De proyecto a entrega, sin intermediarios" },
+];
+
+const DEFAULT_CAPACIDADES: SectorCapacidadTecnica[] = [
+  {
+    codigo: "01",
+    titulo: "Arquitectura & Proyecto Ejecutivo",
+    metrica: "Modelado BIM · Planimetría",
+    resumen: "Desarrollo técnico minucioso, optimización de espacios y selección de materiales nobles previa al inicio de obra.",
+    puntos: ["Detalles constructivos a escala 1:1", "Asesoramiento continuo en interiorismo"],
+  },
+  {
+    codigo: "02",
+    titulo: "Gestión Integral de Licencias",
+    metrica: "Ayuntamiento · ECLU Madrid",
+    resumen: "Tramitación técnica completa de licencias de obra mayor, menor y proyectos de actividad sin retrasos burocráticos.",
+    puntos: ["Seguridad jurídica garantizada", "Gestión directa con técnicos municipales"],
+  },
+  {
+    codigo: "03",
+    titulo: "Instalaciones & Eficiencia",
+    metrica: "Aerotermia · Suelo Radiante · Clima",
+    resumen: "Cálculo e instalación de envolventes térmicas, ventilación mecánica con recuperación y domótica de vanguardia.",
+    puntos: ["Ahorros energéticos de hasta el 70%", "Confort acústico y térmico homogéneo"],
+  },
+  {
+    codigo: "04",
+    titulo: "Acabados & Carpintería a Medida",
+    metrica: "Tolerancia milimétrica",
+    resumen: "Fabricación propia de panelados, armarios integrados, cerrajerías enrasadas y cocinas de diseño exclusivo.",
+    puntos: ["Materiales nobles: maderas, piedras y metales", "Alineaciones enrasadas sin molduras visibles"],
+  },
+  {
+    codigo: "05",
+    titulo: "Control y Dirección de Obra Diaria",
+    metrica: "Supervisión a pie de obra",
+    resumen: "Presencia continua de un arquitecto técnico para garantizar la calidad de colocación y el cumplimiento de hitos.",
+    puntos: ["Inspecciones en cada fase antes de cerrar", "Coordinación estricta de gremios especializados"],
+  },
+  {
+    codigo: "06",
+    titulo: "Entrega Llave en Mano & Garantía",
+    metrica: "Dossier As-Built · Certificaciones",
+    resumen: "Recepción de obra tras pruebas exhaustivas de estanqueidad, planos finales y garantía legal posventa directa.",
+    puntos: ["Manual de mantenimiento del inmueble", "Respuesta posventa prioritaria"],
+  },
 ];
 
 const DEFAULT_PROBLEMS: SectorProblem[] = [
@@ -56,7 +109,9 @@ const DEFAULT_FAQS: SectorFaq[] = [
 
 export default function ServiceEditForm({ initialSector, isNew = false }: ServiceEditFormProps) {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<"general" | "hero" | "problems" | "includes" | "content" | "faqs">("general");
+  const [activeTab, setActiveTab] = useState<
+    "general" | "hero" | "capacidades" | "problems" | "includes" | "content" | "faqs"
+  >("general");
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successToast, setSuccessToast] = useState("");
@@ -89,6 +144,9 @@ export default function ServiceEditForm({ initialSector, isNew = false }: Servic
             "Carpintería a medida: puertas, armarios y panelados",
           ],
           includesImage: existingLanding.includesImage || "",
+          capacidadesHeadline: existingLanding.capacidadesHeadline || "Capacidades Técnicas",
+          capacidadesSubtitle: existingLanding.capacidadesSubtitle || "DISCIPLINAS TÉCNICAS & METODOLOGÍA",
+          capacidades: existingLanding.capacidades?.length ? existingLanding.capacidades : [...DEFAULT_CAPACIDADES],
           processHeadline: existingLanding.processHeadline || "6 fases, un solo equipo.",
           supportTitle: existingLanding.supportTitle || "Rigurosidad técnica en cada fase",
           supportContent: existingLanding.supportContent || "Supervisamos minuciosamente cada partida con un arquitecto técnico asignado a tu obra, asegurando el cumplimiento de normativas y las más altas calidades constructivas.",
@@ -128,6 +186,9 @@ export default function ServiceEditForm({ initialSector, isNew = false }: Servic
           "Carpintería a medida: puertas, armarios y panelados",
         ],
         includesImage: "",
+        capacidadesHeadline: "Capacidades Técnicas",
+        capacidadesSubtitle: "DISCIPLINAS TÉCNICAS & METODOLOGÍA",
+        capacidades: [...DEFAULT_CAPACIDADES],
         processHeadline: "6 fases, un solo equipo.",
         supportTitle: "Rigurosidad técnica en cada fase",
         supportContent: "Supervisamos minuciosamente cada partida con un arquitecto técnico asignado a tu obra, asegurando el cumplimiento de normativas y las más altas calidades constructivas.",
@@ -307,6 +368,19 @@ export default function ServiceEditForm({ initialSector, isNew = false }: Servic
           >
             <Sparkles className="w-4 h-4" />
             <span>Hero & Compromisos</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab("capacidades")}
+            className={`py-3.5 px-4 border-b-2 flex items-center gap-2 transition shrink-0 ${
+              activeTab === "capacidades"
+                ? "border-blue-600 text-blue-600 font-semibold bg-white"
+                : "border-transparent text-slate-500 hover:text-slate-800"
+            }`}
+          >
+            <Compass className="w-4 h-4" />
+            <span>Capacidades Técnicas</span>
           </button>
 
           <button
@@ -581,6 +655,126 @@ export default function ServiceEditForm({ initialSector, isNew = false }: Servic
                   placeholder="Proyectos entregados"
                   className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
                 />
+              </div>
+            </div>
+          )}
+
+          {/* TAB: CAPACIDADES TÉCNICAS */}
+          {activeTab === "capacidades" && (
+            <div className="space-y-6 animate-in fade-in duration-150 max-w-4xl">
+              <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                <h4 className="text-xs font-bold text-slate-800 mb-1 flex items-center gap-1.5">
+                  <Compass className="w-4 h-4 text-amber-600" />
+                  <span>Capacidades Técnicas & Disciplinas Especializadas</span>
+                </h4>
+                <p className="text-[11px] text-slate-500">
+                  Las 6 tarjetas modulares que detallan la solvencia técnica, ingeniería y rigor constructivo de ALKO para este servicio.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                    Subtítulo Superior
+                  </label>
+                  <input
+                    type="text"
+                    value={sector.landing?.capacidadesSubtitle || "DISCIPLINAS TÉCNICAS & METODOLOGÍA"}
+                    onChange={(e) => updateLanding({ capacidadesSubtitle: e.target.value })}
+                    placeholder="DISCIPLINAS TÉCNICAS & METODOLOGÍA"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-slate-800 focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                    Titular H2 de Capacidades
+                  </label>
+                  <input
+                    type="text"
+                    value={sector.landing?.capacidadesHeadline || "Capacidades Técnicas"}
+                    onChange={(e) => updateLanding({ capacidadesHeadline: e.target.value })}
+                    placeholder="Capacidades Técnicas"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-slate-800 focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                {(sector.landing?.capacidades || DEFAULT_CAPACIDADES).map((cap, idx) => (
+                  <div key={idx} className="p-5 bg-white border border-slate-200 rounded-2xl shadow-2xs space-y-3">
+                    <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                      <span className="font-mono text-xs font-bold text-[#b87600]">Disciplina 0{idx + 1} ({cap.codigo})</span>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
+                      <div className="md:col-span-8">
+                        <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                          Título de la Capacidad
+                        </label>
+                        <input
+                          type="text"
+                          value={cap.titulo}
+                          onChange={(e) => {
+                            const copy = [...(sector.landing?.capacidades || DEFAULT_CAPACIDADES)];
+                            copy[idx] = { ...copy[idx], titulo: e.target.value };
+                            updateLanding({ capacidades: copy });
+                          }}
+                          className="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-500"
+                        />
+                      </div>
+                      <div className="md:col-span-4">
+                        <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                          Métrica / Badge
+                        </label>
+                        <input
+                          type="text"
+                          value={cap.metrica}
+                          onChange={(e) => {
+                            const copy = [...(sector.landing?.capacidades || DEFAULT_CAPACIDADES)];
+                            copy[idx] = { ...copy[idx], metrica: e.target.value };
+                            updateLanding({ capacidades: copy });
+                          }}
+                          className="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-mono text-slate-700 focus:outline-none focus:border-blue-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                        Resumen Explicativo
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={cap.resumen}
+                        onChange={(e) => {
+                          const copy = [...(sector.landing?.capacidades || DEFAULT_CAPACIDADES)];
+                          copy[idx] = { ...copy[idx], resumen: e.target.value };
+                          updateLanding({ capacidades: copy });
+                        }}
+                        className="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs text-slate-700 leading-relaxed focus:outline-none focus:border-blue-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                        Puntos Clave con Check ✓ (separados por coma o salto de línea)
+                      </label>
+                      <input
+                        type="text"
+                        value={cap.puntos.join(", ")}
+                        onChange={(e) => {
+                          const copy = [...(sector.landing?.capacidades || DEFAULT_CAPACIDADES)];
+                          copy[idx] = {
+                            ...copy[idx],
+                            puntos: e.target.value.split(",").map((s) => s.trim()).filter(Boolean),
+                          };
+                          updateLanding({ capacidades: copy });
+                        }}
+                        className="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs text-slate-700 focus:outline-none focus:border-blue-500"
+                      />
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           )}

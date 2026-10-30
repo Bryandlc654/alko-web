@@ -132,8 +132,8 @@ export default async function SectorDetailPage({
     { valor: `+${projects.length || 15}`, label: "proyectos singulares entregados con éxito" },
   ];
 
-  // 6 Capacidades Técnicas / Pilares específicos
-  const capacidades = [
+  // Capacidades Técnicas / Pilares específicos (editables desde el admin con fallback)
+  const CAPACIDADES_DEFAULT = [
     {
       codigo: "01",
       titulo: "Arquitectura & Proyecto Ejecutivo",
@@ -183,6 +183,15 @@ export default async function SectorDetailPage({
       icon: Award,
     },
   ];
+
+  const ICONS_MAP = [Compass, ShieldCheck, Layers, Ruler, Sparkles, Award];
+
+  const capacidades = landing?.capacidades && landing.capacidades.length > 0
+    ? landing.capacidades.map((cap, i) => ({
+        ...cap,
+        icon: ICONS_MAP[i % ICONS_MAP.length],
+      }))
+    : CAPACIDADES_DEFAULT;
 
   const jsonLd = [
     {
@@ -338,10 +347,10 @@ export default async function SectorDetailPage({
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-8 mb-10 border-b border-stone-200">
             <div>
               <span className="font-mono text-xs text-[#c98300] uppercase tracking-[0.25em] font-semibold">
-                DISCIPLINAS TÉCNICAS & METODOLOGÍA
+                {landing?.capacidadesSubtitle || "DISCIPLINAS TÉCNICAS & METODOLOGÍA"}
               </span>
               <h2 className="mt-2 font-serif text-3xl sm:text-4xl font-light text-stone-900">
-                Capacidades Técnicas
+                {landing?.capacidadesHeadline || "Capacidades Técnicas"}
               </h2>
             </div>
             <p className="text-xs sm:text-sm text-stone-500 max-w-sm font-light">
