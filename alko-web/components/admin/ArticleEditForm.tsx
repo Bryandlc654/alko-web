@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import type { Article } from "@/lib/types";
 import { slugify } from "@/lib/utils";
+import RichTextEditor from "./RichTextEditor";
 
 interface ArticleEditFormProps {
   initialArticle?: Article | null;
@@ -420,22 +421,22 @@ export default function ArticleEditForm({
           />
         </div>
 
-        {/* Fila 5: Contenido Completo del Artículo */}
+        {/* Fila 5: Contenido Completo del Artículo con Editor Visual */}
         <div>
-          <div className="flex items-center justify-between mb-1.5">
-            <label className="block text-xs font-semibold text-slate-700">
-              Contenido Técnico del Artículo (HTML / Párrafos y Encabezados)
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-xs font-semibold text-slate-800">
+              Contenido del Artículo
             </label>
-            <span className="text-[11px] text-slate-400">
-              Usa &lt;p&gt; para texto y &lt;h2&gt; para secciones (se genera índice automático)
+            <span className="text-[11px] text-slate-500">
+              Usa los botones de formato para dar estilo, listas y crear secciones H2
             </span>
           </div>
-          <textarea
-            rows={14}
+
+          <RichTextEditor
             value={article.content || ""}
-            onChange={(e) => setArticle({ ...article, content: e.target.value })}
-            placeholder="<p>Primer párrafo...</p>&#10;<h2>1. Título de sección</h2>&#10;<p>Desarrollo...</p>"
-            className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:border-blue-600 text-xs font-mono text-slate-800 leading-relaxed bg-white"
+            onChange={(html) => setArticle({ ...article, content: html })}
+            placeholder="Comienza a redactar el artículo técnico... Puedes añadir párrafos, títulos H2/H3, viñetas, enlaces y citas."
+            minHeight="380px"
           />
         </div>
 

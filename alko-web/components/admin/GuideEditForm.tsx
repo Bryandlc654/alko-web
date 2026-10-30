@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import type { Guide } from "@/lib/types";
 import { slugify } from "@/lib/utils";
+import RichTextEditor from "./RichTextEditor";
 
 interface GuideEditFormProps {
   initialGuide?: Guide | null;
@@ -361,22 +362,22 @@ export default function GuideEditForm({ initialGuide, isNew = false }: GuideEdit
           />
         </div>
 
-        {/* Fila 5: Contenido Completo */}
+        {/* Fila 5: Contenido Completo con Editor Visual */}
         <div>
-          <div className="flex items-center justify-between mb-1.5">
-            <label className="block text-xs font-semibold text-slate-700">
-              Contenido de la Guía (HTML / Párrafos y Encabezados)
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-xs font-semibold text-slate-800">
+              Contenido de la Guía
             </label>
-            <span className="text-[11px] text-slate-400">
-              Estructura con &lt;p&gt;, &lt;h2&gt; y &lt;ul&gt;
+            <span className="text-[11px] text-slate-500">
+              Estructura con H2 (Sección) para generar el índice automático
             </span>
           </div>
-          <textarea
-            rows={14}
+
+          <RichTextEditor
             value={guide.content || ""}
-            onChange={(e) => setGuide({ ...guide, content: e.target.value })}
-            placeholder="<p>Texto inicial...</p>&#10;<h2>1. Apartado</h2>&#10;<p>Detalles...</p>"
-            className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:border-blue-600 text-xs font-mono text-slate-800 leading-relaxed bg-white"
+            onChange={(html) => setGuide({ ...guide, content: html })}
+            placeholder="Redacta los pasos y recomendaciones de la guía técnica..."
+            minHeight="380px"
           />
         </div>
 
