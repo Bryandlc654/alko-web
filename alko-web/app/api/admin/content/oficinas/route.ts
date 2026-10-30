@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDbOficinasPageContent, saveDbOficinasPageContent } from "@/lib/db/mysql";
-import { cookies } from "next/headers";
+import { getSession } from "@/lib/auth/session";
+import { hasPermission } from "@/lib/auth/rbac";
 
 export async function GET() {
   const content = await getDbOficinasPageContent();
@@ -8,11 +9,13 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const cookieStore = await cookies();
-  const auth = cookieStore.get("alko_admin_auth");
-
-  if (!auth || auth.value !== "true") {
+  const session = await getSession();
+  if (!session) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+
+  if (!hasPermission(session, "servicios") && !hasPermission(session, "editor")) {
+    return NextResponse.json({ error: "Acceso denegado: permisos insuficientes" }, { status: 403 });
   }
 
   try {

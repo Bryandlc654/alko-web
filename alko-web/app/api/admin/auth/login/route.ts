@@ -1,10 +1,33 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { getDbPool, getDbUserForAuth, saveDbUser } from "@/lib/db/mysql";
 import { createSession } from "@/lib/auth/session";
 import { ROLE_DEFINITIONS } from "@/lib/auth/rbac";
+import { clientIp, isSameOrigin } from "@/lib/http";
+import { createRateLimiter } from "@/lib/rate-limit";
 
-export async function POST(req: Request) {
+const checkLoginRateLimit = createRateLimiter();
+
+export async function POST(req: NextRequest) {
+  if (!isSameOrigin(req)) {
+    return NextResponse.json({ error: "Petición no permitida" }, { status: 403 });
+  }
+
+  // Protección anti fuerza bruta: máximo 5 intentos fallidos cada 15 minutos por IP
+  const ip = clientIp(req);
+  const rate = checkLoginRateLimit(ip, {
+    limit: 10,
+    windowMs: 15 * 60 * 1000,
+    dailyLimit: 60,
+  });
+
+  if (!rate.ok) {
+    return NextResponse.json(
+      { error: "Demasiados intentos de acceso fallidos. Por seguridad, espera unos minutos antes de reintentar." },
+      { status: 429, headers: { "Retry-After": String(rate.retryAfter) } }
+    );
+  }
+
   try {
     const { username, password } = await req.json();
 

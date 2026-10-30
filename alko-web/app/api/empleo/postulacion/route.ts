@@ -1,12 +1,33 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 import { saveDbJobApplication } from "@/lib/db/mysql";
+import { clientIp, isSameOrigin } from "@/lib/http";
+import { createRateLimiter } from "@/lib/rate-limit";
 
 const ALLOWED_EXTENSIONS = new Set([".pdf", ".doc", ".docx"]);
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
+const checkRateLimit = createRateLimiter();
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+  if (!isSameOrigin(req)) {
+    return NextResponse.json({ error: "Petición no permitida" }, { status: 403 });
+  }
+
+  // Rate limiting: máximo 5 postulaciones por IP cada 15 minutos
+  const rate = checkRateLimit(clientIp(req), {
+    limit: 5,
+    windowMs: 15 * 60 * 1000,
+    dailyLimit: 30,
+  });
+
+  if (!rate.ok) {
+    return NextResponse.json(
+      { error: "Has superado el límite de envíos de candidaturas. Inténtalo más tarde." },
+      { status: 429, headers: { "Retry-After": String(rate.retryAfter) } }
+    );
+  }
+
   try {
     const formData = await req.formData();
     const nombre = (formData.get("nombre") as string)?.trim();

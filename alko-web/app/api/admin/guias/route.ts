@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { getDbGuides, saveDbGuide, deleteDbGuide } from "@/lib/db/mysql";
 import { getSession } from "@/lib/auth/session";
+import { hasPermission } from "@/lib/auth/rbac";
 
 export async function GET() {
   const guides = await getDbGuides();
@@ -12,6 +13,9 @@ export async function POST(req: Request) {
   const session = await getSession();
   if (!session) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (!hasPermission(session, "guias")) {
+    return NextResponse.json({ error: "Acceso denegado: permiso requerido 'guias'" }, { status: 403 });
   }
 
   try {
@@ -39,6 +43,9 @@ export async function DELETE(req: Request) {
   const session = await getSession();
   if (!session) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (!hasPermission(session, "guias")) {
+    return NextResponse.json({ error: "Acceso denegado: permiso requerido 'guias'" }, { status: 403 });
   }
 
   try {

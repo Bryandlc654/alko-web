@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 import { getSession } from "@/lib/auth/session";
 
-const ALLOWED_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".webp", ".svg", ".avif"]);
+const ALLOWED_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".webp", ".avif"]);
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10MB máximo
 
 export async function POST(req: Request) {

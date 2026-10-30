@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDbArticleCategories, saveDbArticleCategories } from "@/lib/db/mysql";
 import { getSession } from "@/lib/auth/session";
+import { hasPermission } from "@/lib/auth/rbac";
 
 export async function GET() {
   const categories = await getDbArticleCategories();
@@ -11,6 +12,9 @@ export async function POST(req: Request) {
   const session = await getSession();
   if (!session) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (!hasPermission(session, "articulos")) {
+    return NextResponse.json({ error: "Acceso denegado: permiso requerido 'articulos'" }, { status: 403 });
   }
 
   try {

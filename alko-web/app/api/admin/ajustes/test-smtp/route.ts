@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server";
 import { verifySmtpConnection } from "@/lib/email/mailer";
 import { getSession } from "@/lib/auth/session";
+import { hasPermission } from "@/lib/auth/rbac";
 
 export async function POST(req: Request) {
   const session = await getSession();
   if (!session) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (!hasPermission(session, "ajustes")) {
+    return NextResponse.json({ error: "Acceso denegado: permiso requerido 'ajustes'" }, { status: 403 });
   }
 
   try {

@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server";
 import { getDbLeads, updateDbLead, deleteDbLead } from "@/lib/db/mysql";
 import { getSession } from "@/lib/auth/session";
+import { hasPermission } from "@/lib/auth/rbac";
 
 export async function GET() {
   const session = await getSession();
   if (!session) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (!hasPermission(session, "leads")) {
+    return NextResponse.json({ error: "Acceso denegado: permiso requerido 'leads'" }, { status: 403 });
   }
 
   const leads = await getDbLeads();
@@ -16,6 +20,9 @@ export async function PATCH(req: Request) {
   const session = await getSession();
   if (!session) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (!hasPermission(session, "leads")) {
+    return NextResponse.json({ error: "Acceso denegado: permiso requerido 'leads'" }, { status: 403 });
   }
 
   try {
@@ -46,6 +53,9 @@ export async function DELETE(req: Request) {
   const session = await getSession();
   if (!session) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (!hasPermission(session, "leads")) {
+    return NextResponse.json({ error: "Acceso denegado: permiso requerido 'leads'" }, { status: 403 });
   }
 
   try {

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { getDbNosotrosPageContent, saveDbNosotrosPageContent } from "@/lib/db/mysql";
 import { getSession } from "@/lib/auth/session";
+import { hasPermission } from "@/lib/auth/rbac";
 
 export async function GET() {
   const content = await getDbNosotrosPageContent();
@@ -12,6 +13,9 @@ export async function POST(req: Request) {
   const session = await getSession();
   if (!session) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (!hasPermission(session, "editor")) {
+    return NextResponse.json({ error: "Acceso denegado: permiso requerido 'editor'" }, { status: 403 });
   }
 
   try {

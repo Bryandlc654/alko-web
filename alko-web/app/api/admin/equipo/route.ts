@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDbTeamMembers, saveDbTeamMember, deleteDbTeamMember } from "@/lib/db/mysql";
 import { getSession } from "@/lib/auth/session";
+import { hasPermission } from "@/lib/auth/rbac";
 
 export async function GET() {
   const members = await getDbTeamMembers();
@@ -11,6 +12,9 @@ export async function POST(req: Request) {
   const session = await getSession();
   if (!session) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (!hasPermission(session, "equipo")) {
+    return NextResponse.json({ error: "Acceso denegado: permiso requerido 'equipo'" }, { status: 403 });
   }
 
   try {
@@ -36,6 +40,9 @@ export async function DELETE(req: Request) {
   const session = await getSession();
   if (!session) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (!hasPermission(session, "equipo")) {
+    return NextResponse.json({ error: "Acceso denegado: permiso requerido 'equipo'" }, { status: 403 });
   }
 
   try {

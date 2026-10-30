@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDbSectors, saveDbSector, deleteDbSector } from "@/lib/db/mysql";
 import { getSession } from "@/lib/auth/session";
+import { hasPermission } from "@/lib/auth/rbac";
 
 export async function GET() {
   const sectors = await getDbSectors();
@@ -11,6 +12,9 @@ export async function POST(req: Request) {
   const session = await getSession();
   if (!session) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (!hasPermission(session, "servicios")) {
+    return NextResponse.json({ error: "Acceso denegado: permiso requerido 'servicios'" }, { status: 403 });
   }
 
   try {
@@ -26,6 +30,9 @@ export async function DELETE(req: Request) {
   const session = await getSession();
   if (!session) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (!hasPermission(session, "servicios")) {
+    return NextResponse.json({ error: "Acceso denegado: permiso requerido 'servicios'" }, { status: 403 });
   }
 
   try {

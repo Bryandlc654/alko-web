@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server";
 import { reorderDbTeamMembers } from "@/lib/db/mysql";
 import { getSession } from "@/lib/auth/session";
+import { hasPermission } from "@/lib/auth/rbac";
 
 export async function PUT(req: Request) {
   const session = await getSession();
   if (!session) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (!hasPermission(session, "equipo")) {
+    return NextResponse.json({ error: "Acceso denegado: permiso requerido 'equipo'" }, { status: 403 });
   }
 
   try {
