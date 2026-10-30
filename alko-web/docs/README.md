@@ -40,6 +40,14 @@ Este directorio contiene las especificaciones arquitectónicas, operativas y de 
    - Comandos de desarrollo, compilación y puesta en producción.
    - Buenas prácticas de mantenimiento continuo.
 
+7. **[07. Catálogo Completo de Endpoints de la API](07-endpoints-api.md)**
+   - Especificación detallada de endpoints públicos y administrativos (`/api/*`).
+   - Métodos HTTP, payloads de entrada, respuestas JSON y permisos RBAC requeridos.
+
+8. **[08. Modelos de Dominio y Tipos TypeScript](08-modelos-de-datos-typescript.md)**
+   - Interfaces globales de `lib/types.ts`: `Project`, `Article`, `Lead`, `AdminUser`, `SiteSettings`.
+   - Estructuras de datos garantizadas entre backend y frontend.
+
 ---
 
 ## 📌 Historial de Actualizaciones

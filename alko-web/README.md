@@ -47,6 +47,8 @@ La documentación detallada del proyecto se encuentra organizada en el directori
 4. [Base de Datos y Persistencia Híbrida](docs/04-base-de-datos-y-persistencia.md)
 5. [Panel de Administración y Módulos CMS](docs/05-panel-administracion.md)
 6. [Guía de Despliegue y Variables de Entorno](docs/06-despliegue-y-entorno.md)
+7. [Catálogo Completo de Endpoints de la API](docs/07-endpoints-api.md)
+8. [Modelos de Dominio y Tipos TypeScript](docs/08-modelos-de-datos-typescript.md)
 
 ---
 
