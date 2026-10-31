@@ -5,7 +5,7 @@
 El sistema implementa una arquitectura de autenticación **stateless (sin estado)** basada en tokens JWT firmados criptográficamente:
 
 - **Librería Criptográfica:** `jose` (compatible con entornos Edge Runtime y Node.js).
-- **Algoritmo de Firma:** `HS256` (HMAC SHA-256) utilizando el secreto configurado en `JWT_SECRET` (o fallback aleatorio controlado).
+- **Algoritmo de Firma:** `HS256` (HMAC SHA-256) utilizando el secreto configurado en `ADMIN_JWT_SECRET` (obligatorio, sin valor por defecto).
 - **Almacenamiento de Sesión:** Cookie HTTP-only, `SameSite=Lax`, con flag `Secure` habilitado en entornos de producción.
 - **Caducidad:** 7 días desde el momento de autenticación.
 

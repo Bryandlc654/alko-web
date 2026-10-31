@@ -8,12 +8,16 @@ let pool: Pool | null = null;
 
 export function getDbPool(): Pool {
   if (!pool) {
+    const { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME } = process.env;
+    if (!DB_HOST || !DB_USER || !DB_PASSWORD || !DB_NAME) {
+      throw new Error("Faltan variables de entorno de la base de datos (DB_HOST, DB_USER, DB_PASSWORD, DB_NAME).");
+    }
     pool = mysql.createPool({
-      host: process.env.DB_HOST || "193.203.175.226",
+      host: DB_HOST,
       port: Number(process.env.DB_PORT || 3306),
-      user: process.env.DB_USER || "u560058480_adminalko",
-      password: process.env.DB_PASSWORD || "^6A+7Gu3",
-      database: process.env.DB_NAME || "u560058480_alkoeditor",
+      user: DB_USER,
+      password: DB_PASSWORD,
+      database: DB_NAME,
       waitForConnections: true,
       connectionLimit: 10,
       queueLimit: 0,

@@ -6,6 +6,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 // Permite que next/image optimice también las imágenes servidas por el WordPress headless.
 const wpUrl = (process.env.WP_API_URL || "").replace(/\/+$/, "");
 const remotePatterns = [];
+// Imágenes subidas desde el panel (se guardan en GitHub).
+remotePatterns.push({ protocol: "https", hostname: "raw.githubusercontent.com" });
 
 if (wpUrl) {
   try {

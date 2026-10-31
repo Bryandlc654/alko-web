@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 import { getSession } from "@/lib/auth/session";
+import { githubMediaEnabled, uploadImageToGithub } from "@/lib/github-media";
 
 const ALLOWED_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".webp", ".avif"]);
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10MB máximo
@@ -34,7 +35,7 @@ export async function POST(req: Request) {
     // Validación de tipo de archivo permitido
     if (!ALLOWED_EXTENSIONS.has(extension)) {
       return NextResponse.json(
-        { error: "Formato no permitido. Solo se admiten imágenes JPG, PNG, WEBP, SVG o AVIF." },
+        { error: "Formato no permitido. Solo se admiten imágenes JPG, PNG, WEBP o AVIF." },
         { status: 400 }
       );
     }
@@ -50,16 +51,16 @@ export async function POST(req: Request) {
       .slice(0, 40);
 
     const fileName = `${baseName}-${Date.now()}${extension}`;
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
-
-    if (!fs.existsSync(uploadDir)) {
+    // Con GITHUB_TOKEN las imágenes viven en GitHub; sin él (desarrollo local) se guardan en public/uploads.
+    let publicUrl: string;
+    if (githubMediaEnabled()) {
+      publicUrl = await uploadImageToGithub(fileName, buffer);
+    } else {
+      const uploadDir = path.join(process.cwd(), "public", "uploads");
       fs.mkdirSync(uploadDir, { recursive: true });
+      fs.writeFileSync(path.join(uploadDir, fileName), buffer);
+      publicUrl = `/uploads/${fileName}`;
     }
-
-    const filePath = path.join(uploadDir, fileName);
-    fs.writeFileSync(filePath, buffer);
-
-    const publicUrl = `/uploads/${fileName}`;
 
     return NextResponse.json({
       success: true,
