@@ -41,8 +41,8 @@ export default function ProjectEditForm({ initialProject, isNew = false }: Proje
       superficie: "450 m²",
       plazo: "12 meses",
       imagen: "/start-research-1.jpg",
-      fotoAntes: "/start-research-1.jpg",
-      fotoDespues: "/start-research-2.jpg",
+      fotoAntes: "",
+      fotoDespues: "",
       galeria: [],
       content: "",
       reto: "",
@@ -347,16 +347,18 @@ export default function ProjectEditForm({ initialProject, isNew = false }: Proje
               isGrayscale={true}
               uploading={uploadingField === "fotoAntes"}
               onChangeFile={(e) => handleFileUpload(e, "fotoAntes")}
+              onRemove={() => setProject((prev) => ({ ...prev, fotoAntes: "" }))}
             />
 
             <SafePreviewBox
-              url={project.fotoDespues || project.imagen}
+              url={project.fotoDespues}
               alt="Foto Obra Entregada"
               label="Foto DESPUÉS (Obra Entregada)"
               sublabel="Resultado final acabado y entregado."
               badgeText="Sin Foto Después"
               uploading={uploadingField === "fotoDespues"}
               onChangeFile={(e) => handleFileUpload(e, "fotoDespues")}
+              onRemove={() => setProject((prev) => ({ ...prev, fotoDespues: "" }))}
             />
           </div>
         </div>
@@ -503,6 +505,7 @@ function SafePreviewBox({
   badgeText,
   uploading,
   onChangeFile,
+  onRemove,
   isGrayscale = false,
 }: {
   url?: string;
@@ -512,6 +515,8 @@ function SafePreviewBox({
   badgeText?: string;
   uploading: boolean;
   onChangeFile: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  /** Si se pasa, aparece el botón para quitar la foto (las de antes y después son opcionales). */
+  onRemove?: () => void;
   isGrayscale?: boolean;
 }) {
   const [loadError, setLoadError] = useState(false);
@@ -581,6 +586,16 @@ function SafePreviewBox({
           onChange={onChangeFile}
         />
       </label>
+      {onRemove && url && (
+        <button
+          type="button"
+          onClick={onRemove}
+          className="mt-2 inline-flex items-center justify-center gap-2 w-full py-2 px-3 rounded-xl border border-red-200 bg-white text-xs font-semibold text-red-600 hover:bg-red-50 transition"
+        >
+          <Trash2 className="w-4 h-4" />
+          <span>Eliminar foto</span>
+        </button>
+      )}
     </div>
   );
 }

@@ -390,8 +390,9 @@ export async function saveDbProject(projectData: Partial<Project> & { id?: strin
     superficie: projectData.superficie ?? baseProject?.superficie ?? "",
     plazo: projectData.plazo ?? baseProject?.plazo ?? "",
     imagen: projectData.imagen || baseProject?.imagen || "/start-research-1.jpg",
-    fotoAntes: projectData.fotoAntes || baseProject?.fotoAntes || "/start-research-1.jpg",
-    fotoDespues: projectData.fotoDespues || baseProject?.fotoDespues || projectData.imagen || "/start-research-2.jpg",
+    // Opcionales: una cadena vacía significa que se han eliminado.
+    fotoAntes: projectData.fotoAntes ?? baseProject?.fotoAntes ?? "",
+    fotoDespues: projectData.fotoDespues ?? baseProject?.fotoDespues ?? "",
     galeria: Array.isArray(projectData.galeria) ? projectData.galeria : (baseProject?.galeria || []),
     enlace: projectData.enlace || baseProject?.enlace || ("/proyectos/" + slug),
     content: projectData.content ?? baseProject?.content ?? "",

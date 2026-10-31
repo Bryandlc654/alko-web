@@ -131,7 +131,7 @@ export function toProject(post: WpPost, index: number): Project {
     plazo: text(fields.plazo),
     imagen: wpImageField(post, "imagen") || wpFeaturedImage(post),
     fotoAntes: wpImageField(post, "foto_antes") || wpImageField(post, "antes"),
-    fotoDespues: wpImageField(post, "foto_despues") || wpImageField(post, "despues") || wpImageField(post, "imagen") || wpFeaturedImage(post),
+    fotoDespues: wpImageField(post, "foto_despues") || wpImageField(post, "despues"),
     galeria: wpGalleryField(post, "galeria"),
     enlace: text(fields.enlace) || "/contacto",
     content: post.content?.rendered ?? "",
