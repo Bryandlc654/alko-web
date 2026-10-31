@@ -240,7 +240,10 @@ export async function saveFeaturedProjectIds(ids: string[]): Promise<string[]> {
       [JSON.stringify(limited)]
     );
   } catch (err: any) {
+    // Sin MySQL la selección solo quedaría en el disco del servidor, que se borra en cada despliegue:
+    // mejor avisar en el panel que dar por guardado algo que la portada no va a usar.
     console.warn("Aviso: Fallo al guardar destacados en MySQL:", err.message);
+    throw new Error("No se pudo guardar la selección en la base de datos");
   }
 
   return limited;

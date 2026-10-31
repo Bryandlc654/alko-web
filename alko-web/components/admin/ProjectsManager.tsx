@@ -45,31 +45,35 @@ export default function ProjectsManager({
   const [saveFeaturedSuccess, setSaveFeaturedSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
-  // Marcar / Desmarcar como destacado en Home
+  // Marcar / Desmarcar como destacado en Home: se guarda al momento (antes había que pulsar
+  // «Guardar Destacados» aparte y era fácil pensar que ya estaba guardado).
   const toggleFeatured = (projectId: string) => {
     setErrorMsg("");
     setSaveFeaturedSuccess(false);
 
+    let next: string[];
     if (featuredIds.includes(projectId)) {
-      setFeaturedIds((prev) => prev.filter((id) => id !== projectId));
+      next = featuredIds.filter((id) => id !== projectId);
     } else {
       if (featuredIds.length >= 3) {
         setErrorMsg("Solo puedes marcar un máximo de 3 proyectos para la página de inicio. Desmarca uno primero.");
         return;
       }
-      setFeaturedIds((prev) => [...prev, projectId]);
+      next = [...featuredIds, projectId];
     }
+    setFeaturedIds(next);
+    handleSaveFeatured(next);
   };
 
   // Guardar destacados en Home
-  const handleSaveFeatured = async () => {
+  const handleSaveFeatured = async (ids: string[] = featuredIds) => {
     setIsSavingFeatured(true);
     setErrorMsg("");
     try {
       const res = await fetch("/api/admin/projects/featured", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ featuredIds }),
+        body: JSON.stringify({ featuredIds: ids }),
       });
 
       const data = await res.json();
@@ -140,7 +144,7 @@ export default function ProjectsManager({
 
           <button
             type="button"
-            onClick={handleSaveFeatured}
+            onClick={() => handleSaveFeatured()}
             disabled={isSavingFeatured}
             className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white transition shadow-sm ${
               saveFeaturedSuccess
