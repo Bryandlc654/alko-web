@@ -29,9 +29,10 @@ export default function Hero({ slides, content }: { slides: Slide[]; content?: H
           </div>
         ))}
 
-        {/* Gradiente altamente transparente */}
-        <div className="absolute inset-0 bg-gradient-to-t from-stone-950/40 via-transparent to-stone-950/25" />
-        <div className="absolute inset-0 bg-gradient-to-r from-stone-950/35 via-transparent to-transparent" />
+        {/* Velo oscuro + degradados: el texto se lee también sobre fotos claras */}
+        <div className="absolute inset-0 bg-stone-950/25" />
+        <div className="absolute inset-0 bg-gradient-to-t from-stone-950/60 via-stone-950/15 to-stone-950/45" />
+        <div className="absolute inset-0 bg-gradient-to-r from-stone-950/55 via-stone-950/10 to-transparent" />
       </div>
 
       {/* Contenido principal */}
