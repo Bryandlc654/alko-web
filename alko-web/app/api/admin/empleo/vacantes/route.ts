@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getDbVacancies, saveDbVacancy, deleteDbVacancy } from "@/lib/db/mysql";
 import { getSession } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/auth/rbac";
@@ -24,6 +25,8 @@ export async function POST(req: Request) {
     }
 
     const updatedList = await saveDbVacancy(body);
+    revalidatePath("/trabaja-con-nosotros");
+    revalidatePath("/admin/empleo");
     return NextResponse.json({ success: true, vacantes: updatedList });
   } catch (err: any) {
     return NextResponse.json({ error: err.message || "Error al guardar vacante" }, { status: 500 });
@@ -47,6 +50,8 @@ export async function DELETE(req: Request) {
     }
 
     const updatedList = await deleteDbVacancy(id);
+    revalidatePath("/trabaja-con-nosotros");
+    revalidatePath("/admin/empleo");
     return NextResponse.json({ success: true, vacantes: updatedList });
   } catch (err: any) {
     return NextResponse.json({ error: err.message || "Error al eliminar vacante" }, { status: 500 });

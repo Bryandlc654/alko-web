@@ -190,6 +190,23 @@ export default function JobApplicationsManager({
     }
   };
 
+  const handleToggleActiveVacancy = async (v: PosicionEmpleo) => {
+    const updated = { ...v, activa: v.activa === false ? true : false };
+    try {
+      const res = await fetch("/api/admin/empleo/vacantes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updated),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Error al actualizar");
+      setVacantes(data.vacantes || []);
+      showToast(updated.activa ? `Vacante "${v.titulo}" activada y publicada` : `Vacante "${v.titulo}" pausada`);
+    } catch (e: any) {
+      alert(e.message || "Error al actualizar vacante");
+    }
+  };
+
   const handleDeleteVacancy = async (idOrTitulo: string, titulo: string) => {
     if (!confirm(`¿Estás seguro de que deseas eliminar la vacante "${titulo}"?`)) return;
 
@@ -500,11 +517,14 @@ export default function JobApplicationsManager({
                 <div className="space-y-1.5 flex-1 min-w-0">
                   <div className="flex items-center gap-2.5">
                     <h3 className="text-base font-bold text-slate-900">{v.titulo}</h3>
-                    {v.activa === false && (
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-500 border border-slate-200">
-                        Pausada
-                      </span>
-                    )}
+                    <button
+                      type="button"
+                      onClick={() => handleToggleActiveVacancy(v)}
+                      className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold border transition cursor-pointer ${v.activa !== false ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100" : "bg-slate-100 text-slate-500 border-slate-200 hover:bg-slate-200"}`}
+                      title={v.activa !== false ? "Hacer clic para pausar vacante" : "Hacer clic para activar vacante"}
+                    >
+                      {v.activa !== false ? "Activa (Publicada)" : "Pausada"}
+                    </button>
                   </div>
 
                   <p className="text-xs text-slate-600 leading-relaxed">{v.resumen}</p>
@@ -649,6 +669,20 @@ export default function JobApplicationsManager({
                   }
                   className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none"
                 />
+              </div>
+
+              <div>
+                <label className="flex items-center gap-2 cursor-pointer pt-1">
+                  <input
+                    type="checkbox"
+                    checked={editingVacancy.activa !== false}
+                    onChange={(e) => setEditingVacancy((prev) => ({ ...prev, activa: e.target.checked }))}
+                    className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer"
+                  />
+                  <span className="text-xs font-semibold text-slate-700">
+                    Vacante activa (visible públicamente en la página web)
+                  </span>
+                </label>
               </div>
 
               <div className="pt-3 flex items-center justify-end gap-3">
