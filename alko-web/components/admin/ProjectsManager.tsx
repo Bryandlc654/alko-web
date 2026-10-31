@@ -29,7 +29,16 @@ export default function ProjectsManager({
   initialFeaturedIds,
 }: ProjectsManagerProps) {
   const [projectsList, setProjectsList] = useState<Project[]>(initialProjects);
-  const [featuredIds, setFeaturedIds] = useState<string[]>(initialFeaturedIds);
+  // Lo guardado puede tener ids o slugs, o proyectos que ya no existen (p. ej. antiguos de WordPress), que
+  // ocupaban plazas sin verse marcados y no dejaban cambiar la selección. Se normaliza a ids existentes y,
+  // si no queda ninguno, se marcan los que la portada muestra por defecto (los tres primeros).
+  const [featuredIds, setFeaturedIds] = useState<string[]>(() => {
+    const valid = initialProjects
+      .filter((p) => initialFeaturedIds.includes(String(p.id)) || initialFeaturedIds.includes(p.slug))
+      .map((p) => String(p.id))
+      .slice(0, 3);
+    return valid.length > 0 ? valid : initialProjects.slice(0, 3).map((p) => String(p.id));
+  });
 
   // Estados de guardado destacados
   const [isSavingFeatured, setIsSavingFeatured] = useState(false);
