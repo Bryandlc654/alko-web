@@ -5,7 +5,6 @@ import {
   ExternalLink,
   Layers,
   Building2,
-  Database,
   ArrowUpRight,
   TrendingUp,
   Clock,
@@ -416,28 +415,6 @@ export default async function AdminDashboardPage() {
                 <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </div>
             </Link>
-          </div>
-
-          {/* Información del Sistema y Base de Datos */}
-          <div className="rounded-2xl bg-white border border-slate-200/90 p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center shrink-0">
-                <Database className="w-5 h-5" />
-              </div>
-              <div>
-                <span className="text-xs font-bold text-slate-900 block">
-                  Base de Datos MySQL (Hostinger)
-                </span>
-                <span className="text-[11px] text-slate-500 block">
-                  Servidor: 193.203.175.226 &middot; Tablas: `alko_site_content`, `alko_users`
-                </span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-xs text-emerald-700 font-semibold">Conexión Activa</span>
-            </div>
           </div>
         </main>
       </div>
