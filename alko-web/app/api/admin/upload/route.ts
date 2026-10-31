@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
+import sharp from "sharp";
 import { getSession } from "@/lib/auth/server-session";
 import { hasPermission, type Permission } from "@/lib/auth/rbac";
 import { githubMediaEnabled, uploadImageToGithub } from "@/lib/github-media";
@@ -46,7 +47,18 @@ export async function POST(req: Request) {
     }
 
     const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    // Las fotos de cámara (5000-7000 px) son demasiado grandes para el optimizador de imágenes del servidor,
+    // que acababa sirviendo el original. Se guardan ya reducidas a 1920 px de ancho y en WebP.
+    let buffer: Buffer;
+    try {
+      buffer = await sharp(Buffer.from(bytes))
+        .rotate()
+        .resize({ width: 1920, withoutEnlargement: true })
+        .webp({ quality: 78 })
+        .toBuffer();
+    } catch {
+      return NextResponse.json({ error: "No se pudo procesar la imagen" }, { status: 400 });
+    }
 
     // Sanitizar nombre de archivo contra path traversal
     const baseName = path
@@ -55,7 +67,7 @@ export async function POST(req: Request) {
       .replace(/[^a-z0-9_-]/g, "-")
       .slice(0, 40);
 
-    const fileName = `${baseName}-${Date.now()}${extension}`;
+    const fileName = `${baseName}-${Date.now()}.webp`;
     // Con GITHUB_TOKEN las imágenes viven en GitHub; sin él (desarrollo local) se guardan en public/uploads.
     let publicUrl: string;
     if (githubMediaEnabled()) {
