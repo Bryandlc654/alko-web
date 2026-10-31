@@ -51,7 +51,6 @@ export default function Process({
                 type="button"
                 data-phase={i}
                 data-text={fase.texto}
-                data-img={fase.imagen}
                 className={`process-tab text-left group flex items-baseline gap-3 transition-all duration-300 focus:outline-none ${
                   i === 0 ? "is-active" : ""
                 }`}
@@ -79,14 +78,22 @@ export default function Process({
           {/* Columna 2: Imagen */}
           <div className="lg:col-span-4 reveal-scale">
             <div className="relative w-full aspect-[3/4] overflow-hidden bg-stone-200 shadow-md">
-              <Image
-                id="process-image"
-                src={first.imagen}
-                alt={`ALKO - Fase ${first.tag} - ${first.title}`}
-                fill
-                sizes="(max-width: 1024px) 100vw, 576px"
-                className="object-cover object-center transition-all duration-700 ease-out"
-              />
+              {/* Todas las fotos apiladas: la pestaña activa solo cambia cuál se ve (next/image usa srcset,
+                  así que cambiar el src de una sola imagen no la sustituía). */}
+              {fases.map((fase, i) => (
+                <Image
+                  key={fase.id}
+                  data-phase-img={i}
+                  src={fase.imagen}
+                  alt={`ALKO - Fase ${fase.tag} - ${fase.title}`}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 576px"
+                  aria-hidden={i === 0 ? undefined : true}
+                  className={`object-cover object-center transition-opacity duration-500 ease-out ${
+                    i === 0 ? "opacity-100" : "opacity-0"
+                  }`}
+                />
+              ))}
             </div>
           </div>
 

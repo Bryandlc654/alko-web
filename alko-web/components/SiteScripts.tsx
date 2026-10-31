@@ -240,7 +240,7 @@ export default function SiteScripts() {
 
     /* ---------- Interactividad de fases ---------- */
     const phaseTabs = Array.from(document.querySelectorAll<HTMLElement>(".process-tab"));
-    const processImg = document.getElementById("process-image") as HTMLImageElement | null;
+    const phaseImages = Array.from(document.querySelectorAll<HTMLElement>("[data-phase-img]"));
     const detailText = document.getElementById("phase-detail-text");
 
     function activatePhase(idx: number) {
@@ -248,7 +248,6 @@ export default function SiteScripts() {
       if (!tab) return;
 
       const nextText = tab.dataset.text ?? "";
-      const nextImg = tab.dataset.img ?? "";
 
       phaseTabs.forEach((t, i) => {
         const badge = t.querySelector(".phase-badge");
@@ -268,15 +267,13 @@ export default function SiteScripts() {
         }
       });
 
-      if (processImg && nextImg && !processImg.src.endsWith(nextImg)) {
-        processImg.style.opacity = "0.3";
-        timers.push(
-          window.setTimeout(() => {
-            processImg.src = nextImg;
-            processImg.style.opacity = "1";
-          }, 180),
-        );
-      }
+      phaseImages.forEach((img, i) => {
+        const active = i === idx;
+        img.classList.toggle("opacity-100", active);
+        img.classList.toggle("opacity-0", !active);
+        if (active) img.removeAttribute("aria-hidden");
+        else img.setAttribute("aria-hidden", "true");
+      });
 
       if (detailText && nextText) {
         detailText.style.opacity = "0.2";
