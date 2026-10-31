@@ -56,11 +56,14 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: "ID de proyecto no especificado" }, { status: 400 });
     }
 
+    const removed = (await getDbProjects()).find((p) => String(p.id) === id || p.slug === id);
     const ok = await deleteDbProject(id);
     if (!ok) {
       return NextResponse.json({ error: "No se pudo eliminar el proyecto" }, { status: 500 });
     }
 
+    // También la ficha del proyecto, que si no seguía en caché.
+    if (removed) revalidatePath(`/proyectos/${removed.slug}`);
     revalidatePath("/proyectos");
     revalidatePath("/");
     revalidatePath("/admin/proyectos");

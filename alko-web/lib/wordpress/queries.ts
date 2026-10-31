@@ -140,6 +140,9 @@ export async function getProjectBySlug(slug: string): Promise<Project | null> {
     const dbProjects = await getDbProjects();
     const found = dbProjects.find((p) => p.slug === slug || String(p.id) === slug);
     if (found) return found;
+    // Si el panel ya gestiona los proyectos, su lista manda: un proyecto eliminado no debe
+    // reaparecer desde WordPress ni desde los de ejemplo.
+    if (dbProjects.length > 0) return null;
   } catch (err) {
     console.warn("Error buscando proyecto en MySQL:", err);
   }
