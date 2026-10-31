@@ -370,6 +370,7 @@ export const DEFAULT_HOME_CONTENT: HomeContent = {
   workshopBadge: "START RESEARCH",
   workshopTitulo: "Soluciones arquitectónicas y técnicas con criterio constructivo.",
   workshopDescripcion: "Investigar, coordinar y ejecutar: cada detalle responde a una exigencia funcional, constructiva y estética.",
+  workshopBotonTexto: "Ver Solución",
   workshopSlides: DEFAULT_SHOWCASE_SLIDES,
 
   experienciaImagen: "/90dias.jpg",

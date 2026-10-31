@@ -283,6 +283,7 @@ export interface HomeContent {
   workshopBadge: string;
   workshopTitulo: string;
   workshopDescripcion: string;
+  workshopBotonTexto?: string;
   workshopSlides?: Slide[];
 
   // Bloque Experiencia (90 días)

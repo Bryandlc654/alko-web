@@ -66,7 +66,7 @@ export default function Workshop({ slides, content }: { slides: Slide[]; content
                 ↓
               </span>
               <span className="underline underline-offset-4 decoration-stone-900/40 hover:decoration-stone-900">
-                Ver Solución
+                {content?.workshopBotonTexto ?? "Ver Solución"}
               </span>
             </a>
           </div>

@@ -40,7 +40,7 @@ import SectorsList from "@/components/ui/SectorsList";
 import ArticleCard from "@/components/ui/ArticleCard";
 import Footer from "@/components/layout/Footer";
 import { ROUTES } from "@/lib/site";
-import { DEFAULT_PROJECTS_PAGE_CONTENT, DEFAULT_NOSOTROS_PAGE_CONTENT,
+import { DEFAULT_PROJECTS_PAGE_CONTENT, DEFAULT_NOSOTROS_PAGE_CONTENT, DEFAULT_HOME_CONTENT, DEFAULT_SHOWCASE_SLIDES,
   DEFAULT_CONTACTO_PAGE_CONTENT,
   DEFAULT_SERVICIOS_PAGE_CONTENT,
   DEFAULT_EQUIPO_PAGE_CONTENT,
@@ -307,9 +307,14 @@ export default function LiveEditor({
 
   // Estado de contenido editable sincronizado (Home)
   const [content, setContent] = useState<HomeContent>({
+    ...DEFAULT_HOME_CONTENT,
     ...initialContent,
     heroSlides: initialContent.heroSlides?.length ? initialContent.heroSlides : initialHeroSlides,
-    workshopSlides: initialContent.workshopSlides?.length ? initialContent.workshopSlides : initialShowcaseSlides,
+    workshopSlides: (initialContent.workshopSlides && initialContent.workshopSlides.length > 0)
+      ? initialContent.workshopSlides
+      : (initialShowcaseSlides && initialShowcaseSlides.length > 0)
+      ? initialShowcaseSlides
+      : DEFAULT_SHOWCASE_SLIDES,
     fases: initialContent.fases?.length ? initialContent.fases : fases,
   });
 
@@ -324,6 +329,51 @@ export default function LiveEditor({
 
   // Selector oculto para añadir slide al Hero
   const newHeroSlideInputRef = useRef<HTMLInputElement>(null);
+  const newWorkshopSlideInputRef = useRef<HTMLInputElement>(null);
+
+  const handleAddNewWorkshopSlide = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Error al subir imagen");
+
+      const slides = [...(content.workshopSlides || DEFAULT_SHOWCASE_SLIDES)];
+      const newSlide: Slide = {
+        id: `showcase-${Date.now()}`,
+        image: data.url,
+        alt: "Showcase ALKO",
+      };
+      slides.push(newSlide);
+      updateField("workshopSlides", slides);
+      setActiveShowcaseSlideIndex(slides.length - 1);
+    } catch (err: any) {
+      alert("Error subiendo imagen para showcase: " + err.message);
+    } finally {
+      if (newWorkshopSlideInputRef.current) {
+        newWorkshopSlideInputRef.current.value = "";
+      }
+    }
+  };
+
+  const handleDeleteWorkshopSlide = (index: number) => {
+    const slides = [...(content.workshopSlides || DEFAULT_SHOWCASE_SLIDES)];
+    if (slides.length <= 1) {
+      alert("Debe quedar al menos una imagen en el showcase");
+      return;
+    }
+    slides.splice(index, 1);
+    updateField("workshopSlides", slides);
+    setActiveShowcaseSlideIndex(0);
+  };
 
   const updateField = useCallback((field: keyof HomeContent, value: any) => {
     setContent((prev) => ({ ...prev, [field]: value }));
@@ -730,7 +780,7 @@ export default function LiveEditor({
               <a href="#proyectos" className="hover:text-amber-500 transition">Proyectos</a>
               <a href="#servicios" className="hover:text-amber-500 transition">Especialidades</a>
               <a href="#metodo" className="hover:text-amber-500 transition">Método</a>
-              <a href="#workshop" className="hover:text-amber-500 transition">Taller</a>
+              <a href="#workshop" className="hover:text-amber-500 transition">Start Research</a>
               <a href="#contacto" className="hover:text-amber-500 transition">Contacto</a>
             </div>
           </nav>
@@ -1107,10 +1157,16 @@ export default function LiveEditor({
               5. SECCIÓN WORKSHOP / SHOWCASE (EDITABLE EN VIVO)
               ======================================================== */}
           <section id="workshop" className="relative w-full h-[600px] sm:h-[700px] lg:h-[780px] overflow-hidden bg-stone-950 group">
+            {/* Indicador visible de sección editable */}
+            <div className="absolute top-6 left-6 z-40 bg-black/70 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 flex items-center gap-2 text-white font-poppins text-xs shadow-lg">
+              <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+              <span className="font-semibold tracking-wide">Bloque: Start Research (Showcase / Soluciones Técnicas)</span>
+            </div>
+
             {/* Controles para cambiar slides del showcase */}
-            <div className="absolute top-6 right-6 z-40 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 flex items-center gap-2 text-white font-poppins">
-              <span className="text-[10px] tracking-wider uppercase text-white/70">Showcase Slide:</span>
-              {(content.workshopSlides || []).map((slide, i) => (
+            <div className="absolute top-6 right-6 z-40 bg-black/70 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 flex items-center gap-2 text-white font-poppins shadow-lg">
+              <span className="text-[10px] tracking-wider uppercase text-white/70">Slide:</span>
+              {(content.workshopSlides && content.workshopSlides.length > 0 ? content.workshopSlides : DEFAULT_SHOWCASE_SLIDES).map((slide, i) => (
                 <button
                   key={slide.id || i}
                   type="button"
@@ -1124,11 +1180,26 @@ export default function LiveEditor({
                   {i + 1}
                 </button>
               ))}
+              <button
+                type="button"
+                onClick={() => newWorkshopSlideInputRef.current?.click()}
+                className="w-6 h-6 rounded-full bg-blue-600/90 hover:bg-blue-600 text-white flex items-center justify-center text-xs font-bold transition ml-1"
+                title="Añadir nuevo slide de imagen"
+              >
+                <Plus className="w-3.5 h-3.5" />
+              </button>
+              <input
+                ref={newWorkshopSlideInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleAddNewWorkshopSlide}
+                className="hidden"
+              />
             </div>
 
             {/* Slider de imágenes de showcase con edición directa */}
             <div id="showcase-slider" className="absolute inset-0">
-              {(content.workshopSlides || []).map((slide, i) => (
+              {(content.workshopSlides && content.workshopSlides.length > 0 ? content.workshopSlides : DEFAULT_SHOWCASE_SLIDES).map((slide, i) => (
                 <div
                   key={slide.id || i}
                   className={`showcase-slide absolute inset-0 transition-opacity duration-700 ease-in-out ${
@@ -1136,10 +1207,12 @@ export default function LiveEditor({
                   }`}
                 >
                   <InlineImage
-                    src={slide.image}
+                    src={slide.image || "/start-research-1.jpg"}
                     alt={slide.alt || "Showcase ALKO"}
-                    label={`Cambiar imagen de Taller #${i + 1}`}
+                    label={`Cambiar imagen de Showcase #${i + 1}`}
                     onImageChange={(newUrl) => handleWorkshopSlideImageChange(newUrl, i)}
+                    canDelete={(content.workshopSlides || DEFAULT_SHOWCASE_SLIDES).length > 1}
+                    onDelete={() => handleDeleteWorkshopSlide(i)}
                     className="w-full h-full"
                     imageClassName="object-cover object-center brightness-[0.98] contrast-[1.02]"
                   />
@@ -1149,32 +1222,94 @@ export default function LiveEditor({
 
             <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-stone-950/40 via-transparent to-transparent pointer-events-none z-15" />
 
-            {/* Tarjeta flotante con textos editables */}
+            {/* Tarjeta flotante con textos editables idéntica a la web pública */}
             <div id="showcase-card" className="absolute bottom-0 left-6 sm:left-12 lg:left-24 xl:left-32 z-30 max-w-sm sm:max-w-md lg:max-w-xl w-full">
               <div className="relative bg-white/95 backdrop-blur-sm px-6 sm:px-8 py-7 sm:py-9 shadow-2xl border border-white/60">
                 <span className="block font-mono text-[10px] sm:text-[11px] tracking-[0.28em] text-stone-600 uppercase mb-3">
                   <InlineText
-                    value={content.workshopBadge}
+                    value={content.workshopBadge || "START RESEARCH"}
                     onChange={(val) => updateField("workshopBadge", val)}
-                    placeholder="Badge..."
+                    placeholder="START RESEARCH"
                   />
                 </span>
                 <h3 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-light text-stone-900 tracking-tight leading-snug">
                   <InlineText
-                    value={content.workshopTitulo}
+                    value={content.workshopTitulo || "Soluciones arquitectónicas y técnicas con criterio constructivo."}
                     onChange={(val) => updateField("workshopTitulo", val)}
-                    placeholder="Título del taller..."
+                    placeholder="Título del bloque..."
                   />
                 </h3>
                 <div className="mt-4 text-sm sm:text-base text-stone-700 font-light leading-relaxed max-w-lg">
                   <InlineText
-                    value={content.workshopDescripcion}
+                    value={content.workshopDescripcion || "Investigar, coordinar y ejecutar: cada detalle responde a una exigencia funcional, constructiva y estética."}
                     onChange={(val) => updateField("workshopDescripcion", val)}
-                    placeholder="Descripción del taller..."
+                    placeholder="Descripción del bloque..."
                     multiline
                   />
                 </div>
+                <div className="mt-6 sm:mt-8">
+                  <span className="inline-flex items-center gap-2 text-xs sm:text-sm font-normal text-stone-900 group/link">
+                    <span className="text-base font-light transition-transform group-hover/link:translate-y-0.5">
+                      ↓
+                    </span>
+                    <span className="underline underline-offset-4 decoration-stone-900/40 hover:decoration-stone-900">
+                      <InlineText
+                        value={content.workshopBotonTexto || "Ver Solución"}
+                        onChange={(val) => updateField("workshopBotonTexto", val)}
+                        placeholder="Ver Solución"
+                      />
+                    </span>
+                  </span>
+                </div>
               </div>
+            </div>
+
+            {/* Controles de navegación de slides inferiores idénticos a la portada */}
+            <div className="absolute bottom-6 sm:bottom-8 left-6 sm:left-12 z-30 flex items-center gap-6">
+              <button
+                type="button"
+                onClick={() =>
+                  setActiveShowcaseSlideIndex((prev) =>
+                    prev > 0
+                      ? prev - 1
+                      : (content.workshopSlides || DEFAULT_SHOWCASE_SLIDES).length - 1
+                  )
+                }
+                className="text-white/80 hover:text-white transition cursor-pointer text-xl font-light hover:-translate-x-1 duration-200 focus:outline-none"
+                title="Slide anterior"
+              >
+                ←
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  setActiveShowcaseSlideIndex((prev) =>
+                    prev < (content.workshopSlides || DEFAULT_SHOWCASE_SLIDES).length - 1
+                      ? prev + 1
+                      : 0
+                  )
+                }
+                className="text-white/80 hover:text-white transition cursor-pointer text-xl font-light hover:translate-x-1 duration-200 focus:outline-none"
+                title="Slide siguiente"
+              >
+                →
+              </button>
+            </div>
+
+            <div className="absolute bottom-6 sm:bottom-8 right-6 sm:right-12 z-30 flex items-center gap-2.5">
+              {(content.workshopSlides && content.workshopSlides.length > 0 ? content.workshopSlides : DEFAULT_SHOWCASE_SLIDES).map((_, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => setActiveShowcaseSlideIndex(idx)}
+                  className={`w-2.5 h-2.5 transition-all duration-300 focus:outline-none ${
+                    activeShowcaseSlideIndex === idx
+                      ? "bg-white"
+                      : "border border-white/60 bg-transparent hover:border-white"
+                  }`}
+                  aria-label={`Ir al slide ${idx + 1}`}
+                />
+              ))}
             </div>
           </section>
 
