@@ -1072,7 +1072,8 @@ export async function deleteDbGuide(id: string): Promise<boolean> {
 /**
  * Obtiene los Ajustes Globales de la Empresa (teléfono, email, redes, etc.) de MySQL.
  */
-export async function getDbSettings(): Promise<SiteSettings> {
+/** Ajustes completos, con la configuración SMTP. Solo para el panel y el servidor de correo. */
+export async function getDbSettingsFull(): Promise<SiteSettings> {
   try {
     const db = getDbPool();
     const [rows] = await db.execute<any[]>(
@@ -1090,11 +1091,17 @@ export async function getDbSettings(): Promise<SiteSettings> {
   return { ...DEFAULT_SETTINGS, ...(local.settings || {}) };
 }
 
+/** Ajustes para las páginas públicas: sin la configuración SMTP, que nunca debe llegar al navegador. */
+export async function getDbSettings(): Promise<SiteSettings> {
+  const { smtp: _smtp, ...publicSettings } = await getDbSettingsFull();
+  return publicSettings;
+}
+
 /**
  * Guarda los Ajustes Globales de la Empresa en MySQL.
  */
 export async function saveDbSettings(settings: Partial<SiteSettings>): Promise<SiteSettings> {
-  const current = await getDbSettings();
+  const current = await getDbSettingsFull();
   const updated: SiteSettings = { ...current, ...settings };
 
   saveLocalContent({ settings: updated });

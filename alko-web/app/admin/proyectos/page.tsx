@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getSession } from "@/lib/auth/session";
+import { getSession } from "@/lib/auth/server-session";
 import { getProjects } from "@/lib/wordpress";
 import { getFeaturedProjectIds } from "@/lib/db/mysql";
 import AdminSidebar from "@/components/admin/AdminSidebar";

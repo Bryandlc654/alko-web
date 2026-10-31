@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getSession } from "@/lib/auth/session";
+import { getSession } from "@/lib/auth/server-session";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import LeadsCrmManager from "@/components/admin/LeadsCrmManager";
 import { getDbLeads } from "@/lib/db/mysql";

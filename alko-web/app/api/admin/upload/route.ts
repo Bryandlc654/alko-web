@@ -1,16 +1,21 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
-import { getSession } from "@/lib/auth/session";
+import { getSession } from "@/lib/auth/server-session";
+import { hasPermission, type Permission } from "@/lib/auth/rbac";
 import { githubMediaEnabled, uploadImageToGithub } from "@/lib/github-media";
 
 const ALLOWED_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".webp", ".avif"]);
+const UPLOAD_PERMISSIONS: Permission[] = ["editor", "proyectos", "servicios", "articulos", "guias", "equipo", "empleo"];
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10MB máximo
 
 export async function POST(req: Request) {
   const session = await getSession();
   if (!session) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (!UPLOAD_PERMISSIONS.some((permission) => hasPermission(session, permission))) {
+    return NextResponse.json({ error: "Acceso denegado: no tienes permiso para subir imágenes" }, { status: 403 });
   }
 
   try {

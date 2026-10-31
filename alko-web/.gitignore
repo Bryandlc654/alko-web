@@ -16,3 +16,4 @@ start-*.log
 
 # Subidas locales (CV con datos personales; las imágenes van a GitHub)
 /public/uploads/
+/data/private/

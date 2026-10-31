@@ -60,14 +60,6 @@ export async function createSession(user: AdminUser) {
   return token;
 }
 
-export async function getSession(): Promise<AdminUser | null> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(COOKIE_NAME)?.value;
-  if (!token) return null;
-
-  return verifyToken(token);
-}
-
 export async function verifyToken(token: string): Promise<AdminUser | null> {
   try {
     const [encodedPayload, sig] = token.split(".");

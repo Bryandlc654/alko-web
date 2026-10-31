@@ -1,3 +1,34 @@
+import sanitizeHtml from "sanitize-html";
+
+/** El HTML viene del CMS y del editor del panel: se limpia antes de pintarlo (sin scripts ni eventos). */
+function clean(html: string): string {
+  return sanitizeHtml(html, {
+    allowedTags: [
+      "p", "br", "hr", "h2", "h3", "h4", "ul", "ol", "li", "strong", "b", "em", "i", "u", "s", "a", "blockquote",
+      "img", "figure", "figcaption", "span", "code", "pre", "table", "thead", "tbody", "tr", "th", "td", "sup", "sub",
+    ],
+    allowedAttributes: {
+      a: ["href", "target", "rel", "title"],
+      img: ["src", "alt", "title", "width", "height", "loading"],
+      h2: ["id"],
+      h3: ["id"],
+      h4: ["id"],
+      th: ["colspan", "rowspan"],
+      td: ["colspan", "rowspan"],
+      "*": ["style"],
+    },
+    allowedStyles: { "*": { "text-align": [/^(left|right|center|justify)$/] } },
+    allowedSchemes: ["http", "https", "mailto", "tel"],
+    allowedSchemesByTag: { img: ["http", "https"] },
+    transformTags: {
+      a: (tagName, attribs) => ({
+        tagName,
+        attribs: attribs.target === "_blank" ? { ...attribs, rel: "noopener noreferrer" } : attribs,
+      }),
+    },
+  });
+}
+
 /**
  * Renderiza contenido HTML procedente del CMS con los estilos tipográficos del
  * sistema de diseño (sin depender de plugins de tipografía).
@@ -29,7 +60,7 @@ export default function Prose({
   return (
     <div
       className={`${variants[variant]} ${shared} ${className}`}
-      dangerouslySetInnerHTML={{ __html: html }}
+      dangerouslySetInnerHTML={{ __html: clean(html) }}
     />
   );
 }

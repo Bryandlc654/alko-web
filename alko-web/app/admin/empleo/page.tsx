@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getSession } from "@/lib/auth/session";
+import { getSession } from "@/lib/auth/server-session";
 import { getDbJobApplications, getDbVacancies } from "@/lib/db/mysql";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import LogoutButton from "@/components/admin/LogoutButton";

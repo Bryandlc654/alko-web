@@ -63,3 +63,14 @@ Referrer-Policy: strict-origin-when-cross-origin
 Permissions-Policy: camera=(), microphone=(), geolocation=()
 X-XSS-Protection: 1; mode=block
 ```
+
+---
+
+## 4. Endurecimiento posterior (octubre 2026)
+
+- **Sin contraseñas por defecto:** el primer acceso del usuario `admin` usa `ADMIN_INITIAL_PASSWORD` (mínimo 12 caracteres), que se guarda cifrada con bcrypt. Después debe cambiarse desde Usuarios.
+- **Sesión validada en servidor:** `lib/auth/server-session.ts` comprueba en cada petición que el usuario exista y esté activo, y aplica sus permisos actuales (caché de 30 s). El middleware solo verifica la firma.
+- **Ajustes:** `GET /api/admin/ajustes` exige el permiso `ajustes`. Las páginas públicas usan `getDbSettings()`, que no incluye la configuración SMTP.
+- **CV privados:** se guardan en `data/private/cvs/` con nombre aleatorio y se descargan desde `/api/admin/empleo/cv/[file]`, solo con permiso `empleo`.
+- **Subida de imágenes:** requiere algún permiso de edición de contenido.
+- **HTML del CMS:** `components/ui/Prose.tsx` lo sanea con `sanitize-html` (sin scripts, eventos ni enlaces `javascript:`).
