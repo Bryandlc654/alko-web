@@ -26,6 +26,7 @@ import {
   type Permission,
 } from "@/lib/auth/rbac";
 import type { DbUserRecord } from "@/lib/db/mysql";
+import { toast, confirmDialog } from "@/components/admin/feedback";
 
 interface UsersRbacManagerProps {
   initialUsers: DbUserRecord[];
@@ -198,19 +199,17 @@ export default function UsersRbacManager({
 
   const handleDelete = async (user: DbUserRecord) => {
     if (user.username === "admin") {
-      alert("No está permitido eliminar al Super Administrador principal.");
+      toast.error("No está permitido eliminar al Super Administrador principal.");
       return;
     }
 
     if (user.email === currentUserEmail) {
-      alert("No puedes eliminar tu propia cuenta en sesión activa.");
+      toast.error("No puedes eliminar tu propia cuenta en sesión activa.");
       return;
     }
 
     if (
-      !confirm(
-        `¿Confirmas la eliminación permanente del usuario "${user.name} (${user.username})"?`
-      )
+      !(await confirmDialog({ title: `¿Confirmas la eliminación permanente del usuario "${user.name} (${user.username})"?`, danger: true }))
     ) {
       return;
     }
@@ -226,7 +225,7 @@ export default function UsersRbacManager({
       setSuccessToast(`Usuario "${user.username}" eliminado.`);
       setTimeout(() => setSuccessToast(""), 3500);
     } catch (err: any) {
-      alert(err.message || "Error al eliminar usuario");
+      toast.error(err.message || "Error al eliminar usuario");
     }
   };
 

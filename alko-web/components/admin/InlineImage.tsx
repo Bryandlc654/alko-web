@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import { Camera, Upload, Trash2, Loader2, Sparkles } from "lucide-react";
+import { toast, confirmDialog } from "@/components/admin/feedback";
 
 interface InlineImageProps {
   src: string;
@@ -59,7 +60,7 @@ export default function InlineImage({
       setLoadError(false);
       onImageChange(data.url);
     } catch (err: any) {
-      alert("Error subiendo imagen: " + (err.message || "Error desconocido"));
+      toast.error("Error subiendo imagen: " + (err.message || "Error desconocido"));
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) {
@@ -137,9 +138,9 @@ export default function InlineImage({
               {canDelete && onDelete && (
                 <button
                   type="button"
-                  onClick={(e) => {
+                  onClick={async (e) => {
                     e.stopPropagation();
-                    if (confirm("¿Deseas quitar esta imagen?")) {
+                    if ((await confirmDialog({ title: "¿Deseas quitar esta imagen?", danger: true }))) {
                       onDelete();
                     }
                   }}

@@ -25,6 +25,7 @@ import {
   X,
 } from "lucide-react";
 import type { Candidatura, CandidaturaEstado, PosicionEmpleo } from "@/lib/types";
+import { toast, confirmDialog } from "@/components/admin/feedback";
 
 interface JobApplicationsManagerProps {
   initialCandidaturas: Candidatura[];
@@ -126,14 +127,14 @@ export default function JobApplicationsManager({
       );
       showToast("Estado actualizado correctamente");
     } catch (e: any) {
-      alert(e.message || "No se pudo actualizar");
+      toast.error(e.message || "No se pudo actualizar");
     } finally {
       setUpdatingId(null);
     }
   };
 
   const handleDeleteCandidatura = async (id: string, nombre: string) => {
-    if (!confirm(`¿Eliminar la postulación de ${nombre}?`)) return;
+    if (!(await confirmDialog({ title: `¿Eliminar la postulación de ${nombre}?`, danger: true }))) return;
 
     try {
       const res = await fetch(`/api/admin/empleo/postulaciones?id=${encodeURIComponent(id)}`, {
@@ -145,7 +146,7 @@ export default function JobApplicationsManager({
       setCandidaturas((prev) => prev.filter((c) => c.id !== id));
       showToast("Postulación eliminada");
     } catch (e: any) {
-      alert(e.message || "Error al eliminar");
+      toast.error(e.message || "Error al eliminar");
     }
   };
 
@@ -186,7 +187,7 @@ export default function JobApplicationsManager({
       setEditingVacancy(null);
       showToast("Vacante guardada correctamente");
     } catch (e: any) {
-      alert(e.message || "Error al guardar la vacante");
+      toast.error(e.message || "Error al guardar la vacante");
     }
   };
 
@@ -203,12 +204,12 @@ export default function JobApplicationsManager({
       setVacantes(data.vacantes || []);
       showToast(updated.activa ? `Vacante "${v.titulo}" activada y publicada` : `Vacante "${v.titulo}" pausada`);
     } catch (e: any) {
-      alert(e.message || "Error al actualizar vacante");
+      toast.error(e.message || "Error al actualizar vacante");
     }
   };
 
   const handleDeleteVacancy = async (idOrTitulo: string, titulo: string) => {
-    if (!confirm(`¿Estás seguro de que deseas eliminar la vacante "${titulo}"?`)) return;
+    if (!(await confirmDialog({ title: `¿Estás seguro de que deseas eliminar la vacante "${titulo}"?`, danger: true }))) return;
 
     try {
       const res = await fetch(
@@ -222,7 +223,7 @@ export default function JobApplicationsManager({
       setVacantes(data.vacantes || []);
       showToast(`Vacante "${titulo}" eliminada`);
     } catch (e: any) {
-      alert(e.message || "Error al eliminar vacante");
+      toast.error(e.message || "Error al eliminar vacante");
     }
   };
 

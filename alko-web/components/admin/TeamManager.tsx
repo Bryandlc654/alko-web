@@ -22,6 +22,7 @@ import {
   Camera,
 } from "lucide-react";
 import type { MiembroEquipo } from "@/lib/types";
+import { toast, confirmDialog } from "@/components/admin/feedback";
 
 interface TeamManagerProps {
   initialMembers: MiembroEquipo[];
@@ -85,7 +86,7 @@ export default function TeamManager({ initialMembers }: TeamManagerProps) {
       setEditingMember((prev) => (prev ? { ...prev, foto: data.url } : null));
       showToast("Imagen subida con éxito");
     } catch (err: any) {
-      alert(err.message || "Error al subir imagen");
+      toast.error(err.message || "Error al subir imagen");
     } finally {
       setUploadingImage(false);
     }
@@ -111,14 +112,14 @@ export default function TeamManager({ initialMembers }: TeamManagerProps) {
       setEditingMember(null);
       showToast("Miembro del equipo guardado");
     } catch (err: any) {
-      alert(err.message || "Error al guardar");
+      toast.error(err.message || "Error al guardar");
     } finally {
       setSaving(false);
     }
   };
 
   const handleDeleteMember = async (id: string, nombre: string) => {
-    if (!confirm(`¿Eliminar a ${nombre} del equipo?`)) return;
+    if (!(await confirmDialog({ title: `¿Eliminar a ${nombre} del equipo?`, danger: true }))) return;
 
     try {
       const res = await fetch(`/api/admin/equipo?id=${encodeURIComponent(id)}`, {
@@ -131,7 +132,7 @@ export default function TeamManager({ initialMembers }: TeamManagerProps) {
       setMembers(data.miembros || []);
       showToast(`${nombre} eliminado del equipo`);
     } catch (err: any) {
-      alert(err.message || "Error al eliminar");
+      toast.error(err.message || "Error al eliminar");
     }
   };
 

@@ -29,6 +29,7 @@ import type {
   SectorLandingData,
   SectorCapacidadTecnica,
 } from "@/lib/types";
+import { toast } from "@/components/admin/feedback";
 
 interface ServiceEditFormProps {
   initialSector?: Sector | null;
@@ -221,7 +222,7 @@ export default function ServiceEditForm({ initialSector, isNew = false }: Servic
       if (!res.ok) throw new Error(data.error);
       onDone(data.url);
     } catch (err: any) {
-      alert("Error subiendo imagen: " + err.message);
+      toast.error("Error subiendo imagen: " + err.message);
     }
   };
 

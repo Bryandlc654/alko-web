@@ -13,6 +13,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import type { Sector } from "@/lib/types";
+import { toast, confirmDialog } from "@/components/admin/feedback";
 
 interface ServicesManagerProps {
   sectors: Sector[];
@@ -66,7 +67,7 @@ export default function ServicesManager({ sectors }: ServicesManagerProps) {
   });
 
   const handleDeleteSector = async (id: string, title: string) => {
-    if (!confirm(`¿Estás seguro de que deseas eliminar permanentemente el servicio "${title}"?`)) {
+    if (!(await confirmDialog({ title: `¿Estás seguro de que deseas eliminar permanentemente el servicio "${title}"?`, danger: true }))) {
       return;
     }
 
@@ -81,7 +82,7 @@ export default function ServicesManager({ sectors }: ServicesManagerProps) {
       setSuccessToast(`Servicio "${title}" eliminado`);
       setTimeout(() => setSuccessToast(""), 3500);
     } catch (err: any) {
-      alert("Error eliminando servicio: " + err.message);
+      toast.error("Error eliminando servicio: " + err.message);
     }
   };
 

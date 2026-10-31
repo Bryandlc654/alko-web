@@ -14,6 +14,7 @@ import {
   Clock,
 } from "lucide-react";
 import type { Guide } from "@/lib/types";
+import { toast, confirmDialog } from "@/components/admin/feedback";
 
 interface GuidesManagerProps {
   guides: Guide[];
@@ -35,7 +36,7 @@ export default function GuidesManager({ guides }: GuidesManagerProps) {
   });
 
   const handleDelete = async (id: string, title: string) => {
-    if (!confirm(`¿Estás seguro de que deseas eliminar permanentemente la guía "${title}"?`)) {
+    if (!(await confirmDialog({ title: `¿Estás seguro de que deseas eliminar permanentemente la guía "${title}"?`, danger: true }))) {
       return;
     }
 
@@ -50,7 +51,7 @@ export default function GuidesManager({ guides }: GuidesManagerProps) {
       setSuccessToast(`Guía "${title}" eliminada`);
       setTimeout(() => setSuccessToast(""), 3500);
     } catch (err: any) {
-      alert("Error eliminando guía: " + err.message);
+      toast.error("Error eliminando guía: " + err.message);
     }
   };
 

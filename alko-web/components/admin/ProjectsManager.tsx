@@ -18,6 +18,7 @@ import {
   MapPin,
 } from "lucide-react";
 import type { Project } from "@/lib/types";
+import { toast, confirmDialog } from "@/components/admin/feedback";
 
 interface ProjectsManagerProps {
   projects: Project[];
@@ -90,7 +91,7 @@ export default function ProjectsManager({
 
   // Eliminar Proyecto
   const handleDeleteProject = async (project: Project) => {
-    if (!confirm(`¿Estás seguro de eliminar el proyecto "${project.title}"?`)) return;
+    if (!(await confirmDialog({ title: `¿Estás seguro de eliminar el proyecto "${project.title}"?`, danger: true }))) return;
 
     try {
       const res = await fetch(`/api/admin/projects?id=${encodeURIComponent(project.id)}`, {
@@ -105,7 +106,7 @@ export default function ProjectsManager({
       setProjectsList((prev) => prev.filter((p) => p.id !== project.id));
       setFeaturedIds((prev) => prev.filter((id) => id !== String(project.id) && id !== project.slug));
     } catch (err: any) {
-      alert("Error: " + err.message);
+      toast.error("Error: " + err.message);
     }
   };
 

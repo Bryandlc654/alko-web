@@ -60,6 +60,7 @@ import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import ProjectsGallery from "@/components/ui/ProjectsGallery";
 import { splitLead } from "@/lib/utils";
 import { Layers } from "lucide-react";
+import { toast } from "@/components/admin/feedback";
 
 const PAGES_LIST = [
   { id: "home", label: "Inicio (Home)", path: "/", group: "Principal" },
@@ -356,7 +357,7 @@ export default function LiveEditor({
       updateField("workshopSlides", slides);
       setActiveShowcaseSlideIndex(slides.length - 1);
     } catch (err: any) {
-      alert("Error subiendo imagen para showcase: " + err.message);
+      toast.error("Error subiendo imagen para showcase: " + err.message);
     } finally {
       if (newWorkshopSlideInputRef.current) {
         newWorkshopSlideInputRef.current.value = "";
@@ -367,7 +368,7 @@ export default function LiveEditor({
   const handleDeleteWorkshopSlide = (index: number) => {
     const slides = [...(content.workshopSlides || DEFAULT_SHOWCASE_SLIDES)];
     if (slides.length <= 1) {
-      alert("Debe quedar al menos una imagen en el showcase");
+      toast.info("Debe quedar al menos una imagen en el showcase");
       return;
     }
     slides.splice(index, 1);
@@ -550,7 +551,7 @@ export default function LiveEditor({
       updateField("heroSlides", slides);
       setActiveHeroSlideIndex(slides.length - 1);
     } catch (err: any) {
-      alert("Error subiendo imagen de slide: " + err.message);
+      toast.error("Error subiendo imagen de slide: " + err.message);
     } finally {
       if (newHeroSlideInputRef.current) newHeroSlideInputRef.current.value = "";
     }
@@ -560,7 +561,7 @@ export default function LiveEditor({
   const handleDeleteHeroSlide = (index: number) => {
     const slides = [...(content.heroSlides || [])];
     if (slides.length <= 1) {
-      alert("Debe quedar al menos una imagen en la portada.");
+      toast.info("Debe quedar al menos una imagen en la portada.");
       return;
     }
     slides.splice(index, 1);

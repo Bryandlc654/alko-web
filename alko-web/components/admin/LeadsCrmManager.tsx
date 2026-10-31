@@ -33,6 +33,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import type { Lead, LeadEstado } from "@/lib/types";
+import { toast, confirmDialog } from "@/components/admin/feedback";
 
 interface LeadsCrmManagerProps {
   initialLeads: Lead[];
@@ -213,7 +214,7 @@ export default function LeadsCrmManager({ initialLeads }: LeadsCrmManagerProps) 
       setLeads((prev) => prev.map((l) => (l.id === id ? { ...l, estado: nuevoEstado } : l)));
       showToast(`Estado actualizado a: ${ESTADOS_CONFIG[nuevoEstado]?.shortLabel || nuevoEstado}`);
     } catch (e: any) {
-      alert(e.message || "Error al actualizar");
+      toast.error(e.message || "Error al actualizar");
     } finally {
       setUpdatingStatusId(null);
     }
@@ -247,7 +248,7 @@ export default function LeadsCrmManager({ initialLeads }: LeadsCrmManagerProps) 
       setLeads((prev) => prev.map((l) => (l.id === id ? { ...l, notas: nota } : l)));
       showToast("Nota de seguimiento comercial guardada");
     } catch (e: any) {
-      alert(e.message || "Error al guardar notas");
+      toast.error(e.message || "Error al guardar notas");
     } finally {
       setSavingNoteId(null);
     }
@@ -255,7 +256,7 @@ export default function LeadsCrmManager({ initialLeads }: LeadsCrmManagerProps) 
 
   // Eliminar lead
   const handleDeleteLead = async (id: string, nombre: string) => {
-    if (!confirm(`¿Eliminar definitivamente el lead de ${nombre}?`)) return;
+    if (!(await confirmDialog({ title: `¿Eliminar definitivamente el lead de ${nombre}?`, danger: true }))) return;
 
     try {
       const res = await fetch(`/api/admin/leads?id=${encodeURIComponent(id)}`, {
@@ -268,7 +269,7 @@ export default function LeadsCrmManager({ initialLeads }: LeadsCrmManagerProps) 
       if (selectedLeadId === id) setSelectedLeadId(null);
       showToast("Lead eliminado del CRM");
     } catch (e: any) {
-      alert(e.message || "Error al eliminar");
+      toast.error(e.message || "Error al eliminar");
     }
   };
 
@@ -312,7 +313,7 @@ export default function LeadsCrmManager({ initialLeads }: LeadsCrmManagerProps) 
   // Exportar a CSV
   const handleExportCSV = () => {
     if (leads.length === 0) {
-      alert("No hay leads para exportar");
+      toast.info("No hay leads para exportar");
       return;
     }
 

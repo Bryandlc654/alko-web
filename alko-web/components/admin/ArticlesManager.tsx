@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import type { Article } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
+import { toast, confirmDialog } from "@/components/admin/feedback";
 
 interface ArticlesManagerProps {
   articles: Article[];
@@ -75,7 +76,7 @@ export default function ArticlesManager({
   };
 
   const handleDeleteCategory = async (catToDelete: string) => {
-    if (!confirm(`¿Eliminar la categoría "${catToDelete}"? Los artículos asignados no se borrarán.`)) {
+    if (!(await confirmDialog({ title: `¿Eliminar la categoría "${catToDelete}"? Los artículos asignados no se borrarán.`, danger: true }))) {
       return;
     }
 
@@ -99,7 +100,7 @@ export default function ArticlesManager({
   };
 
   const handleDelete = async (id: string, title: string) => {
-    if (!confirm(`¿Estás seguro de que deseas eliminar permanentemente el artículo "${title}"?`)) {
+    if (!(await confirmDialog({ title: `¿Estás seguro de que deseas eliminar permanentemente el artículo "${title}"?`, danger: true }))) {
       return;
     }
 
@@ -114,7 +115,7 @@ export default function ArticlesManager({
       setSuccessToast(`Artículo "${title}" eliminado`);
       setTimeout(() => setSuccessToast(""), 3500);
     } catch (err: any) {
-      alert("Error eliminando artículo: " + err.message);
+      toast.error("Error eliminando artículo: " + err.message);
     }
   };
 
