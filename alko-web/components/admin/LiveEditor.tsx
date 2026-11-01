@@ -1602,7 +1602,7 @@ export default function LiveEditor({
                 <ProjectsGallery projects={projectSummaries} />
               </div>
             </div>
-          ) : (
+          ) : activePage === "nosotros" ? (
             /* ========================================================
                VISTA EDITABLE: PÁGINA NOSOTROS (/nosotros)
                ======================================================== */
@@ -2199,7 +2199,7 @@ export default function LiveEditor({
                 </div>
               </section>
             </div>
-          )}
+          ) : null}
 
 
           {/* ========================================================
