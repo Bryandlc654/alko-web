@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -30,6 +30,7 @@ import type {
   SectorCapacidadTecnica,
 } from "@/lib/types";
 import { toast } from "@/components/admin/feedback";
+import { openMediaPicker } from "@/components/admin/media";
 
 interface ServiceEditFormProps {
   initialSector?: Sector | null;
@@ -116,10 +117,6 @@ export default function ServiceEditForm({ initialSector, isNew = false }: Servic
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successToast, setSuccessToast] = useState("");
-
-  const mainImageInputRef = useRef<HTMLInputElement>(null);
-  const includesImageInputRef = useRef<HTMLInputElement>(null);
-  const supportImageInputRef = useRef<HTMLInputElement>(null);
 
   // Inicialización de sector y landing
   const [sector, setSector] = useState<Partial<Sector>>(() => {
@@ -212,18 +209,10 @@ export default function ServiceEditForm({ initialSector, isNew = false }: Servic
     }));
   };
 
-  const handleUploadGeneric = async (file: File, onDone: (url: string) => void) => {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const res = await fetch("/api/admin/upload", { method: "POST", body: formData });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      onDone(data.url);
-    } catch (err: any) {
-      toast.error("Error subiendo imagen: " + err.message);
-    }
+  // Las imágenes se eligen o se suben desde la biblioteca de medios.
+  const handlePickImage = async (current: string | undefined, onDone: (url: string) => void) => {
+    const url = await openMediaPicker({ current: current || undefined, title: "Elegir imagen" });
+    if (url) onDone(url);
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -527,22 +516,12 @@ export default function ServiceEditForm({ initialSector, isNew = false }: Servic
                     <div className="flex items-center gap-3">
                       <button
                         type="button"
-                        onClick={() => mainImageInputRef.current?.click()}
+                        onClick={() => handlePickImage(sector.imagen, (url) => setSector((prev) => ({ ...prev, imagen: url })))}
                         className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 rounded-xl text-xs font-medium transition shadow-2xs"
                       >
                         <Upload className="w-3.5 h-3.5 text-blue-600" />
-                        <span>Subir fotografía desde tu equipo</span>
+                        <span>Elegir o subir fotografía</span>
                       </button>
-                      <input
-                        type="file"
-                        ref={mainImageInputRef}
-                        accept="image/*"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) handleUploadGeneric(file, (url) => setSector({ ...sector, imagen: url }));
-                        }}
-                        className="hidden"
-                      />
                     </div>
                   </div>
                 </div>
@@ -922,22 +901,12 @@ export default function ServiceEditForm({ initialSector, isNew = false }: Servic
                     />
                     <button
                       type="button"
-                      onClick={() => includesImageInputRef.current?.click()}
+                      onClick={() => handlePickImage(sector.landing?.includesImage, (url) => updateLanding({ includesImage: url }))}
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 rounded-xl text-xs font-medium transition shadow-2xs"
                     >
                       <Upload className="w-3 h-3 text-blue-600" />
-                      <span>Subir foto de sección</span>
+                      <span>Elegir foto de sección</span>
                     </button>
-                    <input
-                      type="file"
-                      ref={includesImageInputRef}
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) handleUploadGeneric(file, (url) => updateLanding({ includesImage: url }));
-                      }}
-                      className="hidden"
-                    />
                   </div>
                 </div>
               </div>
@@ -1032,22 +1001,12 @@ export default function ServiceEditForm({ initialSector, isNew = false }: Servic
                     />
                     <button
                       type="button"
-                      onClick={() => supportImageInputRef.current?.click()}
+                      onClick={() => handlePickImage(sector.landing?.supportImage, (url) => updateLanding({ supportImage: url }))}
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 rounded-xl text-xs font-medium transition shadow-2xs"
                     >
                       <Upload className="w-3 h-3 text-blue-600" />
-                      <span>Subir imagen técnica</span>
+                      <span>Elegir imagen técnica</span>
                     </button>
-                    <input
-                      type="file"
-                      ref={supportImageInputRef}
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) handleUploadGeneric(file, (url) => updateLanding({ supportImage: url }));
-                      }}
-                      className="hidden"
-                    />
                   </div>
                 </div>
               </div>

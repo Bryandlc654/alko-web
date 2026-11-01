@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import type { MiembroEquipo } from "@/lib/types";
 import { toast, confirmDialog } from "@/components/admin/feedback";
+import { openMediaPicker } from "@/components/admin/media";
 
 interface TeamManagerProps {
   initialMembers: MiembroEquipo[];
@@ -34,10 +35,8 @@ export default function TeamManager({ initialMembers }: TeamManagerProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState<Partial<MiembroEquipo> | null>(null);
 
-  const [uploadingImage, setUploadingImage] = useState(false);
   const [saving, setSaving] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -66,30 +65,10 @@ export default function TeamManager({ initialMembers }: TeamManagerProps) {
     setIsModalOpen(true);
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || !e.target.files[0]) return;
-    const file = e.target.files[0];
-
-    setUploadingImage(true);
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const res = await fetch("/api/admin/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Error al subir la imagen");
-
-      setEditingMember((prev) => (prev ? { ...prev, foto: data.url } : null));
-      showToast("Imagen subida con éxito");
-    } catch (err: any) {
-      toast.error(err.message || "Error al subir imagen");
-    } finally {
-      setUploadingImage(false);
-    }
+  // La foto se elige o se sube desde la biblioteca de medios.
+  const handlePickImage = async () => {
+    const url = await openMediaPicker({ current: editingMember?.foto || undefined, title: "Elegir foto" });
+    if (url) setEditingMember((prev) => (prev ? { ...prev, foto: url } : null));
   };
 
   const handleSaveMember = async (e: React.FormEvent) => {
@@ -372,22 +351,13 @@ export default function TeamManager({ initialMembers }: TeamManagerProps) {
                       className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                     />
 
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      className="hidden"
-                    />
-
                     <button
                       type="button"
-                      disabled={uploadingImage}
-                      onClick={() => fileInputRef.current?.click()}
+                      onClick={handlePickImage}
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition"
                     >
                       <Camera className="w-3.5 h-3.5 text-slate-500" />
-                      <span>{uploadingImage ? "Subiendo..." : "Subir foto de ordenador"}</span>
+                      <span>Elegir o subir foto</span>
                     </button>
                   </div>
                 </div>

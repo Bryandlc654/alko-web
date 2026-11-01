@@ -63,3 +63,37 @@ export async function uploadImageToGithub(fileName: string, data: Buffer): Promi
   if (!res.ok) throw new Error(`GitHub rechazó la subida (${res.status})`);
   return `https://raw.githubusercontent.com/${repo}/${branch}/uploads/${fileName}`;
 }
+
+export interface GithubUpload {
+  name: string;
+  size: number;
+  sha: string;
+  url: string;
+}
+
+/** Imágenes de la carpeta uploads/ de la rama de medios. */
+export async function listGithubUploads(): Promise<GithubUpload[]> {
+  const { repo, branch } = config();
+  const res = await gh(`/repos/${repo}/contents/uploads?ref=${branch}`);
+  if (res.status === 404) return [];
+  if (!res.ok) throw new Error(`GitHub no devolvió la lista de imágenes (${res.status})`);
+  const items = (await res.json()) as { type: string; name: string; size: number; sha: string }[];
+  return items
+    .filter((item) => item.type === "file")
+    .map((item) => ({
+      name: item.name,
+      size: item.size,
+      sha: item.sha,
+      url: `https://raw.githubusercontent.com/${repo}/${branch}/uploads/${item.name}`,
+    }));
+}
+
+/** Borra una imagen de la rama de medios. */
+export async function deleteGithubUpload(name: string, sha: string): Promise<void> {
+  const { repo, branch } = config();
+  const res = await gh(`/repos/${repo}/contents/uploads/${name}`, {
+    method: "DELETE",
+    body: JSON.stringify({ message: `Imagen eliminada desde el panel: ${name}`, sha, branch }),
+  });
+  if (!res.ok) throw new Error(`GitHub rechazó el borrado (${res.status})`);
+}

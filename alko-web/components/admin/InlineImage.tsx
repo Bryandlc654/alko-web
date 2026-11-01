@@ -1,9 +1,10 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
-import { Camera, Upload, Trash2, Loader2, Sparkles } from "lucide-react";
-import { toast, confirmDialog } from "@/components/admin/feedback";
+import { Camera, Upload, Trash2, Sparkles } from "lucide-react";
+import { confirmDialog } from "@/components/admin/feedback";
+import { openMediaPicker } from "@/components/admin/media";
 
 interface InlineImageProps {
   src: string;
@@ -31,8 +32,6 @@ export default function InlineImage({
   canDelete = false,
   onDelete,
 }: InlineImageProps) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isUploading, setIsUploading] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [loadError, setLoadError] = useState(false);
 
@@ -40,32 +39,12 @@ export default function InlineImage({
     setLoadError(false);
   }, [src]);
 
-  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setIsUploading(true);
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const res = await fetch("/api/admin/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Error al subir imagen");
-
+  // Abre la biblioteca de medios: elegir una imagen ya subida o subir una nueva.
+  const chooseImage = async () => {
+    const url = await openMediaPicker({ current: src, title: label });
+    if (url) {
       setLoadError(false);
-      onImageChange(data.url);
-    } catch (err: any) {
-      toast.error("Error subiendo imagen: " + (err.message || "Error desconocido"));
-    } finally {
-      setIsUploading(false);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
+      onImageChange(url);
     }
   };
 
@@ -76,7 +55,7 @@ export default function InlineImage({
       className={`${isPositioned ? "" : "relative"} group/image-edit overflow-hidden cursor-pointer ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={() => fileInputRef.current?.click()}
+      onClick={chooseImage}
     >
       {/* Imagen real */}
       {src && !loadError ? (
@@ -95,62 +74,44 @@ export default function InlineImage({
         <div className="w-full h-full flex flex-col items-center justify-center bg-stone-900/80 text-stone-300 border-2 border-dashed border-stone-600/60 p-6 text-center">
           <Camera className="w-10 h-10 mb-2 opacity-50" />
           <span className="text-xs font-poppins font-medium">
-            {loadError ? "Error al cargar imagen (Clic para reemplazar)" : "Sin imagen (Clic para subir)"}
+            {loadError ? "Error al cargar imagen (Clic para reemplazar)" : "Sin imagen (Clic para elegir)"}
           </span>
         </div>
       )}
 
-      {/* Input de archivo invisible */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        onChange={handleFileSelect}
-        className="hidden"
-      />
-
       {/* Overlay de hover con botones de acción flotantes */}
       <div
         className={`absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-950/40 backdrop-blur-[2px] transition-opacity duration-200 pointer-events-none ${
-          isHovered || isUploading ? "opacity-100" : "opacity-0"
+          isHovered ? "opacity-100" : "opacity-0"
         }`}
       >
         <div className="pointer-events-auto flex items-center gap-2 p-1.5 rounded-full bg-white/95 text-slate-800 shadow-xl border border-slate-200 font-poppins">
-          {isUploading ? (
-            <div className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-blue-600">
-              <Loader2 className="w-4 h-4 animate-spin" />
-              <span>Subiendo archivo...</span>
-            </div>
-          ) : (
-            <>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  fileInputRef.current?.click();
-                }}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium transition shadow-sm"
-              >
-                <Upload className="w-3.5 h-3.5" />
-                <span>{label}</span>
-              </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              chooseImage();
+            }}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium transition shadow-sm"
+          >
+            <Upload className="w-3.5 h-3.5" />
+            <span>{label}</span>
+          </button>
 
-              {canDelete && onDelete && (
-                <button
-                  type="button"
-                  onClick={async (e) => {
-                    e.stopPropagation();
-                    if ((await confirmDialog({ title: "¿Deseas quitar esta imagen?", danger: true }))) {
-                      onDelete();
-                    }
-                  }}
-                  className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-red-50 hover:bg-red-100 text-red-600 transition"
-                  title="Eliminar imagen"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
-              )}
-            </>
+          {canDelete && onDelete && (
+            <button
+              type="button"
+              onClick={async (e) => {
+                e.stopPropagation();
+                if ((await confirmDialog({ title: "¿Deseas quitar esta imagen?", danger: true }))) {
+                  onDelete();
+                }
+              }}
+              className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-red-50 hover:bg-red-100 text-red-600 transition"
+              title="Eliminar imagen"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
           )}
         </div>
 

@@ -17,10 +17,11 @@ import {
   ShieldAlert,
   ShieldCheck,
   ExternalLink,
+  Images,
   LucideIcon,
 } from "lucide-react";
 import LogoutButton from "./LogoutButton";
-import { hasPermission, type Permission } from "@/lib/auth/rbac";
+import { canUseMedia, hasPermission, type Permission } from "@/lib/auth/rbac";
 
 interface AdminSidebarProps {
   userEmail?: string;
@@ -37,6 +38,8 @@ interface MenuItem {
   badgeColor?: string;
   target?: string;
   permission?: Permission;
+  /** Visible con cualquiera de los permisos de contenido (biblioteca de medios). */
+  media?: boolean;
 }
 
 interface MenuGroup {
@@ -110,6 +113,13 @@ const MENU_ITEMS: MenuGroup[] = [
         permission: "equipo",
       },
       {
+        name: "Medios",
+        href: "/admin/media",
+        icon: Images,
+        badge: null,
+        media: true,
+      },
+      {
         name: "CRM y Leads",
         href: "/admin/leads",
         icon: Inbox,
@@ -155,6 +165,7 @@ export default function AdminSidebar({ userEmail, userName, userRole, userPermis
   // Filtrar grupos y elementos según los permisos del usuario (RBAC)
   const filteredGroups = MENU_ITEMS.map((group) => {
     const visibleItems = group.items.filter((item) => {
+      if (item.media) return canUseMedia({ role: userRole, permissions: userPermissions });
       if (!item.permission) return true;
       return hasPermission({ role: userRole, permissions: userPermissions }, item.permission);
     });

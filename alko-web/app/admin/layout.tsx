@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import { AdminFeedbackHost } from "@/components/admin/feedback";
+import { MediaPickerHost } from "@/components/admin/media";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -22,6 +23,7 @@ export default function AdminLayout({
   return (
     <div className={`${poppins.variable} font-poppins min-h-screen bg-[#f8fafc] text-slate-900 antialiased`}>
       {children}
+      <MediaPickerHost />
       <AdminFeedbackHost />
     </div>
   );

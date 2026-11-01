@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -61,6 +61,7 @@ import ProjectsGallery from "@/components/ui/ProjectsGallery";
 import { splitLead } from "@/lib/utils";
 import { Layers } from "lucide-react";
 import { toast } from "@/components/admin/feedback";
+import { openMediaPicker } from "@/components/admin/media";
 
 const PAGES_LIST = [
   { id: "home", label: "Inicio (Home)", path: "/", group: "Principal" },
@@ -328,41 +329,19 @@ export default function LiveEditor({
   const [errorMessage, setErrorMessage] = useState("");
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
-  // Selector oculto para añadir slide al Hero
-  const newHeroSlideInputRef = useRef<HTMLInputElement>(null);
-  const newWorkshopSlideInputRef = useRef<HTMLInputElement>(null);
-
-  const handleAddNewWorkshopSlide = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const res = await fetch("/api/admin/upload", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Error al subir imagen");
-
-      const slides = [...(content.workshopSlides || DEFAULT_SHOWCASE_SLIDES)];
-      const newSlide: Slide = {
-        id: `showcase-${Date.now()}`,
-        image: data.url,
-        alt: "Showcase ALKO",
-      };
-      slides.push(newSlide);
-      updateField("workshopSlides", slides);
-      setActiveShowcaseSlideIndex(slides.length - 1);
-    } catch (err: any) {
-      toast.error("Error subiendo imagen para showcase: " + err.message);
-    } finally {
-      if (newWorkshopSlideInputRef.current) {
-        newWorkshopSlideInputRef.current.value = "";
-      }
-    }
+  // Añadir slide al showcase: se elige o sube desde la biblioteca de medios.
+  const handleAddNewWorkshopSlide = async () => {
+    const url = await openMediaPicker({ title: "Añadir imagen al showcase" });
+    if (!url) return;
+    const slides = [...(content.workshopSlides || DEFAULT_SHOWCASE_SLIDES)];
+    const newSlide: Slide = {
+      id: `showcase-${Date.now()}`,
+      image: url,
+      alt: "Showcase ALKO",
+    };
+    slides.push(newSlide);
+    updateField("workshopSlides", slides);
+    setActiveShowcaseSlideIndex(slides.length - 1);
   };
 
   const handleDeleteWorkshopSlide = (index: number) => {
@@ -529,32 +508,18 @@ export default function LiveEditor({
     }
   };
 
-  // Añadir slide al Hero
-  const handleAddNewHeroSlide = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const res = await fetch("/api/admin/upload", { method: "POST", body: formData });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-
-      const slides = [...(content.heroSlides || [])];
-      slides.push({
-        id: `hero-slide-${Date.now()}`,
-        image: data.url,
-        alt: "Slide de portada ALKO",
-      });
-      updateField("heroSlides", slides);
-      setActiveHeroSlideIndex(slides.length - 1);
-    } catch (err: any) {
-      toast.error("Error subiendo imagen de slide: " + err.message);
-    } finally {
-      if (newHeroSlideInputRef.current) newHeroSlideInputRef.current.value = "";
-    }
+  // Añadir slide al Hero: se elige o sube desde la biblioteca de medios.
+  const handleAddNewHeroSlide = async () => {
+    const url = await openMediaPicker({ title: "Añadir imagen a la portada" });
+    if (!url) return;
+    const slides = [...(content.heroSlides || [])];
+    slides.push({
+      id: `hero-slide-${Date.now()}`,
+      image: url,
+      alt: "Slide de portada ALKO",
+    });
+    updateField("heroSlides", slides);
+    setActiveHeroSlideIndex(slides.length - 1);
   };
 
   // Eliminar slide del Hero
@@ -812,19 +777,12 @@ export default function LiveEditor({
 
               <button
                 type="button"
-                onClick={() => newHeroSlideInputRef.current?.click()}
+                onClick={handleAddNewHeroSlide}
                 className="w-6 h-6 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center transition shadow"
                 title="Añadir nueva imagen al Hero"
               >
                 <Plus className="w-3.5 h-3.5" />
               </button>
-              <input
-                ref={newHeroSlideInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleAddNewHeroSlide}
-                className="hidden"
-              />
             </div>
 
             {/* Slider de Fondo con Reemplazo de Imagen en Línea */}
@@ -1183,19 +1141,12 @@ export default function LiveEditor({
               ))}
               <button
                 type="button"
-                onClick={() => newWorkshopSlideInputRef.current?.click()}
+                onClick={handleAddNewWorkshopSlide}
                 className="w-6 h-6 rounded-full bg-blue-600/90 hover:bg-blue-600 text-white flex items-center justify-center text-xs font-bold transition ml-1"
                 title="Añadir nuevo slide de imagen"
               >
                 <Plus className="w-3.5 h-3.5" />
               </button>
-              <input
-                ref={newWorkshopSlideInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleAddNewWorkshopSlide}
-                className="hidden"
-              />
             </div>
 
             {/* Slider de imágenes de showcase con edición directa */}

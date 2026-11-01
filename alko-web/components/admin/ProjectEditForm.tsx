@@ -18,6 +18,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import type { Project } from "@/lib/types";
+import { openMediaPicker } from "@/components/admin/media";
 
 interface ProjectEditFormProps {
   initialProject?: Project | null;
@@ -54,43 +55,22 @@ export default function ProjectEditForm({ initialProject, isNew = false }: Proje
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successToast, setSuccessToast] = useState("");
-  const [uploadingField, setUploadingField] = useState<string | null>(null);
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setUploadingField(field);
-    setErrorMessage("");
-
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const res = await fetch("/api/admin/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Error subiendo archivo");
-
-      if (field === "galeria") {
-        setProject((prev) => ({
-          ...prev,
-          galeria: [...(prev?.galeria || []), data.url],
-        }));
-      } else {
-        setProject((prev) => ({
-          ...prev,
-          [field]: data.url,
-        }));
-      }
-    } catch (err: any) {
-      setErrorMessage(err.message || "Error al subir la fotografía");
-    } finally {
-      setUploadingField(null);
-      e.target.value = "";
+  // Las fotos se eligen o suben desde la biblioteca de medios.
+  const handlePickImage = async (field: string) => {
+    const current = field === "galeria" ? undefined : ((project as unknown as Record<string, string | undefined>)[field] ?? undefined);
+    const url = await openMediaPicker({ current, title: field === "galeria" ? "Añadir foto a la galería" : "Elegir fotografía" });
+    if (!url) return;
+    if (field === "galeria") {
+      setProject((prev) => ({
+        ...prev,
+        galeria: [...(prev?.galeria || []), url],
+      }));
+    } else {
+      setProject((prev) => ({
+        ...prev,
+        [field]: url,
+      }));
     }
   };
 
@@ -334,8 +314,7 @@ export default function ProjectEditForm({ initialProject, isNew = false }: Proje
               label="Foto de Portada / Principal"
               sublabel="Aparece en la cabecera y listados públicos."
               badgeText="Sin Portada"
-              uploading={uploadingField === "imagen"}
-              onChangeFile={(e) => handleFileUpload(e, "imagen")}
+              onChoose={() => handlePickImage("imagen")}
             />
 
             <SafePreviewBox
@@ -345,8 +324,7 @@ export default function ProjectEditForm({ initialProject, isNew = false }: Proje
               sublabel="Muestra el estado previo a la intervención."
               badgeText="Sin Foto Antes"
               isGrayscale={true}
-              uploading={uploadingField === "fotoAntes"}
-              onChangeFile={(e) => handleFileUpload(e, "fotoAntes")}
+              onChoose={() => handlePickImage("fotoAntes")}
               onRemove={() => setProject((prev) => ({ ...prev, fotoAntes: "" }))}
             />
 
@@ -356,8 +334,7 @@ export default function ProjectEditForm({ initialProject, isNew = false }: Proje
               label="Foto DESPUÉS (Obra Entregada)"
               sublabel="Resultado final acabado y entregado."
               badgeText="Sin Foto Después"
-              uploading={uploadingField === "fotoDespues"}
-              onChangeFile={(e) => handleFileUpload(e, "fotoDespues")}
+              onChoose={() => handlePickImage("fotoDespues")}
               onRemove={() => setProject((prev) => ({ ...prev, fotoDespues: "" }))}
             />
           </div>
@@ -371,20 +348,14 @@ export default function ProjectEditForm({ initialProject, isNew = false }: Proje
               <span>3. Galería de Imágenes del Proyecto ({(project.galeria || []).length})</span>
             </h4>
 
-            <label className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200/80 text-xs font-semibold cursor-pointer transition shadow-xs">
-              {uploadingField === "galeria" ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              ) : (
-                <Plus className="w-3.5 h-3.5" />
-              )}
+            <button
+              type="button"
+              onClick={() => handlePickImage("galeria")}
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200/80 text-xs font-semibold cursor-pointer transition shadow-xs"
+            >
+              <Plus className="w-3.5 h-3.5" />
               <span>Añadir Foto a Galería</span>
-              <input
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => handleFileUpload(e, "galeria")}
-              />
-            </label>
+            </button>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -503,8 +474,7 @@ function SafePreviewBox({
   label,
   sublabel,
   badgeText,
-  uploading,
-  onChangeFile,
+  onChoose,
   onRemove,
   isGrayscale = false,
 }: {
@@ -513,8 +483,8 @@ function SafePreviewBox({
   label: string;
   sublabel: string;
   badgeText?: string;
-  uploading: boolean;
-  onChangeFile: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  /** Abre la biblioteca de medios para elegir o subir la foto. */
+  onChoose: () => void;
   /** Si se pasa, aparece el botón para quitar la foto (las de antes y después son opcionales). */
   onRemove?: () => void;
   isGrayscale?: boolean;
@@ -567,25 +537,19 @@ function SafePreviewBox({
               <ImageIcon className="w-5 h-5" />
             </div>
             <span className="text-xs font-medium text-slate-600">Sin vista previa</span>
-            <span className="text-[10px] text-slate-400">Sube una fotografía de calidad</span>
+            <span className="text-[10px] text-slate-400">Elige o sube una fotografía de calidad</span>
           </div>
         )}
       </div>
 
-      <label className="inline-flex items-center justify-center gap-2 w-full py-2.5 px-3 rounded-xl bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50/80 text-xs font-semibold text-slate-700 cursor-pointer shadow-xs active:scale-[0.99] transition">
-        {uploading ? (
-          <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
-        ) : (
-          <Upload className="w-4 h-4 text-slate-500" />
-        )}
-        <span>{hasValidImage ? "Cambiar Imagen" : "Subir Fotografía"}</span>
-        <input
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={onChangeFile}
-        />
-      </label>
+      <button
+        type="button"
+        onClick={onChoose}
+        className="inline-flex items-center justify-center gap-2 w-full py-2.5 px-3 rounded-xl bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50/80 text-xs font-semibold text-slate-700 cursor-pointer shadow-xs active:scale-[0.99] transition"
+      >
+        <Upload className="w-4 h-4 text-slate-500" />
+        <span>{hasValidImage ? "Cambiar Imagen" : "Elegir Fotografía"}</span>
+      </button>
       {onRemove && url && (
         <button
           type="button"
