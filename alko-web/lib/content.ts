@@ -880,6 +880,240 @@ export const DEFAULT_SECTORS: Sector[] = [
       ]
     },
   },
+  {
+    id: "s-11",
+    slug: "concierge-familias-extranjeras",
+    numero: "11",
+    title: "Concierge para familias extranjeras",
+    descripcion: "Acompañamos a familias que se mudan a Madrid desde el extranjero: búsqueda y compra de la vivienda, proyecto, reforma e interiorismo, todo gestionado en remoto.",
+    imagen: "/proceso-entrega.jpg",
+    enlace: "/servicios/concierge-familias-extranjeras",
+    content: "<p>Un único interlocutor para familias que quieren vivir en Madrid sin estar aquí durante el proceso: búsqueda de la vivienda, acompañamiento en la compra con abogados y gestores colaboradores, proyecto, licencias, reforma, interiorismo y entrega lista para entrar a vivir, con seguimiento online de cada fase.</p>",
+    landing: {
+      "lead": "Concierge inmobiliario para familias extranjeras en Madrid: te acompañamos desde la búsqueda y la compra de la vivienda hasta su reforma, interiorismo y entrega lista para vivir, con un único interlocutor y seguimiento online de todo el proceso.",
+      "supportContent": "Mudarse a otro país ya es suficiente trabajo. Nos ocupamos de que la casa no sea una preocupación más: visitamos inmuebles por ti, evaluamos su estado técnico antes de que compres, coordinamos la compra con abogados y gestores colaboradores, y diseñamos y ejecutamos la reforma mientras sigues el avance por videollamada, fotos e informes semanales.",
+      "statsTitle": "Familias extranjeras con ALKO",
+      "problemsHeadline": "Tu casa en Madrid, gestionada desde donde estés",
+      "capacidadesHeadline": "Qué hacemos por tu familia",
+      "commitments": [
+        {
+          "title": "Un solo interlocutor",
+          "text": "Desde la búsqueda hasta la entrega de llaves."
+        },
+        {
+          "title": "Todo en remoto",
+          "text": "Visitas por vídeo, firmas digitales e informes semanales."
+        },
+        {
+          "title": "Lista para vivir",
+          "text": "Reforma, mobiliario y suministros dados de alta."
+        }
+      ],
+      "problems": [
+        {
+          "avoid": "Comprar una vivienda sin saber qué obra necesita ni cuánto costará.",
+          "promise": "Informe técnico y presupuesto orientativo de la reforma antes de firmar la compra."
+        },
+        {
+          "avoid": "Gestionar desde otro país a agentes, notarías, gremios y proveedores por separado.",
+          "promise": "Un único coordinador en Madrid, en tu idioma, con red de abogados y gestores colaboradores."
+        },
+        {
+          "avoid": "Llegar a Madrid y encontrar la casa sin terminar.",
+          "promise": "Calendario cerrado de compra, obra y entrega, con seguimiento online de cada hito."
+        }
+      ],
+      "includesSubtitle": "Qué incluye el servicio de concierge",
+      "includes": [
+        "Búsqueda de vivienda según zona, colegios, presupuesto y estilo de vida",
+        "Visitas por videollamada e informe técnico del estado del inmueble",
+        "Coordinación de la compraventa con abogados, gestores y notaría colaboradores",
+        "Proyecto de reforma e interiorismo con presentación online",
+        "Licencias de obra y trámites con el ayuntamiento",
+        "Ejecución de la reforma con informes semanales de avance",
+        "Mobiliario, equipamiento y alta de suministros",
+        "Entrega lista para entrar a vivir y servicio posventa"
+      ],
+      "capacidades": [
+        {
+          "codigo": "01",
+          "titulo": "Búsqueda y evaluación",
+          "metrica": "Antes de comprar",
+          "resumen": "Seleccionamos inmuebles y revisamos su estado técnico, estructura e instalaciones antes de que tomes una decisión.",
+          "puntos": [
+            "Informe técnico por vivienda",
+            "Estimación del coste de reforma"
+          ]
+        },
+        {
+          "codigo": "02",
+          "titulo": "Compra acompañada",
+          "metrica": "Red de colaboradores",
+          "resumen": "Coordinamos la operación con abogados, gestores y notaría colaboradores, que se encargan de la parte legal y fiscal.",
+          "puntos": [
+            "Seguimiento de plazos y firmas",
+            "Comunicación en tu idioma"
+          ]
+        },
+        {
+          "codigo": "03",
+          "titulo": "Proyecto y reforma",
+          "metrica": "Gestión en remoto",
+          "resumen": "Diseño, licencias y obra con un arquitecto técnico al frente y seguimiento online.",
+          "puntos": [
+            "Presentaciones y aprobaciones por vídeo",
+            "Informes semanales con fotos"
+          ]
+        },
+        {
+          "codigo": "04",
+          "titulo": "Llegada",
+          "metrica": "Llave en mano",
+          "resumen": "Mobiliario, equipamiento, suministros y limpieza final para entrar a vivir desde el primer día.",
+          "puntos": [
+            "Domótica y conectividad listas",
+            "Atención posventa"
+          ]
+        }
+      ],
+      "processHeadline": "Cómo acompañamos a una familia que se muda a Madrid",
+      "faqs": [
+        {
+          "q": "¿Puedo hacer todo el proceso sin viajar a Madrid?",
+          "a": "Sí. Las visitas se hacen por videollamada, los documentos se firman de forma digital o mediante poder notarial, y la obra se sigue con informes semanales, fotos y reuniones online."
+        },
+        {
+          "q": "¿Os encargáis de la parte legal y fiscal de la compra?",
+          "a": "La coordinamos con abogados, gestores y notaría colaboradores, que son quienes asesoran en lo legal y fiscal. Nosotros nos ocupamos de que todo avance en plazo y de que el inmueble sea técnicamente adecuado."
+        },
+        {
+          "q": "¿En qué idiomas trabajáis?",
+          "a": "Atendemos en español e inglés, y coordinamos traducción con nuestros colaboradores cuando hace falta otro idioma."
+        },
+        {
+          "q": "¿Cuánto tiempo pasa desde la búsqueda hasta entrar a vivir?",
+          "a": "Depende del mercado y de la obra que necesite la vivienda. Tras la compra entregamos un calendario cerrado de reforma con la fecha de entrega."
+        }
+      ]
+    },
+  },
+  {
+    id: "s-12",
+    slug: "implantacion-de-empresas",
+    numero: "12",
+    title: "Implantación de empresas internacionales",
+    descripcion: "Para empresas internacionales que necesitan su sede en Madrid: búsqueda del local u oficina, licencia de actividad, reforma e implantación llave en mano.",
+    imagen: "/sector-oficinas.jpg",
+    enlace: "/servicios/implantacion-de-empresas",
+    content: "<p>Acompañamos a empresas internacionales que abren sede en Madrid: búsqueda y evaluación técnica del local u oficina, licencia de apertura y actividad, proyecto, reforma e implantación llave en mano, y coordinación con asesores fiscales y legales colaboradores.</p>",
+    landing: {
+      "lead": "Implantación de sedes de empresas internacionales en Madrid: búsqueda del local u oficina, evaluación técnica, licencia de actividad, proyecto, reforma e implantación llave en mano, con un único interlocutor y coordinación con asesores fiscales y legales.",
+      "supportContent": "Abrir una sede en otro país implica decisiones inmobiliarias, técnicas, administrativas y fiscales a la vez. Actuamos como el equipo local de la empresa: buscamos el espacio adecuado, comprobamos que la actividad es viable antes de firmar, tramitamos la licencia y ejecutamos la implantación, mientras nuestros colaboradores se ocupan de la constitución, la fiscalidad y los contratos.",
+      "statsTitle": "Empresas internacionales con ALKO",
+      "problemsHeadline": "Su sede en Madrid, lista para operar",
+      "capacidadesHeadline": "Qué hacemos por su empresa",
+      "commitments": [
+        {
+          "title": "Viabilidad antes de firmar",
+          "text": "Revisamos usos, licencia y obra antes del contrato."
+        },
+        {
+          "title": "Licencia incluida",
+          "text": "Proyecto de actividad y apertura tramitados por nosotros."
+        },
+        {
+          "title": "Fecha de apertura",
+          "text": "Calendario cerrado de obra e implantación."
+        }
+      ],
+      "problems": [
+        {
+          "avoid": "Firmar el alquiler de un local en el que la actividad no es viable.",
+          "promise": "Informe de compatibilidad urbanística, licencia y obra necesaria antes de la firma."
+        },
+        {
+          "avoid": "Coordinar desde el extranjero a agentes, ingenierías, constructoras y asesores.",
+          "promise": "Un único interlocutor local con red de asesores fiscales y legales colaboradores."
+        },
+        {
+          "avoid": "Retrasos en la apertura por licencias y obras mal planificadas.",
+          "promise": "Licencia, obra e implantación planificadas en paralelo con una fecha de apertura cerrada."
+        }
+      ],
+      "includesSubtitle": "Qué incluye la implantación de su sede",
+      "includes": [
+        "Búsqueda de oficinas, locales o naves según la actividad y la plantilla",
+        "Informe de viabilidad urbanística y técnica antes de firmar",
+        "Licencia de apertura y de actividad",
+        "Proyecto de implantación e imagen corporativa",
+        "Reforma, instalaciones y protección contra incendios",
+        "Mobiliario, tecnología, cableado y puestos de trabajo",
+        "Coordinación con asesores fiscales, legales y laborales colaboradores",
+        "Mantenimiento y servicio posventa tras la apertura"
+      ],
+      "capacidades": [
+        {
+          "codigo": "01",
+          "titulo": "Búsqueda y viabilidad",
+          "metrica": "Antes de firmar",
+          "resumen": "Seleccionamos espacios y comprobamos el uso permitido, la licencia y la obra necesaria.",
+          "puntos": [
+            "Informe por inmueble",
+            "Estimación de plazo y coste"
+          ]
+        },
+        {
+          "codigo": "02",
+          "titulo": "Licencias",
+          "metrica": "Apertura · Actividad",
+          "resumen": "Proyecto técnico y tramitación de la licencia con el ayuntamiento o entidades colaboradoras.",
+          "puntos": [
+            "Accesibilidad e incendios",
+            "Seguimiento del expediente"
+          ]
+        },
+        {
+          "codigo": "03",
+          "titulo": "Implantación llave en mano",
+          "metrica": "Proyecto · Obra · Equipamiento",
+          "resumen": "Diseño del espacio de trabajo, obra, instalaciones, mobiliario y tecnología.",
+          "puntos": [
+            "Estándares corporativos de la empresa",
+            "Fecha de apertura cerrada"
+          ]
+        },
+        {
+          "codigo": "04",
+          "titulo": "Coordinación local",
+          "metrica": "Red de colaboradores",
+          "resumen": "Enlace con asesores fiscales, legales y laborales para la constitución y la operativa en España.",
+          "puntos": [
+            "Un único interlocutor",
+            "Comunicación en inglés"
+          ]
+        }
+      ],
+      "processHeadline": "Cómo implantamos la sede de una empresa en Madrid",
+      "faqs": [
+        {
+          "q": "¿Nos ayudáis a encontrar la oficina o el local?",
+          "a": "Sí. Buscamos espacios según la actividad, la plantilla y la ubicación deseada, y evaluamos cada opción técnicamente antes de que firméis."
+        },
+        {
+          "q": "¿Os ocupáis de la parte fiscal y de la constitución de la empresa?",
+          "a": "Lo coordinamos con asesores fiscales, legales y laborales colaboradores, que son quienes prestan ese asesoramiento. Nosotros integramos sus plazos en el calendario de la implantación."
+        },
+        {
+          "q": "¿Podéis aplicar nuestros estándares corporativos?",
+          "a": "Sí. Adaptamos el manual de imagen y los estándares técnicos del grupo a la normativa española y a los proveedores locales."
+        },
+        {
+          "q": "¿Cuánto se tarda en abrir la sede?",
+          "a": "Depende del inmueble, la licencia y la obra. Tras el informe de viabilidad entregamos un calendario con la fecha de apertura."
+        }
+      ]
+    },
+  },
 ];
 
 /** Servicios anteriores que ahora forman parte de otro (los proyectos antiguos aún los usan). */
@@ -900,6 +1134,8 @@ const SECTOR_KEYWORDS: Record<string, string> = {
   "carpinteria-metalica": "carpintería metálica",
   "ventanas-acusticas": "ventanas acústicas",
   "cabinas-acusticas-oficinas": "cabinas acústicas para oficinas",
+  "concierge-familias-extranjeras": "concierge inmobiliario para familias extranjeras",
+  "implantacion-de-empresas": "implantación de sedes de empresas internacionales",
 };
 
 /** Frase de búsqueda del servicio, en minúsculas (p. ej. «reformas de oficinas»). */
