@@ -913,7 +913,7 @@ export async function saveDbArticle(articleData: Partial<Article>): Promise<Arti
     category: articleData.category || baseArticle?.category || "Metodología",
     excerpt: articleData.excerpt || baseArticle?.excerpt || "",
     content: articleData.content ?? baseArticle?.content ?? "",
-    image: articleData.image || baseArticle?.image || "/art1.jpg",
+    image: articleData.image || baseArticle?.image || "/service-interior-2.jpg",
     date: articleData.date || baseArticle?.date || new Date().toISOString().split("T")[0],
   };
 

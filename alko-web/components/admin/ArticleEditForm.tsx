@@ -52,7 +52,7 @@ export default function ArticleEditForm({
       category: categories[0] || "Metodología",
       excerpt: "",
       content: "<p>Entradilla técnica del artículo explicando los condicionantes y objetivos...</p>\n\n<h2>1. Criterios de partida</h2>\n<p>Detalle técnico de los factores clave a considerar durante la ejecución de obra...</p>\n\n<h2>2. Recomendaciones de los técnicos</h2>\n<p>Puntos de control recomendados para garantizar la calidad y durabilidad...</p>",
-      image: "/art1.jpg",
+      image: "/service-interior-2.jpg",
       date: new Date().toISOString().split("T")[0],
     };
   });
@@ -126,7 +126,7 @@ export default function ArticleEditForm({
       category: article.category || "Metodología",
       excerpt: article.excerpt || "",
       content: article.content || "",
-      image: article.image || "/art1.jpg",
+      image: article.image || "/service-interior-2.jpg",
       date: article.date || new Date().toISOString().split("T")[0],
     };
 

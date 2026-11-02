@@ -54,12 +54,16 @@ export function text(value: unknown): string {
 /** Formatea una fecha ISO en un texto legible en español. */
 export function formatDate(value: string): string {
   if (!value) return "";
-  const date = new Date(value);
+  // «2026-10-28» se interpreta como medianoche UTC: en España (UTC-) o en el navegador de
+  // otra zona salía el día anterior. Las fechas sin hora se leen como día del calendario.
+  const dateOnly = /^\d{4}-\d{2}-\d{2}$/.test(value);
+  const date = new Date(dateOnly ? `${value}T12:00:00Z` : value);
   if (Number.isNaN(date.getTime())) return "";
   return new Intl.DateTimeFormat("es-ES", {
     day: "2-digit",
     month: "long",
     year: "numeric",
+    ...(dateOnly ? { timeZone: "UTC" } : {}),
   }).format(date);
 }
 
