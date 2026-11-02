@@ -41,6 +41,11 @@ export const revalidate = 60;
 // producción no se comprueba) y allí ya basta con SiteScripts.
 const REVEAL_IN_VIEW_SCRIPT = `(function(){var h=innerHeight;document.querySelectorAll(".reveal-item,.reveal-scale").forEach(function(e){if(e.getBoundingClientRect().top<h)e.setAttribute("data-inview","")})})()`;
 
+// Tras un despliegue, una pestaña abierta con la versión anterior pide archivos JS que ya no
+// existen (ChunkLoadError) o los recibe cortados mientras Render cambia de instancia. Se recarga
+// la página una vez (como mucho cada 30 s) para que tome la versión nueva.
+const CHUNK_RELOAD_SCRIPT = `(function(){function r(){try{var k="alko-chunk-reload",t=+sessionStorage.getItem(k)||0;if(Date.now()-t<3e4)return;sessionStorage.setItem(k,String(Date.now()))}catch(e){return}location.reload()}addEventListener("unhandledrejection",function(e){var x=e.reason;if(x&&(x.name==="ChunkLoadError"||/Loading (CSS )?chunk/.test(x.message||"")))r()});addEventListener("error",function(e){if(e.filename&&e.filename.indexOf("/_next/static/")>-1&&e.error instanceof SyntaxError)r()})})()`;
+
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -69,7 +74,10 @@ export default async function RootLayout({
             scripts={
               <>
                 {process.env.NODE_ENV === "production" && (
-                  <script dangerouslySetInnerHTML={{ __html: REVEAL_IN_VIEW_SCRIPT }} />
+                  <>
+                    <script dangerouslySetInnerHTML={{ __html: CHUNK_RELOAD_SCRIPT }} />
+                    <script dangerouslySetInnerHTML={{ __html: REVEAL_IN_VIEW_SCRIPT }} />
+                  </>
                 )}
                 <RouteLoader />
                 <SiteScripts />

@@ -104,10 +104,22 @@ export default function SiteScripts() {
 
     if (!prefersReducedMotion) {
       const runGsap = async () => {
-        const [{ default: gsap }, { ScrollTrigger }] = await Promise.all([
-          import("gsap"),
-          import("gsap/ScrollTrigger"),
-        ]);
+        // Justo después de un despliegue en Render el trozo de GSAP puede fallar (el archivo ya no
+        // existe o llega cortado). Se reintenta una vez y, si sigue fallando, se muestra todo sin
+        // animación: el contenido nunca debe quedarse invisible.
+        const loadGsap = () => Promise.all([import("gsap"), import("gsap/ScrollTrigger")]);
+        let modules: Awaited<ReturnType<typeof loadGsap>>;
+        try {
+          modules = await loadGsap().catch(
+            () => new Promise<Awaited<ReturnType<typeof loadGsap>>>((resolve, reject) => {
+              timers.push(setTimeout(() => loadGsap().then(resolve, reject), 1500) as unknown as number);
+            }),
+          );
+        } catch {
+          animatedElements.forEach((el) => el.classList.add("is-visible"));
+          return;
+        }
+        const [{ default: gsap }, { ScrollTrigger }] = modules;
         if (cancelled) return;
         scrollTrigger = ScrollTrigger;
 
