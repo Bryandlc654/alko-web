@@ -449,21 +449,23 @@ export default function SiteScripts() {
 
       const duration = 1400;
       const startTime = performance.now();
+      // Cada cifra anima hasta su propio valor (data-target); las que no son un entero simple
+      // (p. ej. «1.450») se muestran tal cual.
+      const metrics = [metricClients, metricAwards]
+        .filter((el): el is HTMLElement => !!el)
+        .map((el) => ({ el, final: el.dataset.target || el.textContent || "", target: Number(el.dataset.target) }))
+        .filter((metric) => Number.isInteger(metric.target) && metric.target > 0);
 
       function step(now: number) {
         const elapsed = now - startTime;
         const p = Math.min(1, elapsed / duration);
         const easeP = 1 - Math.pow(1 - p, 3);
 
-        if (metricClients) metricClients.textContent = String(Math.floor(90 * easeP));
-        if (metricAwards) metricAwards.textContent = String(Math.floor(2 * easeP));
-
-        if (p < 1) {
-          requestAnimationFrame(step);
-        } else {
-          if (metricClients) metricClients.textContent = "90";
-          if (metricAwards) metricAwards.textContent = "2";
+        for (const metric of metrics) {
+          metric.el.textContent = p < 1 ? String(Math.floor(metric.target * easeP)) : metric.final;
         }
+
+        if (p < 1) requestAnimationFrame(step);
       }
       requestAnimationFrame(step);
     }

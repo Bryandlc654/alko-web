@@ -56,6 +56,7 @@ import { ArrowRight, Handshake, CalendarClock, Wallet, BadgeCheck, Phone, Messag
 import Materials from "@/components/sections/Materials";
 import Process from "@/components/sections/Process";
 import Workshop from "@/components/sections/Workshop";
+import { getExperienceData } from "@/components/sections/Experience";
 import { METHOD_HREF } from "@/lib/site";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import ProjectsGallery from "@/components/ui/ProjectsGallery";
@@ -312,6 +313,8 @@ export default function LiveEditor({
   );
 
   // Estado de contenido editable sincronizado (Home)
+  const showcaseExperience = showcaseProject ? getExperienceData(undefined, showcaseProject) : null;
+
   const [content, setContent] = useState<HomeContent>({
     ...DEFAULT_HOME_CONTENT,
     ...initialContent,
@@ -1288,6 +1291,66 @@ export default function LiveEditor({
           {/* ========================================================
               6. SECCIÓN EXPERIENCIA (90 DÍAS) - RÉPLICA EXACTA CON EDITABILIDAD
               ======================================================== */}
+          {showcaseExperience ? (
+            /* Con un proyecto en el bloque grande, este bloque muestra sus datos y se cambia en Proyectos. */
+            <section id="experiencia" className="relative bg-white text-stone-900 border-t border-stone-200/80 py-24 px-6 sm:px-12 lg:px-16 overflow-hidden">
+              <div className="absolute top-6 left-6 z-40 bg-black/70 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 flex items-center gap-2 text-white font-poppins text-xs shadow-lg">
+                <span className="w-2 h-2 rounded-full bg-amber-500" />
+                <span className="font-semibold tracking-wide">
+                  Datos del proyecto «{showcaseProject?.title}». Se cambian en{" "}
+                  <Link href="/admin/proyectos" className="underline underline-offset-2 hover:text-amber-300">
+                    Proyectos
+                  </Link>
+                </span>
+              </div>
+              <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-12 lg:gap-16 items-center">
+                <div className="w-full lg:w-1/2 relative">
+                  <div className="relative w-full aspect-[4/5] max-w-[420px] mx-auto overflow-hidden shadow-2xl border border-stone-200">
+                    {showcaseExperience.image && (
+                      <Image src={showcaseExperience.image} alt={showcaseProject?.title || ""} fill sizes="420px" className="object-cover object-center" />
+                    )}
+                  </div>
+                </div>
+                <div className="w-full lg:w-1/2 flex flex-col space-y-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                      <span className="font-mono text-[11px] tracking-[0.2em] text-stone-500 uppercase block mb-1">01 / CONTEXTO</span>
+                      <h4 className="font-serif font-light text-xl text-stone-900 mb-2 tracking-tight">El Proyecto</h4>
+                      <p className="font-sans text-sm text-stone-600 font-light leading-relaxed">{showcaseExperience.contexto}</p>
+                    </div>
+                    <div>
+                      <span className="font-mono text-[11px] tracking-[0.2em] text-stone-500 uppercase block mb-1">02 / CONDICIONANTES REALES</span>
+                      <h4 className="font-serif font-light text-xl text-stone-900 mb-2 tracking-tight">El Reto</h4>
+                      <p className="font-sans text-sm text-stone-600 font-light leading-relaxed mb-3">{showcaseExperience.reto}</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {showcaseExperience.badges.map((badge) => (
+                          <span key={badge} className="px-2.5 py-1 text-[10px] uppercase font-sans border border-stone-300 rounded-full text-stone-700 bg-stone-100/60">
+                            {badge}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="border-b border-stone-200" />
+                  {[
+                    { label: "03 / QUÉ EJECUTÓ ALKO · EL ALCANCE", metric: showcaseExperience.metric1, text: showcaseExperience.alcance },
+                    { label: "04 / DECISIONES TÉCNICAS · LA SOLUCIÓN", metric: showcaseExperience.metric2, text: showcaseExperience.solucion },
+                  ].map((item) => (
+                    <div key={item.label} className="space-y-2">
+                      <span className="font-serif text-xs text-stone-600">{item.label}</span>
+                      {item.metric && (
+                        <div className="flex items-baseline">
+                          <span className="font-sans text-5xl font-light text-stone-900 tracking-tight">{item.metric.value}</span>
+                          <span className="text-2xl font-light text-stone-900 ml-1.5">{item.metric.unit}</span>
+                        </div>
+                      )}
+                      <p className="font-sans text-sm text-stone-600 font-light leading-relaxed">{item.text}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          ) : (
           <section id="experiencia" className="relative bg-white text-stone-900 border-t border-stone-200/80 py-24 px-6 sm:px-12 lg:px-16 overflow-hidden">
             <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-12 lg:gap-16 items-center">
               {/* Contenedor de Imagen de 90 días con recuadro arquitectónico */}
@@ -1375,6 +1438,7 @@ export default function LiveEditor({
               </div>
             </div>
           </section>
+          )}
 
           {/* ========================================================
               7. SECCIÓN MATERIALES (EDITABLE EN VIVO)

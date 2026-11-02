@@ -1,12 +1,8 @@
 import Image from "@/components/ui/Image";
 import type { HomeContent, Project, Slide } from "@/lib/types";
+import { plainExcerpt } from "@/lib/utils";
 
 const MAX_PROJECT_SLIDES = 6;
-
-function excerpt(html: string | undefined, max = 220) {
-  const text = (html || "").replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim();
-  return text.length > max ? text.slice(0, max).replace(/\s+\S*$/, "") + "…" : text;
-}
 
 export default function Workshop({
   slides: defaultSlides,
@@ -28,7 +24,7 @@ export default function Workshop({
   const badge = project ? [project.tipologia, project.ubicacion].filter(Boolean).join(" · ") : content?.workshopBadge ?? "START RESEARCH";
   const title = project ? project.title : content?.workshopTitulo ?? "Soluciones arquitectónicas y técnicas con criterio constructivo.";
   const description = project
-    ? excerpt(project.content || project.solucion || project.reto)
+    ? plainExcerpt(project.content || project.solucion || project.reto)
     : content?.workshopDescripcion ?? "Investigar, coordinar y ejecutar: cada detalle responde a una exigencia funcional, constructiva y estética.";
   const href = project ? `/proyectos/${project.slug}` : "#experiencia";
   const linkText = project ? "Ver proyecto" : content?.workshopBotonTexto ?? "Ver Solución";

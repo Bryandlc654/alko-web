@@ -1,11 +1,64 @@
 import Image from "@/components/ui/Image";
-import type { HomeContent } from "@/lib/types";
+import type { HomeContent, Project } from "@/lib/types";
+import { plainExcerpt } from "@/lib/utils";
 
 const RETO_BADGES = ["Climatización", "Ventilación", "Red de Datos", "Acabados H2"];
 
-export default function Experience({ content }: { content?: HomeContent } = {}) {
-  const badges = content?.experienciaBadges && content.experienciaBadges.length > 0 ? content.experienciaBadges : RETO_BADGES;
-  const imageSrc = content?.experienciaImagen || "/90dias.jpg";
+/** «10 meses» → { value: "10", unit: "meses" }; el número es lo que anima el contador. */
+function splitMetric(raw: string | undefined, fallbackUnit: string) {
+  const match = (raw || "").trim().match(/^([\d.,]+)\s*(.*)$/);
+  return match ? { value: match[1], unit: match[2] || fallbackUnit } : null;
+}
+
+const DEFAULT_EXPERIENCE = {
+  contexto:
+    "Transformación arquitectónica e infraestructural completa de sede corporativa de dos plantas en Madrid para Start Research, requiriendo operatividad continua, áreas de trabajo abiertas y laboratorios analíticos.",
+  reto: "Plazo de entrega inamovible de 90 días naturales, convivencia con normativas acústicas estrictas e integración de complejas redes de ventilación y cableado de datos en alturas de falso techo limitadas.",
+  metric1: { value: "90", unit: "Días" },
+  alcance:
+    "Demolición selectiva, tabiquería técnica, climatización VRF simultánea, renovación forzada de aire, distribución de fibra óptica y cableado estructurado, carpinterías a medida y acabados de especificación H2.",
+  metric2: { value: "2", unit: "Plantas" },
+  solucion:
+    "Una única dirección facultativa que coordinó en paralelo compras críticas de maquinaria e ingeniería de trazados en plenum, neutralizando desviaciones y entregando la obra con verificación técnica total antes del plazo fijado.",
+};
+
+/**
+ * Contenido del bloque: el del proyecto elegido para el bloque grande de la portada
+ * (Proyectos › Poner en bloque grande) o, si no hay ninguno, el de ejemplo.
+ */
+export function getExperienceData(content?: HomeContent, project?: Project | null) {
+  const defaultBadges = content?.experienciaBadges && content.experienciaBadges.length > 0 ? content.experienciaBadges : RETO_BADGES;
+  if (!project) {
+    return { ...DEFAULT_EXPERIENCE, image: content?.experienciaImagen || "/90dias.jpg", badges: defaultBadges };
+  }
+  const alcance = (project.alcance || []).filter(Boolean);
+  return {
+    image: project.fotoDespues || project.galeria?.[0] || project.imagen,
+    // Sin descripción general, un resumen con la ficha del proyecto.
+    contexto:
+      plainExcerpt(project.content, 260) ||
+      [
+        [project.tipologia, project.ubicacion].filter(Boolean).join(" en "),
+        project.superficie,
+        project.plazo && `${project.plazo} de obra`,
+        project.cliente && `Cliente: ${project.cliente}`,
+      ]
+        .filter(Boolean)
+        .join(" · ") + ".",
+    reto: plainExcerpt(project.reto, 240),
+    // Como etiquetas solo caben partidas cortas.
+    badges: alcance.filter((item) => item.length <= 28).slice(0, 4),
+    metric1: splitMetric(project.plazo, "meses"),
+    alcance: alcance.length > 0 ? plainExcerpt(alcance.join(", "), 240) : plainExcerpt(project.resultado, 240),
+    metric2: splitMetric(project.superficie, "m²"),
+    solucion: plainExcerpt(project.solucion, 240),
+  };
+}
+
+export default function Experience({ content, project }: { content?: HomeContent; project?: Project | null } = {}) {
+  const data = getExperienceData(content, project);
+  const { badges } = data;
+  const imageSrc = data.image;
   return (
     <section
       id="experiencia"
@@ -49,7 +102,7 @@ export default function Experience({ content }: { content?: HomeContent } = {}) 
               <Image
                 id="expand-target-image"
                 src={imageSrc}
-                alt="ALKO Terraza y horizonte arquitectónico"
+                alt={project ? project.title : "ALKO Terraza y horizonte arquitectónico"}
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover object-center brightness-[0.98] contrast-[1.02]"
@@ -71,9 +124,7 @@ export default function Experience({ content }: { content?: HomeContent } = {}) 
                     El Proyecto
                   </h4>
                   <p className="font-sans text-base sm:text-lg text-stone-600 font-light leading-relaxed tracking-normal">
-                    Transformación arquitectónica e infraestructural completa de sede corporativa
-                    de dos plantas en Madrid para Start Research, requiriendo operatividad
-                    continua, áreas de trabajo abiertas y laboratorios analíticos.
+                    {data.contexto}
                   </p>
                 </div>
 
@@ -88,10 +139,9 @@ export default function Experience({ content }: { content?: HomeContent } = {}) 
                       </h4>
                     </div>
                     <p className="font-sans text-base sm:text-lg text-stone-600 font-light leading-relaxed tracking-normal">
-                      Plazo de entrega inamovible de 90 días naturales, convivencia con normativas
-                      acústicas estrictas e integración de complejas redes de ventilación y
-                      cableado de datos en alturas de falso techo limitadas.
+                      {data.reto}
                     </p>
+                    {badges.length > 0 && (
                     <div className="flex flex-wrap gap-2 pt-2">
                       {badges.map((badge) => (
                         <span
@@ -102,6 +152,7 @@ export default function Experience({ content }: { content?: HomeContent } = {}) 
                         </span>
                       ))}
                     </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -142,17 +193,20 @@ export default function Experience({ content }: { content?: HomeContent } = {}) 
                       <span className="font-serif text-xs sm:text-sm text-stone-600 font-normal">
                         03 / QUÉ EJECUTÓ ALKO · EL ALCANCE
                       </span>
+                      {data.metric1 && (
                       <div className="flex items-baseline">
                         <span
                           id="metric-num-clients"
+                          data-target={data.metric1.value}
                           className="font-sans text-5xl sm:text-6xl lg:text-7xl font-light text-stone-900 tracking-tight leading-none"
                         >
-                          90
+                          {data.metric1.value}
                         </span>
                         <span className="text-2xl sm:text-3xl font-light text-stone-900 ml-1.5">
-                          Días
+                          {data.metric1.unit}
                         </span>
                       </div>
+                      )}
                     </div>
 
                     <div className="flex-shrink-0 self-center">
@@ -163,9 +217,7 @@ export default function Experience({ content }: { content?: HomeContent } = {}) 
                   </div>
 
                   <p className="font-sans text-base sm:text-lg text-stone-600 font-light leading-relaxed tracking-normal pl-11 sm:pl-14">
-                    Demolición selectiva, tabiquería técnica, climatización VRF simultánea,
-                    renovación forzada de aire, distribución de fibra óptica y cableado
-                    estructurado, carpinterías a medida y acabados de especificación H2.
+                    {data.alcance}
                   </p>
                 </div>
 
@@ -198,17 +250,20 @@ export default function Experience({ content }: { content?: HomeContent } = {}) 
                       <span className="font-serif text-xs sm:text-sm text-stone-600 font-normal">
                         04 / DECISIONES TÉCNICAS · LA SOLUCIÓN
                       </span>
+                      {data.metric2 && (
                       <div className="flex items-baseline">
                         <span
                           id="metric-num-awards"
+                          data-target={data.metric2.value}
                           className="font-sans text-5xl sm:text-6xl lg:text-7xl font-light text-stone-900 tracking-tight leading-none"
                         >
-                          2
+                          {data.metric2.value}
                         </span>
                         <span className="text-2xl sm:text-3xl font-light text-stone-900 ml-1.5">
-                          Plantas
+                          {data.metric2.unit}
                         </span>
                       </div>
+                      )}
                     </div>
 
                     <div className="flex-shrink-0 self-center">
@@ -219,9 +274,7 @@ export default function Experience({ content }: { content?: HomeContent } = {}) 
                   </div>
 
                   <p className="font-sans text-base sm:text-lg text-stone-600 font-light leading-relaxed tracking-normal pl-11 sm:pl-14">
-                    Una única dirección facultativa que coordinó en paralelo compras críticas de
-                    maquinaria e ingeniería de trazados en plenum, neutralizando desviaciones y
-                    entregando la obra con verificación técnica total antes del plazo fijado.
+                    {data.solucion}
                   </p>
                 </div>
               </div>

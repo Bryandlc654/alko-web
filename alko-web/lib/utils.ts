@@ -40,6 +40,12 @@ export function decodeEntities(value: string): string {
     .replace(/&[a-z#0-9]+;/gi, (entity) => NAMED_ENTITIES[entity] ?? entity);
 }
 
+/** Texto plano y recortado (sin cortar palabras) a partir de HTML, para resúmenes. */
+export function plainExcerpt(html: string | undefined, max = 220): string {
+  const plain = decodeEntities(stripHtml((html || "").replace(/<\/?(p|br|li|h\d)[^>]*>/gi, " "))).replace(/\s+/g, " ").trim();
+  return plain.length > max ? plain.slice(0, max).replace(/\s+\S*$/, "") + "…" : plain;
+}
+
 /** Normaliza un valor desconocido a string (nunca devuelve `null`/`undefined`). */
 export function text(value: unknown): string {
   return typeof value === "string" ? value : value == null ? "" : String(value);

@@ -21,7 +21,7 @@ export default async function Home() {
       <Process fases={data.homeContent.fases && data.homeContent.fases.length > 0 ? data.homeContent.fases : data.fases} content={data.homeContent} />
       <ServicesSection sectors={data.sectors} content={data.homeContent} />
       <Workshop slides={data.showcaseSlides} content={data.homeContent} project={data.showcaseProject} />
-      <Experience content={data.homeContent} />
+      <Experience content={data.homeContent} project={data.showcaseProject} />
       <Materials fabricantes={data.fabricantes} content={data.homeContent} />
       <ArticlesSection articles={data.articles} content={data.homeContent} />
       <ContactCta settings={data.settings} content={data.homeContent} />
