@@ -374,9 +374,14 @@ export async function saveDbProject(projectData: Partial<Project> & { id?: strin
   let updatedList = [...currentProjects];
 
   const projectId = projectData.id && projectData.id.trim() !== "" ? projectData.id : "project-" + Date.now();
-  const slug = projectData.slug || projectData.title.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  const baseSlug = projectData.slug || projectData.title.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
-  const existingIndex = updatedList.findIndex(p => String(p.id) === String(projectId) || p.slug === slug);
+  // Solo se actualiza el proyecto con el mismo id: un proyecto nuevo con el mismo t\u00edtulo
+  // no debe reemplazar al existente, sino recibir una URL propia (reforma-alicante-2\u2026).
+  const existingIndex = updatedList.findIndex(p => String(p.id) === String(projectId));
+  const slugTaken = (s: string) => updatedList.some((p, i) => i !== existingIndex && p.slug === s);
+  let slug = baseSlug;
+  for (let n = 2; slugTaken(slug); n++) slug = `${baseSlug}-${n}`;
 
   const baseProject = existingIndex >= 0 ? updatedList[existingIndex] : null;
 
