@@ -49,7 +49,7 @@ const nextConfig = {
       // Oficinas usa ahora la plantilla común de servicio.
       { source: "/oficinas", destination: "/servicios/oficinas", permanent: true },
       // Artículos de ejemplo retirados.
-      { source: "/conocimiento/aerotermia-y-suelo-radiante-en-rehabilitacion", destination: "/conocimiento/articulos", permanent: true },
+      { source: "/conocimiento/aerotermia-y-suelo-radiante-en-rehabilitacion", destination: "/conocimiento/suelo-radiante-con-aerotermia", permanent: true },
       { source: "/conocimiento/carpinterias-de-aluminio-de-hoja-oculta", destination: "/conocimiento/articulos", permanent: true },
     ];
   },
