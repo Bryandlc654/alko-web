@@ -51,7 +51,7 @@ export const DEFAULT_PROJECTS: Project[] = [
     ubicacion: "Pozuelo de Alarcón, Madrid",
     tipologia: "Vivienda Unifamiliar Aislada",
     cliente: "Cliente particular",
-    servicio: "viviendas",
+    servicio: "residencial",
     superficie: "520 m²",
     plazo: "14 meses",
     imagen: "/start-research-1.jpg",
@@ -90,7 +90,7 @@ export const DEFAULT_PROJECTS: Project[] = [
     ubicacion: "Barrio de Salamanca, Madrid",
     tipologia: "Residencial de Alta Gama",
     cliente: "Cliente particular",
-    servicio: "reformas-integrales",
+    servicio: "residencial",
     superficie: "280 m²",
     plazo: "6 meses",
     imagen: "/el-viso.jpg",
@@ -164,45 +164,57 @@ export const DEFAULT_PROJECTS: Project[] = [
 export const DEFAULT_SECTORS: Sector[] = [
   {
     id: "s-1",
-    slug: "viviendas",
-    numero: "01",
-    title: "Viviendas Unifamiliares",
-    descripcion: "Construcción y reforma de chalets y residencias singulares con máxima exigencia en acabados y eficiencia.",
-    imagen: "/p1.jpg",
-    enlace: "/servicios/viviendas",
-    content: "<p>Acompañamos a arquitectos y propietarios en la materialización de residencias exclusivas. Desde la cimentación hasta el último detalle de cerrajería y domótica, aportamos rigor constructivo y transparencia financiera en cada fase.</p>",
-  },
-  {
-    id: "s-2",
-    slug: "reformas-integrales",
-    numero: "02",
-    title: "Reformas Integrales de Alta Gama",
-    descripcion: "Transformación completa de pisos señoriales, áticos y viviendas exclusivas en las mejores zonas de Madrid.",
-    imagen: "/p2.jpg",
-    enlace: "/servicios/reformas-integrales",
-    content: "<p>Especialistas en redistribución espacial, refuerzo estructural y restauración de elementos arquitectónicos protegidos. Coordinamos a todos los gremios especializados bajo la batuta de un arquitecto técnico asignado a tu proyecto.</p>",
-  },
-  {
-    id: "s-3",
     slug: "oficinas",
-    numero: "03",
-    title: "Sedes Corporativas & Oficinas",
+    numero: "01",
+    title: "Oficinas",
     descripcion: "Implantación de espacios de trabajo que potencian la cultura de empresa y cumplen los más altos estándares técnicos.",
-    imagen: "/p3.jpg",
+    imagen: "/sector-oficinas.jpg",
     enlace: "/servicios/oficinas",
     content: "<p>Acondicionamiento y fit-out corporativo llave en mano. Minimizamos los tiempos de inactividad con cronogramas exigentes, garantizando el aislamiento acústico y la flexibilidad de instalaciones requeridas por las compañías líderes.</p>",
   },
   {
-    id: "s-4",
+    id: "s-2",
+    slug: "residencial",
+    numero: "02",
+    title: "Residencial",
+    descripcion: "Viviendas unifamiliares, pisos y áticos: obra nueva y reformas integrales con máxima exigencia en acabados y eficiencia.",
+    imagen: "/service-interior-1.jpg",
+    enlace: "/servicios/residencial",
+    content: "<p>Acompañamos a arquitectos y propietarios desde la cimentación o la demolición hasta el último detalle de carpintería y domótica. Redistribución espacial, refuerzo estructural y restauración de elementos protegidos, con un arquitecto técnico asignado y un presupuesto cerrado en cada fase.</p>",
+  },
+  {
+    id: "s-3",
     slug: "retail",
-    numero: "04",
-    title: "Espacios Comerciales & Retail",
+    numero: "03",
+    title: "Retail",
     descripcion: "Locales comerciales, boutiques y showrooms donde la imagen de marca y los plazos de apertura son innegociables.",
-    imagen: "/p1.jpg",
+    imagen: "/sector-retail.jpg",
     enlace: "/servicios/retail",
     content: "<p>Ejecución ágil de proyectos comerciales con estricto control de costes y plazos de apertura al público. Cumplimiento exhaustivo de normativas de accesibilidad, seguridad y licencias de actividad en Madrid.</p>",
   },
+  {
+    id: "s-4",
+    slug: "hospitality",
+    numero: "04",
+    title: "Hospitality",
+    descripcion: "Hoteles, restaurantes y espacios de ocio donde la experiencia del cliente y la fecha de apertura marcan cada decisión.",
+    imagen: "/sector-hospitality.jpg",
+    enlace: "/servicios/hospitality",
+    content: "<p>Obra por fases para mantener la actividad cuando hace falta, instalaciones dimensionadas para un uso intensivo y acabados resistentes que conservan la imagen del espacio. Coordinamos licencias de actividad, protección contra incendios y accesibilidad en Madrid.</p>",
+  },
 ];
+
+/** Servicios anteriores que ahora forman parte de otro (los proyectos antiguos aún los usan). */
+const SECTOR_ALIASES: Record<string, string> = {
+  viviendas: "residencial",
+  "reformas-integrales": "residencial",
+};
+
+/** Slug vigente de un servicio, traduciendo los antiguos. */
+export function sectorSlug(slug: string | undefined): string {
+  const value = slug || "";
+  return SECTOR_ALIASES[value] ?? value;
+}
 
 export const DEFAULT_FASES: Fase[] = [
   {

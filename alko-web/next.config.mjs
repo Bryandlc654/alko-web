@@ -43,6 +43,9 @@ const nextConfig = {
       { source: "/conocimiento", destination: "/conocimiento/articulos", permanent: true },
       // El método ALKO es ahora una sección de Nosotros.
       { source: "/metodo", destination: "/nosotros#metodo", permanent: true },
+      // Viviendas y reformas integrales se agrupan ahora en Residencial.
+      { source: "/servicios/viviendas", destination: "/servicios/residencial", permanent: true },
+      { source: "/servicios/reformas-integrales", destination: "/servicios/residencial", permanent: true },
     ];
   },
   async headers() {

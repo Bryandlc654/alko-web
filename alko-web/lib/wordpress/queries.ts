@@ -11,6 +11,7 @@ import {
   DEFAULT_SECTORS,
   DEFAULT_SETTINGS,
   DEFAULT_SHOWCASE_SLIDES,
+  sectorSlug,
 } from "../content";
 import type {
   Article,
@@ -164,9 +165,9 @@ export async function getProjectBySlug(slug: string): Promise<Project | null> {
   return DEFAULT_PROJECTS.find((project) => project.slug === slug) ?? null;
 }
 
-export async function getProjectsBySector(sectorSlug: string): Promise<Project[]> {
+export async function getProjectsBySector(slug: string): Promise<Project[]> {
   const all = await getProjects();
-  return all.filter((p) => p.servicio === sectorSlug);
+  return all.filter((p) => sectorSlug(p.servicio) === sectorSlug(slug));
 }
 
 /* -------------------------------- Sectores -------------------------------- */
@@ -188,7 +189,8 @@ export async function getSectors(): Promise<Sector[]> {
   );
 }
 
-export async function getSectorBySlug(slug: string): Promise<Sector | null> {
+export async function getSectorBySlug(rawSlug: string): Promise<Sector | null> {
+  const slug = sectorSlug(rawSlug);
   try {
     const dbSectors = await getDbSectors();
     const found = dbSectors.find((s) => s.slug === slug || String(s.id) === slug);

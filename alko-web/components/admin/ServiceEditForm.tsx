@@ -480,7 +480,7 @@ export default function ServiceEditForm({ initialSector, isNew = false }: Servic
                     type="text"
                     value={sector.slug || ""}
                     onChange={(e) => setSector({ ...sector, slug: e.target.value })}
-                    placeholder="reformas-integrales"
+                    placeholder="residencial"
                     className="w-full px-3.5 py-2.5 rounded-r-xl border border-slate-200 text-xs font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
                   />
                 </div>

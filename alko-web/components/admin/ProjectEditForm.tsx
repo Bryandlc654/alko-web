@@ -38,7 +38,7 @@ export default function ProjectEditForm({ initialProject, isNew = false }: Proje
       ubicacion: "Madrid",
       tipologia: "Vivienda Unifamiliar",
       cliente: "Cliente particular",
-      servicio: "viviendas",
+      servicio: "residencial",
       superficie: "450 m²",
       plazo: "12 meses",
       imagen: "/start-research-1.jpg",

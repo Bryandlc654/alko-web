@@ -435,7 +435,7 @@ export async function saveDbProject(projectData: Partial<Project> & { id?: strin
     ubicacion: projectData.ubicacion || baseProject?.ubicacion || "Madrid",
     tipologia: projectData.tipologia || baseProject?.tipologia || "Residencial",
     cliente: projectData.cliente ?? baseProject?.cliente ?? "",
-    servicio: projectData.servicio || baseProject?.servicio || "reformas-integrales",
+    servicio: projectData.servicio || baseProject?.servicio || "residencial",
     superficie: projectData.superficie ?? baseProject?.superficie ?? "",
     plazo: projectData.plazo ?? baseProject?.plazo ?? "",
     imagen: projectData.imagen || baseProject?.imagen || "/start-research-1.jpg",

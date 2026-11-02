@@ -8,6 +8,7 @@ import ContactCta from "@/components/sections/ContactCta";
 import Materials from "@/components/sections/Materials";
 import { parseService } from "@/lib/services";
 import { ROUTES, SITE } from "@/lib/site";
+import { sectorSlug } from "@/lib/content";
 import {
   getFabricantes,
   getFases,
@@ -116,7 +117,7 @@ export default async function SectorDetailPage({
   const faqList = landing?.faqs && landing.faqs.length > 0 ? landing.faqs : DEFAULT_FAQS;
 
   // Proyectos representativos de este servicio
-  const ownProjects = projects.filter((project) => project.servicio === sector.slug);
+  const ownProjects = projects.filter((project) => sectorSlug(project.servicio) === sector.slug);
   const showcase = ownProjects.length > 0 
     ? ownProjects.slice(0, 4) 
     : projects.slice(0, 4);
