@@ -210,6 +210,19 @@ const SECTOR_ALIASES: Record<string, string> = {
   "reformas-integrales": "residencial",
 };
 
+/** Búsqueda principal de cada servicio (títulos y textos de su página, para posicionarla). */
+const SECTOR_KEYWORDS: Record<string, string> = {
+  oficinas: "reformas de oficinas",
+  residencial: "reformas de viviendas",
+  retail: "reformas de locales comerciales",
+  hospitality: "reformas de hoteles y restaurantes",
+};
+
+/** Frase de búsqueda del servicio, en minúsculas (p. ej. «reformas de oficinas»). */
+export function sectorKeyword(sector: { slug: string; title: string }): string {
+  return SECTOR_KEYWORDS[sectorSlug(sector.slug)] ?? `obras de ${sector.title.toLowerCase()}`;
+}
+
 /** Slug vigente de un servicio, traduciendo los antiguos. */
 export function sectorSlug(slug: string | undefined): string {
   const value = slug || "";
