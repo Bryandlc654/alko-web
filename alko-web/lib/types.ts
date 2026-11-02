@@ -78,6 +78,10 @@ export interface Project {
   materiales: ProjectMaterial[];
   /** Cierre: qué se consiguió con el proyecto. */
   resultado: string;
+  /** Llamada a la acción final de la página del proyecto (vacío = texto por defecto). */
+  ctaTitulo?: string;
+  ctaTexto?: string;
+  ctaBoton?: string;
   /** Proyecto de la línea ALKO Exclusiva: sello en los listados y plantilla propia. */
   exclusivo?: boolean;
   /** Reseña del cliente (si está vacía, la página no muestra el bloque). */

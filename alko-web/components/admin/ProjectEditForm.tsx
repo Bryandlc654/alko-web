@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import type { Project } from "@/lib/types";
 import { sectorSlug } from "@/lib/content";
+import { projectCta } from "@/lib/project-cta";
 import { openMediaPicker } from "@/components/admin/media";
 
 interface ProjectEditFormProps {
@@ -53,6 +54,9 @@ export default function ProjectEditForm({ initialProject, isNew = false, sectors
       resultado: "",
     };
   });
+
+  // Textos por defecto de la llamada final (solo para mostrarlos como ejemplo en los campos).
+  const ctaDefaults = projectCta({ title: project.title || "este proyecto", exclusivo: project.exclusivo });
 
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -459,6 +463,46 @@ export default function ProjectEditForm({ initialProject, isNew = false, sectors
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-blue-600 text-xs text-slate-800 leading-relaxed bg-white"
               />
             </div>
+          </div>
+        </div>
+
+        {/* Llamada a la acción final: vacía = textos por defecto (se muestran como ejemplo). */}
+        <div className="space-y-4">
+          <div>
+            <h3 className="text-sm font-semibold text-slate-900">Llamada a la acción final</h3>
+            <p className="mt-1 text-xs text-slate-500">
+              Bloque de cierre de la página del proyecto, con el botón de contacto. Si lo dejas vacío se usa el texto de ejemplo.
+            </p>
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1.5">Título</label>
+            <input
+              type="text"
+              value={project.ctaTitulo || ""}
+              onChange={(e) => setProject({ ...project, ctaTitulo: e.target.value })}
+              placeholder={ctaDefaults.titulo.replace(/\n/g, " ")}
+              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-blue-600 text-xs text-slate-800 bg-white"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1.5">Texto</label>
+            <textarea
+              rows={2}
+              value={project.ctaTexto || ""}
+              onChange={(e) => setProject({ ...project, ctaTexto: e.target.value })}
+              placeholder={ctaDefaults.texto}
+              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-blue-600 text-xs text-slate-800 bg-white leading-relaxed"
+            />
+          </div>
+          <div className="sm:w-1/2">
+            <label className="block text-xs font-semibold text-slate-700 mb-1.5">Texto del botón</label>
+            <input
+              type="text"
+              value={project.ctaBoton || ""}
+              onChange={(e) => setProject({ ...project, ctaBoton: e.target.value })}
+              placeholder={ctaDefaults.boton}
+              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-blue-600 text-xs text-slate-800 bg-white"
+            />
           </div>
         </div>
 

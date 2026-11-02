@@ -8,6 +8,7 @@ import ContactTrigger from "@/components/contact/ContactTrigger";
 import ExclusiveSeal, { EXCLUSIVE_GOLD } from "@/components/ui/ExclusiveSeal";
 import { ROUTES } from "@/lib/site";
 import { splitLead } from "@/lib/utils";
+import { projectCta } from "@/lib/project-cta";
 import type { Project, Sector } from "@/lib/types";
 
 const IVORY = "#f5f1e8";
@@ -76,6 +77,7 @@ export default function ExclusiveProject({
   const alcance = (project.alcance || []).filter(Boolean);
   const materiales = (project.materiales || []).filter((m) => m.elemento || m.detalle);
   const cifras = (project.cifras || []).filter((c) => c.valor);
+  const cta = projectCta(project);
 
   return (
     <main className="bg-stone-950 text-white">
@@ -373,18 +375,16 @@ export default function ExclusiveProject({
         <div className="absolute inset-0 -z-10 bg-stone-950/80" />
         <Container className="py-28 sm:py-36">
           <ExclusiveSeal size={84} className="mx-auto" />
-          <h2 className="mx-auto mt-10 max-w-3xl font-serif text-3xl font-light leading-tight tracking-tight sm:text-5xl">
-            Un proyecto a la medida de tu espacio
+          <h2 className="mx-auto mt-10 max-w-3xl whitespace-pre-line font-serif text-3xl font-light leading-tight tracking-tight sm:text-5xl">
+            {cta.titulo}
           </h2>
-          <p className="mx-auto mt-6 max-w-xl text-base font-light leading-relaxed text-white/70 sm:text-lg">
-            Cuéntanos qué tienes en mente. El equipo de ALKO Exclusiva te atenderá de forma personal y reservada.
-          </p>
+          <p className="mx-auto mt-6 max-w-xl text-base font-light leading-relaxed text-white/70 sm:text-lg">{cta.texto}</p>
           <ContactTrigger
             mode="avanzado"
             source={`ALKO Exclusiva · ${project.title}`}
             className="mt-12 inline-flex items-center justify-center gap-3 border border-[#c6a66b] px-10 py-4 text-[11px] font-semibold uppercase tracking-[0.25em] text-white transition hover:bg-white hover:text-stone-950"
           >
-            Solicitar una conversación
+            {cta.boton}
           </ContactTrigger>
         </Container>
       </section>

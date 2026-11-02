@@ -6,6 +6,7 @@ import Container from "@/components/ui/Container";
 import Lightbox from "@/components/ui/Lightbox";
 import ContactCta from "@/components/sections/ContactCta";
 import ExclusiveProject from "@/components/projects/ExclusiveProject";
+import { projectCta } from "@/lib/project-cta";
 import { ROUTES } from "@/lib/site";
 import { getProjectBySlug, getProjects, getSectorBySlug, getSettings } from "@/lib/wordpress";
 import { splitLead } from "@/lib/utils";
@@ -71,6 +72,8 @@ export default async function ProjectDetail({
     prev && { label: "Proyecto anterior", project: prev, arrow: "←" },
     next && next.slug !== prev?.slug && { label: "Proyecto siguiente", project: next, arrow: "→" },
   ].filter(Boolean) as { label: string; project: typeof project; arrow: string }[];
+
+  const cta = projectCta(project);
 
   // Los proyectos ALKO Exclusiva tienen su propia plantilla.
   if (project.exclusivo) {
@@ -413,8 +416,15 @@ export default async function ProjectDetail({
         </nav>
       )}
 
-      {/* 4. Contacto CTA Final */}
-      <ContactCta settings={settings} />
+      {/* 4. Llamada a la acción final del proyecto (textos editables en el panel) */}
+      <ContactCta
+        settings={settings}
+        titulo={cta.titulo}
+        descripcion={cta.texto}
+        boton={cta.boton}
+        imagen={project.fotoDespues?.trim() || project.imagen}
+        source={`Proyecto ${project.title}`}
+      />
     </main>
   );
 }
