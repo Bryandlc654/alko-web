@@ -5,6 +5,7 @@ import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import Container from "@/components/ui/Container";
 import Lightbox from "@/components/ui/Lightbox";
 import ContactCta from "@/components/sections/ContactCta";
+import ExclusiveProject from "@/components/projects/ExclusiveProject";
 import { ROUTES } from "@/lib/site";
 import { getProjectBySlug, getProjects, getSectorBySlug, getSettings } from "@/lib/wordpress";
 import { splitLead } from "@/lib/utils";
@@ -34,7 +35,7 @@ export async function generateMetadata({
   const project = await getProjectBySlug(slug);
   if (!project) return {};
   return {
-    title: `${project.title} — ALKO`,
+    title: `${project.title} — ${project.exclusivo ? "ALKO Exclusiva" : "ALKO"}`,
     description: splitLead(project.content).lead.slice(0, 160),
     openGraph: { images: project.imagen ? [project.imagen] : undefined },
   };
@@ -70,6 +71,11 @@ export default async function ProjectDetail({
     prev && { label: "Proyecto anterior", project: prev, arrow: "←" },
     next && next.slug !== prev?.slug && { label: "Proyecto siguiente", project: next, arrow: "→" },
   ].filter(Boolean) as { label: string; project: typeof project; arrow: string }[];
+
+  // Los proyectos ALKO Exclusiva tienen su propia plantilla.
+  if (project.exclusivo) {
+    return <ExclusiveProject project={project} servicio={servicio} neighbours={neighbours} />;
+  }
 
   // Antes y después solo si se han subido las dos; si no, se muestra únicamente la galería.
   const fotoAntes = project.fotoAntes?.trim();

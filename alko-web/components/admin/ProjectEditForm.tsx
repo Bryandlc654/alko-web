@@ -185,6 +185,22 @@ export default function ProjectEditForm({ initialProject, isNew = false }: Proje
           </div>
         )}
 
+        {/* ALKO Exclusiva: sello en los listados y plantilla de página propia. */}
+        <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-amber-200 bg-amber-50/60 p-4">
+          <input
+            type="checkbox"
+            checked={Boolean(project.exclusivo)}
+            onChange={(e) => setProject({ ...project, exclusivo: e.target.checked })}
+            className="mt-0.5 h-4 w-4 rounded border-slate-300 accent-amber-600"
+          />
+          <span>
+            <span className="block text-sm font-semibold text-slate-900">Proyecto ALKO Exclusiva</span>
+            <span className="mt-0.5 block text-xs text-slate-600">
+              Muestra el sello ALKO Exclusiva en los listados y usa la plantilla exclusiva en la página del proyecto.
+            </span>
+          </span>
+        </label>
+
         {/* Bloque 1: Identificación y Ficha General */}
         <div>
           <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">

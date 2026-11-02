@@ -4,6 +4,7 @@ import Image from "@/components/ui/Image";
 import Link from "next/link";
 import { useMemo, useState, useEffect, useRef } from "react";
 import { ROUTES } from "@/lib/site";
+import ExclusiveSeal, { EXCLUSIVE_GOLD } from "@/components/ui/ExclusiveSeal";
 import type { Project } from "@/lib/types";
 import { Loader2 } from "lucide-react";
 
@@ -144,6 +145,11 @@ export default function ProjectsGallery({ projects }: { projects: ProjectSummary
                     <span className="absolute left-0 top-0 bg-stone-950 px-4 py-2 font-mono text-[11px] tracking-[0.2em] uppercase text-white">
                       {project.anio}
                     </span>
+                    {project.exclusivo && (
+                      <span className="absolute right-4 top-4 rounded-full bg-stone-950/55 p-1.5 backdrop-blur-sm sm:right-6 sm:top-6">
+                        <ExclusiveSeal size={92} className="transition-transform duration-1000 ease-out group-hover:rotate-[20deg]" />
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -157,6 +163,15 @@ export default function ProjectsGallery({ projects }: { projects: ProjectSummary
                     </span>
                   </div>
 
+                  {project.exclusivo && (
+                    <span
+                      className="mt-4 flex items-center gap-3 font-mono text-[10px] sm:text-[11px] tracking-[0.3em] uppercase"
+                      style={{ color: EXCLUSIVE_GOLD }}
+                    >
+                      <span aria-hidden="true" className="h-px w-8" style={{ backgroundColor: EXCLUSIVE_GOLD }} />
+                      ALKO Exclusiva
+                    </span>
+                  )}
                   <h3 className="mt-4 font-serif font-light text-2xl sm:text-3xl lg:text-4xl text-stone-900 leading-[1.1] tracking-tight group-hover:text-amber-800 transition-colors duration-300">
                     {project.title}
                   </h3>

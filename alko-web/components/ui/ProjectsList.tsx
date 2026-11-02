@@ -2,6 +2,7 @@ import Image from "@/components/ui/Image";
 import Link from "next/link";
 import { ROUTES } from "@/lib/site";
 import type { Project } from "@/lib/types";
+import ExclusiveSeal from "@/components/ui/ExclusiveSeal";
 
 /** Listado editorial de proyectos (reutilizado en el inicio y en /proyectos). */
 export default function ProjectsList({ projects }: { projects: Project[] }) {
@@ -45,6 +46,11 @@ export default function ProjectsList({ projects }: { projects: Project[] }) {
               sizes="(max-width: 768px) 100vw, 1200px"
               className="object-cover object-center filter brightness-100 contrast-[1.02] transition-transform duration-1000 ease-out group-hover:scale-105 rounded-none"
             />
+            {project.exclusivo && (
+              <span className="absolute right-5 top-5 rounded-full bg-stone-950/55 p-1.5 backdrop-blur-sm sm:right-8 sm:top-8">
+                <ExclusiveSeal size={104} />
+              </span>
+            )}
           </div>
         </Link>
       ))}

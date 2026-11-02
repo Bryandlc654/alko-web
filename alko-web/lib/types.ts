@@ -78,6 +78,8 @@ export interface Project {
   materiales: ProjectMaterial[];
   /** Cierre: qué se consiguió con el proyecto. */
   resultado: string;
+  /** Proyecto de la línea ALKO Exclusiva: sello en los listados y plantilla propia. */
+  exclusivo?: boolean;
   /** Reseña del cliente (si está vacía, la página no muestra el bloque). */
   resenaTexto?: string;
   /** Nombre de quien firma la reseña (p. ej. «Laura M.»). */

@@ -269,6 +269,11 @@ export default function ProjectsManager({
                       <span>En Portada</span>
                     </div>
                   )}
+                  {project.exclusivo && (
+                    <div className="bg-stone-950 text-[#c6a66b] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md">
+                      ALKO Exclusiva
+                    </div>
+                  )}
                   {isShowcase && (
                     <div className="bg-amber-500 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md flex items-center gap-1">
                       <Maximize2 className="w-3 h-3" />
