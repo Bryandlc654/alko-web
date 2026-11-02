@@ -202,6 +202,684 @@ export const DEFAULT_SECTORS: Sector[] = [
     enlace: "/servicios/hospitality",
     content: "<p>Obra por fases para mantener la actividad cuando hace falta, instalaciones dimensionadas para un uso intensivo y acabados resistentes que conservan la imagen del espacio. Coordinamos licencias de actividad, protección contra incendios y accesibilidad en Madrid.</p>",
   },
+  {
+    id: "s-5",
+    slug: "viviendas-unifamiliares",
+    numero: "05",
+    title: "Viviendas unifamiliares",
+    descripcion: "Proyecto y obra de viviendas unifamiliares completas: obra nueva, ampliaciones y rehabilitaciones integrales con un único responsable.",
+    imagen: "/el-viso.jpg",
+    enlace: "/servicios/viviendas-unifamiliares",
+    content: "<p>Desarrollamos la vivienda unifamiliar completa, del proyecto y la licencia a la entrega llave en mano: cimentación, estructura, envolvente eficiente, instalaciones, interiorismo y exteriores. Un único equipo técnico y un presupuesto cerrado por fases.</p>",
+    landing: {
+      "lead": "Proyecto y obra de viviendas unifamiliares en Madrid: obra nueva, ampliaciones y rehabilitaciones integrales con un único equipo técnico, presupuesto cerrado y calendario por fases, desde la licencia hasta la entrega.",
+      "supportContent": "Coordinamos arquitectura, estructura, instalaciones e interiorismo como un solo proyecto. La casa se diseña pensando en cómo se va a vivir y en lo que costará mantenerla: envolvente bien aislada, aerotermia, fotovoltaica y domótica integradas desde el principio.",
+      "commitments": [
+        {
+          "title": "Proyecto completo",
+          "text": "Arquitectura, estructura e instalaciones definidas antes de empezar."
+        },
+        {
+          "title": "Presupuesto por fases",
+          "text": "Cerrado por partidas y certificado según avance."
+        },
+        {
+          "title": "Casa eficiente",
+          "text": "Envolvente, aerotermia y fotovoltaica proyectadas juntas."
+        }
+      ],
+      "problems": [
+        {
+          "avoid": "Proyectos que llegan a obra sin definir instalaciones ni acabados.",
+          "promise": "Proyecto ejecutivo completo con memoria de calidades cerrada antes de la licencia."
+        },
+        {
+          "avoid": "Varios contratistas que se pasan la responsabilidad entre ellos.",
+          "promise": "Un único responsable desde la cimentación hasta la última carpintería."
+        },
+        {
+          "avoid": "Casas que gastan mucho en clima y mantenimiento.",
+          "promise": "Envolvente y sistemas calculados para un consumo bajo durante toda la vida de la vivienda."
+        }
+      ],
+      "includes": [
+        "Estudio de parcela, anteproyecto y proyecto básico y de ejecución",
+        "Licencia de obra y coordinación con el ayuntamiento",
+        "Movimiento de tierras, cimentación y estructura",
+        "Fachadas, cubiertas y carpinterías de altas prestaciones",
+        "Aerotermia, suelo radiante, ventilación y fotovoltaica",
+        "Electricidad, domótica y red de datos",
+        "Interiorismo, cocinas, baños y carpintería a medida",
+        "Urbanización de la parcela, piscina y jardín"
+      ],
+      "capacidades": [
+        {
+          "codigo": "01",
+          "titulo": "Proyecto y licencia",
+          "metrica": "Básico · Ejecución",
+          "resumen": "Diseño adaptado a la parcela y a la normativa urbanística del municipio.",
+          "puntos": [
+            "Estudio de edificabilidad",
+            "Tramitación completa"
+          ]
+        },
+        {
+          "codigo": "02",
+          "titulo": "Estructura y envolvente",
+          "metrica": "Hormigón · Acero · Madera",
+          "resumen": "Cimentación y estructura calculadas, y una envolvente continua sin puentes térmicos.",
+          "puntos": [
+            "Aislamiento por el exterior",
+            "Carpinterías de rotura de puente térmico"
+          ]
+        },
+        {
+          "codigo": "03",
+          "titulo": "Instalaciones eficientes",
+          "metrica": "Aerotermia · Fotovoltaica",
+          "resumen": "Clima, agua caliente y energía dimensionados para el uso real de la casa.",
+          "puntos": [
+            "Suelo radiante y refrescante",
+            "Ventilación con recuperación de calor"
+          ]
+        },
+        {
+          "codigo": "04",
+          "titulo": "Interiores y exteriores",
+          "metrica": "Llave en mano",
+          "resumen": "Acabados, carpintería a medida, piscina y jardín dentro del mismo proyecto.",
+          "puntos": [
+            "Un solo calendario",
+            "Entrega con documentación final"
+          ]
+        }
+      ],
+      "processHeadline": "Cómo construimos una vivienda unifamiliar",
+      "faqs": [
+        {
+          "q": "¿Cuánto se tarda en construir una vivienda unifamiliar?",
+          "a": "Depende del tamaño y del sistema constructivo, pero una vivienda de tamaño medio suele necesitar entre doce y dieciocho meses de obra, a los que se suma la redacción del proyecto y la licencia."
+        },
+        {
+          "q": "¿Os encargáis del proyecto o necesito un arquitecto aparte?",
+          "a": "Podemos asumir el proyecto completo con nuestro equipo técnico o trabajar con el arquitecto que elijas, coordinando su proyecto con la ejecución."
+        },
+        {
+          "q": "¿Hacéis ampliaciones y rehabilitaciones de casas existentes?",
+          "a": "Sí. Ampliamos, reforzamos estructuras y rehabilitamos viviendas completas, incluida la mejora energética de la envolvente y las instalaciones."
+        },
+        {
+          "q": "¿El presupuesto es cerrado?",
+          "a": "Sí. Se cierra por partidas sobre el proyecto de ejecución y se certifica por fases. Los cambios se valoran y se aprueban por escrito antes de hacerlos."
+        }
+      ]
+    },
+  },
+  {
+    id: "s-6",
+    slug: "naves-industriales",
+    numero: "06",
+    title: "Naves industriales",
+    descripcion: "Acondicionamiento y adecuación de naves, almacenes y talleres: licencia de actividad, instalaciones, oficinas interiores y protección contra incendios.",
+    imagen: "/proceso-compras.jpg",
+    enlace: "/servicios/naves-industriales",
+    content: "<p>Convertimos naves en bruto o antiguas en espacios listos para operar: adecuación a la actividad, protección contra incendios, instalaciones industriales, soleras, oficinas y vestuarios, con la licencia de actividad incluida.</p>",
+    landing: {
+      "lead": "Acondicionamiento de naves industriales en Madrid: adecuación de naves, almacenes y talleres a la actividad, con licencia, protección contra incendios, instalaciones, soleras y oficinas interiores, en el plazo que necesita la operación.",
+      "supportContent": "Partimos de la actividad que se va a desarrollar: flujos de mercancía, maquinaria, personal y normativa. Con eso definimos la distribución, las instalaciones y las medidas contra incendios, y tramitamos la licencia para que la nave pueda abrir en la fecha prevista.",
+      "commitments": [
+        {
+          "title": "Licencia incluida",
+          "text": "Proyecto de actividad y tramitación con el ayuntamiento."
+        },
+        {
+          "title": "Plazo de apertura",
+          "text": "Calendario cerrado ajustado a la puesta en marcha."
+        },
+        {
+          "title": "Obra por fases",
+          "text": "Sin parar la actividad si la nave ya está operativa."
+        }
+      ],
+      "problems": [
+        {
+          "avoid": "Naves que no pasan la inspección de protección contra incendios.",
+          "promise": "Proyecto de seguridad contra incendios según el reglamento para establecimientos industriales."
+        },
+        {
+          "avoid": "Instalaciones eléctricas o de aire insuficientes para la maquinaria.",
+          "promise": "Cálculo de potencias, aire comprimido, iluminación y climatización según el proceso."
+        },
+        {
+          "avoid": "Retrasos en la apertura por licencias mal planteadas.",
+          "promise": "Licencia de actividad tramitada en paralelo a la obra desde el primer día."
+        }
+      ],
+      "includes": [
+        "Proyecto de actividad y licencia de apertura",
+        "Protección contra incendios: sectorización, detección y extinción",
+        "Soleras industriales, pinturas y señalización",
+        "Instalación eléctrica de baja tensión e iluminación LED",
+        "Climatización, ventilación y extracción",
+        "Oficinas, vestuarios y aseos interiores",
+        "Muelles de carga, puertas seccionales y abrigos",
+        "Reparación de cubiertas y lucernarios"
+      ],
+      "capacidades": [
+        {
+          "codigo": "01",
+          "titulo": "Licencias y normativa",
+          "metrica": "Actividad · Incendios",
+          "resumen": "Proyecto técnico y tramitación de la licencia de actividad y de las instalaciones.",
+          "puntos": [
+            "Reglamento de seguridad contra incendios",
+            "Accesibilidad y medio ambiente"
+          ]
+        },
+        {
+          "codigo": "02",
+          "titulo": "Obra civil industrial",
+          "metrica": "Soleras · Estructura",
+          "resumen": "Soleras de alta resistencia, refuerzos estructurales, fosos y entreplantas.",
+          "puntos": [
+            "Pavimentos para tráfico de carretillas",
+            "Entreplantas metálicas"
+          ]
+        },
+        {
+          "codigo": "03",
+          "titulo": "Instalaciones",
+          "metrica": "Eléctrica · Clima · Aire",
+          "resumen": "Instalaciones dimensionadas para la maquinaria y el número de trabajadores.",
+          "puntos": [
+            "Cuadros y líneas de potencia",
+            "Climatización por zonas"
+          ]
+        },
+        {
+          "codigo": "04",
+          "titulo": "Espacios de personal",
+          "metrica": "Oficinas · Vestuarios",
+          "resumen": "Oficinas, salas, vestuarios y aseos integrados en la nave.",
+          "puntos": [
+            "Aislamiento acústico frente a la zona de producción",
+            "Acabados resistentes"
+          ]
+        }
+      ],
+      "processHeadline": "Cómo acondicionamos una nave industrial",
+      "faqs": [
+        {
+          "q": "¿Tramitáis la licencia de actividad de la nave?",
+          "a": "Sí. Redactamos el proyecto de actividad y de instalaciones y lo tramitamos con el ayuntamiento, coordinado con la obra para que la apertura no se retrase."
+        },
+        {
+          "q": "¿Podéis trabajar con la nave en funcionamiento?",
+          "a": "Sí. Planificamos la obra por zonas y horarios para que la actividad continúe, separando las áreas de trabajo y manteniendo los accesos."
+        },
+        {
+          "q": "¿Qué exige la normativa contra incendios en una nave?",
+          "a": "Depende de la superficie, la actividad y la carga de fuego. Puede requerir sectorización, detección, extintores, bocas de incendio, rociadores o evacuación de humos. Lo determinamos en el proyecto."
+        },
+        {
+          "q": "¿Hacéis también las oficinas dentro de la nave?",
+          "a": "Sí. Construimos oficinas, vestuarios y aseos, en planta baja o en entreplanta, con sus instalaciones y aislamiento frente a la zona industrial."
+        }
+      ]
+    },
+  },
+  {
+    id: "s-7",
+    slug: "restauracion-de-locales",
+    numero: "07",
+    title: "Restauración de locales",
+    descripcion: "Recuperación de locales antiguos o en desuso: estructura, fachada, instalaciones y adaptación a la normativa para darles una nueva actividad.",
+    imagen: "/proceso-construccion.jpg",
+    enlace: "/servicios/restauracion-de-locales",
+    content: "<p>Recuperamos locales comerciales antiguos, cerrados o deteriorados: diagnóstico del estado, refuerzo estructural, saneamiento de humedades, renovación de instalaciones, fachada y escaparate, y adaptación a la normativa de accesibilidad y actividad.</p>",
+    landing: {
+      "lead": "Restauración de locales en Madrid: recuperamos bajos comerciales antiguos, cerrados o deteriorados con refuerzo estructural, tratamiento de humedades, instalaciones nuevas, fachada y adaptación a la normativa, listos para una nueva actividad.",
+      "supportContent": "Un local antiguo esconde casi siempre sorpresas: forjados dañados, humedades, instalaciones fuera de norma o una fachada protegida. Empezamos con un diagnóstico técnico del estado real para que el presupuesto refleje lo que hay que hacer y no aparezcan sorpresas a mitad de obra.",
+      "commitments": [
+        {
+          "title": "Diagnóstico previo",
+          "text": "Inspección técnica del estado antes de presupuestar."
+        },
+        {
+          "title": "Normativa al día",
+          "text": "Accesibilidad, incendios y licencia de actividad."
+        },
+        {
+          "title": "Patrimonio respetado",
+          "text": "Fachadas y elementos protegidos recuperados con criterio."
+        }
+      ],
+      "problems": [
+        {
+          "avoid": "Presupuestos que se disparan al abrir suelos y techos.",
+          "promise": "Diagnóstico con catas y revisión estructural antes de cerrar el presupuesto."
+        },
+        {
+          "avoid": "Humedades que reaparecen a los pocos meses.",
+          "promise": "Tratamiento del origen: capilaridad, filtraciones o condensaciones, no solo del acabado."
+        },
+        {
+          "avoid": "Locales que no obtienen la licencia de la nueva actividad.",
+          "promise": "Adaptación a accesibilidad, incendios y ventilación según el uso previsto."
+        }
+      ],
+      "includes": [
+        "Diagnóstico técnico, catas e informe del estado",
+        "Refuerzo de forjados, vigas y muros",
+        "Tratamiento de humedades e impermeabilización",
+        "Renovación completa de electricidad, fontanería y saneamiento",
+        "Ventilación, extracción y climatización",
+        "Restauración de fachada, escaparate y cierres",
+        "Adaptación a accesibilidad y protección contra incendios",
+        "Licencia de obra y de actividad"
+      ],
+      "capacidades": [
+        {
+          "codigo": "01",
+          "titulo": "Diagnóstico y estructura",
+          "metrica": "Catas · Refuerzos",
+          "resumen": "Evaluación del estado real y refuerzo de forjados, vigas y muros de carga.",
+          "puntos": [
+            "Informe técnico previo",
+            "Soluciones compatibles con el edificio"
+          ]
+        },
+        {
+          "codigo": "02",
+          "titulo": "Humedades y saneamiento",
+          "metrica": "Origen · Tratamiento",
+          "resumen": "Eliminación de humedades por capilaridad, filtración o condensación.",
+          "puntos": [
+            "Barreras y drenajes",
+            "Revestimientos transpirables"
+          ]
+        },
+        {
+          "codigo": "03",
+          "titulo": "Fachadas y patrimonio",
+          "metrica": "Recuperación",
+          "resumen": "Restauración de fachadas, carpinterías y elementos protegidos según la normativa municipal.",
+          "puntos": [
+            "Coordinación con patrimonio",
+            "Materiales tradicionales"
+          ]
+        },
+        {
+          "codigo": "04",
+          "titulo": "Adaptación a la actividad",
+          "metrica": "Licencia · Accesibilidad",
+          "resumen": "El local queda listo para la nueva actividad, con la licencia tramitada.",
+          "puntos": [
+            "Accesibilidad y aseos adaptados",
+            "Ventilación y extracción"
+          ]
+        }
+      ],
+      "processHeadline": "Cómo restauramos un local",
+      "faqs": [
+        {
+          "q": "¿Qué incluye el diagnóstico inicial?",
+          "a": "Una visita técnica con catas en suelos, techos y muros, revisión de la estructura, las humedades y las instalaciones, y un informe con las actuaciones necesarias y su valoración."
+        },
+        {
+          "q": "¿Podéis trabajar en locales con fachada protegida?",
+          "a": "Sí. Restauramos fachadas y elementos protegidos siguiendo las condiciones de la normativa municipal y de patrimonio, y tramitamos los permisos necesarios."
+        },
+        {
+          "q": "¿El local queda listo para abrir?",
+          "a": "Sí. Lo adaptamos a la actividad prevista en accesibilidad, protección contra incendios y ventilación, y tramitamos la licencia de actividad."
+        },
+        {
+          "q": "¿Cuánto tarda la restauración de un local?",
+          "a": "Depende del estado y la superficie. Tras el diagnóstico entregamos un calendario por fases con el plazo cerrado."
+        }
+      ]
+    },
+  },
+  {
+    id: "s-8",
+    slug: "carpinteria-metalica",
+    numero: "08",
+    title: "Carpintería metálica",
+    descripcion: "Ventanas, cerramientos, puertas, barandillas y estructuras ligeras en aluminio y acero, fabricadas a medida e instaladas por nuestro equipo.",
+    imagen: "/90dias.jpg",
+    enlace: "/servicios/carpinteria-metalica",
+    content: "<p>Diseñamos, fabricamos e instalamos carpintería metálica a medida: ventanas y correderas de aluminio con rotura de puente térmico, cerramientos de terraza, puertas, barandillas, celosías y estructuras ligeras de acero.</p>",
+    landing: {
+      "lead": "Carpintería metálica en Madrid: ventanas y correderas de aluminio, cerramientos, puertas, barandillas, celosías y estructuras de acero fabricadas a medida e instaladas por nuestro equipo, con medición en obra y remates limpios.",
+      "supportContent": "Trabajamos con sistemas de aluminio de fabricantes reconocidos y con talleres de cerrajería de confianza. Medimos en obra, definimos perfiles, vidrios y herrajes según el uso y la orientación, y coordinamos la instalación con albañilería y acabados para que los encuentros queden limpios.",
+      "commitments": [
+        {
+          "title": "Medición en obra",
+          "text": "Cada hueco medido y replanteado antes de fabricar."
+        },
+        {
+          "title": "Sistemas de calidad",
+          "text": "Perfiles con rotura de puente térmico y vidrios adecuados."
+        },
+        {
+          "title": "Instalación propia",
+          "text": "Montaje, sellado y remates por el mismo equipo."
+        }
+      ],
+      "problems": [
+        {
+          "avoid": "Ventanas que dejan pasar aire, agua o ruido.",
+          "promise": "Sistemas ensayados en permeabilidad, estanqueidad y viento, con instalación sellada."
+        },
+        {
+          "avoid": "Perfiles y vidrios elegidos solo por precio.",
+          "promise": "Selección según orientación, altura del edificio y exigencia térmica y acústica."
+        },
+        {
+          "avoid": "Remates mal resueltos con la obra.",
+          "promise": "Coordinación con albañilería, premarcos y acabados interiores."
+        }
+      ],
+      "includes": [
+        "Ventanas y balconeras de aluminio con rotura de puente térmico",
+        "Correderas elevables y de grandes dimensiones",
+        "Cerramientos de terrazas y porches",
+        "Puertas de entrada, cancelas y puertas de garaje",
+        "Barandillas de acero, vidrio y aluminio",
+        "Celosías, lamas y protección solar",
+        "Escaleras y estructuras ligeras de acero",
+        "Sustitución de carpinterías en edificios habitados"
+      ],
+      "capacidades": [
+        {
+          "codigo": "01",
+          "titulo": "Aluminio",
+          "metrica": "Rotura de puente térmico",
+          "resumen": "Ventanas, correderas y cerramientos con sistemas de altas prestaciones.",
+          "puntos": [
+            "Hojas ocultas y perfiles mínimos",
+            "Acabados lacados y anodizados"
+          ]
+        },
+        {
+          "codigo": "02",
+          "titulo": "Acero y cerrajería",
+          "metrica": "Fabricación a medida",
+          "resumen": "Barandillas, escaleras, puertas, cancelas y estructuras ligeras.",
+          "puntos": [
+            "Soldadura y galvanizado",
+            "Diseño con el interiorismo"
+          ]
+        },
+        {
+          "codigo": "03",
+          "titulo": "Vidrio",
+          "metrica": "Térmico · Acústico · Seguridad",
+          "resumen": "Vidrios bajo emisivos, de control solar, laminados y acústicos según el hueco.",
+          "puntos": [
+            "Doble y triple acristalamiento",
+            "Vidrio de seguridad"
+          ]
+        },
+        {
+          "codigo": "04",
+          "titulo": "Instalación",
+          "metrica": "Sellado y remates",
+          "resumen": "Montaje con premarco, sellado perimetral y remates interiores y exteriores.",
+          "puntos": [
+            "Coordinación con la obra",
+            "Ajuste y revisión final"
+          ]
+        }
+      ],
+      "processHeadline": "Cómo trabajamos la carpintería metálica",
+      "faqs": [
+        {
+          "q": "¿Aluminio o PVC?",
+          "a": "Ambos ofrecen buen aislamiento si el sistema es de calidad. El aluminio con rotura de puente térmico permite perfiles más finos y grandes dimensiones; lo recomendamos según el hueco, el diseño y el presupuesto."
+        },
+        {
+          "q": "¿Podéis cambiar las ventanas con la vivienda habitada?",
+          "a": "Sí. Sustituimos las carpinterías por estancias, normalmente en una jornada por hueco, con protección del interior y retirada de las antiguas."
+        },
+        {
+          "q": "¿Hacéis piezas de acero a medida?",
+          "a": "Sí. Barandillas, escaleras, puertas, celosías y estructuras ligeras diseñadas con el proyecto y fabricadas en taller."
+        },
+        {
+          "q": "¿Necesito permiso para cambiar las ventanas?",
+          "a": "En muchos casos basta con una comunicación al ayuntamiento, pero en fachadas protegidas o si cambia el aspecto exterior puede hacer falta autorización de la comunidad y licencia. Lo revisamos antes de empezar."
+        }
+      ]
+    },
+  },
+  {
+    id: "s-9",
+    slug: "ventanas-acusticas",
+    numero: "09",
+    title: "Ventanas acústicas",
+    descripcion: "Ventanas de alto aislamiento acústico para viviendas, oficinas y hoteles junto a calles con tráfico, ocio nocturno o aeropuertos.",
+    imagen: "/start-research-2.jpg",
+    enlace: "/servicios/ventanas-acusticas",
+    content: "<p>Instalamos ventanas acústicas que reducen de forma notable el ruido exterior: perfiles de altas prestaciones, vidrios laminados acústicos con cámaras asimétricas, cajones de persiana aislados y una instalación completamente sellada.</p>",
+    landing: {
+      "lead": "Ventanas acústicas en Madrid: carpinterías de alto aislamiento con vidrio laminado acústico, cámaras asimétricas, cajones de persiana aislados e instalación sellada para viviendas, oficinas y hoteles expuestos al ruido.",
+      "supportContent": "El aislamiento acústico de una ventana depende del conjunto: perfil, vidrio, juntas, cajón de persiana y, sobre todo, la instalación. Medimos el ruido, analizamos su origen y proponemos la combinación que consigue la mejora necesaria, sin sobredimensionar.",
+      "commitments": [
+        {
+          "title": "Estudio del ruido",
+          "text": "Análisis del origen y del nivel antes de proponer la solución."
+        },
+        {
+          "title": "Sistema completo",
+          "text": "Perfil, vidrio, cajón y juntas pensados juntos."
+        },
+        {
+          "title": "Instalación sellada",
+          "text": "Sin puntos débiles por donde se cuele el ruido."
+        }
+      ],
+      "problems": [
+        {
+          "avoid": "Cambiar las ventanas y seguir oyendo la calle.",
+          "promise": "Vidrios laminados acústicos y cámaras asimétricas elegidos para el tipo de ruido."
+        },
+        {
+          "avoid": "El cajón de persiana como principal entrada de ruido.",
+          "promise": "Cajones aislados o soluciones sin cajón integradas en la ventana."
+        },
+        {
+          "avoid": "Instalaciones con huecos en el perímetro del marco.",
+          "promise": "Sellado perimetral con espumas y cintas acústicas y comprobación final."
+        }
+      ],
+      "includes": [
+        "Estudio del ruido exterior y de la exposición de la fachada",
+        "Ventanas de aluminio o PVC con altas prestaciones acústicas",
+        "Vidrios laminados acústicos con cámaras asimétricas",
+        "Cajones de persiana aislados o sistemas sin cajón",
+        "Doble ventana para exigencias muy altas",
+        "Aireadores acústicos para cumplir la ventilación",
+        "Instalación con sellado perimetral acústico",
+        "Retirada y gestión de las carpinterías antiguas"
+      ],
+      "capacidades": [
+        {
+          "codigo": "01",
+          "titulo": "Diagnóstico acústico",
+          "metrica": "Origen del ruido",
+          "resumen": "Identificamos si el ruido es de tráfico, ocio o aviones, porque cada uno se aísla de forma distinta.",
+          "puntos": [
+            "Revisión de fachada y huecos",
+            "Objetivo de mejora definido"
+          ]
+        },
+        {
+          "codigo": "02",
+          "titulo": "Vidrio acústico",
+          "metrica": "Laminado · Cámaras asimétricas",
+          "resumen": "Vidrios con láminas acústicas y espesores distintos para evitar resonancias.",
+          "puntos": [
+            "Combinable con control solar",
+            "Seguridad incluida"
+          ]
+        },
+        {
+          "codigo": "03",
+          "titulo": "Carpintería",
+          "metrica": "Juntas · Cierres",
+          "resumen": "Perfiles con varias juntas y cierres perimetrales que garantizan la hermeticidad.",
+          "puntos": [
+            "Aluminio o PVC",
+            "Hojas practicables u oscilobatientes"
+          ]
+        },
+        {
+          "codigo": "04",
+          "titulo": "Instalación",
+          "metrica": "Sellado acústico",
+          "resumen": "Montaje sin puentes acústicos en el perímetro, el cajón y el alféizar.",
+          "puntos": [
+            "Cintas y espumas específicas",
+            "Prueba final"
+          ]
+        }
+      ],
+      "processHeadline": "Cómo instalamos ventanas acústicas",
+      "faqs": [
+        {
+          "q": "¿Cuánto ruido reduce una ventana acústica?",
+          "a": "Depende del vidrio, la carpintería y la instalación. Una buena ventana acústica puede reducir el ruido percibido a menos de la mitad respecto a una ventana antigua; definimos el objetivo tras analizar el ruido de tu fachada."
+        },
+        {
+          "q": "¿Basta con cambiar solo el vidrio?",
+          "a": "A veces mejora, pero si el marco no cierra bien o el cajón de persiana no está aislado, el ruido seguirá entrando por ahí. Revisamos el conjunto antes de recomendar."
+        },
+        {
+          "q": "¿Y la ventilación si las ventanas cierran tan bien?",
+          "a": "Se puede resolver con aireadores acústicos o con ventilación mecánica, de forma que la vivienda se ventile sin abrir las ventanas."
+        },
+        {
+          "q": "¿Sirven para hoteles y oficinas?",
+          "a": "Sí. Las instalamos en habitaciones de hotel, despachos y salas de reuniones en calles con mucho tráfico o zonas de ocio."
+        }
+      ]
+    },
+  },
+  {
+    id: "s-10",
+    slug: "cabinas-acusticas-oficinas",
+    numero: "10",
+    title: "Cabinas acústicas para oficinas",
+    descripcion: "Cabinas y salas acústicas para llamadas, videollamadas y reuniones en oficinas abiertas, instaladas y conectadas sin obra.",
+    imagen: "/oficinas.jpg",
+    enlace: "/servicios/cabinas-acusticas-oficinas",
+    content: "<p>Diseñamos e instalamos cabinas acústicas para oficinas: unipersonales para llamadas, de dos a cuatro personas para reuniones y salas a medida, con aislamiento, ventilación, iluminación y electricidad integradas.</p>",
+    landing: {
+      "lead": "Cabinas acústicas para oficinas en Madrid: cabinas para llamadas y videollamadas, pequeñas salas de reunión y espacios de concentración en oficinas abiertas, con aislamiento, ventilación, iluminación y electricidad integradas, instaladas sin obra.",
+      "supportContent": "En una oficina abierta las llamadas y las reuniones improvisadas son la principal fuente de ruido. Analizamos cómo trabaja el equipo para decidir cuántas cabinas hacen falta, de qué tamaño y dónde, y las integramos con la climatización, la electricidad y la imagen de la oficina.",
+      "commitments": [
+        {
+          "title": "Sin obra",
+          "text": "Montaje rápido y sin parar el trabajo de la oficina."
+        },
+        {
+          "title": "Integradas",
+          "text": "Electricidad, ventilación y datos conectados."
+        },
+        {
+          "title": "A medida",
+          "text": "Tamaños, acabados y colores según la oficina."
+        }
+      ],
+      "problems": [
+        {
+          "avoid": "Llamadas y videollamadas que interrumpen al resto del equipo.",
+          "promise": "Cabinas unipersonales con aislamiento suficiente para hablar con normalidad."
+        },
+        {
+          "avoid": "Cabinas calurosas en las que nadie quiere entrar.",
+          "promise": "Ventilación forzada silenciosa que renueva el aire de forma continua."
+        },
+        {
+          "avoid": "Pocas salas de reunión siempre ocupadas.",
+          "promise": "Cabinas de dos a cuatro personas y salas modulares para reuniones cortas."
+        }
+      ],
+      "includes": [
+        "Estudio de necesidades y ubicación en la planta",
+        "Cabinas unipersonales para llamadas y videollamadas",
+        "Cabinas de dos a cuatro personas para reuniones",
+        "Salas acústicas modulares a medida",
+        "Ventilación silenciosa e iluminación regulable",
+        "Electricidad, USB y red de datos",
+        "Acabados, tapicerías y colores corporativos",
+        "Montaje, traslado y reubicación"
+      ],
+      "capacidades": [
+        {
+          "codigo": "01",
+          "titulo": "Aislamiento acústico",
+          "metrica": "Paneles · Vidrio laminado",
+          "resumen": "Cerramientos y puertas diseñados para mantener la privacidad de la conversación.",
+          "puntos": [
+            "Absorción interior que evita el eco",
+            "Puertas con cierre hermético"
+          ]
+        },
+        {
+          "codigo": "02",
+          "titulo": "Confort interior",
+          "metrica": "Ventilación · Luz",
+          "resumen": "Renovación de aire silenciosa, iluminación regulable y detección de presencia.",
+          "puntos": [
+            "Temperatura agradable",
+            "Encendido automático"
+          ]
+        },
+        {
+          "codigo": "03",
+          "titulo": "Integración",
+          "metrica": "Electricidad · Datos",
+          "resumen": "Conexión a la red eléctrica y de datos de la oficina, y adaptación a la protección contra incendios.",
+          "puntos": [
+            "Tomas y USB integrados",
+            "Coordinación con el edificio"
+          ]
+        },
+        {
+          "codigo": "04",
+          "titulo": "Diseño",
+          "metrica": "Acabados a medida",
+          "resumen": "Tamaños, materiales y colores que encajan con la imagen de la empresa.",
+          "puntos": [
+            "Mobiliario interior incluido",
+            "Opciones accesibles"
+          ]
+        }
+      ],
+      "processHeadline": "Cómo instalamos cabinas acústicas en oficinas",
+      "faqs": [
+        {
+          "q": "¿Necesitan obra o licencia?",
+          "a": "Normalmente no. Son elementos modulares que se montan en pocas horas y se conectan a un enchufe. Revisamos su encaje con la protección contra incendios y la climatización del edificio."
+        },
+        {
+          "q": "¿Cuántas cabinas necesita mi oficina?",
+          "a": "Depende del número de personas, de cuántas llamadas y videollamadas hacen y del número de salas disponibles. Lo calculamos con el equipo antes de proponer."
+        },
+        {
+          "q": "¿Se pueden trasladar si cambiamos de oficina?",
+          "a": "Sí. Se desmontan y se vuelven a montar en la nueva ubicación sin perder prestaciones."
+        },
+        {
+          "q": "¿Hacéis salas acústicas a medida además de cabinas?",
+          "a": "Sí. Diseñamos salas de reunión y despachos acústicos a medida dentro de reformas de oficinas completas."
+        }
+      ]
+    },
+  },
 ];
 
 /** Servicios anteriores que ahora forman parte de otro (los proyectos antiguos aún los usan). */
@@ -216,6 +894,12 @@ const SECTOR_KEYWORDS: Record<string, string> = {
   residencial: "reformas de viviendas",
   retail: "reformas de locales comerciales",
   hospitality: "reformas de hoteles y restaurantes",
+  "viviendas-unifamiliares": "construcción de viviendas unifamiliares",
+  "naves-industriales": "acondicionamiento de naves industriales",
+  "restauracion-de-locales": "restauración de locales",
+  "carpinteria-metalica": "carpintería metálica",
+  "ventanas-acusticas": "ventanas acústicas",
+  "cabinas-acusticas-oficinas": "cabinas acústicas para oficinas",
 };
 
 /** Frase de búsqueda del servicio, en minúsculas (p. ej. «reformas de oficinas»). */

@@ -347,11 +347,11 @@ export default async function SectorDetailPage({
       <section id="incluye" className="scroll-mt-36 bg-stone-950 text-white">
         <div className="grid grid-cols-1 lg:grid-cols-2">
           <div className="relative min-h-[320px] sm:min-h-[460px] lg:min-h-full">
-            <Image src={includesImage} alt={`Qué incluyen nuestras ${keyword}`} fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover" />
+            <Image src={includesImage} alt={`Qué incluye nuestro servicio de ${keyword}`} fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover" />
           </div>
           <div className="px-6 py-16 sm:px-12 sm:py-24 lg:px-16 xl:px-24">
             <span className="block font-mono text-[11px] uppercase tracking-[0.25em] text-amber-500 sm:text-xs">
-              {landing?.includesSubtitle || parsedIncludes?.title || `Qué incluyen nuestras ${keyword}`}
+              {landing?.includesSubtitle || parsedIncludes?.title || `Qué incluye nuestro servicio de ${keyword}`}
             </span>
             <h2 className="mt-4 font-serif text-3xl font-light leading-[1.08] tracking-tight sm:text-4xl lg:text-5xl">
               {landing?.includesHeadline || "Todo en un mismo equipo técnico."}
@@ -456,7 +456,7 @@ export default async function SectorDetailPage({
               <div>
                 <span className={eyebrowClass}>Proyectos</span>
                 <h2 className={`mt-4 ${h2Class}`}>
-                  {ownProjects.length > 0 ? `${Keyword} realizadas` : "Proyectos recientes de ALKO"}
+                  {ownProjects.length > 0 ? `Proyectos de ${keyword}` : "Proyectos recientes de ALKO"}
                 </h2>
               </div>
               <Link

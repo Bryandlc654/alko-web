@@ -178,7 +178,7 @@ export default function Nav({
                                     : "text-white/80 hover:text-white hover:bg-white/10"
                                 }`}
                               >
-                                <span className="truncate pr-2">{child.label}</span>
+                                <span className="pr-2 leading-snug">{child.label}</span>
                                 <span className="opacity-0 -translate-x-2 group-hover/item:opacity-100 group-hover/item:translate-x-0 transition-all text-amber-500 text-xs">
                                   →
                                 </span>
