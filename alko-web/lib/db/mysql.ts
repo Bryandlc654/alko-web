@@ -260,7 +260,16 @@ export async function getShowcaseProjectId(): Promise<string | null> {
       "SELECT data FROM alko_site_content WHERE id = 'showcase_project' LIMIT 1"
     );
     if (rows && rows.length > 0) {
-      const parsed = typeof rows[0].data === "string" ? JSON.parse(rows[0].data) : rows[0].data;
+      // La columna es JSON: mysql2 ya la devuelve decodificada, así que el id llega como texto
+      // plano («project-…») y JSON.parse fallaba; el error hacía creer que no había ninguno.
+      let parsed: unknown = rows[0].data;
+      if (typeof parsed === "string") {
+        try {
+          parsed = JSON.parse(parsed);
+        } catch {
+          // Ya era el id.
+        }
+      }
       return parsed ? String(parsed) : null;
     }
   } catch (err: any) {
