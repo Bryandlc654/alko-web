@@ -392,6 +392,11 @@ export async function saveDbContactoPageContent(content: Partial<ContactoPageCon
   return updated;
 }
 
+/** El número de cada proyecto es su posición en la lista (01, 02…): se calcula, no se escribe. */
+function numberProjects(list: Project[]): Project[] {
+  return list.map((p, i) => ({ ...p, indice: String(i + 1).padStart(2, "0") }));
+}
+
 export async function getDbProjects(): Promise<Project[]> {
   try {
     const db = getDbPool();
@@ -401,7 +406,7 @@ export async function getDbProjects(): Promise<Project[]> {
     if (rows && rows.length > 0) {
       const data = typeof rows[0].data === "string" ? JSON.parse(rows[0].data) : rows[0].data;
       if (Array.isArray(data) && data.length > 0) {
-        return data;
+        return numberProjects(data);
       }
     }
   } catch (err: any) {
@@ -410,10 +415,10 @@ export async function getDbProjects(): Promise<Project[]> {
 
   const local = getLocalContent();
   if (local.customProjects && local.customProjects.length > 0) {
-    return local.customProjects;
+    return numberProjects(local.customProjects);
   }
 
-  return DEFAULT_PROJECTS;
+  return numberProjects(DEFAULT_PROJECTS);
 }
 
 /**
@@ -439,7 +444,8 @@ export async function saveDbProject(projectData: Partial<Project> & { id?: strin
     id: projectId,
     slug: slug,
     title: projectData.title,
-    indice: projectData.indice || baseProject?.indice || String(existingIndex >= 0 ? existingIndex + 1 : updatedList.length + 1).padStart(2, "0"),
+    // Posición en la lista; getDbProjects lo vuelve a calcular al leer.
+    indice: String(existingIndex >= 0 ? existingIndex + 1 : updatedList.length + 1).padStart(2, "0"),
     anio: projectData.anio || baseProject?.anio || new Date().getFullYear().toString(),
     ubicacion: projectData.ubicacion || baseProject?.ubicacion || "Madrid",
     tipologia: projectData.tipologia || baseProject?.tipologia || "Residencial",

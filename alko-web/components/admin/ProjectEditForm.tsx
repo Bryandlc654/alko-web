@@ -18,14 +18,17 @@ import {
   ExternalLink,
 } from "lucide-react";
 import type { Project } from "@/lib/types";
+import { sectorSlug } from "@/lib/content";
 import { openMediaPicker } from "@/components/admin/media";
 
 interface ProjectEditFormProps {
   initialProject?: Project | null;
   isNew?: boolean;
+  /** Servicios para el selector (slug y título). */
+  sectors: { slug: string; title: string }[];
 }
 
-export default function ProjectEditForm({ initialProject, isNew = false }: ProjectEditFormProps) {
+export default function ProjectEditForm({ initialProject, isNew = false, sectors }: ProjectEditFormProps) {
   const router = useRouter();
   const [project, setProject] = useState<Partial<Project>>(() => {
     if (initialProject) return initialProject;
@@ -33,12 +36,11 @@ export default function ProjectEditForm({ initialProject, isNew = false }: Proje
       id: "",
       title: "",
       slug: "",
-      indice: "01",
       anio: new Date().getFullYear().toString(),
       ubicacion: "Madrid",
       tipologia: "Vivienda Unifamiliar",
       cliente: "Cliente particular",
-      servicio: "residencial",
+      servicio: sectors[0]?.slug || "residencial",
       superficie: "450 m²",
       plazo: "12 meses",
       imagen: "/start-research-1.jpg",
@@ -225,15 +227,24 @@ export default function ProjectEditForm({ initialProject, isNew = false }: Proje
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                Número / Índice
+                Servicio *
               </label>
-              <input
-                type="text"
-                value={project.indice || ""}
-                onChange={(e) => setProject({ ...project, indice: e.target.value })}
-                placeholder="01"
+              <select
+                required
+                value={sectorSlug(project.servicio) || ""}
+                onChange={(e) => setProject({ ...project, servicio: e.target.value })}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-100/60 text-sm font-medium transition bg-white"
-              />
+              >
+                {!sectors.some((s) => s.slug === sectorSlug(project.servicio)) && <option value="">Elige un servicio</option>}
+                {sectors.map((s) => (
+                  <option key={s.slug} value={s.slug}>
+                    {s.title}
+                  </option>
+                ))}
+              </select>
+              <p className="mt-1.5 text-[11px] text-slate-500">
+                {project.indice && !isNew ? `Proyecto nº ${project.indice}. ` : ""}El número se asigna solo según el orden de la lista.
+              </p>
             </div>
 
             <div>

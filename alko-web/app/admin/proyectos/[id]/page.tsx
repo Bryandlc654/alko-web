@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getSession } from "@/lib/auth/server-session";
-import { getProjectBySlug } from "@/lib/wordpress";
+import { getProjectBySlug, getSectors } from "@/lib/wordpress";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import LogoutButton from "@/components/admin/LogoutButton";
 import ProjectEditForm from "@/components/admin/ProjectEditForm";
@@ -18,7 +18,7 @@ export default async function AdminProjectEditPage({
   const { id } = await params;
   const isNew = id === "nuevo";
 
-  const project = isNew ? null : await getProjectBySlug(id);
+  const [project, sectors] = await Promise.all([isNew ? null : getProjectBySlug(id), getSectors()]);
 
   if (!isNew && !project) {
     return notFound();
@@ -76,7 +76,7 @@ export default async function AdminProjectEditPage({
 
         {/* Zona de Trabajo */}
         <main className="p-8 max-w-6xl w-full mx-auto">
-          <ProjectEditForm initialProject={project} isNew={isNew} />
+          <ProjectEditForm initialProject={project} isNew={isNew} sectors={sectors.map(({ slug, title }) => ({ slug, title }))} />
         </main>
       </div>
     </div>
