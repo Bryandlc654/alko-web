@@ -628,7 +628,7 @@ export default async function SectorDetailPage({
             <div className="flex flex-col justify-between gap-6 border-b border-stone-200 pb-8 sm:flex-row sm:items-end">
               <h2 className="font-serif text-3xl font-light tracking-tight sm:text-4xl">Para saber más</h2>
               <Link
-                href={ROUTES.articlesList}
+                href={ROUTES.journal}
                 className="group inline-flex items-center gap-2 self-start border-b border-stone-900 pb-1.5 text-xs font-semibold uppercase tracking-[0.22em] transition hover:border-amber-700 hover:text-amber-700 sm:self-auto"
               >
                 Ver todos los artículos

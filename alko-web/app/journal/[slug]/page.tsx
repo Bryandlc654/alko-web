@@ -10,7 +10,7 @@ import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import Image from "@/components/ui/Image";
 import Prose from "@/components/ui/Prose";
 import { prepareArticle } from "@/lib/articles";
-import { ROUTES, SITE } from "@/lib/site";
+import { GUIDES_HREF, ROUTES, SITE } from "@/lib/site";
 import { getArticleBySlug, getArticles } from "@/lib/wordpress";
 import { formatDate } from "@/lib/utils";
 
@@ -86,7 +86,7 @@ export default async function ArticleDetail({
         <Container>
           <Breadcrumbs
             items={[
-              isNews ? { label: "Guías", href: ROUTES.guides } : { label: "Artículos", href: ROUTES.articlesList },
+              { label: "Journal", href: isNews ? GUIDES_HREF : ROUTES.journal },
               { label: article.title },
             ]}
             className="mb-10 sm:mb-14"
@@ -201,11 +201,11 @@ export default async function ArticleDetail({
                   <ShareButtons url={url} title={article.title} />
                 </div>
                 <Link
-                  href={isNews ? `${ROUTES.guides}#actualidad` : ROUTES.articlesList}
+                  href={isNews ? GUIDES_HREF : ROUTES.journal}
                   className="inline-flex items-center gap-2 self-start border-b border-stone-900 pb-1 text-xs font-semibold uppercase tracking-[0.22em] transition hover:border-amber-700 hover:text-amber-700 sm:self-auto"
                 >
                   <span aria-hidden="true">←</span>
-                  {isNews ? "Volver a actualidad" : "Volver a artículos"}
+                  Volver al Journal
                 </Link>
               </div>
 
@@ -244,10 +244,10 @@ export default async function ArticleDetail({
                 Sigue leyendo
               </h2>
               <Link
-                href={isNews ? ROUTES.guides : ROUTES.articlesList}
+                href={ROUTES.journal}
                 className="group inline-flex items-center gap-2 border-b border-stone-900 pb-1.5 text-xs font-semibold uppercase tracking-[0.22em] transition hover:border-amber-700 hover:text-amber-700"
               >
-                {isNews ? "Ver todas las guías" : "Ver todos los artículos"}
+                Ver el Journal
                 <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">
                   →
                 </span>

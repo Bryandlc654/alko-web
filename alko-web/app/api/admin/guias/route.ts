@@ -26,8 +26,8 @@ export async function POST(req: Request) {
 
     const saved = await saveDbGuide(body);
 
-    revalidatePath("/conocimiento/guias");
-    revalidatePath(`/conocimiento/guias/${saved.slug}`);
+    revalidatePath("/journal");
+    revalidatePath(`/journal/guias/${saved.slug}`);
     revalidatePath("/admin/guias");
 
     return NextResponse.json({ success: true, guide: saved });
@@ -60,7 +60,7 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: "No se pudo eliminar la guía" }, { status: 500 });
     }
 
-    revalidatePath("/conocimiento/guias");
+    revalidatePath("/journal");
     revalidatePath("/admin/guias");
 
     return NextResponse.json({ success: true });

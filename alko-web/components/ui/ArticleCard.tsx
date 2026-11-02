@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ROUTES } from "@/lib/site";
 import type { Article } from "@/lib/types";
 
-/** Tarjeta de artículo usada en el inicio y en el listado de conocimiento. */
+/** Tarjeta de artículo usada en el inicio y en el Journal. */
 export default function ArticleCard({
   article,
   index,

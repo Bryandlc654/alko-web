@@ -705,7 +705,7 @@ export async function saveDbOficinasPageContent(content: Partial<OficinasPageCon
 }
 
 /**
- * Obtiene el contenido de la Página de Artículos (/conocimiento/articulos) desde MySQL.
+ * Obtiene el contenido de la Página de Artículos (/journal) desde MySQL.
  */
 export async function getDbArticulosPageContent(): Promise<ArticulosPageContent> {
   try {
@@ -726,7 +726,7 @@ export async function getDbArticulosPageContent(): Promise<ArticulosPageContent>
 }
 
 /**
- * Guarda el contenido de la Página de Artículos (/conocimiento/articulos) en MySQL.
+ * Guarda el contenido de la Página de Artículos (/journal) en MySQL.
  */
 export async function saveDbArticulosPageContent(content: Partial<ArticulosPageContent>): Promise<ArticulosPageContent> {
   const current = await getDbArticulosPageContent();
@@ -750,7 +750,7 @@ export async function saveDbArticulosPageContent(content: Partial<ArticulosPageC
 }
 
 /**
- * Obtiene el contenido de la Página de Guías (/conocimiento/guias) desde MySQL.
+ * Obtiene el contenido de la Página de Guías (/journal, sección Guías) desde MySQL.
  */
 export async function getDbGuiasPageContent(): Promise<GuiasPageContent> {
   try {
@@ -771,7 +771,7 @@ export async function getDbGuiasPageContent(): Promise<GuiasPageContent> {
 }
 
 /**
- * Guarda el contenido de la Página de Guías (/conocimiento/guias) en MySQL.
+ * Guarda el contenido de la Página de Guías (/journal, sección Guías) en MySQL.
  */
 export async function saveDbGuiasPageContent(content: Partial<GuiasPageContent>): Promise<GuiasPageContent> {
   const current = await getDbGuiasPageContent();

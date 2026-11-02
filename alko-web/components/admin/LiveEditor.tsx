@@ -73,8 +73,8 @@ const PAGES_LIST = [
   { id: "servicios", label: "Servicios", path: "/servicios", group: "Servicios" },
   { id: "equipo", label: "Equipo", path: "/equipo", group: "Corporativo" },
   { id: "empleo", label: "Trabaja con nosotros", path: "/trabaja-con-nosotros", group: "Corporativo" },
-  { id: "articulos", label: "Artículos (Blog)", path: "/conocimiento/articulos", group: "Conocimiento" },
-  { id: "guias", label: "Guías Técnicas", path: "/conocimiento/guias", group: "Conocimiento" },
+  { id: "articulos", label: "Artículos (Blog)", path: "/journal", group: "Journal" },
+  { id: "guias", label: "Guías Técnicas", path: "/journal", group: "Journal" },
   { id: "contacto", label: "Contacto", path: "/contacto", group: "Contacto" },
 ] as const;
 
@@ -696,7 +696,7 @@ export default function LiveEditor({
           )}
 
           <Link
-            href={activePage === "home" ? "/" : activePage === "projects" ? "/proyectos" : activePage === "nosotros" ? "/nosotros" : activePage === "contacto" ? "/contacto" : activePage === "servicios" ? "/servicios" : activePage === "equipo" ? "/equipo" : activePage === "empleo" ? "/trabaja-con-nosotros" : activePage === "oficinas" ? "/oficinas" : activePage === "articulos" ? "/conocimiento/articulos" : "/conocimiento/guias"}
+            href={activePage === "home" ? "/" : activePage === "projects" ? "/proyectos" : activePage === "nosotros" ? "/nosotros" : activePage === "contacto" ? "/contacto" : activePage === "servicios" ? "/servicios" : activePage === "equipo" ? "/equipo" : activePage === "empleo" ? "/trabaja-con-nosotros" : activePage === "oficinas" ? "/oficinas" : activePage === "articulos" ? "/journal" : "/journal"}
             target="_blank"
             className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition shadow-sm"
           >
@@ -3328,7 +3328,7 @@ export default function LiveEditor({
 
 
           {/* ========================================================
-              VISTA EDITABLE: PÁGINA ARTÍCULOS (/conocimiento/articulos)
+              VISTA EDITABLE: PÁGINA ARTÍCULOS (/journal)
               ======================================================== */}
           {activePage === "articulos" && (
             <div className="bg-white text-stone-900">
@@ -3351,7 +3351,7 @@ export default function LiveEditor({
                 <div className="relative max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 w-full z-10">
                   <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-white/70 uppercase mb-4">
                     <InlineText
-                      value={articulosContent.headerBadge || "CONOCIMIENTO · ARTÍCULOS"}
+                      value={articulosContent.headerBadge || "JOURNAL"}
                       onChange={(val) => updateArticulosField("headerBadge", val)}
                       placeholder="Badge..."
                     />
@@ -3390,7 +3390,7 @@ export default function LiveEditor({
           )}
 
           {/* ========================================================
-              VISTA EDITABLE: PÁGINA GUÍAS (/conocimiento/guias)
+              VISTA EDITABLE: PÁGINA GUÍAS (/journal, sección Guías)
               ======================================================== */}
           {activePage === "guias" && (
             <div className="bg-white text-stone-900">
@@ -3413,7 +3413,7 @@ export default function LiveEditor({
                 <div className="relative max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 w-full z-10">
                   <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-white/70 uppercase mb-4">
                     <InlineText
-                      value={guiasContent.headerBadge || "CONOCIMIENTO · GUÍAS"}
+                      value={guiasContent.headerBadge || "JOURNAL · GUÍAS"}
                       onChange={(val) => updateGuiasField("headerBadge", val)}
                       placeholder="Badge..."
                     />

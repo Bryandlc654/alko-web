@@ -36,7 +36,7 @@ export default async function AdminGuidesPage() {
 
           <div className="flex items-center gap-4">
             <Link
-              href="/conocimiento/guias"
+              href="/journal"
               target="_blank"
               className="inline-flex items-center gap-1.5 text-xs text-slate-600 hover:text-slate-900 px-3.5 py-1.5 rounded-xl border border-slate-200 hover:border-slate-300 bg-white shadow-xs transition font-medium"
             >

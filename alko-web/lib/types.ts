@@ -183,7 +183,7 @@ export interface Article {
   date: string;
 }
 
-/** Guía práctica paso a paso (sección Conocimiento → Guías). */
+/** Guía práctica paso a paso (sección Guías del Journal). */
 export interface Guide {
   id: string;
   slug: string;

@@ -137,7 +137,7 @@ export default function ArticlesManager({
             <span>Módulo de Artículos Técnicos</span>
           </div>
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
-            Gestión de Conocimiento y Artículos
+            Journal: artículos
           </h1>
           <p className="text-xs text-slate-500 mt-1 max-w-xl">
             Publica, edita y organiza los artículos técnicos de ALKO Studio. Cada artículo genera automáticamente su índice de contenidos (TOC) y calcula el tiempo de lectura.
@@ -249,7 +249,7 @@ export default function ArticlesManager({
 
                   <div className="absolute top-3 right-3 flex items-center gap-1.5">
                     <Link
-                      href={`/conocimiento/${art.slug}`}
+                      href={`/journal/${art.slug}`}
                       target="_blank"
                       title="Ver artículo público"
                       className="p-1.5 bg-white/90 hover:bg-white text-slate-700 rounded-lg shadow-xs backdrop-blur-sm transition"
@@ -281,7 +281,7 @@ export default function ArticlesManager({
               {/* Botones inferiores */}
               <div className="px-5 py-3.5 bg-slate-50/80 border-t border-slate-100 flex items-center justify-between gap-2">
                 <Link
-                  href={`/conocimiento/${art.slug}`}
+                  href={`/journal/${art.slug}`}
                   target="_blank"
                   className="text-[11px] font-medium text-slate-600 hover:text-blue-600 flex items-center gap-1 transition"
                 >

@@ -3,46 +3,51 @@ import Link from "next/link";
 import Container from "@/components/ui/Container";
 import PageHero from "@/components/ui/PageHero";
 import ArticlesIndex from "@/components/ui/ArticlesIndex";
+import GuidesIndex from "@/components/ui/GuidesIndex";
 import ContactCta from "@/components/sections/ContactCta";
 import { ROUTES } from "@/lib/site";
-import { getArticles, getSettings } from "@/lib/wordpress";
-import { getDbArticulosPageContent } from "@/lib/db/mysql";
+import { getArticles, getGuides, getSettings } from "@/lib/wordpress";
+import { getDbArticulosPageContent, getDbGuiasPageContent } from "@/lib/db/mysql";
 import { formatDate } from "@/lib/utils";
 
 export const revalidate = 60;
 
 export const metadata = {
-  title: "Artículos — ALKO",
+  title: "Journal — ALKO",
   description:
-    "Todos los artículos técnicos de ALKO ordenados por categoría: climatización, materiales, gestión técnica y más.",
+    "Artículos técnicos y guías paso a paso de ALKO: climatización, materiales, gestión de obra y cómo afrontar una reforma integral.",
 };
 
-export default async function ArticulosPage() {
-  const [allArticles, settings, pageContent] = await Promise.all([getArticles(50), getSettings(), getDbArticulosPageContent()]);
+/** Journal: artículos y guías en una sola página (antes, Conocimiento con dos listados). */
+export default async function JournalPage() {
+  const [allArticles, guides, settings, pageContent, guiasContent] = await Promise.all([
+    getArticles(50),
+    getGuides(),
+    getSettings(),
+    getDbArticulosPageContent(),
+    getDbGuiasPageContent(),
+  ]);
   const articles = [...allArticles].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
   );
   const [featured] = articles;
-  const categories = new Set(articles.map((a) => a.category).filter(Boolean));
 
   const stats = [
     { label: "Artículos", value: String(articles.length).padStart(2, "0") },
-    { label: "Categorías", value: String(categories.size).padStart(2, "0") },
+    { label: "Guías", value: String(guides.length).padStart(2, "0") },
     { label: "Última publicación", value: featured?.date ? formatDate(featured.date) : "—" },
+  ];
+  const sections = [
+    { href: "#articulos", label: "Artículos", count: articles.length },
+    { href: "#guias", label: "Guías", count: guides.length },
   ];
 
   return (
     <main className="bg-white text-stone-900">
       <PageHero
-        breadcrumbs={[{ label: "Artículos" }]}
-        eyebrow={pageContent.headerBadge || "CONOCIMIENTO · ARTÍCULOS"}
-        title={
-          <>
-            Criterio técnico,
-            <br />
-            por escrito.
-          </>
-        }
+        breadcrumbs={[{ label: "Journal" }]}
+        eyebrow={pageContent.headerBadge || "JOURNAL"}
+        title={<span className="whitespace-pre-line">{pageContent.headerTitulo || "Criterio técnico,\npor escrito."}</span>}
         description={pageContent.headerDescripcion || "Detalles constructivos, instalaciones y gestión de obra explicados por el equipo que los ejecuta cada día."}
         image={pageContent.headerBgImage || featured?.image || "/proceso-instalaciones.jpg"}
       >
@@ -62,6 +67,25 @@ export default async function ArticulosPage() {
           ))}
         </dl>
       </PageHero>
+
+      {/* Accesos a las dos partes del Journal. */}
+      <nav aria-label="Secciones del Journal" className="border-b border-stone-200 bg-white">
+        <Container>
+          <ul className="flex gap-8 overflow-x-auto no-scrollbar">
+            {sections.map((s) => (
+              <li key={s.href}>
+                <a
+                  href={s.href}
+                  className="inline-flex items-center gap-2 py-4 font-mono text-[11px] uppercase tracking-[0.25em] text-stone-600 transition-colors hover:text-stone-900"
+                >
+                  {s.label}
+                  <span className="text-stone-400">{String(s.count).padStart(2, "0")}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </Container>
+      </nav>
 
       {featured && (
         <section className="bg-stone-100 border-b border-stone-300/70">
@@ -116,28 +140,33 @@ export default async function ArticulosPage() {
         </section>
       )}
 
-      <Container className="py-20 sm:py-28">
-        <ArticlesIndex articles={articles} />
-      </Container>
+      <section id="articulos" className="scroll-mt-28">
+        <Container className="py-20 sm:py-28">
+          <ArticlesIndex articles={articles} />
+        </Container>
+      </section>
 
-      <Container className="pb-20 sm:pb-28">
-        <Link
-          href={ROUTES.guides}
-          className="reveal-item group flex flex-col sm:flex-row sm:items-center justify-between gap-6 border border-stone-300/80 p-8 sm:p-10 transition-colors hover:border-stone-900"
-        >
-          <div>
-            <span className="block font-mono text-[11px] tracking-[0.25em] text-stone-500 uppercase mb-2">
-              ¿Buscas un recorrido completo?
-            </span>
-            <span className="font-serif font-light text-2xl sm:text-3xl text-stone-900 group-hover:text-amber-800 transition-colors">
-              Consulta nuestras guías paso a paso
-            </span>
-          </div>
-          <span className="text-3xl text-stone-400 group-hover:text-stone-900 transition-transform group-hover:translate-x-1">
-            →
-          </span>
-        </Link>
-      </Container>
+      {guides.length > 0 && (
+        <section id="guias" className="scroll-mt-28 border-t border-stone-200 bg-stone-50">
+          <Container className="py-20 sm:py-28">
+            <div className="reveal-item grid grid-cols-1 gap-6 pb-10 border-b border-stone-300/60 lg:grid-cols-12 lg:items-end">
+              <div className="lg:col-span-7">
+                <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase mb-4">
+                  {String(guides.length).padStart(2, "0")} {guides.length === 1 ? "guía" : "guías"}
+                </span>
+                <h2 className="font-serif font-light text-4xl sm:text-5xl text-stone-900 leading-tight tracking-tight">
+                  {guiasContent.headerTitulo || "Guías"}
+                </h2>
+              </div>
+              <p className="lg:col-span-5 text-base sm:text-lg text-stone-600 font-light leading-relaxed">
+                {guiasContent.headerDescripcion ||
+                  "Recorridos paso a paso por las decisiones clave de una obra: planificación, presupuesto, materiales y entrega."}
+              </p>
+            </div>
+            <GuidesIndex guides={guides} />
+          </Container>
+        </section>
+      )}
 
       <ContactCta settings={settings} />
     </main>

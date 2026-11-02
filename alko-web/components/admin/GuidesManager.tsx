@@ -148,7 +148,7 @@ export default function GuidesManager({ guides }: GuidesManagerProps) {
 
                   <div className="absolute top-3 right-3 flex items-center gap-1.5">
                     <Link
-                      href={`/conocimiento/guias/${guide.slug}`}
+                      href={`/journal/guias/${guide.slug}`}
                       target="_blank"
                       title="Ver guía en vivo"
                       className="p-1.5 bg-white/90 hover:bg-white text-slate-700 rounded-lg shadow-xs backdrop-blur-sm transition"
@@ -188,7 +188,7 @@ export default function GuidesManager({ guides }: GuidesManagerProps) {
               {/* Botones inferiores */}
               <div className="px-5 py-3.5 bg-slate-50/80 border-t border-slate-100 flex items-center justify-between gap-2">
                 <Link
-                  href={`/conocimiento/guias/${guide.slug}`}
+                  href={`/journal/guias/${guide.slug}`}
                   target="_blank"
                   className="text-[11px] font-medium text-slate-600 hover:text-blue-600 flex items-center gap-1 transition"
                 >

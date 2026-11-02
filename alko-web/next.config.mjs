@@ -37,10 +37,14 @@ const nextConfig = {
     minimumCacheTTL: 2678400,
     remotePatterns,
   },
-  // «Biblioteca técnica» (/conocimiento) se eliminó: la sección arranca en Artículos.
   async redirects() {
     return [
-      { source: "/conocimiento", destination: "/conocimiento/articulos", permanent: true },
+      // Conocimiento pasó a llamarse Journal: artículos y guías en una sola página.
+      { source: "/conocimiento", destination: "/journal", permanent: true },
+      { source: "/conocimiento/articulos", destination: "/journal", permanent: true },
+      { source: "/conocimiento/guias", destination: "/journal#guias", permanent: true },
+      { source: "/journal/guias", destination: "/journal#guias", permanent: true },
+      { source: "/conocimiento/guias/:slug", destination: "/journal/guias/:slug", permanent: true },
       // El método ALKO es ahora una sección de Nosotros.
       { source: "/metodo", destination: "/nosotros#metodo", permanent: true },
       // Viviendas y reformas integrales se agrupan ahora en Residencial.
@@ -49,8 +53,9 @@ const nextConfig = {
       // Oficinas usa ahora la plantilla común de servicio.
       { source: "/oficinas", destination: "/servicios/oficinas", permanent: true },
       // Artículos de ejemplo retirados.
-      { source: "/conocimiento/aerotermia-y-suelo-radiante-en-rehabilitacion", destination: "/conocimiento/suelo-radiante-con-aerotermia", permanent: true },
-      { source: "/conocimiento/carpinterias-de-aluminio-de-hoja-oculta", destination: "/conocimiento/articulos", permanent: true },
+      { source: "/conocimiento/aerotermia-y-suelo-radiante-en-rehabilitacion", destination: "/journal/suelo-radiante-con-aerotermia", permanent: true },
+      { source: "/conocimiento/carpinterias-de-aluminio-de-hoja-oculta", destination: "/journal", permanent: true },
+      { source: "/conocimiento/:slug", destination: "/journal/:slug", permanent: true },
     ];
   },
   async headers() {

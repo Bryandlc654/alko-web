@@ -36,12 +36,17 @@ export const ROUTES = {
   company: "/nosotros",
   team: "/equipo",
   careers: "/trabaja-con-nosotros",
-  /** Base de las URL de cada artículo; redirige a articlesList (no tiene página propia). */
-  articles: "/conocimiento",
-  articlesList: "/conocimiento/articulos",
-  guides: "/conocimiento/guias",
+  /** Journal: artículos y guías en una sola página. */
+  journal: "/journal",
+  /** Base de las URL de cada artículo (/journal/<slug>). */
+  articles: "/journal",
+  /** Base de las URL de cada guía (/journal/guias/<slug>); el listado está en el Journal. */
+  guides: "/journal/guias",
   contact: "/contacto",
 } as const;
+
+/** Listado de guías dentro del Journal. */
+export const GUIDES_HREF = `${ROUTES.journal}#guias`;
 
 /** El método ALKO es una sección de Nosotros (antes tenía página propia en /metodo). */
 export const METHOD_HREF = `${ROUTES.company}#metodo`;
@@ -59,14 +64,7 @@ export const MAIN_NAV: NavItem[] = [
       { href: ROUTES.careers, label: "Trabaja con nosotros" },
     ],
   },
-  {
-    href: ROUTES.articles,
-    label: "Conocimiento",
-    children: [
-      { href: ROUTES.articlesList, label: "Artículos" },
-      { href: ROUTES.guides, label: "Guías" },
-    ],
-  },
+  { href: ROUTES.journal, label: "Journal" },
   { href: ROUTES.contact, label: "Contacto" },
 ];
 
@@ -115,6 +113,6 @@ export const FOOTER_NAV: NavItem[] = [
   { href: ROUTES.company, label: "Empresa" },
   { href: ROUTES.team, label: "Equipo" },
   { href: ROUTES.careers, label: "Trabaja con nosotros" },
-  { href: ROUTES.articlesList, label: "Conocimiento" },
+  { href: ROUTES.journal, label: "Journal" },
   { href: ROUTES.contact, label: "Contacto" },
 ];

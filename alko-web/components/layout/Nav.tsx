@@ -44,15 +44,6 @@ const MEGA_MENUS: Record<string, MegaMenuConfig> = {
     featuredTitle: "Un solo equipo de principio a fin",
     featuredHref: ROUTES.company,
   },
-  [ROUTES.articles]: {
-    tag: "Recursos Técnicos",
-    title: "Biblioteca y Conocimiento",
-    description: "Guías, normativas, especificaciones y criterios constructivos para proyectar y construir mejor.",
-    featuredImage: "/start-research-1.jpg",
-    featuredLabel: "Guía recomendada",
-    featuredTitle: "Planificar una reforma integral",
-    featuredHref: `${ROUTES.guides}/planificar-reforma-integral`,
-  },
 };
 
 export default function Nav({

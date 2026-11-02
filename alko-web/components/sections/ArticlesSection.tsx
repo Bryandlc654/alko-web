@@ -18,12 +18,12 @@ export default function ArticlesSection({ articles, content }: { articles: Artic
               {content?.articulosTag ?? "BIBLIOTECA TÉCNICA"}
             </span>
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-light text-stone-900 tracking-tight leading-none">
-              {content?.articulosTitulo ?? "Conocimiento"}
+              {content?.articulosTitulo ?? "Journal"}
             </h2>
           </div>
           <div className="reveal-item">
             <Link
-              href={ROUTES.articlesList}
+              href={ROUTES.journal}
               className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-stone-800 hover:text-amber-800 transition group/all"
             >
               <span className="underline underline-offset-4 decoration-stone-900/30 group-hover/all:decoration-stone-900">
