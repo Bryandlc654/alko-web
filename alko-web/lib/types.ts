@@ -317,6 +317,8 @@ export interface HomeData {
   articles: Article[];
   settings: SiteSettings;
   homeContent: HomeContent;
+  /** Proyecto elegido en el panel para el bloque a pantalla completa; sin él se usan las diapositivas. */
+  showcaseProject: Project | null;
 }
 
 export interface ProjectsPageContent {

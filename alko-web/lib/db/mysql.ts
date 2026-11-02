@@ -45,6 +45,7 @@ interface LocalStoreData {
   guiasPage?: GuiasPageContent;
   slides: Slide[];
   featuredProjectIds?: string[];
+  showcaseProjectId?: string | null;
   customProjects?: Project[];
   customSectors?: Sector[];
   customArticles?: Article[];
@@ -247,6 +248,46 @@ export async function saveFeaturedProjectIds(ids: string[]): Promise<string[]> {
   }
 
   return limited;
+}
+
+/**
+ * Proyecto del bloque a pantalla completa de la portada (el que va tras los servicios). Solo uno.
+ */
+export async function getShowcaseProjectId(): Promise<string | null> {
+  try {
+    const db = getDbPool();
+    const [rows] = await db.execute<any[]>(
+      "SELECT data FROM alko_site_content WHERE id = 'showcase_project' LIMIT 1"
+    );
+    if (rows && rows.length > 0) {
+      const parsed = typeof rows[0].data === "string" ? JSON.parse(rows[0].data) : rows[0].data;
+      return parsed ? String(parsed) : null;
+    }
+  } catch (err: any) {
+    console.warn("Aviso: Error obteniendo el proyecto del bloque de portada de MySQL:", err.message);
+  }
+
+  return getLocalContent().showcaseProjectId ?? null;
+}
+
+/** Guarda el proyecto del bloque de portada; null lo quita y el bloque vuelve a sus diapositivas. */
+export async function saveShowcaseProjectId(id: string | null): Promise<string | null> {
+  saveLocalContent({ showcaseProjectId: id });
+
+  try {
+    const db = getDbPool();
+    await db.execute(
+      `INSERT INTO alko_site_content (id, data) 
+       VALUES ('showcase_project', ?) 
+       ON DUPLICATE KEY UPDATE data = VALUES(data)`,
+      [JSON.stringify(id)]
+    );
+  } catch (err: any) {
+    console.warn("Aviso: Fallo al guardar el proyecto del bloque de portada en MySQL:", err.message);
+    throw new Error("No se pudo guardar la selección en la base de datos");
+  }
+
+  return id;
 }
 
 /**

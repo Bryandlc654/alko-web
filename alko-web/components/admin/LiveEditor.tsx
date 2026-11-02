@@ -55,6 +55,7 @@ import { DEFAULT_PROJECTS_PAGE_CONTENT, DEFAULT_NOSOTROS_PAGE_CONTENT, DEFAULT_H
 import { ArrowRight, Handshake, CalendarClock, Wallet, BadgeCheck, Phone, MessageCircle, Mail, MapPin, Clock } from "lucide-react";
 import Materials from "@/components/sections/Materials";
 import Process from "@/components/sections/Process";
+import Workshop from "@/components/sections/Workshop";
 import { METHOD_HREF } from "@/lib/site";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import ProjectsGallery from "@/components/ui/ProjectsGallery";
@@ -95,6 +96,8 @@ interface LiveEditorProps {
   fabricantes: Fabricante[];
   articles: Article[];
   settings: SiteSettings;
+  /** Proyecto elegido para el bloque grande de la portada (Proyectos › Poner en bloque grande). */
+  showcaseProject?: Project | null;
 }
 
 function phaseNumber(fase: Fase, index: number) {
@@ -121,6 +124,7 @@ export default function LiveEditor({
   fabricantes,
   articles,
   settings,
+  showcaseProject = null,
 }: LiveEditorProps) {
   // Selector de página a editar: 'home' o 'projects'
   const [activePage, setActivePage] = useState<"home" | "projects" | "nosotros" | "contacto" | "servicios" | "equipo" | "empleo" | "oficinas" | "articulos" | "guias">("home");
@@ -1115,6 +1119,21 @@ export default function LiveEditor({
           {/* ========================================================
               5. SECCIÓN WORKSHOP / SHOWCASE (EDITABLE EN VIVO)
               ======================================================== */}
+          {showcaseProject ? (
+            /* El bloque muestra el proyecto elegido en Proyectos: se ve tal cual y se cambia desde allí. */
+            <div className="relative">
+              <div className="absolute top-6 left-6 z-40 bg-black/70 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 flex items-center gap-2 text-white font-poppins text-xs shadow-lg">
+                <span className="w-2 h-2 rounded-full bg-amber-500" />
+                <span className="font-semibold tracking-wide">
+                  Bloque grande: proyecto «{showcaseProject.title}». Se cambia en{" "}
+                  <Link href="/admin/proyectos" className="underline underline-offset-2 hover:text-amber-300">
+                    Proyectos
+                  </Link>
+                </span>
+              </div>
+              <Workshop slides={[]} content={content} project={showcaseProject} />
+            </div>
+          ) : (
           <section id="workshop" className="relative w-full h-[600px] sm:h-[700px] lg:h-[780px] overflow-hidden bg-stone-950 group">
             {/* Indicador visible de sección editable */}
             <div className="absolute top-6 left-6 z-40 bg-black/70 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 flex items-center gap-2 text-white font-poppins text-xs shadow-lg">
@@ -1264,6 +1283,7 @@ export default function LiveEditor({
               ))}
             </div>
           </section>
+          )}
 
           {/* ========================================================
               6. SECCIÓN EXPERIENCIA (90 DÍAS) - RÉPLICA EXACTA CON EDITABILIDAD

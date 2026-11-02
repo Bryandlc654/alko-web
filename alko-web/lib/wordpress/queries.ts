@@ -1,4 +1,4 @@
-import { getDbHomeContent, getFeaturedProjectIds, getDbProjects, getDbSectors, getDbArticles, getDbGuides, getDbSettings } from "../db/mysql";
+import { getDbHomeContent, getFeaturedProjectIds, getShowcaseProjectId, getDbProjects, getDbSectors, getDbArticles, getDbGuides, getDbSettings } from "../db/mysql";
 import {
   DEFAULT_ARTICLES,
   DEFAULT_DESCARGAS,
@@ -133,6 +133,18 @@ export async function getFeaturedHomeProjects(): Promise<Project[]> {
   }
 
   return allProjects.slice(0, 3);
+}
+
+export async function getShowcaseProject(): Promise<Project | null> {
+  try {
+    const id = await getShowcaseProjectId();
+    if (!id) return null;
+    const allProjects = await getProjects();
+    return allProjects.find((p) => String(p.id) === id || p.slug === id) ?? null;
+  } catch (err) {
+    console.warn("Aviso: Error obteniendo el proyecto del bloque de portada:", err);
+    return null;
+  }
 }
 
 export async function getProjectBySlug(slug: string): Promise<Project | null> {
@@ -386,7 +398,7 @@ export async function getHomeContent(): Promise<HomeContent> {
 }
 
 export async function getHomeData(): Promise<HomeData> {
-  const [heroSlides, showcaseSlides, projects, sectors, fases, fabricantes, articles, settings, homeContent] =
+  const [heroSlides, showcaseSlides, projects, sectors, fases, fabricantes, articles, settings, homeContent, showcaseProject] =
     await Promise.all([
       getHeroSlides(),
       getShowcaseSlides(),
@@ -397,7 +409,8 @@ export async function getHomeData(): Promise<HomeData> {
       getArticles(),
       getSettings(),
       getHomeContent(),
+      getShowcaseProject(),
     ]);
 
-  return { heroSlides, showcaseSlides, projects, sectors, fases, fabricantes, articles, settings, homeContent };
+  return { heroSlides, showcaseSlides, projects, sectors, fases, fabricantes, articles, settings, homeContent, showcaseProject };
 }

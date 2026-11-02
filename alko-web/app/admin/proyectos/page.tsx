@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getSession } from "@/lib/auth/server-session";
 import { getProjects } from "@/lib/wordpress";
-import { getFeaturedProjectIds } from "@/lib/db/mysql";
+import { getFeaturedProjectIds, getShowcaseProjectId } from "@/lib/db/mysql";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import LogoutButton from "@/components/admin/LogoutButton";
 import ProjectsManager from "@/components/admin/ProjectsManager";
@@ -11,9 +11,10 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminProjectsPage() {
   const session = await getSession();
-  const [allProjects, featuredIds] = await Promise.all([
+  const [allProjects, featuredIds, showcaseId] = await Promise.all([
     getProjects(),
     getFeaturedProjectIds(),
+    getShowcaseProjectId(),
   ]);
 
   // Si no hay seleccionados aún, inicializar con los primeros 3
@@ -73,6 +74,7 @@ export default async function AdminProjectsPage() {
           <ProjectsManager
             projects={allProjects}
             initialFeaturedIds={activeFeatured}
+            initialShowcaseId={showcaseId}
           />
         </main>
       </div>

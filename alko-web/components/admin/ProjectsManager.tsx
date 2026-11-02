@@ -16,6 +16,7 @@ import {
   Trash2,
   Calendar,
   MapPin,
+  Maximize2,
 } from "lucide-react";
 import type { Project } from "@/lib/types";
 import { toast, confirmDialog } from "@/components/admin/feedback";
@@ -23,11 +24,13 @@ import { toast, confirmDialog } from "@/components/admin/feedback";
 interface ProjectsManagerProps {
   projects: Project[];
   initialFeaturedIds: string[];
+  initialShowcaseId: string | null;
 }
 
 export default function ProjectsManager({
   projects: initialProjects,
   initialFeaturedIds,
+  initialShowcaseId,
 }: ProjectsManagerProps) {
   const [projectsList, setProjectsList] = useState<Project[]>(initialProjects);
   // Lo guardado puede tener ids o slugs, o proyectos que ya no existen (p. ej. antiguos de WordPress), que
@@ -40,6 +43,31 @@ export default function ProjectsManager({
       .slice(0, 3);
     return valid.length > 0 ? valid : initialProjects.slice(0, 3).map((p) => String(p.id));
   });
+
+  // Proyecto del bloque a pantalla completa de la portada (solo uno).
+  const [showcaseId, setShowcaseId] = useState<string | null>(() => {
+    const found = initialProjects.find((p) => String(p.id) === initialShowcaseId || p.slug === initialShowcaseId);
+    return found ? String(found.id) : null;
+  });
+
+  const toggleShowcase = async (projectId: string) => {
+    const previous = showcaseId;
+    const next = showcaseId === projectId ? null : projectId;
+    setShowcaseId(next);
+    try {
+      const res = await fetch("/api/admin/projects/showcase", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ projectId: next }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Error guardando el bloque de portada");
+      toast.success(next ? "Proyecto colocado en el bloque de portada" : "Proyecto quitado del bloque de portada");
+    } catch (err: any) {
+      setShowcaseId(previous);
+      toast.error(err.message || "No se pudo guardar el bloque de portada");
+    }
+  };
 
   // Estados de guardado destacados
   const [isSavingFeatured, setIsSavingFeatured] = useState(false);
@@ -105,6 +133,7 @@ export default function ProjectsManager({
 
       setProjectsList((prev) => prev.filter((p) => p.id !== project.id));
       setFeaturedIds((prev) => prev.filter((id) => id !== String(project.id) && id !== project.slug));
+      if (showcaseId === String(project.id)) setShowcaseId(null);
     } catch (err: any) {
       toast.error("Error: " + err.message);
     }
@@ -123,7 +152,7 @@ export default function ProjectsManager({
               Gestor de Proyectos de Obra
             </h2>
             <p className="text-xs text-slate-500">
-              Gestiona cada proyecto en su propia página con todos sus campos técnicos y marca hasta 3 para la portada.
+              Gestiona cada proyecto en su propia página con todos sus campos técnicos, marca hasta 3 para la portada y elige 1 para el bloque grande.
             </p>
           </div>
         </div>
@@ -191,6 +220,7 @@ export default function ProjectsManager({
         {projectsList.map((project) => {
           const isFeatured =
             featuredIds.includes(String(project.id)) || featuredIds.includes(project.slug);
+          const isShowcase = showcaseId === String(project.id);
 
           return (
             <div
@@ -232,12 +262,20 @@ export default function ProjectsManager({
                   </button>
                 </div>
 
-                {isFeatured && (
-                  <div className="absolute bottom-3 left-3 bg-blue-600 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md flex items-center gap-1">
-                    <Sparkles className="w-3 h-3" />
-                    <span>En Portada</span>
-                  </div>
-                )}
+                <div className="absolute bottom-3 left-3 flex flex-wrap items-center gap-1.5">
+                  {isFeatured && (
+                    <div className="bg-blue-600 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md flex items-center gap-1">
+                      <Sparkles className="w-3 h-3" />
+                      <span>En Portada</span>
+                    </div>
+                  )}
+                  {isShowcase && (
+                    <div className="bg-amber-500 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md flex items-center gap-1">
+                      <Maximize2 className="w-3 h-3" />
+                      <span>Bloque grande</span>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Información del Proyecto */}
@@ -299,6 +337,21 @@ export default function ProjectsManager({
                     }`}
                   >
                     {isFeatured ? "Quitar de Home" : "Mostrar en Home"}
+                  </button>
+                </div>
+                <div className="mt-2 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => toggleShowcase(String(project.id))}
+                    title="Bloque a pantalla completa de la portada, tras los servicios. Solo puede haber un proyecto."
+                    className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition ${
+                      isShowcase
+                        ? "bg-amber-50 text-amber-700 hover:bg-amber-100"
+                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    }`}
+                  >
+                    <Maximize2 className="w-3.5 h-3.5" />
+                    {isShowcase ? "Quitar del bloque grande" : "Poner en bloque grande"}
                   </button>
                 </div>
               </div>
