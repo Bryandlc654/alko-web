@@ -36,6 +36,7 @@ export default function Materials({ fabricantes, content }: { fabricantes: Fabri
               <div key={`${fab.id}-${i}`} className="flex items-center h-12 sm:h-16 lg:h-20">
                 <Image
                   src={fab.logo}
+                  skeleton={false}
                   alt={fab.name}
                   width={120}
                   height={48}

@@ -36,6 +36,7 @@ export default function Footer({ settings }: { settings: SiteSettings }) {
             <div>
               <Image
                 src="/logo-alko-footer.webp"
+                skeleton={false}
                 alt="ALKO Construcción"
                 width={500}
                 height={130}

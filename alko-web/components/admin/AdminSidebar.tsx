@@ -180,6 +180,7 @@ export default function AdminSidebar({ userEmail, userName, userRole, userPermis
           <Link href="/admin" className="flex items-center group py-1">
             <Image
               src="/logo-alko-footer.webp"
+              skeleton={false}
               alt="ALKO"
               width={140}
               height={36}

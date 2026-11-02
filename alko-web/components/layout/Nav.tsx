@@ -102,6 +102,7 @@ export default function Nav({
           <Link href={ROUTES.home} className="flex items-center group">
             <Image
               src="/logo.webp"
+              skeleton={false}
               alt="ALKO"
               width={500}
               height={130}
@@ -339,6 +340,7 @@ function MobileDrawer({
           <div className="flex items-center justify-between pb-6 border-b border-white/10">
             <Image
               src="/logo.webp"
+              skeleton={false}
               alt="ALKO"
               width={140}
               height={36}

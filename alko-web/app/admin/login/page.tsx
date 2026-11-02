@@ -127,6 +127,7 @@ export default function AdminLoginPage() {
             <div className="flex justify-center mb-5">
               <Image
                 src="/logo-alko-footer.webp"
+                skeleton={false}
                 alt="ALKO"
                 width={170}
                 height={45}
