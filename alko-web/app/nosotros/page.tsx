@@ -8,7 +8,7 @@ import Materials from "@/components/sections/Materials";
 import Process from "@/components/sections/Process";
 import { METHOD_HREF, ROUTES } from "@/lib/site";
 import { getFabricantes, getFases, getProjects, getSectors, getSettings } from "@/lib/wordpress";
-import { getDbNosotrosPageContent } from "@/lib/db/mysql";
+import { getDbHomeContent, getDbNosotrosPageContent } from "@/lib/db/mysql";
 
 export const revalidate = 60;
 
@@ -29,13 +29,14 @@ export const metadata = {
 const VALOR_ICONS = [Handshake, CalendarClock, Wallet, BadgeCheck];
 
 export default async function NosotrosPage() {
-  const [settings, projects, sectors, fases, fabricantes, pageContent] = await Promise.all([
+  const [settings, projects, sectors, fases, fabricantes, pageContent, homeContent] = await Promise.all([
     getSettings(),
     getProjects(),
     getSectors(),
     getFases(),
     getFabricantes(),
     getDbNosotrosPageContent(),
+    getDbHomeContent(),
   ]);
 
   const destacado = projects[0];
@@ -289,16 +290,11 @@ export default async function NosotrosPage() {
           </Container>
         </section>
 
-        {/* Las fases del proceso */}
+        {/* Las fases del proceso: las mismas de la portada (se editan en cualquiera de las dos). */}
         <Process
-          fases={pageContent.fases && pageContent.fases.length > 0 ? pageContent.fases : fases}
+          fases={homeContent.fases && homeContent.fases.length > 0 ? homeContent.fases : fases}
           id="fases"
-          content={{
-            procesoTitulo: pageContent.procesoTitulo,
-            procesoSubtitulo: pageContent.procesoSubtitulo,
-            procesoColHeading: pageContent.procesoColHeading,
-            procesoColText: pageContent.procesoColText,
-          }}
+          content={homeContent}
         />
       </div>
 

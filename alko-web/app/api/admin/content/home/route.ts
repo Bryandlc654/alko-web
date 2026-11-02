@@ -24,6 +24,8 @@ export async function POST(req: Request) {
 
     // Revalidar inmediatamente la página principal en Next.js
     revalidatePath("/");
+    // Las fases del proceso de la portada también se muestran en Nosotros.
+    revalidatePath("/nosotros");
 
     return NextResponse.json({ success: true, data: updated });
   } catch (err: any) {

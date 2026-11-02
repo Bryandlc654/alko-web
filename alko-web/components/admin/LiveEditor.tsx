@@ -416,6 +416,24 @@ export default function LiveEditor({
           const errorData = await res.json();
           throw new Error(errorData.error || "Error al guardar en el servidor");
         }
+
+        // Las fases del proceso son las mismas que en la portada: se guardan con ella.
+        const procesoRes = await fetch("/api/admin/content/home", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            fases: content.fases,
+            procesoTitulo: content.procesoTitulo,
+            procesoSubtitulo: content.procesoSubtitulo,
+            procesoColHeading: content.procesoColHeading,
+            procesoColText: content.procesoColText,
+          }),
+        });
+
+        if (!procesoRes.ok) {
+          const errorData = await procesoRes.json();
+          throw new Error(errorData.error || "Error al guardar las fases del proceso");
+        }
       } else if (activePage === "articulos") {
         const res = await fetch("/api/admin/content/articulos", {
           method: "POST",
@@ -1999,7 +2017,7 @@ export default function LiveEditor({
               </section>
 
               {/* ========================================================
-                  5. FASES DEL PROCESO EN NOSOTROS (EDITABLE EN VIVO)
+                  5. FASES DEL PROCESO EN NOSOTROS (COMPARTIDAS CON LA PORTADA)
                   ======================================================== */}
               <section id="proceso-nosotros" className="relative bg-white text-stone-900 py-24 sm:py-32 px-6 sm:px-10 lg:px-12 overflow-hidden border-t border-stone-200">
                 <div className="max-w-7xl mx-auto">
@@ -2008,15 +2026,15 @@ export default function LiveEditor({
                     <div>
                       <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-light text-stone-900 tracking-tight leading-none">
                         <InlineText
-                          value={nosotrosContent.procesoTitulo || "Nuestro proceso"}
-                          onChange={(val) => updateNosotrosField("procesoTitulo", val)}
+                          value={content.procesoTitulo || "Nuestro proceso"}
+                          onChange={(val) => updateField("procesoTitulo", val)}
                           placeholder="Título del proceso..."
                         />
                       </h2>
                       <div className="mt-2 font-mono text-[11px] tracking-[0.25em] text-stone-500 uppercase">
                         <InlineText
-                          value={nosotrosContent.procesoSubtitulo || "SECUENCIA DE COORDINACIÓN INTEGRAL · 6 FASES · 1 EQUIPO"}
-                          onChange={(val) => updateNosotrosField("procesoSubtitulo", val)}
+                          value={content.procesoSubtitulo || "SECUENCIA DE COORDINACIÓN INTEGRAL · 6 FASES · 1 EQUIPO"}
+                          onChange={(val) => updateField("procesoSubtitulo", val)}
                           placeholder="Subtítulo del proceso..."
                         />
                       </div>
@@ -2027,7 +2045,7 @@ export default function LiveEditor({
                   <div className="mt-14 sm:mt-20 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-start">
                     {/* Columna 1: Tabs de fases con edición de título */}
                     <div className="lg:col-span-4 flex flex-col space-y-4 sm:space-y-6">
-                      {(nosotrosContent.fases && nosotrosContent.fases.length > 0 ? nosotrosContent.fases : fases).map((fase, i, allFases) => (
+                      {(content.fases && content.fases.length > 0 ? content.fases : fases).map((fase, i, allFases) => (
                         <div
                           key={fase.id || i}
                           onClick={() => setActiveNosotrosFaseIndex(i)}
@@ -2054,7 +2072,7 @@ export default function LiveEditor({
                               onChange={(val) => {
                                 const updated = [...allFases];
                                 updated[i] = { ...updated[i], title: val };
-                                updateNosotrosField("fases", updated);
+                                updateField("fases", updated);
                               }}
                               placeholder={`Título de fase ${i + 1}...`}
                             />
@@ -2065,7 +2083,7 @@ export default function LiveEditor({
 
                     {/* Columna 2: Imagen de la fase activa con edición en línea */}
                     {(() => {
-                      const activeFases = nosotrosContent.fases && nosotrosContent.fases.length > 0 ? nosotrosContent.fases : fases;
+                      const activeFases = content.fases && content.fases.length > 0 ? content.fases : fases;
                       const activeFase = activeFases[activeNosotrosFaseIndex] || activeFases[0];
                       if (!activeFase) return null;
 
@@ -2080,7 +2098,7 @@ export default function LiveEditor({
                                 onImageChange={(newUrl) => {
                                   const updated = [...activeFases];
                                   updated[activeNosotrosFaseIndex] = { ...updated[activeNosotrosFaseIndex], imagen: newUrl };
-                                  updateNosotrosField("fases", updated);
+                                  updateField("fases", updated);
                                 }}
                                 className="w-full h-full"
                                 imageClassName="object-cover object-center"
@@ -2093,15 +2111,15 @@ export default function LiveEditor({
                             <div>
                               <h3 className="text-xl sm:text-2xl font-serif font-light text-stone-900 tracking-tight leading-snug">
                                 <InlineText
-                                  value={nosotrosContent.procesoColHeading || "Una única dirección para todo el proyecto"}
-                                  onChange={(val) => updateNosotrosField("procesoColHeading", val)}
+                                  value={content.procesoColHeading || "Una única dirección para todo el proyecto"}
+                                  onChange={(val) => updateField("procesoColHeading", val)}
                                   placeholder="Encabezado lateral..."
                                 />
                               </h3>
                               <div className="mt-4 text-base sm:text-lg text-stone-600 font-light leading-relaxed font-sans">
                                 <InlineText
-                                  value={nosotrosContent.procesoColText || "Un único equipo coordina construcción, instalaciones, compras y gestión técnica para mantener el proyecto bajo control."}
-                                  onChange={(val) => updateNosotrosField("procesoColText", val)}
+                                  value={content.procesoColText || "Un único equipo coordina construcción, instalaciones, compras y gestión técnica para mantener el proyecto bajo control."}
+                                  onChange={(val) => updateField("procesoColText", val)}
                                   placeholder="Descripción lateral..."
                                   multiline
                                 />
@@ -2115,7 +2133,7 @@ export default function LiveEditor({
                                   onChange={(val) => {
                                     const updated = [...activeFases];
                                     updated[activeNosotrosFaseIndex] = { ...updated[activeNosotrosFaseIndex], texto: val };
-                                    updateNosotrosField("fases", updated);
+                                    updateField("fases", updated);
                                   }}
                                   placeholder={`Detalle explicativo de la fase ${activeNosotrosFaseIndex + 1}...`}
                                   multiline
