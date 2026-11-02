@@ -1023,7 +1023,7 @@ export default function LeadsCrmManager({ initialLeads }: LeadsCrmManagerProps) 
       {/* ==================================================================== */}
       {selectedLead && (
         <div
-          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
+          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 sm:p-6 overflow-y-auto no-scrollbar"
           onClick={() => setSelectedLeadId(null)}
         >
           <div
@@ -1064,7 +1064,7 @@ export default function LeadsCrmManager({ initialLeads }: LeadsCrmManagerProps) 
             </div>
 
             {/* Modal Body */}
-            <div className="p-6 overflow-y-auto space-y-5 text-xs">
+            <div className="p-6 overflow-y-auto no-scrollbar space-y-5 text-xs">
               {/* Acciones de Contacto Rápido */}
               <div className="flex flex-wrap items-center gap-2.5 p-3 rounded-2xl bg-blue-50/50 border border-blue-100">
                 <span className="text-xs font-bold text-blue-900 mr-1">Contacto directo:</span>

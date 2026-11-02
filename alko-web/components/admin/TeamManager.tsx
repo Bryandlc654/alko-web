@@ -324,7 +324,7 @@ export default function TeamManager({ initialMembers }: TeamManagerProps) {
               </button>
             </div>
 
-            <form onSubmit={handleSaveMember} className="p-6 space-y-4 overflow-y-auto">
+            <form onSubmit={handleSaveMember} className="p-6 space-y-4 overflow-y-auto no-scrollbar">
               {/* Fotografía con selector y subida */}
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-2">

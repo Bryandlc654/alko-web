@@ -316,3 +316,12 @@ html {
     width: 100%;
   }
 }
+
+/* Desplazamiento sin barra visible (modales, menús laterales, carruseles). */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

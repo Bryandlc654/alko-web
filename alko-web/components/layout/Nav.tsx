@@ -332,7 +332,7 @@ function MobileDrawer({
       />
 
       <div
-        className={`absolute inset-y-0 right-0 w-full max-w-sm bg-stone-950 text-white p-6 sm:p-8 flex flex-col justify-between overflow-y-auto transform transition-transform duration-300 ease-out border-l border-white/10 ${
+        className={`absolute inset-y-0 right-0 w-full max-w-sm bg-stone-950 text-white p-6 sm:p-8 flex flex-col justify-between overflow-y-auto no-scrollbar transform transition-transform duration-300 ease-out border-l border-white/10 ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >

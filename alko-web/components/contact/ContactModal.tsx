@@ -151,7 +151,7 @@ export default function ContactModal({
             </button>
           </div>
 
-          <div className="overflow-y-auto overscroll-contain px-6 py-8 sm:px-10 sm:py-10">
+          <div className="no-scrollbar overflow-y-auto overscroll-contain px-6 py-8 sm:px-10 sm:py-10">
             {rapido ? (
               <>
                 <QuickContactForm

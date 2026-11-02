@@ -123,7 +123,7 @@ export default function JobApplicationModal({
         </div>
 
         {/* Cuerpo / Formulario */}
-        <div className="p-6 sm:p-8 overflow-y-auto">
+        <div className="no-scrollbar p-6 sm:p-8 overflow-y-auto">
           {success ? (
             <div className="py-12 text-center space-y-4">
               <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 mx-auto flex items-center justify-center">
