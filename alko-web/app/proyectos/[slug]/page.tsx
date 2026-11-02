@@ -312,6 +312,64 @@ export default async function ProjectDetail({
         </Container>
       </section>
 
+      {/* Reseña del cliente (solo si se ha escrito en el panel) */}
+      {project.resenaTexto?.trim() && (
+        <section aria-labelledby="resena-titulo" className="border-t border-stone-200 bg-stone-50">
+          <Container className="py-20 sm:py-28">
+            <figure className="reveal-item mx-auto max-w-4xl">
+              <div className="flex items-center gap-4">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-amber-700">
+                  <span className="h-1.5 w-1.5 rounded-full bg-amber-700" />
+                </span>
+                <h2 id="resena-titulo" className="font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase">
+                  Lo que dice el cliente
+                </h2>
+              </div>
+
+              {!!project.resenaValoracion && (
+                <div className="mt-10 flex gap-1 text-amber-700" role="img" aria-label={`${project.resenaValoracion} de 5 estrellas`}>
+                  {Array.from({ length: 5 }, (_, i) => (
+                    <svg
+                      key={i}
+                      viewBox="0 0 20 20"
+                      aria-hidden="true"
+                      className={`h-5 w-5 ${i < (project.resenaValoracion || 0) ? "fill-current" : "fill-stone-300"}`}
+                    >
+                      <path d="M10 1.5l2.6 5.4 5.9.8-4.3 4.1 1 5.9L10 14.9l-5.2 2.8 1-5.9L1.5 7.7l5.9-.8z" />
+                    </svg>
+                  ))}
+                </div>
+              )}
+
+              <blockquote className={project.resenaValoracion ? "mt-6" : "mt-10"}>
+                <span aria-hidden="true" className="block font-serif text-7xl leading-none text-amber-700/40 sm:text-8xl">
+                  “
+                </span>
+                <p className="-mt-6 font-serif text-2xl font-light leading-snug tracking-tight text-stone-900 sm:-mt-8 sm:text-3xl lg:text-4xl">
+                  {project.resenaTexto.trim()}
+                </p>
+              </blockquote>
+
+              {(project.resenaAutor || project.resenaCargo) && (
+                <figcaption className="mt-10 flex items-center gap-4 border-t border-stone-900/15 pt-6">
+                  <span aria-hidden="true" className="h-px w-10 bg-amber-700" />
+                  <span>
+                    {project.resenaAutor && (
+                      <span className="block font-serif text-lg text-stone-900">{project.resenaAutor}</span>
+                    )}
+                    {project.resenaCargo && (
+                      <span className="mt-0.5 block font-mono text-[11px] tracking-[0.2em] uppercase text-stone-500">
+                        {project.resenaCargo}
+                      </span>
+                    )}
+                  </span>
+                </figcaption>
+              )}
+            </figure>
+          </Container>
+        </section>
+      )}
+
       {/* 3. Navegación entre más proyectos */}
       {neighbours.length > 0 && (
         <nav aria-label="Más proyectos" className="border-t border-stone-300">

@@ -435,6 +435,65 @@ export default function ProjectEditForm({ initialProject, isNew = false }: Proje
           </div>
         </div>
 
+        {/* Reseña del cliente: si el texto está vacío, la página del proyecto no muestra el bloque. */}
+        <div className="space-y-4">
+          <div>
+            <h3 className="text-sm font-semibold text-slate-900">Reseña del cliente</h3>
+            <p className="mt-1 text-xs text-slate-500">
+              Opcional. Usa solo opiniones reales del cliente, con su permiso. Si lo dejas vacío, el bloque no aparece.
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1.5">Texto de la reseña</label>
+            <textarea
+              rows={4}
+              value={project.resenaTexto || ""}
+              onChange={(e) => setProject({ ...project, resenaTexto: e.target.value })}
+              placeholder="Lo que el cliente dice de la obra y del equipo..."
+              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-blue-600 text-xs text-slate-800 bg-white leading-relaxed"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1.5">Nombre</label>
+              <input
+                type="text"
+                value={project.resenaAutor || ""}
+                onChange={(e) => setProject({ ...project, resenaAutor: e.target.value })}
+                placeholder="Laura M."
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-blue-600 text-xs text-slate-800 bg-white"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1.5">Cargo o tipo de cliente</label>
+              <input
+                type="text"
+                value={project.resenaCargo || ""}
+                onChange={(e) => setProject({ ...project, resenaCargo: e.target.value })}
+                placeholder="Propietaria de la vivienda"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-blue-600 text-xs text-slate-800 bg-white"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1.5">Valoración</label>
+              <select
+                value={project.resenaValoracion || 0}
+                onChange={(e) => setProject({ ...project, resenaValoracion: Number(e.target.value) })}
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-blue-600 text-xs text-slate-800 bg-white"
+              >
+                <option value={0}>Sin estrellas</option>
+                {[5, 4, 3, 2, 1].map((n) => (
+                  <option key={n} value={n}>
+                    {n} {n === 1 ? "estrella" : "estrellas"}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+
         {/* Botones inferiores */}
         <div className="pt-6 border-t border-slate-200 flex items-center justify-between">
           <Link

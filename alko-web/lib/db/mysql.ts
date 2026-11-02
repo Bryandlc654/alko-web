@@ -461,6 +461,10 @@ export async function saveDbProject(projectData: Partial<Project> & { id?: strin
     cronograma: Array.isArray(projectData.cronograma) ? projectData.cronograma : (baseProject?.cronograma || []),
     materiales: Array.isArray(projectData.materiales) ? projectData.materiales : (baseProject?.materiales || []),
     resultado: projectData.resultado ?? baseProject?.resultado ?? "",
+    resenaTexto: projectData.resenaTexto ?? baseProject?.resenaTexto ?? "",
+    resenaAutor: projectData.resenaAutor ?? baseProject?.resenaAutor ?? "",
+    resenaCargo: projectData.resenaCargo ?? baseProject?.resenaCargo ?? "",
+    resenaValoracion: Math.max(0, Math.min(5, Number(projectData.resenaValoracion ?? baseProject?.resenaValoracion ?? 0) || 0)),
   };
 
   if (existingIndex >= 0) {

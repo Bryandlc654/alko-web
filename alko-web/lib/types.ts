@@ -78,6 +78,14 @@ export interface Project {
   materiales: ProjectMaterial[];
   /** Cierre: qué se consiguió con el proyecto. */
   resultado: string;
+  /** Reseña del cliente (si está vacía, la página no muestra el bloque). */
+  resenaTexto?: string;
+  /** Nombre de quien firma la reseña (p. ej. «Laura M.»). */
+  resenaAutor?: string;
+  /** Cargo, empresa o tipo de cliente (p. ej. «Propietaria de la vivienda»). */
+  resenaCargo?: string;
+  /** Valoración de 1 a 5 estrellas; 0 o vacío = sin estrellas. */
+  resenaValoracion?: number;
 }
 
 export interface SectorCommitment {
