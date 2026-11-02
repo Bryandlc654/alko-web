@@ -70,7 +70,6 @@ const PAGES_LIST = [
   { id: "projects", label: "Proyectos", path: "/proyectos", group: "Portfolio" },
   { id: "nosotros", label: "Nosotros", path: "/nosotros", group: "Corporativo" },
   { id: "servicios", label: "Servicios", path: "/servicios", group: "Servicios" },
-  { id: "oficinas", label: "Oficinas", path: "/oficinas", group: "Servicios" },
   { id: "equipo", label: "Equipo", path: "/equipo", group: "Corporativo" },
   { id: "empleo", label: "Trabaja con nosotros", path: "/trabaja-con-nosotros", group: "Corporativo" },
   { id: "articulos", label: "Artículos (Blog)", path: "/conocimiento/articulos", group: "Conocimiento" },
@@ -741,6 +740,7 @@ export default function LiveEditor({
             <div className="pointer-events-auto">
               <Image
                 src="/logo.webp"
+                skeleton={false}
                 alt="ALKO Arquitectura y Reformas"
                 width={170}
                 height={48}
@@ -1484,6 +1484,7 @@ export default function LiveEditor({
                   <div key={`${fab.id}-${i}`} className="flex items-center h-12 sm:h-16 shrink-0 opacity-70 hover:opacity-100 transition">
                     <Image
                       src={fab.logo}
+                      skeleton={false}
                       alt={fab.name}
                       width={120}
                       height={48}
