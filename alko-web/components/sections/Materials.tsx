@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/components/ui/Image";
 import type { Fabricante, HomeContent } from "@/lib/types";
 
 export default function Materials({ fabricantes, content }: { fabricantes: Fabricante[]; content?: HomeContent }) {

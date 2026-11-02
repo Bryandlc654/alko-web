@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/components/ui/Image";
 import Container from "@/components/ui/Container";
 import PageHero from "@/components/ui/PageHero";
 import { getSettings } from "@/lib/wordpress";

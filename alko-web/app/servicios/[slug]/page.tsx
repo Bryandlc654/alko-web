@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import Image from "next/image";
+import Image from "@/components/ui/Image";
 import Link from "next/link";
 import ContactTrigger from "@/components/contact/ContactTrigger";
 import Container from "@/components/ui/Container";

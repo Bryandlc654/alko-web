@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/components/ui/Image";
 import { Clock, Mail, MapPin, MessageCircle, Phone, type LucideIcon } from "lucide-react";
 import Container from "@/components/ui/Container";
 import ContactForm from "@/components/ui/ContactForm";

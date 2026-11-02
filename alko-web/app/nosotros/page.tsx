@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/components/ui/Image";
 import Link from "next/link";
 import { BadgeCheck, CalendarClock, Handshake, Wallet } from "lucide-react";
 import Container from "@/components/ui/Container";

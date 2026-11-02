@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/components/ui/Image";
 import type { HomeContent } from "@/lib/types";
 
 const RETO_BADGES = ["Climatización", "Ventilación", "Red de Datos", "Acabados H2"];

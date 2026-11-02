@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/components/ui/Image";
 import type { HomeContent, Project, Slide } from "@/lib/types";
 
 const MAX_PROJECT_SLIDES = 6;

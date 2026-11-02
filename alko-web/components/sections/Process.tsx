@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/components/ui/Image";
 import type { Fase, HomeContent } from "@/lib/types";
 
 /** Extrae el número de fase (p. ej. "(01)") a partir del tag o del índice. */

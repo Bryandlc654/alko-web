@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
+import Image from "@/components/ui/Image";
 import { Camera, Upload, Trash2, Sparkles } from "lucide-react";
 import { confirmDialog } from "@/components/admin/feedback";
 import { openMediaPicker } from "@/components/admin/media";

@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/components/ui/Image";
 import ContactTrigger from "@/components/contact/ContactTrigger";
 import Container from "@/components/ui/Container";
 import PageHero from "@/components/ui/PageHero";

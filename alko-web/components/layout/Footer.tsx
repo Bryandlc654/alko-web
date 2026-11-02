@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/components/ui/Image";
 import Link from "next/link";
 import { FOOTER_NAV } from "@/lib/site";
 import type { SiteSettings } from "@/lib/types";

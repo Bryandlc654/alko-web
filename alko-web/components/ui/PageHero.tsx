@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/components/ui/Image";
 import type { ReactNode } from "react";
 import Breadcrumbs, { type Crumb } from "./Breadcrumbs";
 import Container from "./Container";
