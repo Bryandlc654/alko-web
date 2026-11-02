@@ -1,5 +1,10 @@
 import type { HomeContent, Sector } from "@/lib/types";
+import Link from "next/link";
 import SectorsList from "@/components/ui/SectorsList";
+import { ROUTES } from "@/lib/site";
+
+/** La portada muestra los primeros servicios de la lista; el resto, en /servicios. */
+export const HOME_SECTORS_LIMIT = 6;
 
 export default function ServicesSection({ sectors, content }: { sectors: Sector[]; content?: HomeContent }) {
   return (
@@ -24,7 +29,19 @@ export default function ServicesSection({ sectors, content }: { sectors: Sector[
           </div>
         </div>
 
-        <SectorsList sectors={sectors} />
+        <SectorsList sectors={sectors.slice(0, HOME_SECTORS_LIMIT)} />
+
+        {sectors.length > HOME_SECTORS_LIMIT && (
+          <div className="reveal-item mt-12 sm:mt-16 flex justify-center">
+            <Link
+              href={ROUTES.sectors}
+              className="inline-flex items-center gap-3 border border-stone-900 px-7 py-4 font-mono text-[11px] tracking-[0.25em] uppercase text-stone-900 transition-colors hover:bg-stone-900 hover:text-white"
+            >
+              <span>VER TODOS LOS SERVICIOS</span>
+              <span aria-hidden="true">→</span>
+            </Link>
+          </div>
+        )}
       </div>
     </section>
   );

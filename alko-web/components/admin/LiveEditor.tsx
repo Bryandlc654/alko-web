@@ -37,6 +37,7 @@ import InlineText from "@/components/admin/InlineText";
 import InlineImage from "@/components/admin/InlineImage";
 import ProjectsList from "@/components/ui/ProjectsList";
 import SectorsList from "@/components/ui/SectorsList";
+import { HOME_SECTORS_LIMIT } from "@/components/sections/ServicesSection";
 import ArticleCard from "@/components/ui/ArticleCard";
 import Footer from "@/components/layout/Footer";
 import { ROUTES } from "@/lib/site";
@@ -1133,7 +1134,7 @@ export default function LiveEditor({
                 </div>
               </div>
 
-              <SectorsList sectors={sectors} />
+              <SectorsList sectors={sectors.slice(0, HOME_SECTORS_LIMIT)} />
             </div>
           </section>
 
