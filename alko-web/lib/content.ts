@@ -886,7 +886,7 @@ export const DEFAULT_SECTORS: Sector[] = [
     numero: "11",
     title: "Concierge para familias extranjeras",
     descripcion: "Acompañamos a familias que se mudan a Madrid desde el extranjero: búsqueda y compra de la vivienda, proyecto, reforma e interiorismo, todo gestionado en remoto.",
-    imagen: "https://raw.githubusercontent.com/Bryandlc654/alko-web/media/uploads/cristobal-bordiu-lampara-roseton-1793940493364.webp",
+    imagen: "https://raw.githubusercontent.com/Bryandlc654/alko-web/media/uploads/fotografia_reforma_rm_dsc7020-1793470074062.webp",
     enlace: "/servicios/concierge-familias-extranjeras",
     content: "<p>Un único interlocutor para familias que quieren vivir en Madrid sin estar aquí durante el proceso: búsqueda de la vivienda, acompañamiento en la compra con abogados y gestores colaboradores, proyecto, licencias, reforma, interiorismo y entrega lista para entrar a vivir, con seguimiento online de cada fase.</p>",
     landing: {
