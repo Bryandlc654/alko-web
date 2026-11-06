@@ -4,7 +4,11 @@ import path from "path";
 import { DEFAULT_HOME_CONTENT, DEFAULT_PROJECTS_PAGE_CONTENT, DEFAULT_NOSOTROS_PAGE_CONTENT, DEFAULT_CONTACTO_PAGE_CONTENT, DEFAULT_SERVICIOS_PAGE_CONTENT, DEFAULT_EQUIPO_PAGE_CONTENT, DEFAULT_EMPLEO_PAGE_CONTENT, DEFAULT_OFICINAS_PAGE_CONTENT, DEFAULT_ARTICULOS_PAGE_CONTENT, DEFAULT_GUIAS_PAGE_CONTENT, DEFAULT_PROJECTS, DEFAULT_SECTORS, DEFAULT_ARTICLES, DEFAULT_GUIDES, DEFAULT_SETTINGS, DEFAULT_POSICIONES_EMPLEO, DEFAULT_EQUIPO_MEMBERS } from "../content";
 import type { Project, Sector, Article, Guide, HomeContent, ProjectsPageContent, NosotrosPageContent, ContactoPageContent, ServiciosPageContent, EquipoPageContent, EmpleoPageContent, OficinasPageContent, ArticulosPageContent, GuiasPageContent, Slide, SiteSettings, Candidatura, CandidaturaEstado, PosicionEmpleo, MiembroEquipo, Lead, LeadEstado } from "../types";
 
-let pool: Pool | null = null;
+// El hosting limita las conexiones nuevas por hora (500). El pool se guarda en globalThis para que la
+// recarga en caliente de desarrollo no abra uno nuevo en cada cambio, y las conexiones inactivas se
+// conservan 10 minutos en lugar de cerrarse y volver a abrirse en cada visita.
+const globalForDb = globalThis as unknown as { alkoDbPool?: Pool };
+let pool: Pool | null = globalForDb.alkoDbPool ?? null;
 
 export function getDbPool(): Pool {
   if (!pool) {
@@ -19,10 +23,14 @@ export function getDbPool(): Pool {
       password: DB_PASSWORD,
       database: DB_NAME,
       waitForConnections: true,
-      connectionLimit: 10,
+      connectionLimit: 5,
+      maxIdle: 5,
+      idleTimeout: 600000,
+      enableKeepAlive: true,
       queueLimit: 0,
       connectTimeout: 5000,
     });
+    globalForDb.alkoDbPool = pool;
   }
   return pool;
 }
