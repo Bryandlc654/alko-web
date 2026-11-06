@@ -424,6 +424,7 @@ export default async function ProjectDetail({
         boton={cta.boton}
         imagen={project.fotoDespues?.trim() || project.imagen}
         source={`Proyecto ${project.title}`}
+        overlay
       />
     </main>
   );

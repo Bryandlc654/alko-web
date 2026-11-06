@@ -10,6 +10,7 @@ export default function ContactCta({
   imagen,
   boton,
   source = "Cierre de página",
+  overlay = false,
 }: {
   settings: SiteSettings;
   content?: HomeContent;
@@ -20,6 +21,8 @@ export default function ContactCta({
   boton?: string;
   /** Origen que se guarda con la solicitud de contacto. */
   source?: string;
+  /** Capa negra sobre toda la foto, con antetítulo y separador (llamada final de los proyectos). */
+  overlay?: boolean;
 }) {
   const heading = titulo || content?.contactoTitulo;
   const telHref = `tel:${settings.telefono.replace(/[^+\d]/g, "")}`;
@@ -35,10 +38,17 @@ export default function ContactCta({
           sizes="100vw"
           className="w-full h-full object-cover object-top select-none pointer-events-none transition-transform duration-1000 ease-out group-hover:scale-[1.01]"
         />
+        {overlay && <div className="absolute inset-0 pointer-events-none bg-black/55" />}
         <div className="absolute inset-x-0 bottom-0 h-2/3 pointer-events-none bg-gradient-to-t from-stone-950/95 via-stone-950/50 to-transparent" />
         <div className="absolute inset-0 z-10 flex flex-col justify-between max-w-7xl mx-auto px-6 sm:px-12 lg:px-16 py-12 sm:py-16 md:py-20 lg:py-24">
           <div className="pt-8 sm:pt-14 md:pt-18 lg:pt-20">
-            <h2 className="text-3xl sm:text-5xl md:text-6xl lg:text-[68px] font-light font-display text-white tracking-[-0.03em] leading-[1.08] select-text">
+            {overlay && (
+              <span className="mb-6 sm:mb-8 inline-flex items-center gap-4 font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.3em] text-amber-500">
+                <span className="h-px w-10 bg-amber-500/70" />
+                Siguiente paso
+              </span>
+            )}
+            <h2 className={`text-3xl sm:text-5xl md:text-6xl lg:text-[68px] font-light font-display text-white tracking-[-0.03em] leading-[1.08] select-text${overlay ? " max-w-4xl drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)]" : ""}`}>
               {heading ? (
                 heading.split('\n').map((line, i) => (
                   <span key={i}>
@@ -55,7 +65,7 @@ export default function ContactCta({
               )}
             </h2>
           </div>
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 pt-6">
+          <div className={`flex flex-col lg:flex-row lg:items-end justify-between gap-8 pt-6${overlay ? " border-t border-white/15 sm:pt-10" : ""}`}>
             <div className="space-y-5 max-w-xl">
               <p className="text-base sm:text-lg font-sans text-stone-200/90 font-light leading-relaxed max-w-lg drop-shadow-sm">
                 {descripcion || content?.contactoDescripcion || "Una única interlocución para coordinar arquitectura, compras, instalaciones y obra completa. Sin intermediarios ni imprevistos."}
