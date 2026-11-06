@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getDbGuiasPageContent, saveDbGuiasPageContent } from "@/lib/db/mysql";
 import { getSession } from "@/lib/auth/server-session";
 import { hasPermission } from "@/lib/auth/rbac";
@@ -21,6 +22,8 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     const updated = await saveDbGuiasPageContent(body);
+    // Regenera la web publicada al momento (si no, sigue la versión en caché hasta que caduca).
+    revalidatePath("/", "layout");
     return NextResponse.json({ success: true, data: updated });
   } catch (error: any) {
     return NextResponse.json({ error: error.message || "Error al guardar contenido" }, { status: 500 });
