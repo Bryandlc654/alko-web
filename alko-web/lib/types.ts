@@ -84,6 +84,8 @@ export interface Project {
   ctaBoton?: string;
   /** Proyecto de la línea ALKO Exclusiva: sello en los listados y plantilla propia. */
   exclusivo?: boolean;
+  /** Oculto: no se ve en la web pública (listados, portada, ficha ni sitemap); sigue en el panel. */
+  oculto?: boolean;
   /** Reseña del cliente (si está vacía, la página no muestra el bloque). */
   resenaTexto?: string;
   /** Nombre de quien firma la reseña (p. ej. «Laura M.»). */

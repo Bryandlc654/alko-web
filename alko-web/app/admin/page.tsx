@@ -27,7 +27,7 @@ export const dynamic = "force-dynamic";
 export default async function AdminDashboardPage() {
   const session = await getSession();
   const [projects, sectors, articles, guides, candidaturas, vacantes, teamMembers, leads, homeContent] = await Promise.all([
-    getProjects(),
+    getProjects({ includeHidden: true }),
     getSectors(),
     getArticles(),
     getGuides(),

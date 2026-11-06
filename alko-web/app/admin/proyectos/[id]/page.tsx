@@ -18,7 +18,7 @@ export default async function AdminProjectEditPage({
   const { id } = await params;
   const isNew = id === "nuevo";
 
-  const [project, sectors] = await Promise.all([isNew ? null : getProjectBySlug(id), getSectors()]);
+  const [project, sectors] = await Promise.all([isNew ? null : getProjectBySlug(id, { includeHidden: true }), getSectors()]);
 
   if (!isNew && !project) {
     return notFound();

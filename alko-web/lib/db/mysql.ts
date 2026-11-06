@@ -468,6 +468,7 @@ export async function saveDbProject(projectData: Partial<Project> & { id?: strin
     materiales: Array.isArray(projectData.materiales) ? projectData.materiales : (baseProject?.materiales || []),
     resultado: projectData.resultado ?? baseProject?.resultado ?? "",
     exclusivo: Boolean(projectData.exclusivo ?? baseProject?.exclusivo ?? false),
+    oculto: Boolean(projectData.oculto ?? baseProject?.oculto ?? false),
     ctaTitulo: projectData.ctaTitulo ?? baseProject?.ctaTitulo ?? "",
     ctaTexto: projectData.ctaTexto ?? baseProject?.ctaTexto ?? "",
     ctaBoton: projectData.ctaBoton ?? baseProject?.ctaBoton ?? "",

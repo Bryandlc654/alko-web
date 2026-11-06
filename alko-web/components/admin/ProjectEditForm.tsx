@@ -191,6 +191,22 @@ export default function ProjectEditForm({ initialProject, isNew = false, sectors
           </div>
         )}
 
+        {/* Oculto: fuera de la web pública hasta que se vuelva a publicar. */}
+        <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <input
+            type="checkbox"
+            checked={Boolean(project.oculto)}
+            onChange={(e) => setProject({ ...project, oculto: e.target.checked })}
+            className="mt-0.5 h-4 w-4 rounded border-slate-300 accent-slate-900"
+          />
+          <span>
+            <span className="block text-sm font-semibold text-slate-900">Ocultar en la web</span>
+            <span className="mt-0.5 block text-xs text-slate-600">
+              El proyecto no aparece en la web pública ni se puede abrir su página. Sigue aquí en el panel para publicarlo cuando quieras.
+            </span>
+          </span>
+        </label>
+
         {/* ALKO Exclusiva: sello en los listados y plantilla de página propia. */}
         <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-amber-200 bg-amber-50/60 p-4">
           <input

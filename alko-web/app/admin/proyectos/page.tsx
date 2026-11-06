@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 export default async function AdminProjectsPage() {
   const session = await getSession();
   const [allProjects, featuredIds, showcaseId] = await Promise.all([
-    getProjects(),
+    getProjects({ includeHidden: true }),
     getFeaturedProjectIds(),
     getShowcaseProjectId(),
   ]);

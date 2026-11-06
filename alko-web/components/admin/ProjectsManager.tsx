@@ -269,6 +269,11 @@ export default function ProjectsManager({
                       <span>En Portada</span>
                     </div>
                   )}
+                  {project.oculto && (
+                    <div className="bg-slate-700 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md">
+                      Oculto
+                    </div>
+                  )}
                   {project.exclusivo && (
                     <div className="bg-stone-950 text-[#c6a66b] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md">
                       ALKO Exclusiva

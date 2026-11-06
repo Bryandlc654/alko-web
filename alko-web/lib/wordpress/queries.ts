@@ -95,11 +95,19 @@ export async function getShowcaseSlides(): Promise<Slide[]> {
 
 /* ------------------------------- Proyectos -------------------------------- */
 
-export async function getProjects(): Promise<Project[]> {
+/** Quita los proyectos ocultos y renumera los visibles (01, 02…) para que no queden huecos. */
+function visibleProjects(list: Project[]): Project[] {
+  return list
+    .filter((p) => !p.oculto)
+    .map((p, i) => ({ ...p, indice: String(i + 1).padStart(2, "0") }));
+}
+
+/** Proyectos de la web pública. El panel pasa `includeHidden` para ver también los ocultos. */
+export async function getProjects({ includeHidden = false }: { includeHidden?: boolean } = {}): Promise<Project[]> {
   try {
     const dbProjects = await getDbProjects();
     if (dbProjects && dbProjects.length > 0) {
-      return dbProjects;
+      return includeHidden ? dbProjects : visibleProjects(dbProjects);
     }
   } catch (err) {
     console.warn("Error leyendo proyectos de MySQL:", err);
@@ -148,10 +156,14 @@ export async function getShowcaseProject(): Promise<Project | null> {
   }
 }
 
-export async function getProjectBySlug(slug: string): Promise<Project | null> {
+export async function getProjectBySlug(
+  slug: string,
+  { includeHidden = false }: { includeHidden?: boolean } = {},
+): Promise<Project | null> {
   try {
     const dbProjects = await getDbProjects();
-    const found = dbProjects.find((p) => p.slug === slug || String(p.id) === slug);
+    const list = includeHidden ? dbProjects : visibleProjects(dbProjects);
+    const found = list.find((p) => p.slug === slug || String(p.id) === slug);
     if (found) return found;
     // Si el panel ya gestiona los proyectos, su lista manda: un proyecto eliminado no debe
     // reaparecer desde WordPress ni desde los de ejemplo.
