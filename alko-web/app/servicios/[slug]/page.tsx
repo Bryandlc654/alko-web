@@ -172,9 +172,9 @@ export default async function SectorDetailPage({
   const capacidades = landing?.capacidades && landing.capacidades.length > 0 ? landing.capacidades : DEFAULT_CAPACIDADES;
   const problems = (landing?.problems || []).filter((p) => p.avoid || p.promise);
 
-  // Proyectos del servicio (si aún no hay, los más recientes) y fotos de obra para la galería.
+  // Solo proyectos de este servicio: sin obras propias no se muestran proyectos ni galería de otro tipo de obra.
   const ownProjects = projects.filter((project) => sectorSlug(project.servicio) === sector.slug);
-  const showcase = (ownProjects.length > 0 ? ownProjects : projects).slice(0, 3);
+  const showcase = ownProjects.slice(0, 3);
   const galleryPhotos = Array.from(
     new Set(
       landing?.resultsImages && landing.resultsImages.length > 0
@@ -456,7 +456,7 @@ export default async function SectorDetailPage({
               <div>
                 <span className={eyebrowClass}>Proyectos</span>
                 <h2 className={`mt-4 ${h2Class}`}>
-                  {ownProjects.length > 0 ? `Proyectos de ${keyword}` : "Proyectos recientes de ALKO"}
+                  {`Proyectos de ${keyword}`}
                 </h2>
               </div>
               <Link

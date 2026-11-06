@@ -178,7 +178,7 @@ export const DEFAULT_SECTORS: Sector[] = [
     numero: "02",
     title: "Residencial",
     descripcion: "Viviendas unifamiliares, pisos y áticos: obra nueva y reformas integrales con máxima exigencia en acabados y eficiencia.",
-    imagen: "/service-interior-1.jpg",
+    imagen: "https://raw.githubusercontent.com/Bryandlc654/alko-web/media/uploads/fotografia_reforma_rm_dsc7012-1793470017765.webp",
     enlace: "/servicios/residencial",
     content: "<p>Acompañamos a arquitectos y propietarios desde la cimentación o la demolición hasta el último detalle de carpintería y domótica. Redistribución espacial, refuerzo estructural y restauración de elementos protegidos, con un arquitecto técnico asignado y un presupuesto cerrado en cada fase.</p>",
   },
@@ -208,7 +208,7 @@ export const DEFAULT_SECTORS: Sector[] = [
     numero: "05",
     title: "Viviendas unifamiliares",
     descripcion: "Proyecto y obra de viviendas unifamiliares completas: obra nueva, ampliaciones y rehabilitaciones integrales con un único responsable.",
-    imagen: "/el-viso.jpg",
+    imagen: "https://raw.githubusercontent.com/Bryandlc654/alko-web/media/uploads/el-boalo-fachada-piedra-1793940292730.webp",
     enlace: "/servicios/viviendas-unifamiliares",
     content: "<p>Desarrollamos la vivienda unifamiliar completa, del proyecto y la licencia a la entrega llave en mano: cimentación, estructura, envolvente eficiente, instalaciones, interiorismo y exteriores. Un único equipo técnico y un presupuesto cerrado por fases.</p>",
     landing: {
@@ -660,7 +660,7 @@ export const DEFAULT_SECTORS: Sector[] = [
     numero: "09",
     title: "Ventanas acústicas",
     descripcion: "Ventanas de alto aislamiento acústico para viviendas, oficinas y hoteles junto a calles con tráfico, ocio nocturno o aeropuertos.",
-    imagen: "/start-research-2.jpg",
+    imagen: "https://raw.githubusercontent.com/Bryandlc654/alko-web/media/uploads/columela-cocina-isla-salon-1793940584502.webp",
     enlace: "/servicios/ventanas-acusticas",
     content: "<p>Instalamos ventanas acústicas que reducen de forma notable el ruido exterior: perfiles de altas prestaciones, vidrios laminados acústicos con cámaras asimétricas, cajones de persiana aislados y una instalación completamente sellada.</p>",
     landing: {
@@ -886,7 +886,7 @@ export const DEFAULT_SECTORS: Sector[] = [
     numero: "11",
     title: "Concierge para familias extranjeras",
     descripcion: "Acompañamos a familias que se mudan a Madrid desde el extranjero: búsqueda y compra de la vivienda, proyecto, reforma e interiorismo, todo gestionado en remoto.",
-    imagen: "/proceso-entrega.jpg",
+    imagen: "https://raw.githubusercontent.com/Bryandlc654/alko-web/media/uploads/cristobal-bordiu-lampara-roseton-1793940493364.webp",
     enlace: "/servicios/concierge-familias-extranjeras",
     content: "<p>Un único interlocutor para familias que quieren vivir en Madrid sin estar aquí durante el proceso: búsqueda de la vivienda, acompañamiento en la compra con abogados y gestores colaboradores, proyecto, licencias, reforma, interiorismo y entrega lista para entrar a vivir, con seguimiento online de cada fase.</p>",
     landing: {
