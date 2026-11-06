@@ -87,7 +87,7 @@ export default async function Home() {
   return (
     <main>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <Hero slides={data.heroSlides} content={data.homeContent} />
+      <Hero slides={data.heroSlides} content={data.homeContent} settings={data.settings} />
       <ProjectsSection projects={data.projects} content={data.homeContent} />
       <Process fases={data.homeContent.fases && data.homeContent.fases.length > 0 ? data.homeContent.fases : data.fases} content={data.homeContent} />
       <ServicesSection sectors={data.sectors} content={data.homeContent} />

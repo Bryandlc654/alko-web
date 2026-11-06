@@ -1,8 +1,18 @@
 import Image from "@/components/ui/Image";
 import ContactTrigger from "@/components/contact/ContactTrigger";
-import type { HomeContent, Slide } from "@/lib/types";
+import QuickContactForm from "@/components/ui/QuickContactForm";
+import type { HomeContent, SiteSettings, Slide } from "@/lib/types";
 
-export default function Hero({ slides, content }: { slides: Slide[]; content?: HomeContent }) {
+export default function Hero({
+  slides,
+  content,
+  settings,
+}: {
+  slides: Slide[];
+  content?: HomeContent;
+  settings: SiteSettings;
+}) {
+  const whatsappHref = `https://wa.me/${settings.whatsapp.replace(/[^\d]/g, "")}`;
   return (
     <header className="hero relative min-h-screen w-full flex flex-col justify-between overflow-hidden">
       {/* Slider de fondo con overlay cinematográfico arquitectónico */}
@@ -54,7 +64,8 @@ export default function Hero({ slides, content }: { slides: Slide[]; content?: H
       </div>
 
       {/* Barra inferior del hero */}
-      <div className="relative z-20 w-full max-w-7xl mx-auto px-6 sm:px-10 pb-8 sm:pb-10 pt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mt-16 sm:mt-20 lg:mt-24">
+      {/* En escritorio deja sitio a la derecha para el formulario */}
+      <div className="relative z-20 w-full max-w-7xl mx-auto px-6 sm:px-10 pb-8 sm:pb-10 pt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mt-16 sm:mt-20 lg:mt-24 lg:pr-[440px]">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-8">
           <ContactTrigger mode="avanzado" source="Portada" className="inline-flex items-center justify-center px-7 py-3 rounded-full border border-white/60 bg-stone-900/30 hover:bg-white/15 backdrop-blur-md text-white text-xs font-semibold tracking-[0.18em] uppercase transition duration-300 shadow-sm active:scale-95">
             {content?.heroCtaTexto ?? "SOLICITAR PRESUPUESTO"}
@@ -114,6 +125,20 @@ export default function Hero({ slides, content }: { slides: Slide[]; content?: H
             </svg>
           </button>
         </div>
+      </div>
+
+      {/* Formulario rápido abierto: abajo a la derecha en escritorio, debajo de los botones en móvil */}
+      <div className="relative z-20 w-full max-w-7xl mx-auto px-6 sm:px-10 pb-10 lg:absolute lg:inset-x-0 lg:bottom-10 lg:pb-0 lg:pointer-events-none">
+        <section
+          aria-labelledby="hero-form-title"
+          className="ml-auto w-full border border-white/15 bg-stone-950/60 p-6 text-white shadow-2xl backdrop-blur-md sm:max-w-md lg:pointer-events-auto lg:w-[380px]"
+        >
+          <span className="block font-mono text-[10px] uppercase tracking-[0.25em] text-amber-500">Contacto</span>
+          <h2 id="hero-form-title" className="mt-2 mb-5 font-display text-2xl font-light leading-tight tracking-tight">
+            Hablemos de tu proyecto
+          </h2>
+          <QuickContactForm compact source="Portada (formulario del hero)" email={settings.email} whatsappHref={whatsappHref} />
+        </section>
       </div>
     </header>
   );

@@ -20,7 +20,10 @@ export default function QuickContactForm({
   whatsappHref,
   onClose,
   onSent,
+  compact = false,
 }: {
+  /** Versión compacta, abierta en la página (p. ej. sobre el hero de la portada). */
+  compact?: boolean;
   /** Qué botón y qué página lo abrieron; llega en el campo «Origen» del correo. */
   source?: string;
   email: string;
@@ -87,25 +90,28 @@ export default function QuickContactForm({
     setStatus("error");
   }
 
-  const label = "block font-mono text-[10px] sm:text-[11px] tracking-[0.2em] uppercase text-white/50 mb-1";
-  const input =
-    "w-full border-0 border-b border-white/25 bg-transparent px-0 py-3 text-lg text-white font-light placeholder:text-white/30 focus:border-amber-700 focus:outline-none focus:ring-0 transition-colors aria-[invalid=true]:border-amber-500";
+  const label = `block font-mono text-[10px] sm:text-[11px] tracking-[0.2em] uppercase ${compact ? "text-white/60" : "text-white/50"} mb-1`;
+  const input = `w-full border-0 border-b border-white/25 bg-transparent px-0 ${
+    compact ? "py-2 text-base" : "py-3 text-lg"
+  } text-white font-light placeholder:text-white/35 focus:border-amber-700 focus:outline-none focus:ring-0 transition-colors aria-[invalid=true]:border-amber-500`;
   const error = "mt-2 text-sm text-amber-500";
 
   // --- Confirmación ---------------------------------------------------------------------------
   if (status === "sent" && sent) {
     return (
       <div ref={confirmRef} tabIndex={-1} role="status" aria-live="polite" className="py-2 outline-none">
-        <CheckCircle2 className="h-12 w-12 text-amber-500" strokeWidth={1.25} aria-hidden="true" />
-        <h3 className="mt-6 font-serif font-light text-3xl leading-tight tracking-tight">Hemos recibido tus datos</h3>
-        <p className="mt-4 text-lg font-light leading-relaxed text-white/70">
+        <CheckCircle2 className={compact ? "h-9 w-9 text-amber-500" : "h-12 w-12 text-amber-500"} strokeWidth={1.25} aria-hidden="true" />
+        <h3 className={`font-serif font-light leading-tight tracking-tight text-white ${compact ? "mt-4 text-2xl" : "mt-6 text-3xl"}`}>
+          Hemos recibido tus datos
+        </h3>
+        <p className={`font-light leading-relaxed text-white/70 ${compact ? "mt-3 text-sm" : "mt-4 text-lg"}`}>
           Gracias, {sent.nombre}. Una persona del equipo se pondrá en contacto contigo en{" "}
           <span className="text-white">{sent.via}</span>.
         </p>
         <button
           type="button"
           onClick={onClose ?? (() => setStatus("idle"))}
-          className="mt-10 inline-flex items-center gap-2 border-b border-white pb-1 text-xs font-semibold uppercase tracking-[0.22em] text-white transition hover:border-amber-500 hover:text-amber-500"
+          className={`${compact ? "mt-6" : "mt-10"} inline-flex items-center gap-2 border-b border-white pb-1 text-xs font-semibold uppercase tracking-[0.22em] text-white transition hover:border-amber-500 hover:text-amber-500`}
         >
           {onClose ? "Cerrar" : "Enviar otra solicitud"}
         </button>
@@ -116,10 +122,12 @@ export default function QuickContactForm({
   // --- Formulario -----------------------------------------------------------------------------
   const sending = status === "sending";
   return (
-    <form onSubmit={handleSubmit} noValidate aria-busy={sending}>
-      <p className="mb-8 text-sm font-light leading-relaxed text-white/60">
-        Solo necesitamos tu nombre y un correo o un teléfono. Te contestará una persona del equipo técnico.
-      </p>
+    <form onSubmit={handleSubmit} noValidate aria-busy={sending} className="relative">
+      {!compact && (
+        <p className="mb-8 text-sm font-light leading-relaxed text-white/60">
+          Solo necesitamos tu nombre y un correo o un teléfono. Te contestará una persona del equipo técnico.
+        </p>
+      )}
 
       {/* Campo trampa para bots: las personas no lo ven */}
       <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
@@ -129,7 +137,7 @@ export default function QuickContactForm({
         </label>
       </div>
 
-      <div className="grid grid-cols-1 gap-y-7">
+      <div className={`grid grid-cols-1 ${compact ? "gap-y-4" : "gap-y-7"}`}>
         <div>
           <label htmlFor={id("nombre")} className={label}>
             Nombre *
@@ -137,7 +145,7 @@ export default function QuickContactForm({
           <input
             id={id("nombre")}
             name="nombre"
-            data-autofocus=""
+            data-autofocus={compact ? undefined : ""}
             required
             maxLength={CONTACT_LIMITS.maxNombre}
             autoComplete="name"
@@ -205,7 +213,7 @@ export default function QuickContactForm({
               {errors.contacto}
             </p>
           ) : (
-            <p className="mt-2 text-sm font-light text-white/50">Con uno de los dos nos basta.</p>
+            <p className={`mt-2 font-light text-white/50 ${compact ? "text-xs" : "text-sm"}`}>Con uno de los dos nos basta.</p>
           )}
         </div>
       </div>
@@ -225,14 +233,20 @@ export default function QuickContactForm({
         </div>
       )}
 
-      <div className="mt-10 flex flex-col justify-between gap-6 border-t border-white/15 pt-8 sm:flex-row sm:items-center">
-        <p className="max-w-xs text-sm font-light leading-relaxed text-white/50">
+      <div
+        className={
+          compact
+            ? "mt-6 flex flex-col gap-3"
+            : "mt-10 flex flex-col justify-between gap-6 border-t border-white/15 pt-8 sm:flex-row sm:items-center"
+        }
+      >
+        <p className={`font-light leading-relaxed text-white/50 ${compact ? "order-last text-[11px]" : "max-w-xs text-sm"}`}>
           Usaremos tus datos solo para responder a tu consulta.
         </p>
         <button
           type="submit"
           disabled={sending}
-          className="group/btn inline-flex w-full shrink-0 items-center justify-center gap-3 rounded-full bg-amber-700 px-9 py-4 text-xs font-semibold uppercase tracking-wider text-white shadow-xl transition-all duration-300 hover:bg-white hover:text-stone-900 active:scale-95 disabled:cursor-wait disabled:opacity-70 sm:w-auto"
+          className={`group/btn inline-flex w-full shrink-0 items-center justify-center gap-3 rounded-full bg-amber-700 ${compact ? "px-7 py-3.5" : "px-9 py-4 sm:w-auto"} text-xs font-semibold uppercase tracking-wider text-white shadow-xl transition-all duration-300 hover:bg-white hover:text-stone-900 active:scale-95 disabled:cursor-wait disabled:opacity-70`}
         >
           {sending ? (
             <>
