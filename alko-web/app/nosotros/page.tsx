@@ -6,26 +6,22 @@ import PageHero from "@/components/ui/PageHero";
 import ContactCta from "@/components/sections/ContactCta";
 import Materials from "@/components/sections/Materials";
 import Process from "@/components/sections/Process";
-import { METHOD_HREF, OG_IMAGE, ROUTES } from "@/lib/site";
+import { METHOD_HREF, ROUTES } from "@/lib/site";
+import { pageJsonLd, pageMetadata } from "@/lib/seo";
 import { getFabricantes, getFases, getProjects, getSectors, getSettings } from "@/lib/wordpress";
 import { getDbHomeContent, getDbNosotrosPageContent } from "@/lib/db/mysql";
 
 export const revalidate = 60;
 
-export const metadata = {
-  title: "Nosotros | ALKO — Construcción y reformas integrales en Madrid",
-  description:
-    "ALKO: construcción, rehabilitación y reformas integrales en Madrid. Un único interlocutor, ejecución controlada y criterio constructivo.",
-  openGraph: {
-    title: "Nosotros | ALKO",
-    description: "Un único interlocutor, ejecución controlada y criterio constructivo.",
-    type: "website",
-    images: [OG_IMAGE],
-  },
-  alternates: {
-    canonical: "/nosotros",
-  },
-};
+const NOSOTROS_TITLE = "Sobre ALKO, empresa de reformas integrales en Madrid";
+const NOSOTROS_DESCRIPTION =
+  "Empresa de construcción y reformas integrales en Madrid. Un único responsable de proyecto, compras, instalaciones y acabados, de la primera visita a la entrega.";
+
+export const metadata = pageMetadata({
+  title: NOSOTROS_TITLE,
+  description: NOSOTROS_DESCRIPTION,
+  path: ROUTES.company,
+});
 
 const VALOR_ICONS = [Handshake, CalendarClock, Wallet, BadgeCheck];
 
@@ -63,9 +59,27 @@ export default async function NosotrosPage() {
     },
   ];
 
+  // Año de fundación, si figura entre las cifras del panel (p. ej. «1996»).
+  const fundacion = cifras.find((c) => /^(19|20)\d{2}$/.test(c.valor.trim()))?.valor.trim();
+  const jsonLd = pageJsonLd({
+    type: "AboutPage",
+    path: ROUTES.company,
+    name: NOSOTROS_TITLE,
+    description: NOSOTROS_DESCRIPTION,
+    organization: {
+      description: NOSOTROS_DESCRIPTION,
+      ...(fundacion && { foundingDate: fundacion }),
+      ...(settings.telefono && { telephone: settings.telefono }),
+      ...(settings.email && { email: settings.email }),
+      ...(sectors.length > 0 && { knowsAbout: sectors.map((s) => s.title) }),
+    },
+  });
+
   return (
     <main className="bg-white text-stone-900">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <PageHero
+        breadcrumbs={[{ label: "Nosotros" }]}
         eyebrow={pageContent.headerBadge || "NOSOTROS"}
         title={
           <span className="whitespace-pre-line">

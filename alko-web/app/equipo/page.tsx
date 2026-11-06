@@ -5,25 +5,20 @@ import PageHero from "@/components/ui/PageHero";
 import { getSettings } from "@/lib/wordpress";
 import { getDbEquipoPageContent } from "@/lib/db/mysql";
 import { DEFAULT_EQUIPO_MEMBERS } from "@/lib/content";
-import { OG_IMAGE, SITE } from "@/lib/site";
+import { ROUTES } from "@/lib/site";
+import { pageJsonLd, pageMetadata } from "@/lib/seo";
 
 export const revalidate = 60;
 
-export const metadata = {
-  title: "Equipo | ALKO — Personas detrás de cada obra en Madrid",
-  description:
-    "Conoce al equipo de ALKO: dirección técnica, arquitectura, jefatura de obra, instalaciones y atención al cliente. Un equipo multidisciplinar detrás de cada proyecto.",
-  openGraph: {
-    title: "Equipo | ALKO",
-    description:
-      "Dirección técnica, arquitectura, jefatura de obra, instalaciones y atención al cliente bajo un mismo criterio.",
-    type: "website",
-    images: [OG_IMAGE],
-  },
-  alternates: {
-    canonical: "/equipo",
-  },
-};
+const EQUIPO_TITLE = "Equipo de ALKO, construcción y reformas en Madrid";
+const EQUIPO_DESCRIPTION =
+  "Conoce al equipo de ALKO: dirección técnica, arquitectura, jefatura de obra, instalaciones y atención al cliente, bajo un mismo criterio en cada obra de Madrid.";
+
+export const metadata = pageMetadata({
+  title: EQUIPO_TITLE,
+  description: EQUIPO_DESCRIPTION,
+  path: ROUTES.team,
+});
 
 export default async function EquipoPage() {
   const [settings, pageContent] = await Promise.all([
@@ -36,23 +31,14 @@ export default async function EquipoPage() {
       ? pageContent.miembros
       : DEFAULT_EQUIPO_MEMBERS;
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: SITE.legalName,
-    url: SITE.url,
-    address: {
-      "@type": "PostalAddress",
-      addressLocality: "Madrid",
-      addressCountry: "ES",
-    },
-    employee: listaMiembros.map((m) => ({
-      "@type": "Person",
-      name: m.nombre,
-      jobTitle: m.rol,
-      worksFor: { "@type": "Organization", name: SITE.name },
-    })),
-  };
+  // Sin la lista de personas: solo se publicaría en los datos estructurados con el equipo real
+  // (nombres y fotos de cada persona) cargado en el panel.
+  const jsonLd = pageJsonLd({
+    type: "AboutPage",
+    path: ROUTES.team,
+    name: EQUIPO_TITLE,
+    description: EQUIPO_DESCRIPTION,
+  });
 
   return (
     <main className="bg-white text-stone-900">
@@ -62,6 +48,7 @@ export default async function EquipoPage() {
       />
 
       <PageHero
+        breadcrumbs={[{ label: "Empresa", href: ROUTES.company }, { label: "Equipo" }]}
         eyebrow={pageContent.headerBadge || "EQUIPO"}
         title={pageContent.headerTitulo || "Personas detrás de cada obra"}
         description={
