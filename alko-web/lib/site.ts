@@ -10,10 +10,26 @@ export const SITE = {
   legalName: "ALKO Construcción y Reformas Integrales",
   url: (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.alko.es").replace(/\/+$/, ""),
   locale: "es_ES",
-  title: "ALKO - Construcción y Reformas Integrales en Madrid",
+  title: "Reformas integrales y construcción en Madrid | ALKO",
   description:
-    "Ejecutamos proyectos residenciales y corporativos de alta exigencia, coordinando construcción, instalaciones, acabados y gestión técnica hasta la entrega final.",
-  keywords: ["construcción", "reformas integrales", "Madrid", "arquitectura", "obra", "ALKO"],
+    "Reformas integrales de viviendas, oficinas y locales en Madrid. Un único equipo de proyecto a entrega, con presupuesto cerrado y plazo por escrito.",
+  keywords: [
+    "reformas integrales Madrid",
+    "empresa de reformas Madrid",
+    "reforma de pisos Madrid",
+    "construcción Madrid",
+    "reforma de oficinas",
+    "reforma de locales",
+    "ALKO",
+  ],
+} as const;
+
+/** Imagen por defecto al compartir la web (Open Graph y X): 1200 × 630. */
+export const OG_IMAGE = {
+  url: "/og-image.jpg",
+  width: 1200,
+  height: 630,
+  alt: "ALKO, reformas integrales y construcción en Madrid",
 } as const;
 
 export interface NavItem {

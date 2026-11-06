@@ -6,7 +6,7 @@ import PageHero from "@/components/ui/PageHero";
 import ContactCta from "@/components/sections/ContactCta";
 import Materials from "@/components/sections/Materials";
 import Process from "@/components/sections/Process";
-import { METHOD_HREF, ROUTES } from "@/lib/site";
+import { METHOD_HREF, OG_IMAGE, ROUTES } from "@/lib/site";
 import { getFabricantes, getFases, getProjects, getSectors, getSettings } from "@/lib/wordpress";
 import { getDbHomeContent, getDbNosotrosPageContent } from "@/lib/db/mysql";
 
@@ -20,9 +20,10 @@ export const metadata = {
     title: "Nosotros | ALKO",
     description: "Un único interlocutor, ejecución controlada y criterio constructivo.",
     type: "website",
+    images: [OG_IMAGE],
   },
   alternates: {
-    canonical: "https://www.alko.es/nosotros",
+    canonical: "/nosotros",
   },
 };
 

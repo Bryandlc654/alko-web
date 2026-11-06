@@ -1,6 +1,7 @@
 import Image from "@/components/ui/Image";
 import Container from "@/components/ui/Container";
 import PageHero from "@/components/ui/PageHero";
+import { OG_IMAGE } from "@/lib/site";
 import { getSettings } from "@/lib/wordpress";
 import { getDbEmpleoPageContent } from "@/lib/db/mysql";
 import { DEFAULT_POSICIONES_EMPLEO } from "@/lib/content";
@@ -18,9 +19,10 @@ export const metadata = {
     description:
       "Un equipo sin compartimentos, con criterio técnico y dirección única. Descubre las posiciones abiertas.",
     type: "website",
+    images: [OG_IMAGE],
   },
   alternates: {
-    canonical: "https://www.alko.es/trabaja-con-nosotros",
+    canonical: "/trabaja-con-nosotros",
   },
 };
 

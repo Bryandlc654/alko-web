@@ -5,7 +5,7 @@ import PageHero from "@/components/ui/PageHero";
 import { getSettings } from "@/lib/wordpress";
 import { getDbEquipoPageContent } from "@/lib/db/mysql";
 import { DEFAULT_EQUIPO_MEMBERS } from "@/lib/content";
-import { SITE } from "@/lib/site";
+import { OG_IMAGE, SITE } from "@/lib/site";
 
 export const revalidate = 60;
 
@@ -18,9 +18,10 @@ export const metadata = {
     description:
       "Dirección técnica, arquitectura, jefatura de obra, instalaciones y atención al cliente bajo un mismo criterio.",
     type: "website",
+    images: [OG_IMAGE],
   },
   alternates: {
-    canonical: "https://www.alko.es/equipo",
+    canonical: "/equipo",
   },
 };
 

@@ -10,7 +10,7 @@ import SiteScripts from "@/components/SiteScripts";
 import RouteLoader from "@/components/RouteLoader";
 import SiteShell from "@/components/layout/SiteShell";
 import { getSectors, getSettings } from "@/lib/wordpress";
-import { SITE } from "@/lib/site";
+import { OG_IMAGE, SITE } from "@/lib/site";
 
 // Una única tipografía para todo el sitio.
 const ebGaramond = EB_Garamond({
@@ -23,14 +23,30 @@ const ebGaramond = EB_Garamond({
 });
 
 export const metadata: Metadata = {
+  // Base de las URL relativas (canonical, imágenes de Open Graph).
+  metadataBase: new URL(SITE.url),
   title: SITE.title,
   description: SITE.description,
-  keywords: SITE.keywords as unknown as string[],
+  applicationName: SITE.name,
+  keywords: [...SITE.keywords],
+  authors: [{ name: SITE.legalName, url: SITE.url }],
+  creator: SITE.legalName,
+  publisher: SITE.legalName,
+  // Valores por defecto: cada página puede sustituirlos.
   openGraph: {
     title: SITE.title,
     description: SITE.description,
     type: "website",
     locale: SITE.locale,
+    siteName: SITE.name,
+    images: [OG_IMAGE],
+  },
+  // Sin imagen propia: X usa la de Open Graph de cada página.
+  twitter: { card: "summary_large_image" },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 },
   },
 };
 
