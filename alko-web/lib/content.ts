@@ -168,9 +168,14 @@ export const DEFAULT_SECTORS: Sector[] = [
     numero: "01",
     title: "Oficinas",
     descripcion: "Implantación de espacios de trabajo que potencian la cultura de empresa y cumplen los más altos estándares técnicos.",
-    imagen: "/sector-oficinas.jpg",
+    imagen: "https://raw.githubusercontent.com/Bryandlc654/alko-web/media/uploads/oficina-roble-puestos-trabajo-1793977322563.webp",
     enlace: "/servicios/oficinas",
     content: "<p>Acondicionamiento y fit-out corporativo llave en mano. Minimizamos los tiempos de inactividad con cronogramas exigentes, garantizando el aislamiento acústico y la flexibilidad de instalaciones requeridas por las compañías líderes.</p>",
+    // Sin supportTitle el bloque de apoyo no se muestra: supportImage solo da la foto de la introducción.
+    landing: {
+      supportImage: "https://raw.githubusercontent.com/Bryandlc654/alko-web/media/uploads/oficina-roble-sala-reuniones-1793977325192.webp",
+      includesImage: "https://raw.githubusercontent.com/Bryandlc654/alko-web/media/uploads/oficina-roble-office-iluminacion-1793977328101.webp",
+    },
   },
   {
     id: "s-2",
