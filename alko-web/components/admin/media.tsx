@@ -29,10 +29,13 @@ type Filter = "todas" | "subida" | "web";
 
 export function MediaLibrary({
   onSelect,
+  onConfirm,
   selectedUrl,
 }: {
-  /** Si se pasa, al pulsar una imagen se elige (modo selector); si no, es la página de gestión. */
+  /** Si se pasa, al pulsar una imagen se marca (modo selector); si no, es la página de gestión. */
   onSelect?: (url: string) => void;
+  /** Doble clic en una imagen: usarla directamente. */
+  onConfirm?: (url: string) => void;
   selectedUrl?: string;
 }) {
   const [items, setItems] = useState<MediaItem[] | null>(null);
@@ -205,7 +208,8 @@ export function MediaLibrary({
                   <button
                     type="button"
                     onClick={() => (onSelect ? onSelect(item.url) : copyUrl(item.url))}
-                    title={onSelect ? "Usar esta imagen" : "Copiar enlace"}
+                    onDoubleClick={onConfirm ? () => onConfirm(item.url) : undefined}
+                    title={onSelect ? "Ver vista previa (doble clic para usarla)" : "Copiar enlace"}
                     className={`relative block aspect-square w-full overflow-hidden rounded-xl border bg-slate-100 transition ${
                       selected ? "border-blue-600 ring-2 ring-blue-600" : "border-slate-200 hover:border-blue-400"
                     }`}
@@ -300,6 +304,23 @@ export function MediaPickerHost() {
 
   if (!request) return null;
 
+  return <PickerDialog request={request} finish={finish} />;
+}
+
+function fileNameFromUrl(url: string) {
+  return decodeURIComponent(url.split("?")[0].split("/").pop() || url);
+}
+
+function PickerDialog({ request, finish }: { request: PickerRequest; finish: (url: string | null) => void }) {
+  // Imagen marcada en la rejilla: se ve en grande antes de confirmarla.
+  const [pending, setPending] = useState<string | undefined>(request.current);
+  const [dims, setDims] = useState<{ w: number; h: number } | null>(null);
+  const isCurrent = !!pending && pending === request.current;
+
+  useEffect(() => {
+    setDims(null);
+  }, [pending]);
+
   return (
     <div
       className="fixed inset-0 z-[190] flex items-center justify-center bg-slate-900/50 p-3 backdrop-blur-sm sm:p-6"
@@ -311,14 +332,16 @@ export function MediaPickerHost() {
         role="dialog"
         aria-modal="true"
         aria-labelledby="media-picker-title"
-        className="flex h-[88vh] w-full max-w-5xl flex-col rounded-2xl border border-slate-200 bg-slate-50 p-5 shadow-2xl font-poppins"
+        className="flex h-[90vh] w-full max-w-6xl flex-col rounded-2xl border border-slate-200 bg-slate-50 p-5 shadow-2xl font-poppins"
       >
         <div className="flex items-start justify-between gap-4 pb-4">
           <div>
             <h2 id="media-picker-title" className="text-base font-semibold text-slate-900">
               {request.title ?? "Elegir imagen"}
             </h2>
-            <p className="mt-0.5 text-xs text-slate-500">Pulsa una imagen para usarla, o sube una nueva desde tu equipo.</p>
+            <p className="mt-0.5 text-xs text-slate-500">
+              Pulsa una imagen para verla en grande y confirma con «Usar esta imagen». También puedes subir una nueva.
+            </p>
           </div>
           <button
             type="button"
@@ -329,7 +352,68 @@ export function MediaPickerHost() {
             <X className="h-5 w-5" />
           </button>
         </div>
-        <MediaLibrary onSelect={(url) => finish(url)} selectedUrl={request.current} />
+        <div className="flex min-h-0 flex-1 flex-col gap-4 lg:flex-row">
+          <div className="flex min-h-0 flex-1 flex-col">
+            <MediaLibrary onSelect={setPending} onConfirm={(url) => finish(url)} selectedUrl={pending} />
+          </div>
+
+          {/* Vista previa */}
+          <aside className="flex shrink-0 flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-3 lg:w-80">
+            <div className="relative flex h-36 items-center justify-center overflow-hidden rounded-xl bg-slate-900 sm:h-44 lg:h-auto lg:flex-1">
+              {pending ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  key={pending}
+                  src={pending}
+                  alt="Vista previa"
+                  onLoad={(e) => setDims({ w: e.currentTarget.naturalWidth, h: e.currentTarget.naturalHeight })}
+                  className="h-full w-full object-contain"
+                />
+              ) : (
+                <div className="flex flex-col items-center gap-2 text-center text-xs text-slate-400">
+                  <ImageIcon className="h-8 w-8 text-slate-500" />
+                  <span>Pulsa una imagen para verla aquí</span>
+                </div>
+              )}
+              {isCurrent && (
+                <span className="absolute left-2 top-2 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-semibold text-slate-700">
+                  Imagen actual
+                </span>
+              )}
+            </div>
+            {pending && (
+              <div className="min-w-0">
+                <p className="truncate text-xs font-medium text-slate-800" title={fileNameFromUrl(pending)}>
+                  {fileNameFromUrl(pending)}
+                </p>
+                <p className="mt-0.5 text-[11px] text-slate-500">
+                  {dims ? `${dims.w} × ${dims.h} px · ${dims.w >= dims.h ? "horizontal" : "vertical"}` : "Cargando…"}
+                  {" · "}
+                  <a href={pending} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">
+                    Ver a tamaño real
+                  </a>
+                </p>
+              </div>
+            )}
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => finish(null)}
+                className="flex-1 rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-50"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                disabled={!pending}
+                onClick={() => pending && finish(pending)}
+                className="flex-[2] rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Usar esta imagen
+              </button>
+            </div>
+          </aside>
+        </div>
       </div>
     </div>
   );
