@@ -1,8 +1,8 @@
 import Image from "@/components/ui/Image";
 import { Clock, Mail, MapPin, MessageCircle, Phone, type LucideIcon } from "lucide-react";
 import Container from "@/components/ui/Container";
-import ContactForm from "@/components/ui/ContactForm";
-import { getSectors, getSettings } from "@/lib/wordpress";
+import QuickContactForm from "@/components/ui/QuickContactForm";
+import { getSettings } from "@/lib/wordpress";
 import { getDbContactoPageContent } from "@/lib/db/mysql";
 
 export const revalidate = 60;
@@ -37,16 +37,14 @@ interface Channel {
 }
 
 export default async function ContactoPage() {
-  const [settings, sectors, pageContent] = await Promise.all([
+  const [settings, pageContent] = await Promise.all([
     getSettings(),
-    getSectors(),
     getDbContactoPageContent(),
   ]);
 
   const telHref = `tel:${settings.telefono.replace(/[^+\d]/g, "")}`;
   const whatsappHref = `https://wa.me/${settings.whatsapp.replace(/[^\d]/g, "")}`;
   const mapsHref = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(settings.direccion)}`;
-  const projectTypes = [...sectors.map((sector) => sector.title), "Otro"];
 
   const channels: Channel[] = [
     { icon: Phone, label: "Teléfono", value: settings.telefono, href: telHref },
@@ -201,8 +199,7 @@ export default async function ContactoPage() {
                     <div className="h-1.5 w-1.5 rounded-full bg-amber-700" />
                   </div>
                 </div>
-                <ContactForm
-                  projectTypes={projectTypes}
+                <QuickContactForm
                   email={settings.email}
                   whatsappHref={whatsappHref}
                   source="Página de contacto"

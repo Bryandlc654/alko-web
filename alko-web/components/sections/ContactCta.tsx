@@ -11,6 +11,7 @@ export default function ContactCta({
   boton,
   source = "Cierre de página",
   overlay = false,
+  formulario = "rapido",
 }: {
   settings: SiteSettings;
   content?: HomeContent;
@@ -23,6 +24,8 @@ export default function ContactCta({
   source?: string;
   /** Capa negra sobre toda la foto, con antetítulo y separador (llamada final de los proyectos). */
   overlay?: boolean;
+  /** Formulario que abre el botón: el simplificado o el completo (con tipo de obra, presupuesto y planos). */
+  formulario?: "rapido" | "avanzado";
 }) {
   const heading = titulo || content?.contactoTitulo;
   const telHref = `tel:${settings.telefono.replace(/[^+\d]/g, "")}`;
@@ -90,7 +93,7 @@ export default function ContactCta({
               </div>
             </div>
             <div className="shrink-0 self-start lg:self-auto">
-              <ContactTrigger mode="rapido" source={source} className="inline-flex items-center justify-center gap-2 px-8 py-3.5 sm:py-4 rounded-full bg-amber-700 hover:bg-amber-800 text-white text-[11px] sm:text-xs font-semibold tracking-wider uppercase transition-all duration-300 shadow-xl hover:scale-105 active:scale-95 border border-white/10 shrink-0 cursor-pointer">
+              <ContactTrigger mode={formulario} source={source} className="inline-flex items-center justify-center gap-2 px-8 py-3.5 sm:py-4 rounded-full bg-amber-700 hover:bg-amber-800 text-white text-[11px] sm:text-xs font-semibold tracking-wider uppercase transition-all duration-300 shadow-xl hover:scale-105 active:scale-95 border border-white/10 shrink-0 cursor-pointer">
                 <span>{boton || "SOLICITAR CONSULTORÍA"}</span>
                 <span>→</span>
               </ContactTrigger>

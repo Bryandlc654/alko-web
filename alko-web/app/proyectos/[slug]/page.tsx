@@ -425,6 +425,7 @@ export default async function ProjectDetail({
         imagen={project.fotoDespues?.trim() || project.imagen}
         source={`Proyecto ${project.title}`}
         overlay
+        formulario="avanzado"
       />
     </main>
   );
