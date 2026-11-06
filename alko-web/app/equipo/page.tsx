@@ -112,29 +112,24 @@ export default async function EquipoPage() {
             </p>
           </div>
 
-          <div className="mt-12 grid grid-cols-1 gap-6 sm:mt-16 sm:grid-cols-2 lg:mt-20 lg:grid-cols-4 xl:gap-8">
+          {/* Solo nombre y función, sin fotos. */}
+          <ul className="mt-12 grid grid-cols-1 border-t border-[rgba(64,62,59,0.2)] sm:mt-16 sm:grid-cols-2 lg:mt-20 lg:grid-cols-3">
             {listaMiembros.map((m, i) => (
-              <article
+              <li
                 key={m.nombre + i}
-                className="flex flex-col reveal-item"
+                className="flex items-baseline gap-5 border-b border-[rgba(64,62,59,0.2)] py-7 sm:py-9 sm:pr-8 reveal-item"
                 style={{ transitionDelay: `${i * 80}ms` }}
               >
-                <div className="relative aspect-[4/5] w-full overflow-hidden bg-neutral-200">
-                  <Image
-                    src={m.foto}
-                    alt={`${m.nombre}, ${m.rol}`}
-                    fill
-                    sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 25vw"
-                    className="object-cover object-center grayscale transition-transform duration-500 hover:scale-[1.03]"
-                  />
+                <span className="w-8 shrink-0 font-mono text-xs tracking-wider text-[#8a8783]">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <div className="min-w-0">
+                  <h3 className="text-2xl font-normal leading-tight tracking-tight sm:text-3xl">{m.nombre}</h3>
+                  <p className="mt-1.5 text-sm text-[#686663] sm:text-base">{m.rol}</p>
                 </div>
-                <div className="pt-4">
-                  <h3 className="text-xl font-normal tracking-tight">{m.nombre}</h3>
-                  <p className="mt-0.5 text-sm text-[#686663]">{m.rol}</p>
-                </div>
-              </article>
+              </li>
             ))}
-          </div>
+          </ul>
         </Container>
       </section>
 
