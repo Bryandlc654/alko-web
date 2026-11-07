@@ -63,36 +63,18 @@ export default function Hero({
         </div>
       </div>
 
-      {/* Barra inferior del hero */}
-      {/* En escritorio deja sitio a la derecha para el formulario */}
-      <div className="relative z-20 w-full max-w-7xl mx-auto px-6 sm:px-10 pb-8 sm:pb-10 pt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mt-16 sm:mt-20 lg:mt-24 lg:pr-[440px]">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-8">
-          <ContactTrigger mode="avanzado" source="Portada" className="inline-flex items-center justify-center px-7 py-3 rounded-full border border-white/60 bg-stone-900/30 hover:bg-white/15 backdrop-blur-md text-white text-xs font-semibold tracking-[0.18em] uppercase transition duration-300 shadow-sm active:scale-95">
-            {content?.heroCtaTexto ?? "SOLICITAR PRESUPUESTO"}
-          </ContactTrigger>
+      {/* Barra inferior del hero (en escritorio deja sitio a la derecha para el formulario) */}
+      <div className="relative z-20 w-full max-w-7xl mx-auto px-6 sm:px-10 pb-8 sm:pb-10 pt-4 flex items-center gap-3 sm:gap-4 mt-16 sm:mt-20 lg:mt-24 lg:pr-[440px]">
+        <ContactTrigger mode="avanzado" source="Portada" className="inline-flex shrink-0 items-center justify-center px-5 sm:px-7 py-3 rounded-full border border-white/60 bg-stone-900/30 hover:bg-white/15 backdrop-blur-md text-white text-[11px] sm:text-xs font-semibold tracking-[0.12em] sm:tracking-[0.18em] whitespace-nowrap uppercase transition duration-300 shadow-sm active:scale-95">
+          {content?.heroCtaTexto ?? "SOLICITAR PRESUPUESTO"}
+        </ContactTrigger>
 
-          <a
-            href="#proyectos"
-            className="group flex items-center gap-2 text-xs font-normal tracking-wide text-white/80 hover:text-white transition"
-          >
-            <span>{content?.heroSecundarioTexto ?? "Explorar"}</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 448 512"
-              className="w-[10px] h-[10px] text-white/60 group-hover:translate-y-0.5 transition duration-300"
-              fill="currentColor"
-              aria-hidden="true"
-            >
-              <path d="M201.4 374.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 306.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z" />
-            </svg>
-          </a>
-        </div>
-
-        <div className="flex items-center gap-3">
+        {/* Flechas del slider, al lado del botón */}
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <button
             id="prev-slide-btn"
             aria-label="Slide anterior"
-            className="w-11 h-11 rounded-2xl rounded-tr-sm border border-white/40 bg-stone-900/40 hover:bg-white/20 backdrop-blur-md flex items-center justify-center text-white transition duration-200 group active:scale-95 shadow-lg"
+            className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl rounded-tr-sm border border-white/40 bg-stone-900/40 hover:bg-white/20 backdrop-blur-md flex items-center justify-center text-white transition duration-200 group active:scale-95 shadow-lg"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -110,7 +92,7 @@ export default function Hero({
           <button
             id="next-slide-btn"
             aria-label="Slide siguiente"
-            className="w-11 h-11 rounded-2xl rounded-bl-sm border border-white/40 bg-stone-900/40 hover:bg-white/20 backdrop-blur-md flex items-center justify-center text-white transition duration-200 group active:scale-95 shadow-lg"
+            className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl rounded-bl-sm border border-white/40 bg-stone-900/40 hover:bg-white/20 backdrop-blur-md flex items-center justify-center text-white transition duration-200 group active:scale-95 shadow-lg"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -128,10 +110,11 @@ export default function Hero({
       </div>
 
       {/* Formulario rápido abierto: abajo a la derecha en escritorio, debajo de los botones en móvil */}
-      <div className="relative z-20 w-full max-w-7xl mx-auto px-6 sm:px-10 pb-10 lg:absolute lg:inset-x-0 lg:bottom-10 lg:pb-0 lg:pointer-events-none">
+      {/* Pegado al borde inferior del hero */}
+      <div className="relative z-20 w-full max-w-7xl mx-auto px-6 sm:px-10 lg:absolute lg:inset-x-0 lg:bottom-0 lg:pointer-events-none">
         <section
           aria-labelledby="hero-form-title"
-          className="ml-auto w-full border border-white/15 bg-stone-950/60 p-6 text-white shadow-2xl backdrop-blur-md sm:max-w-md lg:pointer-events-auto lg:w-[380px]"
+          className="ml-auto w-full border border-b-0 border-white/15 bg-stone-950/60 p-6 text-white shadow-2xl backdrop-blur-md sm:max-w-md lg:pointer-events-auto lg:w-[380px]"
         >
           <span className="block font-mono text-[10px] uppercase tracking-[0.25em] text-amber-500">Contacto</span>
           <h2 id="hero-form-title" className="mt-2 mb-5 font-display text-2xl font-light leading-tight tracking-tight">
