@@ -196,6 +196,10 @@ export const DEFAULT_SECTORS: Sector[] = [
     imagen: "/sector-retail.jpg",
     enlace: "/servicios/retail",
     content: "<p>Ejecución ágil de proyectos comerciales con estricto control de costes y plazos de apertura al público. Cumplimiento exhaustivo de normativas de accesibilidad, seguridad y licencias de actividad en Madrid.</p>",
+    landing: {
+      supportImage: "https://raw.githubusercontent.com/Bryandlc654/alko-web/media/uploads/showroom-vitrinas-iluminadas-1794027633271.webp",
+      includesImage: "https://raw.githubusercontent.com/Bryandlc654/alko-web/media/uploads/tienda-estanterias-blancas-1794027636025.webp",
+    },
   },
   {
     id: "s-4",
@@ -206,6 +210,10 @@ export const DEFAULT_SECTORS: Sector[] = [
     imagen: "/sector-hospitality.jpg",
     enlace: "/servicios/hospitality",
     content: "<p>Obra por fases para mantener la actividad cuando hace falta, instalaciones dimensionadas para un uso intensivo y acabados resistentes que conservan la imagen del espacio. Coordinamos licencias de actividad, protección contra incendios y accesibilidad en Madrid.</p>",
+    landing: {
+      supportImage: "https://raw.githubusercontent.com/Bryandlc654/alko-web/media/uploads/recepcion-hotel-madera-1794027637909.webp",
+      includesImage: "https://raw.githubusercontent.com/Bryandlc654/alko-web/media/uploads/vestibulo-marmol-madera-1794027640441.webp",
+    },
   },
   {
     id: "s-5",
@@ -330,6 +338,8 @@ export const DEFAULT_SECTORS: Sector[] = [
     enlace: "/servicios/naves-industriales",
     content: "<p>Convertimos naves en bruto o antiguas en espacios listos para operar: adecuación a la actividad, protección contra incendios, instalaciones industriales, soleras, oficinas y vestuarios, con la licencia de actividad incluida.</p>",
     landing: {
+      supportImage: "https://raw.githubusercontent.com/Bryandlc654/alko-web/media/uploads/nave-hormigon-pulido-1794027642350.webp",
+      includesImage: "https://raw.githubusercontent.com/Bryandlc654/alko-web/media/uploads/nave-estructura-luminarias-1794027644329.webp",
       "lead": "Acondicionamiento de naves industriales en Madrid: adecuación de naves, almacenes y talleres a la actividad, con licencia, protección contra incendios, instalaciones, soleras y oficinas interiores, en el plazo que necesita la operación.",
       "supportContent": "Partimos de la actividad que se va a desarrollar: flujos de mercancía, maquinaria, personal y normativa. Con eso definimos la distribución, las instalaciones y las medidas contra incendios, y tramitamos la licencia para que la nave pueda abrir en la fecha prevista.",
       "commitments": [
@@ -443,6 +453,8 @@ export const DEFAULT_SECTORS: Sector[] = [
     enlace: "/servicios/restauracion-de-locales",
     content: "<p>Recuperamos locales comerciales antiguos, cerrados o deteriorados: diagnóstico del estado, refuerzo estructural, saneamiento de humedades, renovación de instalaciones, fachada y escaparate, y adaptación a la normativa de accesibilidad y actividad.</p>",
     landing: {
+      supportImage: "https://raw.githubusercontent.com/Bryandlc654/alko-web/media/uploads/local-boveda-ladrillo-1794027647011.webp",
+      includesImage: "https://raw.githubusercontent.com/Bryandlc654/alko-web/media/uploads/local-ladrillo-ventanal-1794027649440.webp",
       "lead": "Restauración de locales en Madrid: recuperamos bajos comerciales antiguos, cerrados o deteriorados con refuerzo estructural, tratamiento de humedades, instalaciones nuevas, fachada y adaptación a la normativa, listos para una nueva actividad.",
       "supportContent": "Un local antiguo esconde casi siempre sorpresas: forjados dañados, humedades, instalaciones fuera de norma o una fachada protegida. Empezamos con un diagnóstico técnico del estado real para que el presupuesto refleje lo que hay que hacer y no aparezcan sorpresas a mitad de obra.",
       "commitments": [
@@ -556,6 +568,8 @@ export const DEFAULT_SECTORS: Sector[] = [
     enlace: "/servicios/carpinteria-metalica",
     content: "<p>Diseñamos, fabricamos e instalamos carpintería metálica a medida: ventanas y correderas de aluminio con rotura de puente térmico, cerramientos de terraza, puertas, barandillas, celosías y estructuras ligeras de acero.</p>",
     landing: {
+      supportImage: "https://raw.githubusercontent.com/Bryandlc654/alko-web/media/uploads/mamparas-acero-vidrio-1794027651327.webp",
+      includesImage: "https://raw.githubusercontent.com/Bryandlc654/alko-web/media/uploads/pasillo-carpinteria-acero-1794027653460.webp",
       "lead": "Carpintería metálica en Madrid: ventanas y correderas de aluminio, cerramientos, puertas, barandillas, celosías y estructuras de acero fabricadas a medida e instaladas por nuestro equipo, con medición en obra y remates limpios.",
       "supportContent": "Trabajamos con sistemas de aluminio de fabricantes reconocidos y con talleres de cerrajería de confianza. Medimos en obra, definimos perfiles, vidrios y herrajes según el uso y la orientación, y coordinamos la instalación con albañilería y acabados para que los encuentros queden limpios.",
       "commitments": [
@@ -669,6 +683,8 @@ export const DEFAULT_SECTORS: Sector[] = [
     enlace: "/servicios/ventanas-acusticas",
     content: "<p>Instalamos ventanas acústicas que reducen de forma notable el ruido exterior: perfiles de altas prestaciones, vidrios laminados acústicos con cámaras asimétricas, cajones de persiana aislados y una instalación completamente sellada.</p>",
     landing: {
+      supportImage: "https://raw.githubusercontent.com/Bryandlc654/alko-web/media/uploads/salon-ventanal-corredero-1794027664961.webp",
+      includesImage: "https://raw.githubusercontent.com/Bryandlc654/alko-web/media/uploads/ventanal-suelo-techo-1794027667267.webp",
       "lead": "Ventanas acústicas en Madrid: carpinterías de alto aislamiento con vidrio laminado acústico, cámaras asimétricas, cajones de persiana aislados e instalación sellada para viviendas, oficinas y hoteles expuestos al ruido.",
       "supportContent": "El aislamiento acústico de una ventana depende del conjunto: perfil, vidrio, juntas, cajón de persiana y, sobre todo, la instalación. Medimos el ruido, analizamos su origen y proponemos la combinación que consigue la mejora necesaria, sin sobredimensionar.",
       "commitments": [
@@ -782,6 +798,8 @@ export const DEFAULT_SECTORS: Sector[] = [
     enlace: "/servicios/cabinas-acusticas-oficinas",
     content: "<p>Diseñamos e instalamos cabinas acústicas para oficinas: unipersonales para llamadas, de dos a cuatro personas para reuniones y salas a medida, con aislamiento, ventilación, iluminación y electricidad integradas.</p>",
     landing: {
+      supportImage: "https://raw.githubusercontent.com/Bryandlc654/alko-web/media/uploads/cabina-reuniones-oficina-1794027656547.webp",
+      includesImage: "https://raw.githubusercontent.com/Bryandlc654/alko-web/media/uploads/cabinas-acusticas-zona-trabajo-1794027659134.webp",
       "lead": "Cabinas acústicas para oficinas en Madrid: cabinas para llamadas y videollamadas, pequeñas salas de reunión y espacios de concentración en oficinas abiertas, con aislamiento, ventilación, iluminación y electricidad integradas, instaladas sin obra.",
       "supportContent": "En una oficina abierta las llamadas y las reuniones improvisadas son la principal fuente de ruido. Analizamos cómo trabaja el equipo para decidir cuántas cabinas hacen falta, de qué tamaño y dónde, y las integramos con la climatización, la electricidad y la imagen de la oficina.",
       "commitments": [
@@ -895,6 +913,8 @@ export const DEFAULT_SECTORS: Sector[] = [
     enlace: "/servicios/concierge-familias-extranjeras",
     content: "<p>Un único interlocutor para familias que quieren vivir en Madrid sin estar aquí durante el proceso: búsqueda de la vivienda, acompañamiento en la compra con abogados y gestores colaboradores, proyecto, licencias, reforma, interiorismo y entrega lista para entrar a vivir, con seguimiento online de cada fase.</p>",
     landing: {
+      supportImage: "https://raw.githubusercontent.com/Bryandlc654/alko-web/media/uploads/cristobal-bordiu-comedor-1793940484231.webp",
+      includesImage: "https://raw.githubusercontent.com/Bryandlc654/alko-web/media/uploads/fotografia_reforma_rm_dsc6962-1793470043663.webp",
       "lead": "Concierge inmobiliario para familias extranjeras en Madrid: te acompañamos desde la búsqueda y la compra de la vivienda hasta su reforma, interiorismo y entrega lista para vivir, con un único interlocutor y seguimiento online de todo el proceso.",
       "supportContent": "Mudarse a otro país ya es suficiente trabajo. Nos ocupamos de que la casa no sea una preocupación más: visitamos inmuebles por ti, evaluamos su estado técnico antes de que compres, coordinamos la compra con abogados y gestores colaboradores, y diseñamos y ejecutamos la reforma mientras sigues el avance por videollamada, fotos e informes semanales.",
       "statsTitle": "Familias extranjeras con ALKO",
@@ -1012,6 +1032,8 @@ export const DEFAULT_SECTORS: Sector[] = [
     enlace: "/servicios/implantacion-de-empresas",
     content: "<p>Acompañamos a empresas internacionales que abren sede en Madrid: búsqueda y evaluación técnica del local u oficina, licencia de apertura y actividad, proyecto, reforma e implantación llave en mano, y coordinación con asesores fiscales y legales colaboradores.</p>",
     landing: {
+      supportImage: "https://raw.githubusercontent.com/Bryandlc654/alko-web/media/uploads/sala-juntas-ventanal-1794027661132.webp",
+      includesImage: "https://raw.githubusercontent.com/Bryandlc654/alko-web/media/uploads/sala-reuniones-madera-1794027662983.webp",
       "lead": "Implantación de sedes de empresas internacionales en Madrid: búsqueda del local u oficina, evaluación técnica, licencia de actividad, proyecto, reforma e implantación llave en mano, con un único interlocutor y coordinación con asesores fiscales y legales.",
       "supportContent": "Abrir una sede en otro país implica decisiones inmobiliarias, técnicas, administrativas y fiscales a la vez. Actuamos como el equipo local de la empresa: buscamos el espacio adecuado, comprobamos que la actividad es viable antes de firmar, tramitamos la licencia y ejecutamos la implantación, mientras nuestros colaboradores se ocupan de la constitución, la fiscalidad y los contratos.",
       "statsTitle": "Empresas internacionales con ALKO",
