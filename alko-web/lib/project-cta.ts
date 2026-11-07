@@ -4,8 +4,9 @@ import type { Project } from "@/lib/types";
 export function projectCta(project: Pick<Project, "title" | "exclusivo" | "ctaTitulo" | "ctaTexto" | "ctaBoton">) {
   const defaults = project.exclusivo
     ? {
-        titulo: "Un proyecto a la medida de tu espacio",
+        titulo: "Habla con el equipo\nde ALKO Exclusiva",
         texto: "Cuéntanos qué tienes en mente. El equipo de ALKO Exclusiva te atenderá de forma personal y reservada.",
+        // En la plantilla exclusiva es el título del formulario.
         boton: "Solicitar una conversación",
       }
     : {

@@ -6,11 +6,13 @@ import { useMemo, useState, useEffect, useRef } from "react";
 import { ROUTES } from "@/lib/site";
 import ExclusiveSeal, { EXCLUSIVE_GOLD } from "@/components/ui/ExclusiveSeal";
 import type { Project } from "@/lib/types";
+import { CATEGORY_ORDER, projectCategory } from "@/lib/project-category";
 import { Loader2 } from "lucide-react";
 
 const ALL = "Todos";
 const INITIAL_PAGE_SIZE = 4;
 const LOAD_MORE_STEP = 3;
+
 
 export interface ProjectSummary extends Project {
   /** Primer párrafo del contenido, sin HTML. */
@@ -30,14 +32,14 @@ export default function ProjectsGallery({ projects }: { projects: ProjectSummary
   const types = useMemo(() => {
     const counts = new Map<string, number>();
     for (const project of projects) {
-      if (!project.tipologia) continue;
-      counts.set(project.tipologia, (counts.get(project.tipologia) ?? 0) + 1);
+      const category = projectCategory(project.tipologia || "");
+      counts.set(category, (counts.get(category) ?? 0) + 1);
     }
-    return Array.from(counts, ([name, count]) => ({ name, count }));
+    return CATEGORY_ORDER.filter((name) => counts.has(name)).map((name) => ({ name, count: counts.get(name)! }));
   }, [projects]);
 
   const filtered = useMemo(() => {
-    return active === ALL ? projects : projects.filter((p) => p.tipologia === active);
+    return active === ALL ? projects : projects.filter((p) => projectCategory(p.tipologia || "") === active);
   }, [active, projects]);
 
   // Al cambiar de categoría restablecer el contador
@@ -87,7 +89,7 @@ export default function ProjectsGallery({ projects }: { projects: ProjectSummary
 
   return (
     <div>
-      <div className="reveal-item flex flex-col gap-6 md:flex-row md:items-end md:justify-between pb-8 border-b border-stone-300">
+      <div className="reveal-item flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between pb-8 border-b border-stone-300">
         <div>
           <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase mb-2">
             PORTFOLIO
@@ -98,7 +100,12 @@ export default function ProjectsGallery({ projects }: { projects: ProjectSummary
         </div>
 
         {types.length > 1 && (
-          <div role="group" aria-label="Filtrar por tipología" className="flex flex-wrap gap-2">
+          // Filtros como pestañas de texto: sin cajas, solo una línea bajo la activa.
+          <div
+            role="group"
+            aria-label="Filtrar por tipología"
+            className="no-scrollbar -mx-6 flex gap-7 overflow-x-auto px-6 sm:mx-0 sm:gap-9 sm:px-0"
+          >
             {filters.map((filter) => {
               const selected = filter.name === active;
               return (
@@ -107,16 +114,18 @@ export default function ProjectsGallery({ projects }: { projects: ProjectSummary
                   type="button"
                   aria-pressed={selected}
                   onClick={() => handleFilterChange(filter.name)}
-                  className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-[11px] font-light uppercase tracking-[0.16em] transition-colors ${
-                    selected
-                      ? "border-stone-900 bg-stone-900 text-white"
-                      : "border-stone-300 text-stone-600 hover:border-stone-900 hover:text-stone-900"
+                  className={`group relative shrink-0 whitespace-nowrap pb-2 text-[11px] uppercase tracking-[0.2em] transition-colors duration-300 ${
+                    selected ? "text-stone-900" : "text-stone-400 hover:text-stone-900"
                   }`}
                 >
                   {filter.name}
-                  <span className={`font-mono ${selected ? "text-white/50" : "text-stone-400"}`}>
-                    {filter.count}
-                  </span>
+                  <sup className="ml-1 font-mono text-[9px] tracking-normal text-stone-400">{filter.count}</sup>
+                  <span
+                    aria-hidden="true"
+                    className={`absolute inset-x-0 -bottom-px h-px origin-left bg-stone-900 transition-transform duration-300 ${
+                      selected ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100 group-hover:bg-stone-400"
+                    }`}
+                  />
                 </button>
               );
             })}

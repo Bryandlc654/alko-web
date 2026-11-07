@@ -2,6 +2,7 @@ import Image from "@/components/ui/Image";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import Container from "@/components/ui/Container";
 import ProjectsGallery from "@/components/ui/ProjectsGallery";
+import { projectCategory } from "@/lib/project-category";
 import ContactCta from "@/components/sections/ContactCta";
 import { getProjects, getSettings } from "@/lib/wordpress";
 import { getDbProjectsPageContent } from "@/lib/db/mysql";
@@ -27,7 +28,8 @@ export default async function ProyectosPage() {
   }));
 
   const years = projects.map((p) => Number(p.anio)).filter(Boolean);
-  const types = new Set(projects.map((p) => p.tipologia).filter(Boolean));
+  // Las mismas categorías que el filtro del listado.
+  const types = new Set(projects.map((p) => projectCategory(p.tipologia || "")));
   const stats = [
     { label: "Obras", value: String(projects.length).padStart(2, "0") },
     { label: "Tipologías", value: String(types.size).padStart(2, "0") },

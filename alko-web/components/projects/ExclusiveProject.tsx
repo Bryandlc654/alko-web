@@ -4,12 +4,12 @@ import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import Container from "@/components/ui/Container";
 import Lightbox from "@/components/ui/Lightbox";
 import Prose from "@/components/ui/Prose";
-import ContactTrigger from "@/components/contact/ContactTrigger";
+import QuickContactForm from "@/components/ui/QuickContactForm";
 import ExclusiveSeal, { EXCLUSIVE_GOLD } from "@/components/ui/ExclusiveSeal";
 import { ROUTES } from "@/lib/site";
 import { splitLead } from "@/lib/utils";
 import { projectCta } from "@/lib/project-cta";
-import type { Project, Sector } from "@/lib/types";
+import type { Project, Sector, SiteSettings } from "@/lib/types";
 
 const IVORY = "#f5f1e8";
 const ROMAN = ["I", "II", "III", "IV"];
@@ -45,11 +45,14 @@ export default function ExclusiveProject({
   project,
   servicio,
   neighbours,
+  settings,
 }: {
   project: Project;
   servicio: Sector | null;
   neighbours: { label: string; project: Project; arrow: string }[];
+  settings: SiteSettings;
 }) {
+  const whatsappHref = `https://wa.me/${settings.whatsapp.replace(/[^\d]/g, "")}`;
   const { lead, rest } = splitLead(project.content || "");
   const fotoAntes = project.fotoAntes?.trim();
   const fotoDespues = project.fotoDespues?.trim();
@@ -369,23 +372,39 @@ export default function ExclusiveProject({
         </section>
       )}
 
-      {/* Llamada a la acción propia */}
-      <section className="relative isolate overflow-hidden text-center">
+      {/* Contacto con el equipo de ALKO Exclusiva: texto a la izquierda, formulario abierto a la derecha */}
+      <section id="contacto-exclusiva" aria-labelledby="contacto-exclusiva-title" className="relative isolate overflow-hidden">
         <Image src={fotos[fotos.length - 1] || project.imagen} alt="" fill sizes="100vw" className="-z-10 object-cover" />
-        <div className="absolute inset-0 -z-10 bg-stone-950/80" />
-        <Container className="py-28 sm:py-36">
-          <ExclusiveSeal size={84} className="mx-auto" />
-          <h2 className="mx-auto mt-10 max-w-3xl whitespace-pre-line font-serif text-3xl font-light leading-tight tracking-tight sm:text-5xl">
-            {cta.titulo}
-          </h2>
-          <p className="mx-auto mt-6 max-w-xl text-base font-light leading-relaxed text-white/70 sm:text-lg">{cta.texto}</p>
-          <ContactTrigger
-            mode="avanzado"
-            source={`ALKO Exclusiva · ${project.title}`}
-            className="mt-12 inline-flex items-center justify-center gap-3 border border-[#c6a66b] px-10 py-4 text-[11px] font-semibold uppercase tracking-[0.25em] text-white transition hover:bg-white hover:text-stone-950"
-          >
-            {cta.boton}
-          </ContactTrigger>
+        <div className="absolute inset-0 -z-10 bg-stone-950/85" />
+        <Container className="py-24 sm:py-32">
+          <div className="grid grid-cols-1 items-center gap-14 lg:grid-cols-[1fr_420px] lg:gap-20">
+            <div className="text-center lg:text-left">
+              <ExclusiveSeal size={84} className="mx-auto lg:mx-0" />
+              <Eyebrow className="mt-10 block">Equipo ALKO Exclusiva</Eyebrow>
+              <h2
+                id="contacto-exclusiva-title"
+                className="mx-auto mt-5 max-w-2xl whitespace-pre-line font-serif text-3xl font-light leading-tight tracking-tight sm:text-5xl lg:mx-0"
+              >
+                {cta.titulo}
+              </h2>
+              <p className="mx-auto mt-6 max-w-xl text-base font-light leading-relaxed text-white/70 sm:text-lg lg:mx-0">{cta.texto}</p>
+              <GoldDivider className="mt-10 lg:justify-start" />
+              <p className="mt-8 text-sm font-light text-white/60">
+                O llámanos al{" "}
+                <a href={`tel:${settings.telefono.replace(/[^+\d]/g, "")}`} className="text-white underline decoration-[#c6a66b] underline-offset-4">
+                  {settings.telefono}
+                </a>
+              </p>
+            </div>
+
+            <div className="border p-7 sm:p-9" style={{ borderColor: EXCLUSIVE_GOLD, backgroundColor: "rgba(12,10,9,0.7)" }}>
+              <span className="block font-mono text-[10px] uppercase tracking-[0.25em]" style={{ color: EXCLUSIVE_GOLD }}>
+                Contacto reservado
+              </span>
+              <h3 className="mt-2 mb-6 font-serif text-2xl font-light leading-tight tracking-tight text-white">{cta.boton}</h3>
+              <QuickContactForm compact source={`ALKO Exclusiva · ${project.title}`} email={settings.email} whatsappHref={whatsappHref} />
+            </div>
+          </div>
         </Container>
       </section>
 

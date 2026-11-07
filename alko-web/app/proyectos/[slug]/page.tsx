@@ -77,7 +77,7 @@ export default async function ProjectDetail({
 
   // Los proyectos ALKO Exclusiva tienen su propia plantilla.
   if (project.exclusivo) {
-    return <ExclusiveProject project={project} servicio={servicio} neighbours={neighbours} />;
+    return <ExclusiveProject project={project} servicio={servicio} neighbours={neighbours} settings={settings} />;
   }
 
   // Antes y después solo si se han subido las dos; si no, se muestra únicamente la galería.
