@@ -32,7 +32,7 @@ export const metadata: Metadata = {
 /** Datos estructurados de la portada: la empresa (negocio local) y el sitio web. */
 function homeJsonLd(settings: SiteSettings, services: string[]) {
   const postalCode = settings.direccion?.match(/\b\d{5}\b/)?.[0];
-  const sameAs = [settings.linkedin, settings.instagram, settings.facebook].filter((u) => /^https?:\/\//.test(u ?? ""));
+  const sameAs = [settings.instagram, settings.facebook].filter((u) => /^https?:\/\//.test(u ?? ""));
   const business = {
     "@type": "GeneralContractor",
     "@id": `${SITE.url}/#empresa`,

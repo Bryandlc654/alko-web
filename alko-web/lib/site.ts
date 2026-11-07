@@ -59,7 +59,21 @@ export const ROUTES = {
   /** Base de las URL de cada guía (/journal/guias/<slug>); el listado está en el Journal. */
   guides: "/journal/guias",
   contact: "/contacto",
+  privacy: "/politica-de-privacidad",
 } as const;
+
+/** Datos del titular para los textos legales. Si se rellena el NIF, aparece en la política de privacidad. */
+export const LEGAL = {
+  titular: "ALKO Construcción y Reformas Integrales",
+  nif: "",
+  actualizada: "noviembre de 2026",
+} as const;
+
+/** Redes de ALKO: solo Instagram y Facebook. La URL del panel manda; si está vacía, se usa la de aquí. */
+export const SOCIAL_LINKS = [
+  { key: "instagram", label: "Instagram", fallback: "https://www.instagram.com/alkoreformas" },
+  { key: "facebook", label: "Facebook", fallback: "https://www.facebook.com/alkoreformas/" },
+] as const;
 
 /** Listado de guías dentro del Journal. */
 export const GUIDES_HREF = `${ROUTES.journal}#guias`;

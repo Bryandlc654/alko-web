@@ -3,6 +3,8 @@
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { CONTACT_LIMITS, CONTACT_MESSAGES, contactKind } from "@/lib/contact/config";
+import Link from "next/link";
+import { ROUTES } from "@/lib/site";
 
 type Status = "idle" | "sending" | "sent" | "error";
 type Errors = Partial<Record<"nombre" | "email" | "telefono" | "contacto", string>>;
@@ -241,7 +243,10 @@ export default function QuickContactForm({
         }
       >
         <p className={`font-light leading-relaxed text-white/50 ${compact ? "order-last text-[11px]" : "max-w-xs text-sm"}`}>
-          Usaremos tus datos solo para responder a tu consulta.
+          Usaremos tus datos solo para responder a tu consulta.{" "}
+          <Link href={ROUTES.privacy} className="underline underline-offset-2 hover:text-white">
+            Política de privacidad
+          </Link>
         </p>
         <button
           type="submit"

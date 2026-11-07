@@ -1356,9 +1356,9 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   whatsapp: "+34 600 000 000",
   direccion: "Calle Velázquez 12, 28001 Madrid",
   horario: "8:30am - 5pm",
-  linkedin: "#",
-  facebook: "#",
-  instagram: "#",
+  linkedin: "",
+  facebook: "https://www.facebook.com/alkoreformas/",
+  instagram: "https://www.instagram.com/alkoreformas",
   smtp: {
     enabled: false,
     host: "smtp.hostinger.com",

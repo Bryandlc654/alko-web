@@ -1,6 +1,6 @@
 import Image from "@/components/ui/Image";
 import Link from "next/link";
-import { FOOTER_NAV } from "@/lib/site";
+import { FOOTER_NAV, ROUTES, SOCIAL_LINKS } from "@/lib/site";
 import type { SiteSettings } from "@/lib/types";
 
 export default function Footer({ settings }: { settings: SiteSettings }) {
@@ -102,17 +102,22 @@ export default function Footer({ settings }: { settings: SiteSettings }) {
             <span className="text-stone-500">Madrid · España</span>
           </div>
 
-          <div className="flex items-center gap-6">
-            <span className="text-stone-400">Social Sites:</span>
-            <a href={settings.linkedin || "#"} className="hover:text-white transition-colors duration-200">
-              Linkedin
-            </a>
-            <a href={settings.facebook || "#"} className="hover:text-white transition-colors duration-200">
-              Facebook
-            </a>
-            <a href={settings.instagram || "#"} className="hover:text-white transition-colors duration-200">
-              Instagram
-            </a>
+          <div className="flex flex-wrap items-center justify-center gap-6">
+            <Link href={ROUTES.privacy} className="hover:text-white transition-colors duration-200">
+              Política de privacidad
+            </Link>
+            <span aria-hidden="true" className="hidden sm:block h-3 w-px bg-stone-700" />
+            {SOCIAL_LINKS.map((social) => (
+              <a
+                key={social.label}
+                href={settings[social.key] || social.fallback}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-white transition-colors duration-200"
+              >
+                {social.label}
+              </a>
+            ))}
           </div>
         </div>
       </div>
