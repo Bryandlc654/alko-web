@@ -15,6 +15,7 @@ import {
   getArticles,
   getFabricantes,
   getFases,
+  getHomeContent,
   getProjects,
   getSectorBySlug,
   getSectors,
@@ -143,7 +144,7 @@ export default async function SectorDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const [sector, sectors, projects, fases, fabricantes, settings, articles] = await Promise.all([
+  const [sector, sectors, projects, fases, fabricantes, settings, articles, homeContent] = await Promise.all([
     getSectorBySlug(slug),
     getSectors(),
     getProjects(),
@@ -151,6 +152,7 @@ export default async function SectorDetailPage({
     getFabricantes(),
     getSettings(),
     getArticles(3),
+    getHomeContent(),
   ]);
 
   if (!sector) return notFound();
@@ -189,6 +191,28 @@ export default async function SectorDetailPage({
   const introImage = landing?.supportImage || projectPhotos[0] || heroImage;
   const introDetailImage = projectPhotos.find((src) => src !== introImage && src !== heroImage) || heroImage;
   const includesImage = landing?.includesImage || projectPhotos[1] || heroImage;
+
+  // Fotos del «Método ALKO» propias de cada servicio: primero las de sus obras que no salen ya en la
+  // página; si no tiene obras, sus propias fotos y después fotos de obra en curso de la portada.
+  const usedImages = new Set([heroImage, introImage, introDetailImage, includesImage]);
+  // Alterna entre las obras del servicio (una foto de cada una por turno) para que no salgan todas de la misma.
+  const perProject = showcase.map((p) =>
+    [p.imagen, ...(p.galeria || [])].filter((src): src is string => !!src && !usedImages.has(src)),
+  );
+  const ownProcessPhotos: string[] = [];
+  for (let round = 0; perProject.some((list) => list.length > round); round++) {
+    for (const list of perProject) if (list[round]) ownProcessPhotos.push(list[round]);
+  }
+  const obraPhotos = (homeContent.fases ?? []).map((f) => f.imagen).filter(Boolean) as string[];
+  const processPool = Array.from(
+    new Set(
+      ownProcessPhotos.length >= fases.length
+        ? ownProcessPhotos
+        : [...ownProcessPhotos, introImage, includesImage, heroImage, ...obraPhotos],
+    ),
+  ).filter(Boolean);
+  const processImage = (i: number, fallback?: string) =>
+    processPool.length > 0 ? processPool[i % processPool.length] : fallback;
 
   const otrosServicios = sectors.filter((item) => item.slug !== sector.slug);
   const url = `${SITE.url}${ROUTES.sectors}/${sector.slug}`;
@@ -424,9 +448,9 @@ export default async function SectorDetailPage({
               {fases.map((fase, i) => (
                 <li key={fase.id} className="group overflow-hidden bg-white">
                   <div className="relative aspect-[16/10] overflow-hidden bg-stone-200">
-                    {fase.imagen && (
+                    {processImage(i, fase.imagen) && (
                       <Image
-                        src={fase.imagen}
+                        src={processImage(i, fase.imagen)!}
                         alt={`Fase ${i + 1}: ${fase.title}`}
                         fill
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
