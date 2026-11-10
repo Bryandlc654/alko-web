@@ -95,7 +95,7 @@ export default function JobApplicationModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
       <div
-        className="relative w-full max-w-xl bg-white rounded-3xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col max-h-[90vh]"
+        className="relative w-full max-w-xl bg-paper rounded-3xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Cabecera */}
@@ -154,7 +154,7 @@ export default function JobApplicationModal({
                 <select
                   value={puesto}
                   onChange={(e) => setPuesto(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 text-xs font-medium text-stone-800 bg-white focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 text-xs font-medium text-stone-800 bg-paper focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700"
                 >
                   <option value="Candidatura espontánea">Candidatura espontánea (General)</option>
                   {vacantes.map((v) => (

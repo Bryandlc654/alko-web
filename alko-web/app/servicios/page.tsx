@@ -19,7 +19,7 @@ export default async function ServiciosPage() {
   ]);
 
   return (
-    <main className="bg-white text-stone-900">
+    <main className="bg-paper text-stone-900">
       <PageHero
         breadcrumbs={[{ label: "Servicios" }]}
         eyebrow={pageContent.headerBadge || "SERVICIOS"}

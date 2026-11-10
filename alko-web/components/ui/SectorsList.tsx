@@ -10,7 +10,7 @@ export default function SectorsList({ sectors }: { sectors: Sector[] }) {
       {sectors.map((sector, i) => (
         <div
           key={sector.id}
-          className={`service-row ${i === 0 ? "is-active" : ""} border-b border-[#e1e1df] cursor-pointer group`}
+          className={`service-row ${i === 0 ? "is-active" : ""} border-b border-[#D8D2C8] cursor-pointer group`}
           data-service={i}
         >
           {/* Vista inactiva */}

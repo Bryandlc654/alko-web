@@ -39,7 +39,7 @@ export default async function GuideDetail({
   const others = guides.filter((g) => g.slug !== guide.slug);
 
   return (
-    <main className="bg-white text-stone-900">
+    <main className="bg-paper text-stone-900">
       <PageHero
         eyebrow={`${guide.numero} — GUÍA · ${guide.tema}`}
         title={guide.title}

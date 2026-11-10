@@ -76,7 +76,7 @@ export default function ArticlesIndex({ articles }: { articles: Article[] }) {
 
       <ul>
         {visible.map((article, i) => (
-          <li key={article.id} className="border-b border-[#e1e1df]">
+          <li key={article.id} className="border-b border-[#D8D2C8]">
             <Link
               href={`${ROUTES.articles}/${article.slug}`}
               className="group grid grid-cols-12 gap-x-4 gap-y-3 sm:gap-x-8 py-8 sm:py-10 items-center"

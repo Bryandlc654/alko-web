@@ -205,7 +205,7 @@ export default function ProjectsGallery({ projects }: { projects: ProjectSummary
               type="button"
               onClick={loadMore}
               disabled={isLoadingMore}
-              className="group inline-flex items-center gap-3 rounded-full border border-stone-900 bg-white px-8 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] text-stone-900 transition hover:bg-stone-900 hover:text-white active:scale-95 disabled:opacity-50"
+              className="group inline-flex items-center gap-3 rounded-full border border-stone-900 bg-paper px-8 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] text-stone-900 transition hover:bg-stone-900 hover:text-white active:scale-95 disabled:opacity-50"
             >
               {isLoadingMore ? (
                 <>

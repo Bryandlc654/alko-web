@@ -59,7 +59,7 @@ export default async function ContactoPage() {
     "inline-flex items-center gap-2.5 rounded-full border px-5 py-2.5 text-[11px] font-light uppercase tracking-[0.16em] transition-colors";
 
   return (
-    <main className="bg-white text-stone-900">
+    <main className="bg-paper text-stone-900">
       <header className="relative isolate flex min-h-[640px] sm:min-h-[720px] lg:min-h-[82vh] items-end overflow-hidden bg-stone-950 text-white pt-36 sm:pt-44 pb-16 sm:pb-20">
         <Image
           src={pageContent.headerBgImage || "/cta-bg.jpg"}

@@ -9,7 +9,7 @@ export default function Container({
   className?: string;
 }) {
   return (
-    <div className={`mx-auto w-full max-w-7xl px-6 sm:px-10 lg:px-12 ${className}`}>
+    <div className={`site-wrap ${className}`}>
       {children}
     </div>
   );

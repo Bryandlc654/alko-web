@@ -5,7 +5,10 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // Permite que next/image optimice también las imágenes servidas por el WordPress headless.
 const wpUrl = (process.env.WP_API_URL || "").replace(/\/+$/, "");
-const remotePatterns = [];
+// Las imágenes de proyectos guardadas en la BD apuntan a la rama `media` del repositorio.
+const remotePatterns = [
+  { protocol: "https", hostname: "raw.githubusercontent.com", pathname: "/Bryandlc654/alko-web/**" },
+];
 
 if (wpUrl) {
   try {

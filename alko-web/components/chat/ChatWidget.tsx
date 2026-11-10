@@ -130,8 +130,8 @@ export default function ChatWidget() {
           {/* Cabecera del chat */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-stone-200/80 bg-stone-50/80">
             <div className="flex items-center gap-3">
-              <div className="relative flex items-center justify-center w-9 h-9 rounded-full bg-white border border-[#c98300]/40 text-[#c98300] shadow-sm">
-                <Sparkles className="w-4 h-4 text-[#c98300]" />
+              <div className="relative flex items-center justify-center w-9 h-9 rounded-full bg-paper border border-[#8B7560]/40 text-[#8B7560] shadow-sm">
+                <Sparkles className="w-4 h-4 text-[#8B7560]" />
                 <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white" />
               </div>
               <div>
@@ -174,7 +174,7 @@ export default function ChatWidget() {
                   className={`flex gap-2.5 ${isAssistant ? "justify-start" : "justify-end"}`}
                 >
                   {isAssistant && (
-                    <div className="w-7 h-7 rounded-full bg-white border border-stone-200/80 flex items-center justify-center text-[#c98300] flex-shrink-0 mt-0.5 shadow-xs">
+                    <div className="w-7 h-7 rounded-full bg-paper border border-stone-200/80 flex items-center justify-center text-[#8B7560] flex-shrink-0 mt-0.5 shadow-xs">
                       <Bot className="w-3.5 h-3.5" />
                     </div>
                   )}
@@ -182,8 +182,8 @@ export default function ChatWidget() {
                   <div
                     className={`max-w-[82%] px-4 py-2.5 rounded-2xl whitespace-pre-line leading-relaxed ${
                       isAssistant
-                        ? "bg-white border border-stone-200/90 text-stone-800 rounded-tl-none shadow-sm"
-                        : "bg-[#c98300] text-white border border-[#b87600] rounded-tr-none shadow-sm"
+                        ? "bg-paper border border-stone-200/90 text-stone-800 rounded-tl-none shadow-sm"
+                        : "bg-[#8B7560] text-white border border-[#75624F] rounded-tr-none shadow-sm"
                     }`}
                   >
                     {m.content}
@@ -205,15 +205,15 @@ export default function ChatWidget() {
             {/* Indicador de carga */}
             {isLoading && (
               <div className="flex gap-2.5 justify-start items-center text-stone-500">
-                <div className="w-7 h-7 rounded-full bg-white border border-stone-200/80 flex items-center justify-center text-[#c98300] flex-shrink-0 shadow-xs">
-                  <Loader2 className="w-3.5 h-3.5 animate-spin text-[#c98300]" />
+                <div className="w-7 h-7 rounded-full bg-paper border border-stone-200/80 flex items-center justify-center text-[#8B7560] flex-shrink-0 shadow-xs">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-[#8B7560]" />
                 </div>
-                <div className="px-4 py-2.5 rounded-2xl rounded-tl-none bg-white border border-stone-200/90 text-xs text-stone-600 flex items-center gap-1.5 shadow-sm">
+                <div className="px-4 py-2.5 rounded-2xl rounded-tl-none bg-paper border border-stone-200/90 text-xs text-stone-600 flex items-center gap-1.5 shadow-sm">
                   <span>Consultando asistente</span>
                   <span className="inline-flex gap-1">
-                    <span className="w-1 h-1 bg-[#c98300] rounded-full animate-bounce [animation-delay:-0.3s]" />
-                    <span className="w-1 h-1 bg-[#c98300] rounded-full animate-bounce [animation-delay:-0.15s]" />
-                    <span className="w-1 h-1 bg-[#c98300] rounded-full animate-bounce" />
+                    <span className="w-1 h-1 bg-[#8B7560] rounded-full animate-bounce [animation-delay:-0.3s]" />
+                    <span className="w-1 h-1 bg-[#8B7560] rounded-full animate-bounce [animation-delay:-0.15s]" />
+                    <span className="w-1 h-1 bg-[#8B7560] rounded-full animate-bounce" />
                   </span>
                 </div>
               </div>
@@ -231,7 +231,7 @@ export default function ChatWidget() {
                       key={idx}
                       type="button"
                       onClick={() => handleSend(suggestion)}
-                      className="text-left text-xs px-3.5 py-2.5 rounded-xl bg-white hover:bg-stone-50 border border-stone-200/90 hover:border-[#c98300]/50 text-stone-700 hover:text-stone-950 transition-all duration-200 shadow-xs"
+                      className="text-left text-xs px-3.5 py-2.5 rounded-xl bg-paper hover:bg-stone-50 border border-stone-200/90 hover:border-[#8B7560]/50 text-stone-700 hover:text-stone-950 transition-all duration-200 shadow-xs"
                     >
                       {suggestion}
                     </button>
@@ -261,13 +261,13 @@ export default function ChatWidget() {
                 onKeyDown={handleKeyDown}
                 placeholder="Escribe tu consulta sobre tu obra o proyecto..."
                 disabled={isLoading}
-                className="flex-1 bg-white border border-stone-200/90 focus:border-[#c98300] focus:ring-1 focus:ring-[#c98300]/30 rounded-xl px-3.5 py-2.5 text-sm text-stone-900 placeholder-stone-400 focus:outline-none transition-colors shadow-xs"
+                className="flex-1 bg-paper border border-stone-200/90 focus:border-[#8B7560] focus:ring-1 focus:ring-[#8B7560]/30 rounded-xl px-3.5 py-2.5 text-sm text-stone-900 placeholder-stone-400 focus:outline-none transition-colors shadow-xs"
               />
               <button
                 type="submit"
                 disabled={!input.trim() || isLoading}
                 aria-label="Enviar mensaje"
-                className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#c98300] hover:bg-[#b87600] text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all active:scale-95 shadow-sm flex-shrink-0"
+                className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#8B7560] hover:bg-[#75624F] text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all active:scale-95 shadow-sm flex-shrink-0"
               >
                 {isLoading ? (
                   <Loader2 className="w-4 h-4 animate-spin text-white" />
@@ -288,25 +288,25 @@ export default function ChatWidget() {
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
         aria-label={isOpen ? "Cerrar asistente" : "Abrir asistente de arquitectura"}
-        className="group relative flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white border border-stone-200/90 hover:border-[#c98300]/60 text-[#c98300] shadow-xl shadow-stone-900/10 hover:shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95"
+        className="group relative flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-paper border border-stone-200/90 hover:border-[#8B7560]/60 text-[#8B7560] shadow-xl shadow-stone-900/10 hover:shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95"
       >
         {/* Anillo de pulso sutil */}
         {!isOpen && (
-          <span className="absolute inset-0 rounded-full bg-[#c98300]/15 animate-ping opacity-60 pointer-events-none" />
+          <span className="absolute inset-0 rounded-full bg-[#8B7560]/15 animate-ping opacity-60 pointer-events-none" />
         )}
 
         {isOpen ? (
           <X className="w-6 h-6 text-stone-800 transition-transform duration-200" />
         ) : (
           <div className="relative">
-            <MessageSquare className="w-6 h-6 text-[#c98300] group-hover:text-[#b87600] transition-colors" />
-            <Sparkles className="w-3 h-3 text-[#c98300] absolute -top-1 -right-1.5" />
+            <MessageSquare className="w-6 h-6 text-[#8B7560] group-hover:text-[#75624F] transition-colors" />
+            <Sparkles className="w-3 h-3 text-[#8B7560] absolute -top-1 -right-1.5" />
           </div>
         )}
 
         {/* Tooltip visible en desktop */}
         {!isOpen && (
-          <span className="hidden sm:inline-block absolute right-full mr-3 whitespace-nowrap rounded-full bg-white border border-stone-200/90 px-3.5 py-1.5 text-xs text-stone-800 font-medium shadow-lg opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 pointer-events-none">
+          <span className="hidden sm:inline-block absolute right-full mr-3 whitespace-nowrap rounded-full bg-paper border border-stone-200/90 px-3.5 py-1.5 text-xs text-stone-800 font-medium shadow-lg opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 pointer-events-none">
             Asistente ALKO
           </span>
         )}

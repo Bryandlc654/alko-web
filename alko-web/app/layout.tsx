@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { EB_Garamond } from "next/font/google";
+import { DM_Sans, Manrope } from "next/font/google";
 import "./globals.css";
 import Nav from "@/components/layout/Nav";
 import Footer from "@/components/layout/Footer";
@@ -12,13 +12,19 @@ import SiteShell from "@/components/layout/SiteShell";
 import { getSectors, getSettings } from "@/lib/wordpress";
 import { SITE } from "@/lib/site";
 
-// Una única tipografía para todo el sitio.
-const ebGaramond = EB_Garamond({
+// Dirección V3: Manrope (titulares, peso Light) + DM Sans (cuerpo).
+const manrope = Manrope({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  // Solo estilo normal: la web no usa cursiva (tampoco mezclada dentro de los títulos).
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-manrope",
+  display: "swap",
+});
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
   style: ["normal"],
-  variable: "--font-eb-garamond",
+  variable: "--font-dm-sans",
   display: "swap",
 });
 
@@ -49,7 +55,7 @@ export default async function RootLayout({
   return (
     <html lang="es" className="scroll-smooth">
       <body
-        className={`${ebGaramond.variable} bg-stone-950 text-white font-sans antialiased overflow-x-hidden selection:bg-white/20`}
+        className={`${manrope.variable} ${dmSans.variable} bg-stone-950 text-white font-sans antialiased overflow-x-hidden selection:bg-piedra selection:text-ink`}
       >
         <ContactModalProvider
           projectTypes={[...sectors.map((sector) => sector.title), "Otro"]}
@@ -60,7 +66,7 @@ export default async function RootLayout({
             nav={
               <Nav
                 settings={settings}
-                services={sectors.map(({ slug, title }) => ({ slug, title }))}
+                services={sectors.map(({ slug, title, descripcion }) => ({ slug, title, descripcion }))}
               />
             }
             footer={<Footer settings={settings} />}

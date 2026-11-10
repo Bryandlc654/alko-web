@@ -62,7 +62,7 @@ export default async function NosotrosPage() {
   ];
 
   return (
-    <main className="bg-white text-stone-900">
+    <main className="bg-paper text-stone-900">
       <PageHero
         eyebrow={pageContent.headerBadge || "NOSOTROS"}
         title={

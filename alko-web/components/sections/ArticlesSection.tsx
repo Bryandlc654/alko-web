@@ -9,7 +9,7 @@ export default function ArticlesSection({ articles, content }: { articles: Artic
   return (
     <section
       id="articulos"
-      className="relative bg-white text-stone-900 py-24 sm:py-32 border-t border-stone-300/70 overflow-hidden"
+      className="relative bg-paper text-stone-900 py-24 sm:py-32 border-t border-stone-300/70 overflow-hidden"
     >
       <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-16">
         <div className="flex items-end justify-between pb-8 border-b border-stone-300/60 mb-12 sm:mb-16">

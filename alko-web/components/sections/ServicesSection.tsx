@@ -5,10 +5,10 @@ export default function ServicesSection({ sectors, content }: { sectors: Sector[
   return (
     <section
       id="servicios"
-      className="relative bg-white text-stone-900 py-20 sm:py-28 lg:py-32 overflow-hidden border-t border-[#e1e1df]"
+      className="relative bg-paper text-stone-900 py-20 sm:py-28 lg:py-32 overflow-hidden border-t border-[#D8D2C8]"
     >
       <div className="max-w-[1400px] mx-auto px-6 sm:px-10 lg:px-14">
-        <div className="reveal-item pb-12 sm:pb-16 border-b border-[#e1e1df]">
+        <div className="reveal-item pb-12 sm:pb-16 border-b border-[#D8D2C8]">
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
             <div>
               <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase mb-3">

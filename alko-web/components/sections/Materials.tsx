@@ -7,7 +7,7 @@ export default function Materials({ fabricantes, content }: { fabricantes: Fabri
   return (
     <section
       id="materiales"
-      className="relative bg-white text-stone-900 py-24 sm:py-32 border-t border-stone-300/80 overflow-hidden"
+      className="relative bg-paper text-stone-900 py-24 sm:py-32 border-t border-stone-300/80 overflow-hidden"
     >
       <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-16 mb-16 sm:mb-20">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-stone-300/70">

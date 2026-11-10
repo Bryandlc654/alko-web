@@ -9,7 +9,7 @@ export default function Experience({ content }: { content?: HomeContent } = {}) 
   return (
     <section
       id="experiencia"
-      className="relative bg-white text-stone-900 border-t border-stone-200/80"
+      className="relative bg-paper text-stone-900 border-t border-stone-200/80"
       style={{ height: "230vh" }}
     >
       <div

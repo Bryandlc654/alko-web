@@ -175,7 +175,7 @@ export default async function OficinasPage() {
   const [settings, servicio, pageContent] = await Promise.all([getSettings(), getSectorBySlug("oficinas"), getDbOficinasPageContent()]);
 
   return (
-    <main className="bg-white text-stone-900 selection:bg-[#c98300]/20">
+    <main className="bg-paper text-stone-900 selection:bg-[#8B7560]/20">
       {/* Hero Principal con imagen de oficinas de alta gama */}
       <PageHero
         breadcrumbs={[{ label: "Servicios", href: ROUTES.sectors }, { label: "Reformas de oficinas" }]}
@@ -190,7 +190,7 @@ export default async function OficinasPage() {
             mode="avanzado"
             source="Servicio Reformas de oficinas"
             tipo={servicio?.title}
-            className="inline-flex items-center gap-2 px-6 py-3.5 bg-[#c98300] hover:bg-[#b87600] text-stone-950 font-semibold text-xs tracking-widest uppercase transition-all shadow-lg active:scale-95"
+            className="inline-flex items-center gap-2 px-6 py-3.5 bg-[#8B7560] hover:bg-[#75624F] text-stone-950 font-semibold text-xs tracking-widest uppercase transition-all shadow-lg active:scale-95"
           >
             <span>Solicitar valoración de sede</span>
             <ArrowRight className="w-4 h-4" />
@@ -230,7 +230,7 @@ export default async function OficinasPage() {
         <Container>
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             <div className="lg:col-span-6 space-y-6">
-              <span className="font-mono text-xs text-[#c98300] uppercase tracking-[0.2em] font-semibold">
+              <span className="font-mono text-xs text-[#8B7560] uppercase tracking-[0.2em] font-semibold">
                 EL ENFOQUE ALKO EN EL ESPACIO DE TRABAJO
               </span>
               <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-light text-stone-900 leading-tight">
@@ -248,14 +248,14 @@ export default async function OficinasPage() {
 
               <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex items-start gap-3 p-4 rounded-lg bg-stone-50 border border-stone-200">
-                  <CheckCircle2 className="w-5 h-5 text-[#c98300] shrink-0 mt-0.5" />
+                  <CheckCircle2 className="w-5 h-5 text-[#8B7560] shrink-0 mt-0.5" />
                   <div>
                     <h3 className="text-sm font-semibold text-stone-900">Dirección 360°</h3>
                     <p className="text-xs text-stone-500 mt-1">Un solo responsable para obra, clima y licencias.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3 p-4 rounded-lg bg-stone-50 border border-stone-200">
-                  <CheckCircle2 className="w-5 h-5 text-[#c98300] shrink-0 mt-0.5" />
+                  <CheckCircle2 className="w-5 h-5 text-[#8B7560] shrink-0 mt-0.5" />
                   <div>
                     <h3 className="text-sm font-semibold text-stone-900">Plazos Innegociables</h3>
                     <p className="text-xs text-stone-500 mt-1">Planificación milimétrica con compras anticipadas.</p>
@@ -275,7 +275,7 @@ export default async function OficinasPage() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                 <div className="absolute bottom-6 left-6 right-6 text-white">
-                  <span className="font-mono text-[11px] uppercase tracking-widest text-[#c98300] block mb-1">
+                  <span className="font-mono text-[11px] uppercase tracking-widest text-[#8B7560] block mb-1">
                     CASO DESTACADO
                   </span>
                   <p className="text-sm sm:text-base font-serif font-light">
@@ -296,7 +296,7 @@ export default async function OficinasPage() {
           {/* Cabecera */}
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-8 mb-10 border-b border-stone-200">
             <div>
-              <span className="font-mono text-xs text-[#c98300] uppercase tracking-[0.25em] font-semibold">
+              <span className="font-mono text-xs text-[#8B7560] uppercase tracking-[0.25em] font-semibold">
                 INGENIERÍA & DISCIPLINAS
               </span>
               <h2 className="mt-2 font-serif text-3xl sm:text-4xl font-light text-stone-900">
@@ -315,19 +315,19 @@ export default async function OficinasPage() {
               return (
                 <div
                   key={cap.codigo}
-                  className="bg-white border border-stone-200/90 p-6 sm:p-7 shadow-xs hover:border-[#c98300]/60 hover:shadow-md transition-all flex flex-col justify-between"
+                  className="bg-paper border border-stone-200/90 p-6 sm:p-7 shadow-xs hover:border-[#8B7560]/60 hover:shadow-md transition-all flex flex-col justify-between"
                 >
                   <div>
                     <div className="flex items-center justify-between mb-4">
                       <span className="font-mono text-xs text-stone-400 font-medium">
                         {cap.codigo}
                       </span>
-                      <div className="w-8 h-8 rounded-full bg-stone-50 border border-stone-200 flex items-center justify-center text-[#c98300]">
+                      <div className="w-8 h-8 rounded-full bg-stone-50 border border-stone-200 flex items-center justify-center text-[#8B7560]">
                         <Icon className="w-4 h-4" />
                       </div>
                     </div>
 
-                    <span className="inline-block font-mono text-[10px] uppercase tracking-wider text-[#b87600] bg-[#c98300]/10 px-2 py-0.5 rounded-xs border border-[#c98300]/20 mb-3">
+                    <span className="inline-block font-mono text-[10px] uppercase tracking-wider text-[#75624F] bg-[#8B7560]/10 px-2 py-0.5 rounded-xs border border-[#8B7560]/20 mb-3">
                       {cap.metrica}
                     </span>
 
@@ -346,7 +346,7 @@ export default async function OficinasPage() {
                         key={pIdx}
                         className="flex items-center gap-2 text-xs text-stone-700 font-light"
                       >
-                        <Check className="w-3.5 h-3.5 text-[#c98300] shrink-0" />
+                        <Check className="w-3.5 h-3.5 text-[#8B7560] shrink-0" />
                         <span>{punto}</span>
                       </li>
                     ))}
@@ -363,7 +363,7 @@ export default async function OficinasPage() {
         <Container>
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12">
             <div>
-              <span className="font-mono text-xs text-[#c98300] uppercase tracking-[0.2em] font-semibold">
+              <span className="font-mono text-xs text-[#8B7560] uppercase tracking-[0.2em] font-semibold">
                 PROYECTOS REPRESENTATIVOS
               </span>
               <h2 className="mt-2 font-serif text-3xl sm:text-4xl font-light text-stone-900">
@@ -372,7 +372,7 @@ export default async function OficinasPage() {
             </div>
             <Link
               href={ROUTES.projects}
-              className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-900 hover:text-[#c98300] border-b border-stone-900 hover:border-[#c98300] pb-1 transition-colors"
+              className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-900 hover:text-[#8B7560] border-b border-stone-900 hover:border-[#8B7560] pb-1 transition-colors"
             >
               <span>Ver todos los proyectos</span>
               <ChevronRight className="w-3.5 h-3.5" />
@@ -383,7 +383,7 @@ export default async function OficinasPage() {
             {PROYECTOS_OFICINAS.map((p) => (
               <article
                 key={p.slug}
-                className="group border border-stone-200 bg-white overflow-hidden shadow-sm hover:shadow-lg transition-all"
+                className="group border border-stone-200 bg-paper overflow-hidden shadow-sm hover:shadow-lg transition-all"
               >
                 <div className="relative aspect-[16/10] overflow-hidden bg-stone-200">
                   <Image
@@ -411,7 +411,7 @@ export default async function OficinasPage() {
                     <span>•</span>
                     <span>Plazo: {p.plazo}</span>
                   </div>
-                  <h3 className="font-serif text-2xl font-light text-stone-900 group-hover:text-[#c98300] transition-colors">
+                  <h3 className="font-serif text-2xl font-light text-stone-900 group-hover:text-[#8B7560] transition-colors">
                     {p.title}
                   </h3>
                   <p className="mt-3 text-sm text-stone-600 leading-relaxed font-light">
@@ -420,7 +420,7 @@ export default async function OficinasPage() {
                   <div className="mt-6 pt-6 border-t border-stone-100 flex items-center justify-between">
                     <Link
                       href={`/proyectos/${p.slug}`}
-                      className="inline-flex items-center gap-2 text-xs font-mono tracking-widest uppercase text-stone-900 group-hover:text-[#c98300] transition-colors"
+                      className="inline-flex items-center gap-2 text-xs font-mono tracking-widest uppercase text-stone-900 group-hover:text-[#8B7560] transition-colors"
                     >
                       <span>Ver ficha técnica completa</span>
                       <ArrowRight className="w-3.5 h-3.5" />
@@ -436,12 +436,12 @@ export default async function OficinasPage() {
       {/* ========================================================
           METODOLOGÍA DE EJECUCIÓN (Secuencia Sintética de 5 Pasos)
           ======================================================== */}
-      <section className="py-16 sm:py-24 bg-white border-b border-stone-200">
+      <section className="py-16 sm:py-24 bg-paper border-b border-stone-200">
         <Container>
           {/* Cabecera */}
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-8 mb-10 border-b border-stone-200">
             <div>
-              <span className="font-mono text-xs text-[#c98300] uppercase tracking-[0.25em] font-semibold">
+              <span className="font-mono text-xs text-[#8B7560] uppercase tracking-[0.25em] font-semibold">
                 SECUENCIA OPERATIVA
               </span>
               <h2 className="mt-2 font-serif text-3xl sm:text-4xl font-light text-stone-900">
@@ -458,11 +458,11 @@ export default async function OficinasPage() {
             {METODOLOGIA_OFICINAS.map((etapa) => (
               <div
                 key={etapa.fase}
-                className="bg-[#fbfbfa] border border-stone-200 p-6 flex flex-col justify-between hover:border-[#c98300]/50 transition-colors"
+                className="bg-[#fbfbfa] border border-stone-200 p-6 flex flex-col justify-between hover:border-[#8B7560]/50 transition-colors"
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <span className="font-mono text-2xl font-light text-[#c98300]">
+                    <span className="font-mono text-2xl font-light text-[#8B7560]">
                       ({etapa.fase})
                     </span>
                     <span className="font-mono text-[10px] uppercase tracking-wider bg-stone-200/70 text-stone-700 px-2 py-0.5 font-medium">
@@ -494,21 +494,21 @@ export default async function OficinasPage() {
           {/* Franja de 3 Garantías Clave */}
           <div className="mt-10 p-6 bg-stone-50 border border-stone-200 flex flex-col sm:flex-row items-center justify-around gap-4 text-center sm:text-left">
             <div className="flex items-center gap-2.5">
-              <CheckCircle2 className="w-4 h-4 text-[#c98300] shrink-0" />
+              <CheckCircle2 className="w-4 h-4 text-[#8B7560] shrink-0" />
               <span className="text-xs font-mono tracking-wider uppercase text-stone-800 font-medium">
                 Compras anticipadas en fábrica
               </span>
             </div>
             <span className="hidden sm:inline text-stone-300">•</span>
             <div className="flex items-center gap-2.5">
-              <CheckCircle2 className="w-4 h-4 text-[#c98300] shrink-0" />
+              <CheckCircle2 className="w-4 h-4 text-[#8B7560] shrink-0" />
               <span className="text-xs font-mono tracking-wider uppercase text-stone-800 font-medium">
                 1 único interlocutor técnico
               </span>
             </div>
             <span className="hidden sm:inline text-stone-300">•</span>
             <div className="flex items-center gap-2.5">
-              <CheckCircle2 className="w-4 h-4 text-[#c98300] shrink-0" />
+              <CheckCircle2 className="w-4 h-4 text-[#8B7560] shrink-0" />
               <span className="text-xs font-mono tracking-wider uppercase text-stone-800 font-medium">
                 Presupuesto y plazo cerrados
               </span>
@@ -521,7 +521,7 @@ export default async function OficinasPage() {
       <section className="py-16 sm:py-24 border-b border-stone-200">
         <Container>
           <div className="max-w-3xl mb-12">
-            <span className="font-mono text-xs text-[#c98300] uppercase tracking-[0.2em] font-semibold">
+            <span className="font-mono text-xs text-[#8B7560] uppercase tracking-[0.2em] font-semibold">
               RESOLVEMOS TUS DUDAS
             </span>
             <h2 className="mt-3 font-serif text-3xl sm:text-4xl font-light text-stone-900">

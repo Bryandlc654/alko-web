@@ -388,7 +388,7 @@ export default function ContactForm({
         <button
           type="submit"
           disabled={sending}
-          className="group/btn inline-flex w-full shrink-0 items-center justify-center gap-3 rounded-full bg-amber-700 px-9 py-4 text-xs font-semibold uppercase tracking-wider text-white shadow-xl transition-all duration-300 hover:bg-white hover:text-stone-900 active:scale-95 disabled:cursor-wait disabled:opacity-70 sm:w-auto"
+          className="group/btn inline-flex w-full shrink-0 items-center justify-center gap-3 rounded-full bg-amber-700 px-9 py-4 text-xs font-semibold uppercase tracking-wider text-white shadow-xl transition-all duration-300 hover:bg-paper hover:text-stone-900 active:scale-95 disabled:cursor-wait disabled:opacity-70 sm:w-auto"
         >
           {sending ? (
             <>

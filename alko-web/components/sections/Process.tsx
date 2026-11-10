@@ -26,7 +26,7 @@ export default function Process({
   return (
     <section
       id={id}
-      className="relative bg-white text-stone-900 py-24 sm:py-32 px-6 sm:px-10 lg:px-12 overflow-hidden border-t border-stone-200"
+      className="relative bg-paper text-stone-900 py-24 sm:py-32 px-6 sm:px-10 lg:px-12 overflow-hidden border-t border-stone-200"
     >
       <div className="max-w-7xl mx-auto">
         {/* Cabecera */}

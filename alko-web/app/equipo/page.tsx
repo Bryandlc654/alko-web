@@ -54,7 +54,7 @@ export default async function EquipoPage() {
   };
 
   return (
-    <main className="bg-white text-stone-900">
+    <main className="bg-paper text-stone-900">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

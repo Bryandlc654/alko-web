@@ -26,6 +26,8 @@ export interface NavItem {
 export interface NavLink {
   href: string;
   label: string;
+  /** Línea breve bajo el enlace en el mega menú. */
+  description?: string;
 }
 
 /** Rutas base de cada colección de contenido. */
@@ -46,38 +48,35 @@ export const ROUTES = {
 /** El método ALKO es una sección de Nosotros (antes tenía página propia en /metodo). */
 export const METHOD_HREF = `${ROUTES.company}#metodo`;
 
-/** Navegación principal (cabecera y menú móvil). */
+/**
+ * Navegación principal (cabecera y menú móvil). Dirección V3: una navegación corta
+ * con cuatro entradas; «Presentar proyecto» vive como CTA fijo de la cabecera.
+ * Conocimiento y Contacto siguen enlazados desde el pie.
+ */
 export const MAIN_NAV: NavItem[] = [
   { href: ROUTES.projects, label: "Proyectos" },
-  { href: ROUTES.sectors, label: "Servicios" },
+  { href: ROUTES.sectors, label: "Divisiones" },
+  { href: METHOD_HREF, label: "Método" },
   {
     href: ROUTES.company,
-    label: "Empresa",
+    label: "Estudio",
     children: [
-      { href: ROUTES.company, label: "Nosotros" },
-      { href: ROUTES.team, label: "Equipo" },
-      { href: ROUTES.careers, label: "Trabaja con nosotros" },
+      { href: ROUTES.company, label: "Nosotros", description: "Trayectoria y forma de trabajar" },
+      { href: ROUTES.team, label: "Equipo", description: "Personas y responsabilidades" },
+      { href: ROUTES.careers, label: "Trabaja con nosotros", description: "Vacantes y candidaturas" },
     ],
   },
-  {
-    href: ROUTES.articles,
-    label: "Conocimiento",
-    children: [
-      { href: ROUTES.articlesList, label: "Artículos" },
-      { href: ROUTES.guides, label: "Guías" },
-    ],
-  },
-  { href: ROUTES.contact, label: "Contacto" },
 ];
 
 /** Servicio mínimo que necesita el menú (los datos vienen del CMS). */
 export interface ServiceLink {
   slug: string;
   title: string;
+  descripcion?: string;
 }
 
 /**
- * Navegación principal con el desplegable de Servicios construido a partir de los
+ * Navegación principal con el desplegable de Divisiones construido a partir de los
  * servicios del CMS: uno nuevo aparece en el menú sin tocar el código.
  */
 export function buildMainNav(services: ServiceLink[] = []): NavItem[] {
@@ -85,13 +84,11 @@ export function buildMainNav(services: ServiceLink[] = []): NavItem[] {
     item.href === ROUTES.sectors && services.length > 0
       ? {
           ...item,
-          children: [
-            { href: ROUTES.sectors, label: "Todos los servicios" },
-            ...services.map((service) => ({
-              href: `${ROUTES.sectors}/${service.slug}`,
-              label: service.title,
-            })),
-          ],
+          children: services.map((service) => ({
+            href: `${ROUTES.sectors}/${service.slug}`,
+            label: service.title,
+            description: service.descripcion,
+          })),
         }
       : item,
   );
@@ -108,11 +105,15 @@ export function buildMainNav(services: ServiceLink[] = []): NavItem[] {
  */
 export const TRANSPARENT_HEADER_ROUTES: string[] = ["/*"];
 
-/** Elementos del pie de página. */
+/** Columnas del pie de página. */
 export const FOOTER_NAV: NavItem[] = [
   { href: ROUTES.projects, label: "Proyectos" },
-  { href: ROUTES.sectors, label: "Servicios" },
-  { href: ROUTES.company, label: "Empresa" },
+  { href: ROUTES.sectors, label: "Divisiones" },
+  { href: METHOD_HREF, label: "Método" },
+  { href: ROUTES.company, label: "Estudio" },
+];
+
+export const FOOTER_NAV_SECONDARY: NavItem[] = [
   { href: ROUTES.team, label: "Equipo" },
   { href: ROUTES.careers, label: "Trabaja con nosotros" },
   { href: ROUTES.articlesList, label: "Conocimiento" },

@@ -360,7 +360,7 @@ export default function SiteScripts() {
       showcaseDots.forEach((dot, i) => {
         if (i === index) {
           dot.className =
-            "showcase-dot w-2.5 h-2.5 bg-white transition-all duration-300 focus:outline-none";
+            "showcase-dot w-2.5 h-2.5 bg-paper transition-all duration-300 focus:outline-none";
         } else {
           dot.className =
             "showcase-dot w-2.5 h-2.5 border border-white/60 bg-transparent hover:border-white transition-all duration-300 focus:outline-none";

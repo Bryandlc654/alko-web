@@ -101,7 +101,7 @@ export default async function ProjectDetail({
   ].filter((item) => Boolean(item.value));
 
   return (
-    <main className="bg-white text-stone-900">
+    <main className="bg-paper text-stone-900">
       {/* 1. Header Hero Principal */}
       <header className="relative isolate flex min-h-[640px] sm:min-h-[720px] lg:min-h-[92vh] items-end overflow-hidden bg-stone-950 text-white pt-36 sm:pt-44 pb-10 sm:pb-14">
         <Image

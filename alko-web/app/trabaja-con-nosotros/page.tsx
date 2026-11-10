@@ -41,7 +41,7 @@ export default async function TrabajaConNosotrosPage() {
   };
 
   return (
-    <main className="bg-white text-stone-900">
+    <main className="bg-paper text-stone-900">
       <PageHero
         eyebrow={pageContent.headerBadge || "TRABAJA CON NOSOTROS"}
         title={pageContent.headerTitulo || "Construimos con las personas"}
@@ -53,7 +53,7 @@ export default async function TrabajaConNosotrosPage() {
       />
 
       {/* Cultura */}
-      <section className="relative isolate w-full overflow-hidden bg-white text-stone-900">
+      <section className="relative isolate w-full overflow-hidden bg-paper text-stone-900">
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 z-[1] mx-auto hidden max-w-[1780px] grid-cols-6 px-6 sm:px-12 lg:grid lg:px-20"

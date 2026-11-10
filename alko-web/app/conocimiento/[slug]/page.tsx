@@ -76,7 +76,7 @@ export default async function ArticleDetail({
   };
 
   return (
-    <main className="bg-white text-stone-900">
+    <main className="bg-paper text-stone-900">
       <ReadingProgress targetId="articulo" />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
@@ -170,7 +170,7 @@ export default async function ArticleDetail({
                   <ContactTrigger
                     mode="avanzado"
                     source={`Artículo ${article.title}`}
-                    className="inline-flex items-center justify-center gap-2 rounded-full bg-amber-700 px-8 py-3.5 text-xs font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-white hover:text-stone-900"
+                    className="inline-flex items-center justify-center gap-2 rounded-full bg-amber-700 px-8 py-3.5 text-xs font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-paper hover:text-stone-900"
                   >
                     Solicitar valoración
                   </ContactTrigger>

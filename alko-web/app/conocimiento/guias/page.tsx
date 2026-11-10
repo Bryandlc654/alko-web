@@ -23,7 +23,7 @@ export default async function GuiasPage() {
   ]);
 
   return (
-    <main className="bg-white text-stone-900">
+    <main className="bg-paper text-stone-900">
       <PageHero
         eyebrow={pageContent.headerBadge || "CONOCIMIENTO · GUÍAS"}
         title={pageContent.headerTitulo || "Guías"}
@@ -45,7 +45,7 @@ export default async function GuiasPage() {
 
           <div>
             {guides.map((guide) => (
-              <article key={guide.id} className="reveal-item group border-b border-[#e1e1df]">
+              <article key={guide.id} className="reveal-item group border-b border-[#D8D2C8]">
                 <Link
                   href={`${ROUTES.guides}/${guide.slug}`}
                   className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 py-10 sm:py-12 lg:items-center"

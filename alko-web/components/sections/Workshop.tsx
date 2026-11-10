@@ -92,7 +92,7 @@ export default function Workshop({ slides, content }: { slides: Slide[]; content
 
       <div className="absolute bottom-6 sm:bottom-8 right-6 sm:right-12 z-30 flex items-center gap-2.5">
         <button
-          className="showcase-dot w-2.5 h-2.5 bg-white transition-all duration-300 focus:outline-none"
+          className="showcase-dot w-2.5 h-2.5 bg-paper transition-all duration-300 focus:outline-none"
           data-slide="0"
           aria-label="Ir al slide 1"
         />

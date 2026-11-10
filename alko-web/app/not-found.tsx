@@ -4,7 +4,7 @@ import { ROUTES } from "@/lib/site";
 
 export default function NotFound() {
   return (
-    <main className="bg-white text-stone-900">
+    <main className="bg-paper text-stone-900">
       <PageHero
         eyebrow="404"
         title="Página no encontrada"

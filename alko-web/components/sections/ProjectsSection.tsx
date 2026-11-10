@@ -7,7 +7,7 @@ export default function ProjectsSection({ projects, content }: { projects: Proje
   return (
     <section
       id="proyectos"
-      className="relative bg-white text-stone-900 py-24 sm:py-32 px-6 sm:px-10 lg:px-12 overflow-hidden border-t border-stone-200/80"
+      className="relative bg-paper text-stone-900 py-24 sm:py-32 px-6 sm:px-10 lg:px-12 overflow-hidden border-t border-stone-200/80"
     >
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-8 pb-14 border-b border-stone-300/60">

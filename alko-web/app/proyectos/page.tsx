@@ -43,7 +43,7 @@ export default async function ProyectosPage() {
   const heroImage = pageContent.headerBgImage || projects[0]?.imagen || "/start-research-1.jpg";
 
   return (
-    <main className="bg-white text-stone-900">
+    <main className="bg-paper text-stone-900">
       <header className="relative isolate flex min-h-[640px] sm:min-h-[720px] lg:min-h-[86vh] items-end overflow-hidden bg-stone-950 text-white pt-36 sm:pt-44 pb-12 sm:pb-16">
         <Image src={heroImage} alt="" fill priority sizes="100vw" className="-z-10 object-cover object-center" />
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-stone-950/85 via-stone-950/45 to-stone-950/5" />
