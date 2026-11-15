@@ -1,6 +1,3 @@
-import Image from "@/components/ui/Image";
-import Breadcrumbs from "@/components/ui/Breadcrumbs";
-import Container from "@/components/ui/Container";
 import ProjectsGallery from "@/components/ui/ProjectsGallery";
 import { projectCategory } from "@/lib/project-category";
 import PageHero from "@/components/ui/PageHero";
@@ -46,7 +43,7 @@ export default async function ProyectosPage() {
   const heroImage = pageContent.headerBgImage || projects[0]?.imagen || "/start-research-1.jpg";
 
   return (
-    <main className="bg-white text-ink">
+    <main className="bg-paper text-ink">
       <PageHero
         breadcrumbs={[{ label: "Proyectos" }]}
         eyebrow={pageContent.headerBadge || "PROYECTOS"}
@@ -68,9 +65,9 @@ export default async function ProyectosPage() {
         </dl>
       </PageHero>
 
-      <Container className="pt-20 sm:pt-28 pb-8 sm:pb-12">
+      <div className="site-wrap pb-16 pt-20 sm:pb-24 sm:pt-28">
         <ProjectsGallery projects={summaries} />
-      </Container>
+      </div>
 
       <ContactCta settings={settings} />
     </main>

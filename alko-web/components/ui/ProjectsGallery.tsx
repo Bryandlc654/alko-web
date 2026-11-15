@@ -10,7 +10,7 @@ import { CATEGORY_ORDER, projectCategory } from "@/lib/project-category";
 import { Loader2 } from "lucide-react";
 
 const ALL = "Todos";
-const INITIAL_PAGE_SIZE = 4;
+const INITIAL_PAGE_SIZE = 6;
 const LOAD_MORE_STEP = 3;
 
 
@@ -20,7 +20,7 @@ export interface ProjectSummary extends Project {
 }
 
 /**
- * Listado de /proyectos: filas editoriales alternadas con filtro por tipología
+ * Listado de /proyectos: rejilla de fotos a sangre (una a todo el ancho y dos en pareja) con filtro por tipología
  * y carga progresiva (paginación infinita por scroll + botón de "Mostrar más obras").
  */
 export default function ProjectsGallery({ projects }: { projects: ProjectSummary[] }) {
@@ -89,120 +89,115 @@ export default function ProjectsGallery({ projects }: { projects: ProjectSummary
 
   return (
     <div>
-      <div className="reveal-item flex flex-col gap-10 border-b border-ink/15 pb-10">
-        <div>
+      <div className="reveal-item grid grid-cols-12 items-end gap-6">
+        <div className="col-span-12 lg:col-span-7">
           <p className="eyebrow">Portfolio</p>
           <h2 className="display-title mt-6 text-5xl leading-none sm:text-6xl xl:text-[5.5rem]">
-            Obra a obra.
-            <br />
-            Detalle a detalle.
+            Todas las obras.
           </h2>
         </div>
-
-        {types.length > 1 && (
-          // Filtros como pestañas de texto: sin cajas, solo una línea bajo la activa.
-          <div
-            role="group"
-            aria-label="Filtrar por tipología"
-            className="no-scrollbar -mx-6 flex gap-7 overflow-x-auto px-6 sm:mx-0 sm:gap-9 sm:px-0"
-          >
-            {filters.map((filter) => {
-              const selected = filter.name === active;
-              return (
-                <button
-                  key={filter.name}
-                  type="button"
-                  aria-pressed={selected}
-                  onClick={() => handleFilterChange(filter.name)}
-                  className={`group relative shrink-0 whitespace-nowrap pb-2 text-[11px] uppercase tracking-[0.2em] transition-colors duration-300 ${
-                    selected ? "text-ink" : "text-mid hover:text-ink"
-                  }`}
-                >
-                  {filter.name}
-                  <sup className="ml-1 text-[9px] tracking-normal text-mid/70">{filter.count}</sup>
-                  <span
-                    aria-hidden="true"
-                    className={`absolute inset-x-0 -bottom-px h-px origin-left bg-ink transition-transform duration-300 ${
-                      selected ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100 group-hover:bg-stone-400"
-                    }`}
-                  />
-                </button>
-              );
-            })}
-          </div>
-        )}
+        <p className="col-span-12 leading-relaxed text-mid lg:col-span-4 lg:col-start-9">
+          Viviendas, oficinas y locales ejecutados con dirección técnica unificada. Entra en cada uno para ver su
+          ficha completa.
+        </p>
       </div>
 
-      <ul>
+      {types.length > 1 && (
+        // Filtros como fichas cuadradas: la activa en tinta.
+        <div
+          role="group"
+          aria-label="Filtrar por tipología"
+          className="no-scrollbar -mx-[var(--gutter)] mt-12 flex gap-2 overflow-x-auto px-[var(--gutter)] sm:mx-0 sm:flex-wrap sm:px-0"
+        >
+          {filters.map((filter) => {
+            const selected = filter.name === active;
+            return (
+              <button
+                key={filter.name}
+                type="button"
+                aria-pressed={selected}
+                onClick={() => handleFilterChange(filter.name)}
+                className={`flex shrink-0 items-center gap-2 whitespace-nowrap border px-4 py-2.5 text-[11px] uppercase tracking-[0.18em] transition-colors duration-300 ${
+                  selected
+                    ? "border-ink bg-ink text-paper"
+                    : "border-ink/20 text-ink hover:border-ink"
+                }`}
+              >
+                {filter.name}
+                <span className={`text-[10px] tracking-normal ${selected ? "text-paper/60" : "text-mid"}`}>
+                  {String(filter.count).padStart(2, "0")}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      <ul className="mt-10 grid grid-cols-1 gap-2 md:grid-cols-2">
         {visibleProjects.map((project, i) => {
-          const reversed = i % 2 === 1;
+          // Ritmo de tres: una obra a todo el ancho y dos en pareja.
+          const wide = i % 3 === 0;
+          const meta = [project.tipologia, project.ubicacion].filter(Boolean).join(" · ");
           return (
-            <li key={project.id} className="border-b border-ink/15 last:border-b-0">
+            <li key={project.id} className={`hh-rise ${wide ? "md:col-span-2" : ""}`} style={{ animationDuration: "1s" }}>
               <Link
                 href={`${ROUTES.projects}/${project.slug}`}
-                className="group grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 py-14 sm:py-20 items-center"
+                className={`group relative block aspect-[4/5] overflow-hidden bg-ink text-white ${
+                  wide ? "md:aspect-[16/8]" : "md:aspect-[57/60]"
+                }`}
               >
-                <div className={`lg:col-span-7 ${reversed ? "lg:order-2" : ""}`}>
-                  <div className="relative aspect-[4/3] overflow-hidden bg-piedra sm:aspect-[16/10]">
-                    <Image
-                      src={project.imagen}
-                      alt={project.title}
-                      fill
-                      sizes="(max-width: 1024px) 100vw, 58vw"
-                      className="object-cover transition-transform duration-[1.6s] ease-alko group-hover:scale-[1.04]"
+                <Image
+                  src={project.imagen}
+                  alt={project.title}
+                  fill
+                  sizes={wide ? "100vw" : "(max-width: 768px) 100vw, 50vw"}
+                  className="object-cover transition-transform duration-[1.6s] ease-alko group-hover:scale-[1.04]"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-black/10" />
+
+                <span className="absolute left-4 top-4 border border-white/50 px-2 py-1 text-[10px] uppercase tracking-[0.18em] md:left-6 md:top-6">
+                  {project.indice}
+                  {project.anio && ` · ${project.anio}`}
+                </span>
+                {project.exclusivo && (
+                  <span className="absolute right-4 top-4 bg-stone-950/55 p-1.5 backdrop-blur-sm md:right-6 md:top-6">
+                    <ExclusiveSeal
+                      size={wide ? 92 : 76}
+                      className="transition-transform duration-1000 ease-out group-hover:rotate-[20deg]"
                     />
-                    <span className="absolute left-4 top-4 border border-white/60 px-2 py-1 text-[10px] uppercase tracking-[0.18em] text-white">
-                      {project.anio}
-                    </span>
+                  </span>
+                )}
+
+                <div className="absolute inset-x-5 bottom-5 flex items-end justify-between gap-6 md:inset-x-8 md:bottom-8">
+                  <div className="max-w-2xl">
                     {project.exclusivo && (
-                      <span className="absolute right-4 top-4 bg-stone-950/55 p-1.5 backdrop-blur-sm sm:right-6 sm:top-6">
-                        <ExclusiveSeal size={92} className="transition-transform duration-1000 ease-out group-hover:rotate-[20deg]" />
+                      <span
+                        className="mb-3 flex items-center gap-3 text-[10px] uppercase tracking-[0.22em]"
+                        style={{ color: EXCLUSIVE_GOLD }}
+                      >
+                        <span aria-hidden="true" className="h-px w-8" style={{ backgroundColor: EXCLUSIVE_GOLD }} />
+                        ALKO Exclusiva
                       </span>
                     )}
+                    {meta && <p className="text-[10px] uppercase tracking-[0.22em] text-white/70">{meta}</p>}
+                    <h3 className={`display-title mt-3 ${wide ? "text-3xl md:text-5xl" : "text-3xl md:text-4xl"}`}>
+                      {project.title}
+                    </h3>
+                    {project.extracto && (
+                      <p
+                        className={`mt-4 max-w-xl text-sm leading-relaxed text-white/80 ${
+                          wide ? "line-clamp-2" : "line-clamp-2 md:hidden"
+                        }`}
+                      >
+                        {project.extracto}
+                      </p>
+                    )}
                   </div>
-                </div>
-
-                <div className={`lg:col-span-5 ${reversed ? "lg:order-1" : ""}`}>
-                  <span className="display-title select-none text-7xl text-bronze/70">{project.indice}</span>
-
-                  {project.exclusivo && (
-                    <span
-                      className="mt-4 flex items-center gap-3 text-[10px] uppercase tracking-[0.22em]"
-                      style={{ color: EXCLUSIVE_GOLD }}
-                    >
-                      <span aria-hidden="true" className="h-px w-8" style={{ backgroundColor: EXCLUSIVE_GOLD }} />
-                      ALKO Exclusiva
-                    </span>
-                  )}
-                  <h3 className="display-title mt-4 text-3xl transition-colors group-hover:text-bronze lg:text-4xl">
-                    {project.title}
-                  </h3>
-
-                  {project.extracto && (
-                    <p className="mt-5 line-clamp-4 leading-relaxed text-mid">
-                      {project.extracto}
-                    </p>
-                  )}
-
-                  <dl className="mt-8 divide-y divide-ink/10 border-y border-ink/10 text-sm">
-                    {[
-                      ["Tipología", project.tipologia],
-                      ["Ubicación", project.ubicacion],
-                      ["Año", project.anio],
-                    ]
-                      .filter(([, value]) => value)
-                      .map(([label, value]) => (
-                        <div key={label} className="flex justify-between gap-6 py-3">
-                          <dt className="text-mid">
-                            {label}
-                          </dt>
-                          <dd className="text-right">{value}</dd>
-                        </div>
-                      ))}
-                  </dl>
-
-                  <span className="arrow-link mt-8">
-                    Ver ficha del proyecto <span aria-hidden="true">↗</span>
+                  <span
+                    className="grid h-12 w-12 shrink-0 place-items-center rounded-full border border-white/70 text-lg transition-colors group-hover:bg-paper group-hover:text-ink"
+                    aria-hidden="true"
+                  >
+                    ↗
                   </span>
                 </div>
               </Link>
@@ -212,7 +207,7 @@ export default function ProjectsGallery({ projects }: { projects: ProjectSummary
       </ul>
 
       {/* Centinela de Scroll y Botón Mostrar Más */}
-      <div ref={sentinelRef} className="pt-12 pb-4 flex flex-col items-center justify-center">
+      <div ref={sentinelRef} className="pt-16 pb-4 flex flex-col items-center justify-center">
         {hasMore ? (
           <div className="flex flex-col items-center gap-4">
             <button
