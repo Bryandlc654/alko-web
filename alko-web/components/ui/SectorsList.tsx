@@ -3,65 +3,47 @@ import Link from "next/link";
 import { ROUTES } from "@/lib/site";
 import type { Sector } from "@/lib/types";
 
-/** Listado interactivo de sectores con estado dual (reposo / activo). */
+/**
+ * Servicios en tarjetas de imagen a sangre con etiqueta y titular · Propuesta 6
+ * (tarjetas de servicios de la V5). Dos columnas en escritorio.
+ */
 export default function SectorsList({ sectors }: { sectors: Sector[] }) {
   return (
-    <div>
+    <ul className="grid grid-cols-1 gap-2 md:grid-cols-2">
       {sectors.map((sector, i) => (
-        <div
-          key={sector.id}
-          className={`service-row ${i === 0 ? "is-active" : ""} border-b border-[#D8D2C8] cursor-pointer group`}
-          data-service={i}
-        >
-          {/* Vista inactiva */}
-          <div className="service-inactive py-8 sm:py-10 md:py-12 lg:py-14 flex items-center">
-            <span className="w-24 sm:w-32 md:w-40 lg:w-48 shrink-0 font-mono text-xs sm:text-sm text-stone-400 tracking-wider select-none">
-              {sector.numero} — SERVICIO
+        <li key={sector.id} className="reveal-item" style={{ transitionDelay: `${(i % 2) * 100}ms` }}>
+          <Link
+            href={`${ROUTES.sectors}/${sector.slug}`}
+            className="group relative block aspect-[4/4.3] overflow-hidden bg-ink text-white md:aspect-[57/50]"
+          >
+            <Image
+              src={sector.imagen}
+              alt={`ALKO ${sector.title}`}
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-cover transition-transform duration-700 ease-alko group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+            <span className="absolute left-4 top-4 border border-white/50 px-2 py-1 text-[10px] uppercase tracking-[0.18em]">
+              {sector.numero} · Servicio
             </span>
-            <h3 className="flex-1 text-4xl sm:text-6xl md:text-7xl lg:text-[84px] xl:text-[100px] font-serif font-light text-stone-900 leading-none tracking-tight">
-              {sector.title}
-            </h3>
-          </div>
-
-          {/* Vista activa */}
-          <div className="service-active py-8 sm:py-10 md:py-12 lg:py-14 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-            <div className="flex items-start gap-4 sm:gap-6 w-full lg:w-[48%] shrink-0">
-              <span className="w-24 sm:w-32 md:w-40 lg:w-48 shrink-0 font-mono text-xs sm:text-sm text-stone-900 tracking-wider select-none font-medium pt-1">
-                {sector.numero} — SERVICIO
+            <div className="absolute inset-x-5 bottom-5 flex items-end justify-between gap-6 md:inset-x-7 md:bottom-7">
+              <div>
+                <h3 className="display-title text-3xl md:text-4xl">{sector.title}</h3>
+                {sector.descripcion && (
+                  <p className="mt-3 line-clamp-2 max-w-md text-sm text-white/80">{sector.descripcion}</p>
+                )}
+              </div>
+              <span
+                className="grid h-12 w-12 shrink-0 place-items-center rounded-full border border-white/70 text-lg transition-colors group-hover:bg-paper group-hover:text-ink"
+                aria-hidden="true"
+              >
+                ↗
               </span>
-              <div className="flex-1 pr-2 sm:pr-4">
-                <h3 className="text-xl sm:text-2xl font-serif font-light text-stone-900 tracking-tight leading-snug">
-                  {sector.title}
-                </h3>
-                <p className="mt-2 text-base sm:text-lg text-stone-600 font-light leading-relaxed font-sans max-w-md">
-                  {sector.descripcion}
-                </p>
-                <div className="mt-3 sm:mt-4">
-                  <Link
-                    href={`${ROUTES.sectors}/${sector.slug}`}
-                    className="inline-flex items-center gap-1.5 text-[11px] font-mono tracking-widest uppercase text-stone-900 hover:text-amber-800 transition-colors border-b border-stone-900 pb-0.5 group/link"
-                  >
-                    <span>VER SERVICIO</span>
-                    <span className="transition-transform group-hover/link:translate-x-1">→</span>
-                  </Link>
-                </div>
-              </div>
             </div>
-
-            <div className="w-full lg:w-[52%]">
-              <div className="relative w-full h-[160px] sm:h-[190px] md:h-[220px] lg:h-[240px] overflow-hidden bg-stone-300 rounded-none shadow-sm">
-                <Image
-                  src={sector.imagen}
-                  alt={`ALKO ${sector.title}`}
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 52vw"
-                  className="object-cover object-center rounded-none filter brightness-100 contrast-[1.02]"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+          </Link>
+        </li>
       ))}
-    </div>
+    </ul>
   );
 }

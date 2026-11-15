@@ -1,11 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
-import SectionHead from "@/components/home/SectionHead";
 import { DIVISIONS } from "@/lib/divisions";
 import { ROUTES } from "@/lib/site";
 import type { Sector } from "@/lib/types";
 
-/** Cuatro divisiones en tarjetas editoriales 2×2. */
+/**
+ * Cuatro divisiones en paneles que se expanden al pasar el cursor (escritorio);
+ * en móvil y tableta, tarjetas en rejilla. Propuesta 6 · V4.
+ */
 export default function DivisionsGrid({ sectors }: { sectors: Sector[] }) {
   const slugs = new Set(sectors.map((sector) => sector.slug));
   const hrefFor = (candidates: string[]) => {
@@ -14,61 +16,63 @@ export default function DivisionsGrid({ sectors }: { sectors: Sector[] }) {
   };
 
   return (
-    <section id="divisiones" className="section-y bg-paper text-ink">
-      <div className="site-wrap">
-        <SectionHead
-          eyebrow="01 / Qué hacemos"
-          title={
-            <>
-              Cuatro ámbitos.
-              <br />
-              Un mismo criterio.
-            </>
-          }
-          text="Organizamos nuestra experiencia según las necesidades de cada cliente, manteniendo un enfoque integral de ejecución."
-        />
+    <section id="divisiones" className="bg-paper text-ink">
+      <div className="site-wrap grid grid-cols-12 items-end gap-6 pb-14 pt-24 lg:pt-36">
+        <div className="col-span-12 lg:col-span-7">
+          <p className="eyebrow reveal-item">01 / Qué hacemos</p>
+          <h2 className="reveal-item display-title mt-6 text-5xl leading-none sm:text-6xl xl:text-[5.5rem]">
+            Cuatro ámbitos.
+            <br />
+            Un mismo criterio.
+          </h2>
+        </div>
+        <p className="reveal-item col-span-12 leading-relaxed text-mid lg:col-span-4 lg:col-start-9">
+          Un mismo sistema de trabajo, adaptado a lo que necesita cada cliente: tranquilidad en casa,
+          continuidad en la empresa, experiencia en el local y rendimiento en la nave.
+        </p>
+      </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-[26px]">
-          {DIVISIONS.map((division, i) => (
-            <Link
-              key={division.id}
-              href={hrefFor(division.sectorSlugs)}
-              aria-label={`Explorar ${division.name}`}
-              className="reveal-item group relative block aspect-[4/3] min-h-[300px] overflow-hidden bg-piedra text-white"
-              style={{ transitionDelay: `${(i % 2) * 100}ms` }}
-            >
-              <Image
-                src={division.image}
-                alt=""
-                fill
-                sizes="(max-width: 640px) 100vw, 50vw"
-                className="object-cover saturate-[.82] transition-transform duration-[900ms] ease-alko group-hover:scale-[1.045]"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
-              <div className="absolute inset-x-0 bottom-0 z-10 p-[clamp(22px,3vw,44px)] pr-24">
-                <span className="text-[10px] uppercase tracking-[0.17em] text-white/80">
-                  {division.num} / División ALKO
-                </span>
-                <h3 className="display-title mt-3 text-[clamp(30px,3.3vw,48px)] font-normal tracking-[-0.055em]">
-                  {division.name}
-                </h3>
-                <p className="mt-2 max-w-[360px] text-[13px] leading-relaxed text-white/90">{division.desc}</p>
-              </div>
-              <span
-                aria-hidden="true"
-                className="absolute bottom-[clamp(22px,3vw,44px)] right-[clamp(22px,2.5vw,36px)] z-10 grid h-12 w-12 place-items-center rounded-full border border-white/80 text-xl transition-colors duration-200 group-hover:bg-paper group-hover:text-ink"
-              >
-                ↗
+      <div className="div-panels mx-auto grid max-w-site gap-3 px-[var(--gutter)] pb-6 sm:grid-cols-2 lg:flex lg:gap-0 lg:px-0">
+        {DIVISIONS.map((division, i) => (
+          <Link
+            key={division.id}
+            href={hrefFor(division.sectorSlugs)}
+            aria-label={`Explorar ${division.name}`}
+            className={`div-panel group relative aspect-[4/5] overflow-hidden bg-ink text-paper sm:aspect-[3/4] lg:aspect-auto ${
+              i < DIVISIONS.length - 1 ? "lg:border-r lg:border-paper/20" : ""
+            }`}
+          >
+            <Image
+              src={division.image}
+              alt=""
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 60vw"
+              className="object-cover transition-transform duration-[1.6s] group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/20 to-ink/10" />
+            <span className="absolute left-6 top-6 text-[10px] uppercase tracking-[0.22em] text-paper/70">
+              {division.num}
+            </span>
+            <span className="div-panel-name display-title absolute bottom-8 left-6 hidden text-3xl lg:block" aria-hidden="true">
+              {division.name}
+            </span>
+            <div className="div-panel-body absolute inset-x-6 bottom-6 lg:bottom-8">
+              <h3 className="display-title text-3xl lg:text-4xl">{division.name}</h3>
+              <p className="mt-3 max-w-xs text-sm text-paper/80">{division.desc}</p>
+              <span className="mt-6 inline-flex items-center gap-3 text-[10px] uppercase tracking-[0.22em]">
+                Explorar división <span aria-hidden="true">↗</span>
               </span>
-            </Link>
-          ))}
-        </div>
-
-        <div className="mt-7 flex justify-end">
-          <Link href={ROUTES.sectors} className="arrow-link">
-            Explorar divisiones <span aria-hidden="true">↗</span>
+            </div>
           </Link>
-        </div>
+        ))}
+      </div>
+
+      {/* Las imágenes de división son provisionales: no se presentan como obras ALKO (brief §3). */}
+      <div className="site-wrap flex flex-col-reverse gap-4 pb-24 text-[10px] uppercase tracking-[0.12em] text-mid sm:flex-row sm:justify-between lg:pb-36">
+        <span>Imágenes de referencia · No representan obras de ALKO</span>
+        <Link href={ROUTES.sectors} className="transition-colors hover:text-ink">
+          Explorar divisiones ↗
+        </Link>
       </div>
     </section>
   );

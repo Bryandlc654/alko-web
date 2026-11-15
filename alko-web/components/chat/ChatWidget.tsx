@@ -125,12 +125,12 @@ export default function ChatWidget() {
         <div
           role="dialog"
           aria-label="Asistente Virtual ALKO"
-          className="mb-4 w-[calc(100vw-2.5rem)] sm:w-[420px] h-[560px] max-h-[82vh] flex flex-col bg-white/95 backdrop-blur-2xl border border-stone-200/90 rounded-2xl shadow-2xl shadow-stone-900/15 overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200"
+          className="mb-4 w-[calc(100vw-2.5rem)] sm:w-[420px] h-[560px] max-h-[82vh] flex flex-col bg-white/95 backdrop-blur-2xl border border-stone-200/90 shadow-stone-900/15 overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200"
         >
           {/* Cabecera del chat */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-stone-200/80 bg-stone-50/80">
             <div className="flex items-center gap-3">
-              <div className="relative flex items-center justify-center w-9 h-9 rounded-full bg-paper border border-[#8B7560]/40 text-[#8B7560] shadow-sm">
+              <div className="relative flex items-center justify-center w-9 h-9 rounded-full bg-paper border border-[#8B7560]/40 text-[#8B7560]">
                 <Sparkles className="w-4 h-4 text-[#8B7560]" />
                 <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white" />
               </div>
@@ -147,7 +147,7 @@ export default function ChatWidget() {
                 type="button"
                 onClick={handleReset}
                 title="Reiniciar conversación"
-                className="p-1.5 text-stone-400 hover:text-stone-800 rounded-lg hover:bg-stone-200/60 transition-colors"
+                className="p-1.5 text-stone-400 hover:text-stone-800 hover:bg-stone-200/60 transition-colors"
                 aria-label="Reiniciar conversación"
               >
                 <RotateCcw className="w-4 h-4" />
@@ -156,7 +156,7 @@ export default function ChatWidget() {
                 type="button"
                 onClick={() => setIsOpen(false)}
                 title="Cerrar chat"
-                className="p-1.5 text-stone-400 hover:text-stone-800 rounded-lg hover:bg-stone-200/60 transition-colors"
+                className="p-1.5 text-stone-400 hover:text-stone-800 hover:bg-stone-200/60 transition-colors"
                 aria-label="Cerrar ventana de chat"
               >
                 <X className="w-4 h-4" />
@@ -180,10 +180,10 @@ export default function ChatWidget() {
                   )}
 
                   <div
-                    className={`max-w-[82%] px-4 py-2.5 rounded-2xl whitespace-pre-line leading-relaxed ${
+                    className={`max-w-[82%] px-4 py-2.5 whitespace-pre-line leading-relaxed ${
                       isAssistant
-                        ? "bg-paper border border-stone-200/90 text-stone-800 rounded-tl-none shadow-sm"
-                        : "bg-[#8B7560] text-white border border-[#75624F] rounded-tr-none shadow-sm"
+                        ? "bg-paper border border-stone-200/90 text-stone-800 "
+                        : "bg-[#8B7560] text-white border border-[#75624F] "
                     }`}
                   >
                     {m.content}
@@ -208,7 +208,7 @@ export default function ChatWidget() {
                 <div className="w-7 h-7 rounded-full bg-paper border border-stone-200/80 flex items-center justify-center text-[#8B7560] flex-shrink-0 shadow-xs">
                   <Loader2 className="w-3.5 h-3.5 animate-spin text-[#8B7560]" />
                 </div>
-                <div className="px-4 py-2.5 rounded-2xl rounded-tl-none bg-paper border border-stone-200/90 text-xs text-stone-600 flex items-center gap-1.5 shadow-sm">
+                <div className="px-4 py-2.5 bg-paper border border-stone-200/90 text-xs text-stone-600 flex items-center gap-1.5">
                   <span>Consultando asistente</span>
                   <span className="inline-flex gap-1">
                     <span className="w-1 h-1 bg-[#8B7560] rounded-full animate-bounce [animation-delay:-0.3s]" />
@@ -231,7 +231,7 @@ export default function ChatWidget() {
                       key={idx}
                       type="button"
                       onClick={() => handleSend(suggestion)}
-                      className="text-left text-xs px-3.5 py-2.5 rounded-xl bg-paper hover:bg-stone-50 border border-stone-200/90 hover:border-[#8B7560]/50 text-stone-700 hover:text-stone-950 transition-all duration-200 shadow-xs"
+                      className="text-left text-xs px-3.5 py-2.5 bg-paper hover:bg-stone-50 border border-stone-200/90 hover:border-[#8B7560]/50 text-stone-700 hover:text-stone-950 transition-all duration-200 shadow-xs"
                     >
                       {suggestion}
                     </button>
@@ -261,13 +261,13 @@ export default function ChatWidget() {
                 onKeyDown={handleKeyDown}
                 placeholder="Escribe tu consulta sobre tu obra o proyecto..."
                 disabled={isLoading}
-                className="flex-1 bg-paper border border-stone-200/90 focus:border-[#8B7560] focus:ring-1 focus:ring-[#8B7560]/30 rounded-xl px-3.5 py-2.5 text-sm text-stone-900 placeholder-stone-400 focus:outline-none transition-colors shadow-xs"
+                className="flex-1 bg-paper border border-stone-200/90 focus:border-[#8B7560] focus:ring-1 focus:ring-[#8B7560]/30 px-3.5 py-2.5 text-sm text-stone-900 placeholder-stone-400 focus:outline-none transition-colors shadow-xs"
               />
               <button
                 type="submit"
                 disabled={!input.trim() || isLoading}
                 aria-label="Enviar mensaje"
-                className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#8B7560] hover:bg-[#75624F] text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all active:scale-95 shadow-sm flex-shrink-0"
+                className="flex items-center justify-center w-10 h-10 bg-[#8B7560] hover:bg-[#75624F] text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all active:scale-95 flex-shrink-0"
               >
                 {isLoading ? (
                   <Loader2 className="w-4 h-4 animate-spin text-white" />
@@ -288,11 +288,11 @@ export default function ChatWidget() {
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
         aria-label={isOpen ? "Cerrar asistente" : "Abrir asistente de arquitectura"}
-        className="group relative flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-paper border border-stone-200/90 hover:border-[#8B7560]/60 text-[#8B7560] shadow-xl shadow-stone-900/10 hover:shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95"
+        className="group relative flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-paper border border-stone-200/90 hover:border-[#8B7560]/60 text-[#8B7560] shadow-stone-900/10 transition-all duration-300 hover:scale-105 active:scale-95"
       >
         {/* Anillo de pulso sutil */}
         {!isOpen && (
-          <span className="absolute inset-0 rounded-full bg-[#8B7560]/15 animate-ping opacity-60 pointer-events-none" />
+          <span className="absolute inset-0 bg-[#8B7560]/15 animate-ping opacity-60 pointer-events-none" />
         )}
 
         {isOpen ? (
@@ -306,7 +306,7 @@ export default function ChatWidget() {
 
         {/* Tooltip visible en desktop */}
         {!isOpen && (
-          <span className="hidden sm:inline-block absolute right-full mr-3 whitespace-nowrap rounded-full bg-paper border border-stone-200/90 px-3.5 py-1.5 text-xs text-stone-800 font-medium shadow-lg opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 pointer-events-none">
+          <span className="hidden sm:inline-block absolute right-full mr-3 whitespace-nowrap bg-paper border border-stone-200/90 px-3.5 py-1.5 text-xs text-stone-800 font-medium opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 pointer-events-none">
             Asistente ALKO
           </span>
         )}

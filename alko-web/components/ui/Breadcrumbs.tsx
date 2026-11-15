@@ -27,7 +27,7 @@ export default function Breadcrumbs({ items, className = "" }: { items: Crumb[];
 
   return (
     <nav aria-label="Migas de pan" className={className}>
-      <ol className="flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[11px] sm:text-xs tracking-[0.2em] uppercase text-white/70">
+      <ol className="text-[10px] tracking-[0.22em] flex flex-wrap items-center gap-x-2 gap-y-1 uppercase text-white/70">
         {trail.map((item, index) => {
           const last = index === trail.length - 1;
           return (

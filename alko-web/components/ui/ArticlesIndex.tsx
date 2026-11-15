@@ -39,10 +39,10 @@ export default function ArticlesIndex({ articles }: { articles: Article[] }) {
     <div className="reveal-item">
       <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between pb-8 border-b border-stone-300/60">
         <div>
-          <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase mb-2">
+          <span className="eyebrow block mb-2">
             ARCHIVO
           </span>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-light text-stone-900 tracking-tight leading-none">
+          <h2 className="display-title text-3xl sm:text-4xl md:text-5xl text-ink leading-none">
             Todos los artículos
           </h2>
         </div>
@@ -57,7 +57,7 @@ export default function ArticlesIndex({ articles }: { articles: Article[] }) {
                   type="button"
                   aria-pressed={selected}
                   onClick={() => setActive(filter.name)}
-                  className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-[11px] font-light uppercase tracking-[0.16em] transition-colors ${
+                  className={`inline-flex items-center gap-2 border px-4 py-2 text-[11px] font-light uppercase tracking-[0.16em] transition-colors ${
                     selected
                       ? "border-stone-900 bg-stone-900 text-white"
                       : "border-stone-300 text-stone-600 hover:border-stone-900 hover:text-stone-900"
@@ -81,7 +81,7 @@ export default function ArticlesIndex({ articles }: { articles: Article[] }) {
               href={`${ROUTES.articles}/${article.slug}`}
               className="group grid grid-cols-12 gap-x-4 gap-y-3 sm:gap-x-8 py-8 sm:py-10 items-center"
             >
-              <span className="col-span-12 sm:col-span-2 font-mono text-[11px] tracking-widest uppercase text-stone-400 group-hover:text-stone-900 transition-colors">
+              <span className="text-[10px] tracking-[0.22em] col-span-12 sm:col-span-2 uppercase text-stone-400 group-hover:text-stone-900 transition-colors">
                 {String(i + 1).padStart(2, "0")}
                 {article.date && (
                   <span className="sm:block sm:mt-2">
@@ -92,14 +92,14 @@ export default function ArticlesIndex({ articles }: { articles: Article[] }) {
               </span>
 
               <div className="col-span-12 sm:col-span-7 lg:col-span-6">
-                <span className="block font-mono text-[10px] sm:text-[11px] text-amber-800 uppercase tracking-widest mb-2">
+                <span className="eyebrow block mb-4">
                   {article.category}
                 </span>
-                <h3 className="font-serif font-light text-2xl sm:text-3xl lg:text-4xl text-stone-900 leading-tight tracking-tight group-hover:text-amber-800 transition-colors duration-300">
+                <h3 className="display-title text-2xl sm:text-3xl lg:text-4xl text-ink leading-tight group-hover:text-amber-800 transition-colors duration-300">
                   {article.title}
                 </h3>
                 {article.excerpt && (
-                  <p className="mt-3 max-w-xl text-sm sm:text-base text-stone-600 font-light leading-relaxed">
+                  <p className="mt-3 max-w-xl text-sm sm:text-base text-mid font-light leading-relaxed">
                     {article.excerpt}
                   </p>
                 )}

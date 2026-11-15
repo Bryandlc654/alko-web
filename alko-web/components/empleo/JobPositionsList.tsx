@@ -29,10 +29,10 @@ export default function JobPositionsList({ posiciones }: JobPositionsListProps) 
               className="w-full text-left group flex flex-col gap-4 py-7 transition-colors hover:bg-white/60 sm:flex-row sm:items-center sm:justify-between sm:gap-8 sm:px-4 cursor-pointer"
             >
               <div className="min-w-0">
-                <h3 className="font-serif font-light text-2xl leading-snug sm:text-3xl text-stone-900 group-hover:text-amber-900 transition-colors">
+                <h3 className="display-title text-2xl leading-snug sm:text-3xl text-ink group-hover:text-amber-900 transition-colors">
                   {p.titulo}
                 </h3>
-                <p className="mt-2 max-w-xl text-sm text-stone-600 leading-relaxed">{p.resumen}</p>
+                <p className="mt-2 max-w-xl text-sm text-mid leading-relaxed">{p.resumen}</p>
               </div>
 
               <div className="flex shrink-0 flex-wrap items-center gap-x-4 gap-y-2 text-[11px] uppercase tracking-[0.18em] text-stone-500">
@@ -41,7 +41,7 @@ export default function JobPositionsList({ posiciones }: JobPositionsListProps) 
                 <span className="font-mono">{p.ubicacion}</span>
                 <span className="hidden text-stone-300 sm:inline">•</span>
                 <span className="hidden font-mono sm:inline">{p.tipo}</span>
-                <span className="ml-1 inline-flex items-center gap-1.5 font-semibold text-stone-900 transition-colors group-hover:text-amber-800">
+                <span className="ml-1 inline-flex items-center gap-1.5 font-semibold text-ink transition-colors group-hover:text-amber-800">
                   <span>POSTULAR</span>
                   <ArrowRight
                     className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"

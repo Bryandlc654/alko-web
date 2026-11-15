@@ -16,7 +16,7 @@ export default function SectionHead({
     <div className="mb-[clamp(28px,3.5vw,48px)] flex flex-col gap-6 md:flex-row md:items-end md:justify-between md:gap-8">
       <div className="reveal-item">
         <p className={`eyebrow ${light ? "eyebrow-light" : ""}`}>{eyebrow}</p>
-        <h2 className="display-title mt-4 max-w-[850px] text-[clamp(40px,5.3vw,80px)] tracking-[-0.065em]">
+        <h2 className="display-title mt-4 max-w-[850px] text-[clamp(40px,5.3vw,80px)]">
           {title}
         </h2>
       </div>

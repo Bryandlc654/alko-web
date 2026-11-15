@@ -41,7 +41,7 @@ export default async function TrabajaConNosotrosPage() {
   };
 
   return (
-    <main className="bg-paper text-stone-900">
+    <main className="bg-paper text-ink">
       <PageHero
         eyebrow={pageContent.headerBadge || "TRABAJA CON NOSOTROS"}
         title={pageContent.headerTitulo || "Construimos con las personas"}
@@ -53,7 +53,7 @@ export default async function TrabajaConNosotrosPage() {
       />
 
       {/* Cultura */}
-      <section className="relative isolate w-full overflow-hidden bg-paper text-stone-900">
+      <section className="relative isolate w-full overflow-hidden bg-paper text-ink">
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 z-[1] mx-auto hidden max-w-[1780px] grid-cols-6 px-6 sm:px-12 lg:grid lg:px-20"
@@ -69,7 +69,7 @@ export default async function TrabajaConNosotrosPage() {
         <div className="relative z-10 mx-auto max-w-[1720px] px-6 py-16 sm:px-12 sm:py-24 lg:px-20">
           <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12 lg:gap-14">
             <div className="relative pt-1 lg:col-span-5 reveal-item">
-              <span className="font-mono text-xs tracking-widest text-stone-500 uppercase">
+              <span className="text-[10px] tracking-[0.22em] text-stone-500 uppercase">
                 {pageContent.culturaTag || "El equipo ALKO"}
               </span>
             </div>
@@ -78,15 +78,15 @@ export default async function TrabajaConNosotrosPage() {
               className="lg:col-span-7 lg:pl-10 xl:pl-16 reveal-item"
               style={{ transitionDelay: "120ms" }}
             >
-              <h2 className="font-serif font-light text-3xl leading-tight sm:text-4xl lg:text-5xl">
+              <h2 className="display-title text-3xl leading-tight sm:text-4xl lg:text-5xl">
                 {pageContent.culturaTitulo ||
                   "Un equipo pequeño, con criterio y sin intermediarios"}
               </h2>
-              <p className="mt-5 max-w-lg text-stone-600">
+              <p className="mt-5 max-w-lg text-mid">
                 {pageContent.culturaParrafo1 ||
                   "En ALKO cada persona tiene responsabilidad real sobre el proyecto. Trabajamos cerca de la obra, con decisiones rápidas y una única dirección técnica."}
               </p>
-              <p className="mt-4 max-w-lg text-stone-600">
+              <p className="mt-4 max-w-lg text-mid">
                 {pageContent.culturaParrafo2 ||
                   "Buscamos perfiles con oficio y ambición de crecer: gente que disfrute resolviendo problemas constructivos y cuidando el detalle hasta la entrega."}
               </p>
@@ -110,14 +110,14 @@ export default async function TrabajaConNosotrosPage() {
         <Container>
           <div className="flex flex-col justify-between gap-8 border-b border-stone-300/70 pb-10 lg:flex-row lg:items-end">
             <div className="reveal-item">
-              <span className="font-mono text-xs tracking-widest text-stone-500 uppercase">
+              <span className="text-[10px] tracking-[0.22em] text-stone-500 uppercase">
                 {pageContent.posicionesTag || "POSICIONES ABIERTAS"}
               </span>
-              <h2 className="mt-3 font-serif font-light text-3xl leading-tight sm:text-4xl lg:text-5xl">
+              <h2 className="display-title mt-3 text-3xl leading-tight sm:text-4xl lg:text-5xl">
                 {pageContent.posicionesTitulo || "Únete al equipo"}
               </h2>
             </div>
-            <p className="max-w-sm text-sm text-stone-600">
+            <p className="max-w-sm text-sm text-mid">
               {pageContent.posicionesSubtitulo ||
                 "Envíanos tu candidatura por correo. Valoramos perfiles técnicos con experiencia en obra."}
             </p>
@@ -129,7 +129,7 @@ export default async function TrabajaConNosotrosPage() {
       </section>
 
       {/* CTA final */}
-      <section className="relative w-full overflow-hidden bg-stone-950 group">
+      <section className="relative w-full overflow-hidden bg-ink group">
         <div className="relative h-[440px] w-full overflow-hidden sm:h-[500px] md:h-[560px]">
           <Image
             src={pageContent.ctaBgImage || "/cta-bg.jpg"}
@@ -141,7 +141,7 @@ export default async function TrabajaConNosotrosPage() {
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-stone-950/95 via-stone-950/50 to-transparent" />
           <div className="absolute inset-0 z-10 mx-auto flex max-w-7xl flex-col justify-between px-6 py-12 sm:px-12 sm:py-16 lg:px-16 lg:py-24">
             <div className="pt-8 sm:pt-14">
-              <h2 className="text-3xl font-light leading-[1.08] tracking-[-0.03em] text-white sm:text-5xl md:text-6xl lg:text-[68px]">
+              <h2 className="display-title text-3xl leading-[1.08] text-white sm:text-5xl md:text-6xl lg:text-[68px]">
                 {pageContent.ctaTitulo || "¿No encuentras tu puesto ideal?"}
               </h2>
             </div>

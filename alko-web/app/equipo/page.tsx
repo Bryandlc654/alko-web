@@ -54,7 +54,7 @@ export default async function EquipoPage() {
   };
 
   return (
-    <main className="bg-paper text-stone-900">
+    <main className="bg-paper text-ink">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -84,7 +84,7 @@ export default async function EquipoPage() {
       </section>
 
       <section className="flex w-full flex-col items-center bg-[#faf9f5] px-6 pb-28 pt-16 text-center md:pb-36 md:pt-24">
-        <h2 className="mx-auto max-w-4xl text-5xl font-normal leading-[1.05] tracking-tight sm:text-6xl md:text-7xl lg:text-[5.5rem]">
+        <h2 className="display-title mx-auto max-w-4xl text-5xl leading-[1.05] sm:text-6xl md:text-7xl lg:text-[5.5rem]">
           {pageContent.filosofiaTitulo || "Menos compartimentos. Más equipo."}
         </h2>
         <div aria-hidden="true" className="my-10 flex w-full justify-center md:my-12">
@@ -109,13 +109,12 @@ export default async function EquipoPage() {
         </div>
 
         <Container>
-          <div className="flex items-center gap-2 pb-6 text-sm text-[#403E3B] sm:pb-8 reveal-item">
-            <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#403E3B]" />
-            <span>{pageContent.gridTag || "Nuestro equipo"}</span>
+          <div className="reveal-item pb-6 sm:pb-8">
+            <span className="eyebrow">{pageContent.gridTag || "Nuestro equipo"}</span>
           </div>
 
           <div className="max-w-4xl pt-1 md:pt-4 reveal-item">
-            <h2 className="text-5xl font-normal leading-[1.05] tracking-tight sm:text-6xl md:text-7xl lg:text-[5.5rem]">
+            <h2 className="display-title text-5xl leading-[1.05] sm:text-6xl md:text-7xl lg:text-[5.5rem]">
               {pageContent.gridTitulo || "Nuestros profesionales"}
             </h2>
             <p className="mt-5 max-w-md text-sm leading-relaxed text-[#302F2C] sm:mt-6 sm:text-base">
@@ -141,7 +140,7 @@ export default async function EquipoPage() {
                   />
                 </div>
                 <div className="pt-4">
-                  <h3 className="text-xl font-normal tracking-tight">{m.nombre}</h3>
+                  <h3 className="display-title text-xl">{m.nombre}</h3>
                   <p className="mt-0.5 text-sm text-[#686663]">{m.rol}</p>
                 </div>
               </article>
@@ -151,7 +150,7 @@ export default async function EquipoPage() {
       </section>
 
       {/* CTA final */}
-      <section className="bg-stone-950 text-white">
+      <section className="bg-ink text-white">
         <div className="group relative w-full overflow-hidden">
           <div className="relative h-[440px] w-full overflow-hidden sm:h-[500px] md:h-[560px]">
             <Image
@@ -164,7 +163,7 @@ export default async function EquipoPage() {
             <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-stone-950/95 via-stone-950/50 to-transparent" />
             <div className="absolute inset-0 z-10 mx-auto flex max-w-7xl flex-col justify-between px-6 py-12 sm:px-12 sm:py-16 lg:px-16 lg:py-24">
               <div className="pt-8 sm:pt-14">
-                <h2 className="text-3xl font-light leading-tight tracking-tight text-white sm:text-5xl md:text-6xl lg:text-[68px]">
+                <h2 className="display-title text-3xl leading-tight text-white sm:text-5xl md:text-6xl lg:text-[68px]">
                   {pageContent.ctaTitulo || "¿Sumamos tu proyecto al equipo?"}
                 </h2>
               </div>
@@ -179,7 +178,7 @@ export default async function EquipoPage() {
                       href={`tel:${settings.telefono.replace(/\s+/g, "")}`}
                       className="inline-flex items-center gap-2 transition-colors hover:text-white"
                     >
-                      <span className="font-mono text-[10px] uppercase tracking-wider text-white/70">
+                      <span className="text-[10px] tracking-[0.22em] uppercase text-white/70">
                         TEL
                       </span>
                       <span className="tracking-wide">{settings.telefono}</span>
@@ -189,7 +188,7 @@ export default async function EquipoPage() {
                       href={`mailto:${settings.email}`}
                       className="inline-flex items-center gap-2 transition-colors hover:text-white"
                     >
-                      <span className="font-mono text-[10px] uppercase tracking-wider text-white/70">
+                      <span className="text-[10px] tracking-[0.22em] uppercase text-white/70">
                         ESCRÍBENOS
                       </span>
                       <span className="underline decoration-white/50 underline-offset-4 hover:decoration-white">
@@ -198,7 +197,7 @@ export default async function EquipoPage() {
                     </a>
                     <span className="hidden text-white/40 sm:inline">•</span>
                     <div className="inline-flex items-center gap-2">
-                      <span className="font-mono text-[10px] uppercase tracking-wider text-white/70">
+                      <span className="text-[10px] tracking-[0.22em] uppercase text-white/70">
                         VISÍTANOS
                       </span>
                       <span>{settings.direccion}</span>
@@ -206,7 +205,7 @@ export default async function EquipoPage() {
                   </div>
                 </div>
                 <div className="shrink-0">
-                  <ContactTrigger mode="rapido" source="Equipo" className="inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-amber-700 px-8 py-3.5 text-[11px] font-semibold uppercase tracking-wider text-white shadow-xl transition-all duration-300 hover:scale-105 hover:bg-amber-800 active:scale-95 sm:py-4 sm:text-xs">
+                  <ContactTrigger mode="rapido" source="Equipo" className="btn btn-paper">
                     <span>SOLICITAR CONSULTORÍA</span>
                     <span>→</span>
                   </ContactTrigger>

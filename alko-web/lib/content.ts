@@ -256,12 +256,9 @@ export const DEFAULT_FASES: Fase[] = [
 ];
 
 export const DEFAULT_FABRICANTES: Fabricante[] = [
-  { id: "fab-1", name: "Porcelanosa", logo: "/logos/porcelanosa.svg", url: "https://www.porcelanosa.com" },
-  { id: "fab-2", name: "Cortizo", logo: "/logos/cortizo.svg", url: "https://www.cortizo.com" },
-  { id: "fab-3", name: "Daikin", logo: "/logos/daikin.svg", url: "https://www.daikin.es" },
-  { id: "fab-4", name: "Cosentino", logo: "/logos/cosentino.svg", url: "https://www.cosentino.com" },
-  { id: "fab-5", name: "Jung", logo: "/logos/jung.svg", url: "https://www.jung.de" },
-  { id: "fab-6", name: "Grohe", logo: "/logos/grohe.svg", url: "https://www.grohe.es" },
+  { id: "fab-1", name: "Porcelanosa", logo: "/logo-porcelanosa.png", url: "https://www.porcelanosa.com" },
+  { id: "fab-2", name: "Cortizo", logo: "/logo-cortizo.png", url: "https://www.cortizo.com" },
+  { id: "fab-3", name: "Kömmerling", logo: "/logo-koemmerling.png", url: "https://www.koemmerling.com" },
 ];
 
 export const DEFAULT_ARTICLES: Article[] = [

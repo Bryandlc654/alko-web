@@ -183,7 +183,7 @@ function MegaMenu({ item, pathname }: { item: NavItem; pathname: string }) {
   return (
     <div className="invisible absolute inset-x-0 top-full z-50 -translate-y-2 opacity-0 transition-all duration-300 ease-alko group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100">
       <div className="site-wrap pt-3">
-        <div className="ml-auto grid max-w-[900px] grid-cols-12 border border-line bg-surface text-ink shadow-[0_24px_60px_rgba(0,0,0,0.10)]">
+        <div className="ml-auto grid max-w-[900px] grid-cols-12 border border-line bg-surface text-ink">
           {intro && (
             <div className="col-span-4 flex flex-col justify-between border-r border-line p-8">
               <div>

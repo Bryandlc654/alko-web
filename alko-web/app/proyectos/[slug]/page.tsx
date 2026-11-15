@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import Container from "@/components/ui/Container";
+import PageHero from "@/components/ui/PageHero";
 import ContactCta from "@/components/sections/ContactCta";
 import { ROUTES } from "@/lib/site";
 import { getProjectBySlug, getProjects, getSectorBySlug, getSettings } from "@/lib/wordpress";
@@ -87,7 +87,7 @@ export default async function ProjectDetail({
       value: servicio ? (
         <Link
           href={`${ROUTES.sectors}/${servicio.slug}`}
-          className="text-stone-900 underline decoration-amber-700/60 underline-offset-4 hover:text-amber-700 transition-colors"
+          className="text-ink underline decoration-amber-700/60 underline-offset-4 hover:text-amber-700 transition-colors"
         >
           {servicio.title}
         </Link>
@@ -101,52 +101,31 @@ export default async function ProjectDetail({
   ].filter((item) => Boolean(item.value));
 
   return (
-    <main className="bg-paper text-stone-900">
-      {/* 1. Header Hero Principal */}
-      <header className="relative isolate flex min-h-[640px] sm:min-h-[720px] lg:min-h-[92vh] items-end overflow-hidden bg-stone-950 text-white pt-36 sm:pt-44 pb-10 sm:pb-14">
-        <Image
-          src={project.imagen}
-          alt={project.title}
-          fill
-          priority
-          sizes="100vw"
-          className="-z-10 object-cover object-center"
-        />
-        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-stone-950/80 via-stone-950/35 to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 -z-10 h-3/4 bg-gradient-to-t from-stone-950/95 via-stone-950/45 to-transparent" />
-        <div className="absolute inset-x-0 top-0 -z-10 h-40 bg-gradient-to-b from-stone-950/70 to-transparent" />
-
-        <Container className="relative">
-          <Breadcrumbs items={[{ label: "Proyectos", href: ROUTES.projects }, { label: project.title }]} />
-
-          <div className="mt-8 flex items-end gap-6">
-            <span className="hidden sm:block font-serif font-light text-8xl lg:text-9xl text-white/20 leading-[0.8] select-none">
-              {project.indice}
-            </span>
-            <h1 className="max-w-5xl font-display font-light text-4xl sm:text-5xl md:text-6xl lg:text-7xl tracking-[-0.02em] leading-[1.02] drop-shadow-[0_2px_20px_rgba(0,0,0,0.35)]">
-              {project.title}
-            </h1>
-          </div>
-
-          {ficha.length > 0 && (
-            <dl className={`mt-12 sm:mt-16 grid grid-cols-1 ${FICHA_COLS[ficha.length]} border-t border-white/20`}>
-              {ficha.map(([label, value]) => (
-                <div
-                  key={label}
-                  className="flex items-baseline justify-between gap-4 sm:block border-b border-white/20 py-4 sm:py-6 sm:pr-6"
-                >
-                  <dt className="font-mono text-[10px] sm:text-[11px] tracking-[0.25em] uppercase text-white/60">
-                    {label}
-                  </dt>
-                  <dd className="sm:mt-2 text-right sm:text-left font-serif font-light text-lg sm:text-xl lg:text-2xl text-white">
-                    {value}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          )}
-        </Container>
-      </header>
+    <main className="bg-paper text-ink">
+      {/* 1. Cabecera (hero de la propuesta 6) con la ficha técnica */}
+      <PageHero
+        breadcrumbs={[{ label: "Proyectos", href: ROUTES.projects }, { label: project.title }]}
+        eyebrow={project.indice ? `Proyecto ${project.indice}` : "Proyecto"}
+        title={project.title}
+        image={project.imagen}
+        imageAlt={project.title}
+      >
+        {ficha.length > 0 && (
+          <dl className={`mt-12 grid grid-cols-1 border-t border-paper/20 ${FICHA_COLS[ficha.length]}`}>
+            {ficha.map(([label, value], i) => (
+              <div
+                key={label}
+                className={`flex items-baseline justify-between gap-4 border-b border-paper/20 py-4 sm:block sm:border-b-0 sm:py-5 sm:pr-4 ${
+                  i > 0 ? "sm:border-l sm:pl-4" : ""
+                }`}
+              >
+                <dt className="text-[10px] uppercase tracking-[0.22em] text-paper/60">{label}</dt>
+                <dd className="display-title text-right text-lg sm:mt-2 sm:text-left sm:text-2xl">{value}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
+      </PageHero>
 
       {/* 2. Bloque Memoria del Proyecto Simplificado */}
       <section className="relative isolate overflow-clip">
@@ -168,10 +147,7 @@ export default async function ProjectDetail({
             <div className="lg:col-span-4 reveal-item">
               <div className="lg:sticky lg:top-32">
                 <div className="flex items-center gap-4">
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-amber-700">
-                    <span className="h-1.5 w-1.5 rounded-full bg-amber-700" />
-                  </span>
-                  <span className="font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase">
+                  <span className="eyebrow">
                     Memoria del proyecto
                   </span>
                 </div>
@@ -180,10 +156,10 @@ export default async function ProjectDetail({
                   <dl className="mt-8 border-t border-stone-900/15">
                     {infoResumida.map((item) => (
                       <div key={item.label} className="border-b border-stone-900/15 py-4">
-                        <dt className="font-mono text-[10px] tracking-[0.25em] uppercase text-stone-500">
+                        <dt className="eyebrow">
                           {item.label}
                         </dt>
-                        <dd className="mt-1 font-serif text-base sm:text-lg text-stone-900">
+                        <dd className="display-title mt-1 text-base sm:text-lg text-ink">
                           {item.value}
                         </dd>
                       </div>
@@ -198,14 +174,14 @@ export default async function ProjectDetail({
               {/* Bloque 1: Comparativa Antes y Después */}
               <div>
                 <div className="mb-6 flex items-center gap-4">
-                  <span className="font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase">
+                  <span className="eyebrow">
                     Registro fotográfico · Antes y Después
                   </span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
                   {/* Foto ANTES */}
-                  <div className="group relative overflow-hidden bg-stone-100 border border-stone-200/80 rounded-sm">
+                  <div className="group relative overflow-hidden bg-stone-100 border border-stone-200/80">
                     <div className="relative aspect-[4/3] w-full overflow-hidden">
                       <Image
                         src={fotoAntes}
@@ -216,17 +192,17 @@ export default async function ProjectDetail({
                       />
                     </div>
                     <div className="p-4 bg-stone-900 text-white flex items-center justify-between">
-                      <span className="font-mono text-[11px] tracking-[0.25em] uppercase text-stone-400">
+                      <span className="text-[10px] tracking-[0.22em] uppercase text-stone-400">
                         Estado Inicial
                       </span>
-                      <span className="font-serif text-sm font-light uppercase tracking-wider text-amber-500">
+                      <span className="display-title text-sm uppercase tracking-wider text-amber-500">
                         Antes
                       </span>
                     </div>
                   </div>
 
                   {/* Foto DESPUÉS */}
-                  <div className="group relative overflow-hidden bg-stone-100 border border-stone-200/80 rounded-sm shadow-md">
+                  <div className="group relative overflow-hidden bg-stone-100 border border-stone-200/80">
                     <div className="relative aspect-[4/3] w-full overflow-hidden">
                       <Image
                         src={fotoDespues}
@@ -237,10 +213,10 @@ export default async function ProjectDetail({
                       />
                     </div>
                     <div className="p-4 bg-amber-700 text-white flex items-center justify-between">
-                      <span className="font-mono text-[11px] tracking-[0.25em] uppercase text-amber-200">
+                      <span className="text-[10px] tracking-[0.22em] uppercase text-amber-200">
                         Obra Entregada
                       </span>
-                      <span className="font-serif text-sm font-light uppercase tracking-wider text-white">
+                      <span className="display-title text-sm uppercase tracking-wider text-white">
                         Después
                       </span>
                     </div>
@@ -252,7 +228,7 @@ export default async function ProjectDetail({
               {galeriaImagenes.length > 0 && (
                 <div className="pt-10 border-t border-stone-200">
                   <div className="mb-6 flex items-center justify-between">
-                    <span className="font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase">
+                    <span className="eyebrow">
                       Galería del proyecto · {galeriaImagenes.length} imágenes
                     </span>
                   </div>
@@ -263,7 +239,7 @@ export default async function ProjectDetail({
                       return (
                         <figure
                           key={`${src}-${i}`}
-                          className={`relative overflow-hidden bg-stone-200 border border-stone-200/80 rounded-sm group ${
+                          className={`relative overflow-hidden bg-stone-200 border border-stone-200/80 group ${
                             wide ? "sm:col-span-2 aspect-[16/9]" : "aspect-[4/3]"
                           }`}
                         >
@@ -306,10 +282,10 @@ export default async function ProjectDetail({
                 />
                 <div className="absolute inset-0 -z-10 bg-gradient-to-t from-stone-950/90 via-stone-950/30 to-transparent" />
                 <div>
-                  <span className="font-mono text-[11px] tracking-[0.25em] uppercase text-white/60">
+                  <span className="text-[10px] tracking-[0.22em] uppercase text-white/60">
                     {arrow === "←" ? `${arrow} ${label}` : `${label} ${arrow}`}
                   </span>
-                  <span className="mt-3 block font-serif font-light text-2xl sm:text-3xl lg:text-4xl leading-tight tracking-tight">
+                  <span className="display-title mt-3 block text-2xl sm:text-3xl lg:text-4xl leading-tight">
                     {other.title}
                   </span>
                   <span className="mt-2 block text-sm text-white/60 font-light">
@@ -323,7 +299,7 @@ export default async function ProjectDetail({
       )}
 
       {/* 4. Contacto CTA Final */}
-      <ContactCta settings={settings} />
+      <ContactCta settings={settings} source={`Proyecto · ${project.title}`} />
     </main>
   );
 }

@@ -95,17 +95,17 @@ export default function JobApplicationModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
       <div
-        className="relative w-full max-w-xl bg-paper rounded-3xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col max-h-[90vh]"
+        className="relative w-full max-w-xl bg-paper border border-stone-200 overflow-hidden flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Cabecera */}
         <div className="px-6 sm:px-8 py-5 border-b border-stone-100 flex items-center justify-between bg-stone-50/70">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-100/70 text-amber-900 flex items-center justify-center font-bold">
+            <div className="w-10 h-10 bg-amber-100/70 text-amber-900 flex items-center justify-center font-bold">
               <Briefcase className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base sm:text-lg font-serif font-medium text-stone-900">
+              <h2 className="display-title text-base sm:text-lg font-medium text-stone-900">
                 Postular a ALKO
               </h2>
               <p className="text-xs text-stone-500 font-sans">
@@ -116,7 +116,7 @@ export default function JobApplicationModal({
 
           <button
             onClick={onClose}
-            className="p-2 rounded-full text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition"
+            className="p-2 text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition"
           >
             <X className="w-5 h-5" />
           </button>
@@ -129,7 +129,7 @@ export default function JobApplicationModal({
               <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 mx-auto flex items-center justify-center">
                 <CheckCircle2 className="w-8 h-8" />
               </div>
-              <h3 className="text-xl font-serif font-medium text-stone-900">
+              <h3 className="display-title text-xl font-medium text-stone-900">
                 ¡Candidatura recibida con éxito!
               </h3>
               <p className="text-sm text-stone-600 max-w-md mx-auto leading-relaxed">
@@ -140,7 +140,7 @@ export default function JobApplicationModal({
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
-                <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
+                <div className="p-3.5 bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 shrink-0" />
                   <span>{error}</span>
                 </div>
@@ -154,7 +154,7 @@ export default function JobApplicationModal({
                 <select
                   value={puesto}
                   onChange={(e) => setPuesto(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 text-xs font-medium text-stone-800 bg-paper focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700"
+                  className="w-full px-3.5 py-2.5 border border-stone-200 text-xs font-medium text-stone-800 bg-paper focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700"
                 >
                   <option value="Candidatura espontánea">Candidatura espontánea (General)</option>
                   {vacantes.map((v) => (
@@ -177,7 +177,7 @@ export default function JobApplicationModal({
                   value={nombre}
                   onChange={(e) => setNombre(e.target.value)}
                   placeholder="Ej: Marcos Gómez"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 text-xs font-medium text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700"
+                  className="w-full px-3.5 py-2.5 border border-stone-200 text-xs font-medium text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700"
                 />
               </div>
 
@@ -194,7 +194,7 @@ export default function JobApplicationModal({
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="marcos@ejemplo.com"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 text-xs font-medium text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700"
+                    className="w-full px-3.5 py-2.5 border border-stone-200 text-xs font-medium text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700"
                   />
                 </div>
 
@@ -209,7 +209,7 @@ export default function JobApplicationModal({
                     value={telefono}
                     onChange={(e) => setTelefono(e.target.value)}
                     placeholder="+34 600 000 000"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 text-xs font-medium text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700"
+                    className="w-full px-3.5 py-2.5 border border-stone-200 text-xs font-medium text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700"
                   />
                 </div>
               </div>
@@ -221,7 +221,7 @@ export default function JobApplicationModal({
                 </label>
                 <div
                   onClick={() => fileInputRef.current?.click()}
-                  className="border-2 border-dashed border-stone-300 hover:border-amber-700 rounded-2xl p-4 text-center cursor-pointer transition bg-stone-50/50 hover:bg-stone-50 group"
+                  className="border-2 border-dashed border-stone-300 hover:border-amber-700 p-4 text-center cursor-pointer transition bg-stone-50/50 hover:bg-stone-50 group"
                 >
                   <input
                     ref={fileInputRef}
@@ -262,7 +262,7 @@ export default function JobApplicationModal({
                   value={mensaje}
                   onChange={(e) => setMensaje(e.target.value)}
                   placeholder="Cuéntanos brevemente sobre tu experiencia en obra o proyectos..."
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 text-xs font-medium text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 resize-none"
+                  className="w-full px-3.5 py-2.5 border border-stone-200 text-xs font-medium text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 resize-none"
                 />
               </div>
 
@@ -270,7 +270,7 @@ export default function JobApplicationModal({
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3.5 px-6 rounded-full bg-amber-700 hover:bg-amber-800 text-white font-semibold text-xs uppercase tracking-wider shadow-lg transition duration-200 disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="btn btn-ink w-full disabled:opacity-50"
                 >
                   <span>{loading ? "Enviando postulación..." : "Enviar Candidatura"}</span>
                   <span>→</span>

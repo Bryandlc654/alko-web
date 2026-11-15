@@ -87,7 +87,7 @@ export default function QuickContactForm({
     setStatus("error");
   }
 
-  const label = "block font-mono text-[10px] sm:text-[11px] tracking-[0.2em] uppercase text-white/50 mb-1";
+  const label = "block text-[10px] tracking-[0.22em] uppercase text-white/50 mb-1";
   const input =
     "w-full border-0 border-b border-white/25 bg-transparent px-0 py-3 text-lg text-white font-light placeholder:text-white/30 focus:border-amber-700 focus:outline-none focus:ring-0 transition-colors aria-[invalid=true]:border-amber-500";
   const error = "mt-2 text-sm text-amber-500";
@@ -97,7 +97,7 @@ export default function QuickContactForm({
     return (
       <div ref={confirmRef} tabIndex={-1} role="status" aria-live="polite" className="py-2 outline-none">
         <CheckCircle2 className="h-12 w-12 text-amber-500" strokeWidth={1.25} aria-hidden="true" />
-        <h3 className="mt-6 font-serif font-light text-3xl leading-tight tracking-tight">Hemos recibido tus datos</h3>
+        <h3 className="display-title mt-6 text-3xl leading-tight">Hemos recibido tus datos</h3>
         <p className="mt-4 text-lg font-light leading-relaxed text-white/70">
           Gracias, {sent.nombre}. Una persona del equipo se pondrá en contacto contigo en{" "}
           <span className="text-white">{sent.via}</span>.
@@ -232,7 +232,7 @@ export default function QuickContactForm({
         <button
           type="submit"
           disabled={sending}
-          className="group/btn inline-flex w-full shrink-0 items-center justify-center gap-3 rounded-full bg-amber-700 px-9 py-4 text-xs font-semibold uppercase tracking-wider text-white shadow-xl transition-all duration-300 hover:bg-paper hover:text-stone-900 active:scale-95 disabled:cursor-wait disabled:opacity-70 sm:w-auto"
+          className="group/btn btn btn-paper w-full shrink-0 disabled:cursor-wait disabled:opacity-70 sm:w-auto"
         >
           {sending ? (
             <>

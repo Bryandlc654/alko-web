@@ -65,7 +65,7 @@ html {
     font-family: var(--font-manrope), sans-serif;
     font-weight: 300;
     line-height: 1.06;
-    letter-spacing: -0.055em;
+    letter-spacing: -0.035em;
   }
 
   /* Botones rectos del sistema */
@@ -457,4 +457,111 @@ html {
   .route-loader__bar {
     width: 100%;
   }
+}
+
+/* ------------------------------------------------------------------ */
+/* Portada · Propuesta 6                                               */
+/* ------------------------------------------------------------------ */
+
+/* Rejilla de plano: líneas finas de columna, como un dibujo técnico */
+.plan-lines {
+  background-image: linear-gradient(to right, rgba(32, 33, 31, 0.06) 1px, transparent 1px);
+  background-size: calc((min(100%, var(--site-max)) - 2 * var(--gutter)) / 12) 100%;
+  background-position: calc(max(0px, (100% - var(--site-max)) / 2) + var(--gutter)) 0;
+}
+
+/* Cota: línea con remates, a modo de acotación arquitectónica */
+.cota {
+  position: relative;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.5;
+}
+.cota::before,
+.cota::after {
+  content: "";
+  position: absolute;
+  top: -4px;
+  width: 1px;
+  height: 9px;
+  background: currentColor;
+}
+.cota::before { left: 0; }
+.cota::after { right: 0; }
+
+/* Hero: fundido entre imágenes con zoom lento y barras de progreso */
+.hh-slide {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  transition: opacity 1.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.hh-slide img {
+  transform: scale(1.08);
+  transition: transform 8s linear;
+}
+.hh-slide.is-active {
+  opacity: 1;
+  z-index: 1;
+}
+.hh-slide.is-active img {
+  transform: scale(1);
+}
+.hh-bar {
+  display: block;
+  padding: 10px 0;
+  cursor: pointer;
+}
+.hh-bar i {
+  display: block;
+  position: relative;
+  height: 2px;
+  overflow: hidden;
+  background: rgba(245, 243, 238, 0.25);
+}
+.hh-bar:hover i { background: rgba(245, 243, 238, 0.45); }
+.hh-bar:focus-visible { outline: 1px solid var(--paper); outline-offset: 2px; }
+.hh-bar span {
+  position: absolute;
+  inset: 0;
+  background: var(--paper);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+.hh-bar.done span { transform: scaleX(1); }
+.hh-bar.run span { animation: hh-fill var(--dur, 6.5s) linear forwards; }
+@keyframes hh-fill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@keyframes hh-rise {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: none; }
+}
+.hh-rise { animation: hh-rise 1.4s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+@keyframes hh-zoom {
+  from { transform: scale(1.08); }
+  to { transform: scale(1); }
+}
+.hh-zoom { animation: hh-zoom 8s linear both; }
+
+/* Divisiones: paneles que se expanden al pasar el cursor (escritorio) */
+@media (min-width: 1024px) {
+  .div-panels { height: 76vh; min-height: 560px; max-height: 820px; }
+  .div-panel { flex: 1; transition: flex 1s cubic-bezier(0.7, 0, 0.2, 1); }
+  .div-panels:hover .div-panel { flex: 0.8; }
+  .div-panels .div-panel:hover,
+  .div-panels .div-panel:focus-visible { flex: 2.4; }
+  .div-panel .div-panel-body { opacity: 0; transform: translateY(12px); transition: opacity 0.6s 0.15s, transform 0.6s 0.15s; }
+  .div-panel:hover .div-panel-body,
+  .div-panel:focus-visible .div-panel-body { opacity: 1; transform: none; }
+  .div-panel .div-panel-name { writing-mode: vertical-rl; transform: rotate(180deg); transition: opacity 0.4s; }
+  .div-panel:hover .div-panel-name,
+  .div-panel:focus-visible .div-panel-name { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hh-slide, .hh-slide img, .div-panel, .div-panel-body { transition: none !important; }
+  .hh-rise, .hh-zoom { animation: none; }
 }

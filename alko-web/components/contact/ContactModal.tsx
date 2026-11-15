@@ -125,18 +125,18 @@ export default function ContactModal({
           role="dialog"
           aria-modal="true"
           aria-labelledby={titleId}
-          className={`pointer-events-auto flex max-h-[96dvh] w-full flex-col overflow-hidden rounded-t-2xl bg-stone-950 text-white shadow-2xl transition-all duration-300 motion-reduce:transition-none sm:max-h-[90dvh] sm:rounded-sm ${
+          className={`pointer-events-auto flex max-h-[96dvh] w-full flex-col overflow-hidden bg-stone-950 text-white transition-all duration-300 motion-reduce:transition-none sm:max-h-[90dvh] ${
             rapido ? "sm:max-w-lg" : "sm:max-w-3xl"
           } ${entered ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"}`}
         >
           <div className="flex items-start justify-between gap-6 border-b border-white/10 px-6 pb-5 pt-6 sm:px-10 sm:pt-8">
             <div>
-              <span className="block font-mono text-[11px] tracking-[0.25em] text-white/50 uppercase">
+              <span className="text-[10px] tracking-[0.22em] block text-white/50 uppercase">
                 {rapido ? "Contacto" : "Solicitud de presupuesto"}
               </span>
               <h2
                 id={titleId}
-                className="mt-3 font-serif font-light text-3xl leading-tight tracking-tight sm:text-4xl"
+                className="display-title mt-3 text-3xl leading-tight sm:text-4xl"
               >
                 {rapido ? "Déjanos tus datos" : "Cuéntanos tu proyecto"}
               </h2>

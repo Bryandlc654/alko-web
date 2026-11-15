@@ -24,7 +24,7 @@ export default function JobApplyCtaButton({
         onClick={() => setModalOpen(true)}
         className={
           className ||
-          "inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-amber-700 px-8 py-3.5 text-[11px] font-semibold uppercase tracking-wider text-white shadow-xl transition-all duration-300 hover:scale-105 hover:bg-amber-800 active:scale-95 sm:py-4 sm:text-xs cursor-pointer"
+          "btn btn-paper"
         }
       >
         <span>{label}</span>

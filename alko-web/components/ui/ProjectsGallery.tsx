@@ -86,13 +86,13 @@ export default function ProjectsGallery({ projects }: { projects: ProjectSummary
 
   return (
     <div>
-      <div className="reveal-item flex flex-col gap-6 md:flex-row md:items-end md:justify-between pb-8 border-b border-stone-300">
+      <div className="reveal-item flex flex-col gap-10 border-b border-ink/15 pb-10">
         <div>
-          <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase mb-2">
-            PORTFOLIO
-          </span>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-light text-stone-900 tracking-tight leading-none">
-            Obras seleccionadas
+          <p className="eyebrow">Portfolio</p>
+          <h2 className="display-title mt-6 text-5xl leading-none sm:text-6xl xl:text-[5.5rem]">
+            Obra a obra.
+            <br />
+            Detalle a detalle.
           </h2>
         </div>
 
@@ -106,14 +106,14 @@ export default function ProjectsGallery({ projects }: { projects: ProjectSummary
                   type="button"
                   aria-pressed={selected}
                   onClick={() => handleFilterChange(filter.name)}
-                  className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-[11px] font-light uppercase tracking-[0.16em] transition-colors ${
+                  className={`inline-flex items-center gap-2 border px-4 py-2.5 text-[12px] transition-colors ${
                     selected
-                      ? "border-stone-900 bg-stone-900 text-white"
-                      : "border-stone-300 text-stone-600 hover:border-stone-900 hover:text-stone-900"
+                      ? "border-ink bg-ink text-paper"
+                      : "border-piedra text-mid hover:border-ink hover:text-ink"
                   }`}
                 >
                   {filter.name}
-                  <span className={`font-mono ${selected ? "text-white/50" : "text-stone-400"}`}>
+                  <span className={selected ? "text-paper/50" : "text-mid/60"}>
                     {filter.count}
                   </span>
                 </button>
@@ -127,47 +127,40 @@ export default function ProjectsGallery({ projects }: { projects: ProjectSummary
         {visibleProjects.map((project, i) => {
           const reversed = i % 2 === 1;
           return (
-            <li key={project.id} className="border-b border-stone-300 last:border-b-0 animate-in fade-in duration-500">
+            <li key={project.id} className="border-b border-ink/15 last:border-b-0">
               <Link
                 href={`${ROUTES.projects}/${project.slug}`}
                 className="group grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 py-14 sm:py-20 items-center"
               >
                 <div className={`lg:col-span-7 ${reversed ? "lg:order-2" : ""}`}>
-                  <div className="relative overflow-hidden aspect-[4/3] sm:aspect-[16/11] bg-stone-200">
+                  <div className="relative aspect-[4/3] overflow-hidden bg-piedra sm:aspect-[16/10]">
                     <Image
                       src={project.imagen}
                       alt={project.title}
                       fill
                       sizes="(max-width: 1024px) 100vw, 58vw"
-                      className="object-cover object-center transition-transform duration-1000 ease-out group-hover:scale-105"
+                      className="object-cover transition-transform duration-[1.6s] ease-alko group-hover:scale-[1.04]"
                     />
-                    <span className="absolute left-0 top-0 bg-stone-950 px-4 py-2 font-mono text-[11px] tracking-[0.2em] uppercase text-white">
+                    <span className="absolute left-4 top-4 border border-white/60 px-2 py-1 text-[10px] uppercase tracking-[0.18em] text-white">
                       {project.anio}
                     </span>
                   </div>
                 </div>
 
                 <div className={`lg:col-span-5 ${reversed ? "lg:order-1" : ""}`}>
-                  <div className="flex items-baseline justify-between gap-6">
-                    <span className="font-serif font-light text-7xl sm:text-8xl text-stone-900/10 leading-none select-none">
-                      {project.indice}
-                    </span>
-                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-amber-700">
-                      <span className="h-1.5 w-1.5 rounded-full bg-amber-700" />
-                    </span>
-                  </div>
+                  <span className="display-title select-none text-7xl text-bronze/70">{project.indice}</span>
 
-                  <h3 className="mt-4 font-serif font-light text-2xl sm:text-3xl lg:text-4xl text-stone-900 leading-[1.1] tracking-tight group-hover:text-amber-800 transition-colors duration-300">
+                  <h3 className="display-title mt-4 text-3xl transition-colors group-hover:text-bronze lg:text-4xl">
                     {project.title}
                   </h3>
 
                   {project.extracto && (
-                    <p className="mt-5 text-base sm:text-lg text-stone-600 font-light leading-relaxed line-clamp-4">
+                    <p className="mt-5 line-clamp-4 leading-relaxed text-mid">
                       {project.extracto}
                     </p>
                   )}
 
-                  <dl className="mt-8 border-t border-stone-300 text-sm">
+                  <dl className="mt-8 divide-y divide-ink/10 border-y border-ink/10 text-sm">
                     {[
                       ["Tipología", project.tipologia],
                       ["Ubicación", project.ubicacion],
@@ -175,20 +168,17 @@ export default function ProjectsGallery({ projects }: { projects: ProjectSummary
                     ]
                       .filter(([, value]) => value)
                       .map(([label, value]) => (
-                        <div key={label} className="flex justify-between gap-6 border-b border-stone-300 py-3">
-                          <dt className="font-mono text-[10px] sm:text-[11px] tracking-[0.2em] uppercase text-stone-500">
+                        <div key={label} className="flex justify-between gap-6 py-3">
+                          <dt className="text-mid">
                             {label}
                           </dt>
-                          <dd className="text-right text-stone-900 font-light">{value}</dd>
+                          <dd className="text-right">{value}</dd>
                         </div>
                       ))}
                   </dl>
 
-                  <span className="mt-8 inline-flex items-center gap-3 rounded-full border border-stone-900 px-6 py-3 text-[11px] font-light uppercase tracking-[0.16em] text-stone-900 transition-colors group-hover:bg-stone-900 group-hover:text-white">
-                    Ver proyecto
-                    <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">
-                      →
-                    </span>
+                  <span className="arrow-link mt-8">
+                    Ver ficha del proyecto <span aria-hidden="true">↗</span>
                   </span>
                 </div>
               </Link>
@@ -205,11 +195,11 @@ export default function ProjectsGallery({ projects }: { projects: ProjectSummary
               type="button"
               onClick={loadMore}
               disabled={isLoadingMore}
-              className="group inline-flex items-center gap-3 rounded-full border border-stone-900 bg-paper px-8 py-3.5 text-xs font-semibold uppercase tracking-[0.2em] text-stone-900 transition hover:bg-stone-900 hover:text-white active:scale-95 disabled:opacity-50"
+              className="btn btn-outline disabled:opacity-50"
             >
               {isLoadingMore ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin text-amber-700 group-hover:text-amber-400" />
+                  <Loader2 className="h-4 w-4 animate-spin" />
                   <span>Cargando más obras...</span>
                 </>
               ) : (
@@ -221,14 +211,14 @@ export default function ProjectsGallery({ projects }: { projects: ProjectSummary
                 </>
               )}
             </button>
-            <span className="font-mono text-[11px] text-stone-500 uppercase tracking-widest">
+            <span className="text-[10px] uppercase tracking-[0.22em] text-mid">
               Mostrando {visibleProjects.length} de {filtered.length} proyectos
             </span>
           </div>
         ) : (
           filtered.length > 0 && (
-            <div className="text-center py-6 border-t border-stone-200 w-full max-w-xs mx-auto">
-              <span className="font-mono text-[11px] text-stone-600 uppercase tracking-[0.2em]">
+            <div className="mx-auto w-full max-w-xs border-t border-ink/15 py-6 text-center">
+              <span className="text-[10px] uppercase tracking-[0.22em] text-mid">
                 Has visto todas las obras ({filtered.length})
               </span>
             </div>

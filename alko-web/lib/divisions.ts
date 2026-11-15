@@ -61,30 +61,44 @@ export const DIVISIONS: Division[] = [
 ];
 
 /** Método ALKO: cinco etapas, sin compromisos universales no contratados. */
-export const METHOD_STEPS: { num: string; title: string; text: string }[] = [
+export const METHOD_STEPS: { num: string; title: string; text: string; image: string }[] = [
   {
     num: "01",
     title: "Escuchar y evaluar",
+    image: "/proceso-coordinacion.jpg",
     text: "Revisamos necesidades, documentación existente y características del inmueble para delimitar el encargo.",
   },
   {
     num: "02",
     title: "Definir el alcance",
+    image: "/proceso-instalaciones.jpg",
     text: "Establecemos las soluciones y partidas a estudiar, los criterios técnicos y las responsabilidades de cada interviniente.",
   },
   {
     num: "03",
     title: "Planificar y comprar",
+    image: "/proceso-compras.jpg",
     text: "Organizamos los oficios, el calendario de ejecución y la selección de materiales de acuerdo con el proyecto aprobado.",
   },
   {
     num: "04",
     title: "Ejecutar y coordinar",
+    image: "/proceso-construccion.jpg",
     text: "Trabajamos con control de calidad, seguimiento del avance y comunicación de incidencias durante la obra.",
   },
   {
     num: "05",
     title: "Verificar y entregar",
+    image: "/proceso-entrega.jpg",
     text: "Comprobamos los trabajos y formalizamos la entrega conforme al alcance contratado.",
   },
 ];
+
+/** Opciones del campo «División» de los formularios (las cuatro divisiones + «Otro»). */
+export const DIVISION_OPTIONS: string[] = [...DIVISIONS.map((division) => division.name), "Otro"];
+
+/** División a la que pertenece un servicio actual, para preseleccionarla en su CTA. */
+export function divisionForSector(sectorSlug?: string): string | undefined {
+  if (!sectorSlug) return undefined;
+  return DIVISIONS.find((division) => division.sectorSlugs.includes(sectorSlug))?.name;
+}

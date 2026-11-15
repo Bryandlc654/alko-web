@@ -11,6 +11,7 @@ import RouteLoader from "@/components/RouteLoader";
 import SiteShell from "@/components/layout/SiteShell";
 import { getSectors, getSettings } from "@/lib/wordpress";
 import { SITE } from "@/lib/site";
+import { DIVISION_OPTIONS } from "@/lib/divisions";
 
 // Dirección V3: Manrope (titulares, peso Light) + DM Sans (cuerpo).
 const manrope = Manrope({
@@ -58,7 +59,7 @@ export default async function RootLayout({
         className={`${manrope.variable} ${dmSans.variable} bg-stone-950 text-white font-sans antialiased overflow-x-hidden selection:bg-piedra selection:text-ink`}
       >
         <ContactModalProvider
-          projectTypes={[...sectors.map((sector) => sector.title), "Otro"]}
+          projectTypes={DIVISION_OPTIONS}
           email={settings.email}
           whatsappHref={`https://wa.me/${settings.whatsapp.replace(/[^\d]/g, "")}`}
         >

@@ -3,45 +3,57 @@ import Link from "next/link";
 import { ROUTES } from "@/lib/site";
 import type { Article } from "@/lib/types";
 
-/** Tarjeta de artículo usada en el inicio y en el listado de conocimiento. */
+const dateFmt = new Intl.DateTimeFormat("es-ES", { month: "short", year: "numeric" });
+
+function shortDate(iso: string) {
+  const date = new Date(iso);
+  return Number.isNaN(date.getTime()) ? "" : dateFmt.format(date).replace(".", "");
+}
+
+/** Tarjeta de artículo · Propuesta 6 (tarjeta blanca de la V5). */
 export default function ArticleCard({
   article,
   index,
+  className = "",
 }: {
   article: Article;
   index?: number;
+  className?: string;
 }) {
-  const number = index != null ? `${String(index + 1).padStart(2, "0")} — ` : "";
+  const date = shortDate(article.date);
 
   return (
-    <article className="reveal-item group">
-      <Link href={`${ROUTES.articles}/${article.slug}`} className="flex flex-col h-full">
-        <div
-          data-parallax="8"
-          className="relative overflow-hidden aspect-[4/3] bg-stone-200 mb-5"
-        >
+    <article className={`reveal-item bg-white p-1.5 ${className}`}>
+      <Link href={`${ROUTES.articles}/${article.slug}`} className="group flex h-full flex-col">
+        <span className="relative block aspect-[368/278] overflow-hidden bg-piedra">
           <Image
             src={article.image}
-            alt={article.title}
+            alt=""
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className="object-cover object-center filter brightness-[0.98] contrast-[1.02] transition-transform duration-700 ease-out group-hover:scale-105"
+            className="object-cover transition-transform duration-700 ease-alko group-hover:scale-105"
           />
-        </div>
-
-        <span className="font-mono text-[10px] sm:text-[11px] text-stone-500 uppercase tracking-widest mb-2 block">
-          {number}
-          {article.category}
         </span>
-
-        <div className="flex items-start justify-between gap-4">
-          <h3 className="font-serif font-light text-xl sm:text-2xl text-stone-900 leading-snug tracking-tight group-hover:text-amber-800 transition-colors duration-300">
+        <span className="flex flex-1 flex-col p-3.5 pt-5">
+          {index != null && (
+            <span className="mb-2 text-[10px] uppercase tracking-[0.22em] text-bronze">{String(index + 1).padStart(2, "0")}</span>
+          )}
+          <span className="block min-h-[56px] text-[19px] leading-snug text-ink transition-colors group-hover:text-bronze">
             {article.title}
-          </h3>
-          <span className="text-lg text-stone-400 group-hover:text-stone-900 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1 shrink-0 pt-0.5">
-            ↗
           </span>
-        </div>
+          <span className="mt-auto flex items-center justify-between pt-8">
+            <span className="text-[10px] uppercase tracking-[0.18em]">
+              {article.category && <span className="bg-paper px-1.5 py-1">{article.category}</span>}
+              {date && <span className="ml-1.5 text-mid">{date}</span>}
+            </span>
+            <span
+              className="grid h-7 w-7 place-items-center bg-ink text-paper transition-colors group-hover:bg-bronze"
+              aria-hidden="true"
+            >
+              →
+            </span>
+          </span>
+        </span>
       </Link>
     </article>
   );

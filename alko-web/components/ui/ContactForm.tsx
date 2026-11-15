@@ -75,7 +75,7 @@ export default function ContactForm({
 
     // Validación en el navegador (el servidor vuelve a comprobarlo todo).
     const found: Errors = {};
-    if (!value("tipo")) found.tipo = "Elige el tipo de proyecto.";
+    if (!value("tipo")) found.tipo = "Elige la división de tu proyecto.";
     if (!value("nombre")) found.nombre = "Dinos tu nombre o el de tu empresa.";
     if (!value("contacto")) found.contacto = "Escribe un teléfono o un email para poder contestarte.";
     else if (!contactKind(value("contacto"))) found.contacto = "No parece un teléfono ni un email válido.";
@@ -116,8 +116,8 @@ export default function ContactForm({
     setStatus("error");
   }
 
-  const group = "flex items-center gap-4 mb-8 font-mono text-[11px] tracking-[0.25em] uppercase text-white/50";
-  const label = "block font-mono text-[10px] sm:text-[11px] tracking-[0.2em] uppercase text-white/50 mb-1";
+  const group = "flex items-center gap-4 mb-8 text-[10px] tracking-[0.22em] uppercase text-white/50";
+  const label = "block text-[10px] tracking-[0.22em] uppercase text-white/50 mb-1";
   const input =
     "w-full border-0 border-b border-white/25 bg-transparent px-0 py-3 text-lg text-white font-light placeholder:text-white/30 focus:border-amber-700 focus:outline-none focus:ring-0 transition-colors aria-[invalid=true]:border-amber-500";
   const hint = "mt-2 text-sm font-light text-white/50";
@@ -126,7 +126,7 @@ export default function ContactForm({
   // --- Confirmación ---------------------------------------------------------------------------
   if (status === "sent" && sent) {
     const resumen: [string, string][] = [
-      ["Tipo de proyecto", sent.tipo],
+      ["División", sent.tipo],
       ["Ubicación", sent.ubicacion],
     ];
     return (
@@ -138,7 +138,7 @@ export default function ContactForm({
         className="py-4 outline-none sm:py-8"
       >
         <CheckCircle2 className="h-12 w-12 text-amber-500" strokeWidth={1.25} aria-hidden="true" />
-        <h3 className="mt-6 font-serif font-light text-3xl sm:text-4xl leading-tight tracking-tight">
+        <h3 className="display-title mt-6 text-3xl sm:text-4xl leading-tight">
           Hemos recibido tu proyecto
         </h3>
         <p className="mt-4 max-w-xl text-lg font-light text-white/70 leading-relaxed">
@@ -151,7 +151,7 @@ export default function ContactForm({
             .filter(([, v]) => v)
             .map(([k, v]) => (
               <div key={k} className="flex items-baseline justify-between gap-6 border-b border-white/15 py-3">
-                <dt className="font-mono text-[10px] sm:text-[11px] tracking-[0.2em] uppercase text-white/50">{k}</dt>
+                <dt className="text-[10px] tracking-[0.22em] uppercase text-white/50">{k}</dt>
                 <dd className="text-right font-light text-white">{v}</dd>
               </div>
             ))}
@@ -209,7 +209,7 @@ export default function ContactForm({
   return (
     <form ref={formRef} onSubmit={handleSubmit} noValidate aria-busy={sending}>
       <p className="mb-10 max-w-xl text-sm font-light leading-relaxed text-white/60">
-        Solo necesitamos el tipo de proyecto, tu nombre y un teléfono o email. El resto es opcional y nos ayuda
+        Solo necesitamos la división, tu nombre y un teléfono o email. El resto es opcional y nos ayuda
         a orientarte mejor.
       </p>
 
@@ -232,7 +232,7 @@ export default function ContactForm({
           data-invalid={errors.tipo ? "true" : undefined}
           aria-describedby={errors.tipo ? id("tipo-error") : undefined}
         >
-          <legend className={`${label} mb-3`}>Tipo de proyecto *</legend>
+          <legend className={`${label} mb-3`}>División *</legend>
           <div className="flex flex-wrap gap-2">
             {projectTypes.map((type) => (
               <label key={type} className="cursor-pointer">
@@ -245,7 +245,7 @@ export default function ContactForm({
                   onChange={() => setErrors((prev) => ({ ...prev, tipo: undefined }))}
                   className="peer sr-only"
                 />
-                <span className="inline-flex rounded-full border border-white/25 px-4 py-2 text-[11px] font-light uppercase tracking-[0.16em] text-white/70 transition-colors hover:border-white hover:text-white peer-checked:border-amber-700 peer-checked:bg-amber-700 peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-white peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-stone-950 group-data-[invalid=true]:border-amber-500">
+                <span className="inline-flex border border-white/25 px-4 py-2 text-[11px] font-light uppercase tracking-[0.16em] text-white/70 transition-colors hover:border-white hover:text-white peer-checked:border-paper peer-checked:bg-paper peer-checked:text-ink peer-focus-visible:ring-2 peer-focus-visible:ring-white peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-stone-950 group-data-[invalid=true]:border-amber-500">
                   {type}
                 </span>
               </label>
@@ -388,7 +388,7 @@ export default function ContactForm({
         <button
           type="submit"
           disabled={sending}
-          className="group/btn inline-flex w-full shrink-0 items-center justify-center gap-3 rounded-full bg-amber-700 px-9 py-4 text-xs font-semibold uppercase tracking-wider text-white shadow-xl transition-all duration-300 hover:bg-paper hover:text-stone-900 active:scale-95 disabled:cursor-wait disabled:opacity-70 sm:w-auto"
+          className="group/btn inline-flex w-full shrink-0 items-center justify-between gap-7 border border-paper bg-paper px-6 py-[17px] text-[10px] font-semibold uppercase tracking-[0.09em] text-ink transition-colors duration-200 hover:border-bronze hover:bg-bronze hover:text-white disabled:cursor-wait disabled:opacity-70 sm:w-auto"
         >
           {sending ? (
             <>

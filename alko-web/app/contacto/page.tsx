@@ -1,9 +1,9 @@
 import Image from "next/image";
-import { Clock, Mail, MapPin, MessageCircle, Phone, type LucideIcon } from "lucide-react";
-import Container from "@/components/ui/Container";
+import PageHero from "@/components/ui/PageHero";
 import ContactForm from "@/components/ui/ContactForm";
-import { getSectors, getSettings } from "@/lib/wordpress";
+import { getSettings } from "@/lib/wordpress";
 import { getDbContactoPageContent } from "@/lib/db/mysql";
+import { DIVISION_OPTIONS } from "@/lib/divisions";
 
 export const revalidate = 60;
 
@@ -29,270 +29,193 @@ const NEXT_STEPS = [
 ];
 
 interface Channel {
-  icon: LucideIcon;
   label: string;
   value: string;
   href?: string;
   external?: boolean;
 }
 
+/** Contacto · Propuesta 6: hero V4, canales + formulario, pasos y oficina. */
 export default async function ContactoPage() {
-  const [settings, sectors, pageContent] = await Promise.all([
+  const [settings, pageContent] = await Promise.all([
     getSettings(),
-    getSectors(),
     getDbContactoPageContent(),
   ]);
 
   const telHref = `tel:${settings.telefono.replace(/[^+\d]/g, "")}`;
   const whatsappHref = `https://wa.me/${settings.whatsapp.replace(/[^\d]/g, "")}`;
   const mapsHref = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(settings.direccion)}`;
-  const projectTypes = [...sectors.map((sector) => sector.title), "Otro"];
 
   const channels: Channel[] = [
-    { icon: Phone, label: "Teléfono", value: settings.telefono, href: telHref },
-    { icon: Mail, label: "Email", value: settings.email, href: `mailto:${settings.email}` },
-    { icon: MessageCircle, label: "WhatsApp", value: "Escríbenos al momento", href: whatsappHref, external: true },
-    { icon: Clock, label: "Horario", value: settings.horario },
+    { label: "Teléfono", value: settings.telefono, href: telHref },
+    { label: "Email", value: settings.email, href: `mailto:${settings.email}` },
+    { label: "WhatsApp", value: "Escríbenos al momento", href: whatsappHref, external: true },
+    { label: "Horario", value: settings.horario },
   ];
-
-  const pill =
-    "inline-flex items-center gap-2.5 rounded-full border px-5 py-2.5 text-[11px] font-light uppercase tracking-[0.16em] transition-colors";
+  const steps = pageContent.pasos && pageContent.pasos.length > 0 ? pageContent.pasos : NEXT_STEPS;
 
   return (
-    <main className="bg-paper text-stone-900">
-      <header className="relative isolate flex min-h-[640px] sm:min-h-[720px] lg:min-h-[82vh] items-end overflow-hidden bg-stone-950 text-white pt-36 sm:pt-44 pb-16 sm:pb-20">
-        <Image
-          src={pageContent.headerBgImage || "/cta-bg.jpg"}
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="-z-10 object-cover object-top"
-        />
-        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-stone-950/90 via-stone-950/55 to-stone-950/10" />
-        <div className="absolute inset-x-0 bottom-0 -z-10 h-2/3 bg-gradient-to-t from-stone-950/90 via-stone-950/40 to-transparent" />
-        <div className="absolute inset-x-0 top-0 -z-10 h-40 bg-gradient-to-b from-stone-950/70 to-transparent" />
-
-        <Container className="relative">
-          <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-white/70 uppercase mb-4">
-            {pageContent.headerBadge || "CONTACTO"}
-          </span>
-          <h1 className="font-display font-light text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-[-0.03em] leading-[1.02] drop-shadow-[0_2px_20px_rgba(0,0,0,0.35)]">
-            <span className="whitespace-pre-line">{pageContent.headerTitulo}</span>
-
-
-          </h1>
-          <p className="mt-6 max-w-xl text-base sm:text-lg text-white/85 font-light leading-relaxed">
-            <span className="whitespace-pre-line">{pageContent.headerDescripcion}</span>
-
-          </p>
-          <div className="mt-10 flex flex-wrap gap-3">
-            <a href="#formulario" className={`${pill} border-amber-700 bg-amber-700 text-white hover:bg-amber-800`}>
-              Solicitar presupuesto <span aria-hidden="true">↓</span>
-            </a>
-            <a href={telHref} className={`${pill} border-white/40 bg-stone-950/20 backdrop-blur-sm text-white hover:border-white`}>
-              <Phone className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden="true" />
-              Llamar
-            </a>
-            <a
-              href={whatsappHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`${pill} border-white/40 bg-stone-950/20 backdrop-blur-sm text-white hover:border-white`}
-            >
-              <MessageCircle className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden="true" />
-              WhatsApp
-            </a>
-          </div>
-        </Container>
-      </header>
+    <main className="bg-paper text-ink">
+      <PageHero
+        eyebrow={pageContent.headerBadge || "CONTACTO"}
+        title={<span className="whitespace-pre-line">{pageContent.headerTitulo || "Hablemos de tu próxima obra."}</span>}
+        description={pageContent.headerDescripcion ? <span className="whitespace-pre-line">{pageContent.headerDescripcion}</span> : undefined}
+        image={pageContent.headerBgImage || "/cta-bg.jpg"}
+        imagePosition="object-top"
+      >
+        <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
+          <a href="#formulario" className="btn btn-paper">
+            Solicitar presupuesto <span aria-hidden="true">↓</span>
+          </a>
+          <a href={telHref} className="border-b border-paper/50 pb-1 text-[11px] uppercase tracking-[0.22em] transition-colors hover:border-paper">
+            Llamar
+          </a>
+          <a
+            href={whatsappHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="border-b border-paper/50 pb-1 text-[11px] uppercase tracking-[0.22em] transition-colors hover:border-paper"
+          >
+            WhatsApp
+          </a>
+        </div>
+      </PageHero>
 
       {/* Canales + formulario */}
-      <section className="relative isolate overflow-clip">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 -z-10 mx-auto hidden max-w-7xl grid-cols-6 px-6 sm:px-10 lg:grid lg:px-12"
-        >
-          <div className="h-full border-x border-black/[0.06]" />
-          <div className="h-full border-r border-black/[0.06]" />
-          <div className="h-full border-r border-black/[0.06]" />
-          <div className="h-full border-r border-black/[0.06]" />
-          <div className="h-full border-r border-black/[0.06]" />
-          <div className="h-full border-r border-black/[0.06]" />
-        </div>
+      <section className="plan-lines bg-surface">
+        <div className="site-wrap grid grid-cols-12 gap-x-6 gap-y-14 py-24 lg:py-32">
+          <aside className="reveal-item col-span-12 lg:sticky lg:top-32 lg:col-span-5 lg:self-start">
+            <p className="eyebrow">{pageContent.canalesTag || "ALKO Madrid"}</p>
+            <h2 className="display-title mt-6 text-[2.4rem] leading-[1.05] sm:text-5xl">
+              {pageContent.canalesTitulo || "Un único interlocutor, desde la primera llamada."}
+            </h2>
+            <p className="mt-8 max-w-md leading-relaxed text-mid">
+              {pageContent.canalesDescripcion ||
+                "Elige el canal que prefieras. Te atenderá directamente el equipo técnico que llevará tu obra."}
+            </p>
 
-        <Container className="py-16 sm:py-24">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-14 lg:gap-16">
-            <aside className="lg:col-span-5 lg:sticky lg:top-32 lg:self-start reveal-item">
-              <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase mb-3">
-                {pageContent.canalesTag || "ALKO MADRID"}
-              </span>
-              <h2 className="font-serif font-light text-3xl sm:text-4xl lg:text-5xl text-stone-900 tracking-tight leading-tight">
-                {pageContent.canalesTitulo || "Un único interlocutor, desde la primera llamada."}
-              </h2>
-              <p className="mt-5 max-w-md text-base sm:text-lg text-stone-600 font-light leading-relaxed">
-                {pageContent.canalesDescripcion || "Elige el canal que prefieras. Te atenderá directamente el equipo técnico que llevará tu obra."}
-              </p>
-
-              <ul className="mt-10 border-t border-stone-300">
-                {channels.map(({ icon: Icon, label, value, href, external }) => {
-                  const content = (
-                    <>
-                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-stone-300 text-stone-900 transition-colors group-hover:border-amber-700 group-hover:bg-amber-700 group-hover:text-white">
-                        <Icon className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
-                      </span>
-                      <span className="flex-1 min-w-0">
-                        <span className="block font-mono text-[10px] sm:text-[11px] tracking-[0.2em] uppercase text-stone-500">
-                          {label}
-                        </span>
-                        <span className="mt-0.5 block break-words font-serif font-light text-xl text-stone-900 leading-snug group-hover:text-amber-800 transition-colors">
-                          {value}
-                        </span>
-                      </span>
-                      {href && (
-                        <span
-                          aria-hidden="true"
-                          className="text-lg text-stone-400 transition-all group-hover:text-stone-900 group-hover:translate-x-1 group-hover:-translate-y-1"
-                        >
-                          ↗
-                        </span>
-                      )}
-                    </>
-                  );
-                  return (
-                    <li key={label} className="border-b border-stone-300">
-                      {href ? (
-                        <a
-                          href={href}
-                          {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                          className="group flex items-center gap-5 py-5"
-                        >
-                          {content}
-                        </a>
-                      ) : (
-                        <div className="flex items-center gap-5 py-5">{content}</div>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-            </aside>
-
-            <section
-              id="formulario"
-              aria-labelledby="form-title"
-              className="lg:col-span-7 scroll-mt-28 reveal-item"
-              style={{ transitionDelay: "120ms" }}
-            >
-              <div className="bg-stone-950 text-white p-6 sm:p-10 lg:p-12 shadow-2xl">
-                <div className="flex items-start justify-between gap-6 mb-12">
-                  <div>
-                    <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-white/50 uppercase mb-3">
-                      {pageContent.formTag || "SOLICITUD DE PRESUPUESTO"}
+            <ul className="mt-12 border-t border-ink/15">
+              {channels.map(({ label, value, href, external }) => {
+                const content = (
+                  <>
+                    <span className="w-20 shrink-0 text-[10px] uppercase tracking-[0.22em] text-mid sm:w-24">{label}</span>
+                    <span className="display-title min-w-0 flex-1 break-words text-lg transition-colors group-hover:text-bronze sm:text-xl">
+                      {value}
                     </span>
-                    <h2
-                      id="form-title"
-                      className="font-serif font-light text-3xl sm:text-4xl lg:text-5xl tracking-tight leading-none"
-                    >
-                      {pageContent.formTitulo || "Cuéntanos tu proyecto"}
-                    </h2>
-                  </div>
-                  <div className="hidden sm:flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-amber-700 mt-2">
-                    <div className="h-1.5 w-1.5 rounded-full bg-amber-700" />
-                  </div>
-                </div>
-                <ContactForm
-                  projectTypes={projectTypes}
-                  email={settings.email}
-                  whatsappHref={whatsappHref}
-                  source="Página de contacto"
-                />
-              </div>
-            </section>
-          </div>
-        </Container>
+                    {href && (
+                      <span aria-hidden="true" className="text-mid transition-colors group-hover:text-bronze">
+                        ↗
+                      </span>
+                    )}
+                  </>
+                );
+                return (
+                  <li key={label} className="border-b border-ink/15">
+                    {href ? (
+                      <a
+                        href={href}
+                        {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                        className="group flex items-center gap-5 py-5"
+                      >
+                        {content}
+                      </a>
+                    ) : (
+                      <div className="flex items-center gap-5 py-5">{content}</div>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </aside>
+
+          <section
+            id="formulario"
+            aria-labelledby="form-title"
+            className="reveal-item col-span-12 scroll-mt-28 lg:col-span-7"
+            style={{ transitionDelay: "120ms" }}
+          >
+            <div className="bg-ink p-6 text-white sm:p-10 lg:p-12">
+              <p className="eyebrow eyebrow-light">{pageContent.formTag || "Solicitud de presupuesto"}</p>
+              <h2 id="form-title" className="display-title mb-12 mt-5 text-4xl lg:text-5xl">
+                {pageContent.formTitulo || "Cuéntanos tu proyecto"}
+              </h2>
+              <ContactForm
+                projectTypes={DIVISION_OPTIONS}
+                email={settings.email}
+                whatsappHref={whatsappHref}
+                source="Página de contacto"
+              />
+            </div>
+          </section>
+        </div>
       </section>
 
-      {/* Proceso */}
-      <section className="bg-stone-100">
-        <Container className="py-16 sm:py-24">
-          <div className="reveal-item mb-12 sm:mb-16">
-            <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase mb-2">
-              {pageContent.pasosTag || "DESPUÉS DE ESCRIBIRNOS"}
-            </span>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-light text-stone-900 tracking-tight leading-none">
-              {pageContent.pasosTitulo || "Qué pasa a continuación"}
-            </h2>
+      {/* Pasos */}
+      <section className="bg-ink text-paper">
+        <div className="site-wrap py-24 lg:py-32">
+          <div className="grid grid-cols-12 items-end gap-6">
+            <div className="col-span-12 lg:col-span-7">
+              <p className="eyebrow eyebrow-light reveal-item">{pageContent.pasosTag || "Después de escribirnos"}</p>
+              <h2 className="reveal-item display-title mt-6 text-5xl leading-none sm:text-6xl">
+                {pageContent.pasosTitulo || "Qué pasa a continuación"}
+              </h2>
+            </div>
           </div>
-          <ol className="relative grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-10 lg:gap-14">
-            <span
-              aria-hidden="true"
-              className="absolute left-2.5 top-2.5 bottom-0 w-px bg-stone-900/15 md:left-0 md:right-0 md:bottom-auto md:h-px md:w-auto"
-            />
-            {(pageContent.pasos && pageContent.pasos.length > 0 ? pageContent.pasos : NEXT_STEPS).map((step, i) => (
-              <li key={step.title} className="reveal-item relative pl-12 md:pl-0 md:pt-12" style={{ transitionDelay: `${i * 120}ms` }}>
-                <span className="absolute left-0 top-0 flex h-5 w-5 items-center justify-center rounded-full border border-amber-700 bg-stone-100">
-                  <span className="h-1.5 w-1.5 rounded-full bg-amber-700" />
-                </span>
-                <span className="font-serif font-light text-5xl sm:text-6xl text-stone-900/15 leading-none">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <h3 className="mt-4 font-serif font-light text-2xl sm:text-3xl text-stone-900 tracking-tight">
-                  {step.title}
-                </h3>
-                <p className="mt-3 max-w-xs text-base text-stone-600 font-light leading-relaxed">{step.text}</p>
+          <ol className="mt-16 grid grid-cols-1 border-t border-paper/15 md:grid-cols-3">
+            {steps.map((step, i) => (
+              <li
+                key={step.title}
+                className={`reveal-item py-10 md:pr-10 ${i > 0 ? "border-t border-paper/15 md:border-l md:border-t-0 md:pl-10" : ""}`}
+                style={{ transitionDelay: `${i * 120}ms` }}
+              >
+                <span className="display-title text-5xl text-bronze-light">{String(i + 1).padStart(2, "0")}</span>
+                <h3 className="display-title mt-6 text-2xl sm:text-3xl">{step.title}</h3>
+                <p className="mt-3 max-w-xs leading-relaxed text-paper/60">{step.text}</p>
               </li>
             ))}
           </ol>
-        </Container>
+        </div>
       </section>
 
       {/* Oficina */}
-      <section>
-        <Container className="py-16 sm:py-24">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
-            <div className="lg:col-span-7 reveal-item">
-              <div data-parallax="8" className="relative overflow-hidden aspect-[16/10] bg-stone-200">
-                <Image
-                  src={pageContent.oficinaImagen || "/oficinas.jpg"}
-                  alt="Oficina de ALKO en Madrid"
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 58vw"
-                  className="object-cover object-center"
-                />
-              </div>
+      <section className="bg-paper">
+        <div className="site-wrap grid grid-cols-12 items-center gap-x-6 gap-y-12 py-24 lg:py-32">
+          <figure className="col-span-12 lg:col-span-7">
+            <div className="reveal-scale relative aspect-[16/10] overflow-hidden bg-piedra">
+              <Image
+                src={pageContent.oficinaImagen || "/oficinas.jpg"}
+                alt="Oficina de ALKO en Madrid"
+                fill
+                sizes="(max-width: 1024px) 100vw, 58vw"
+                className="object-cover"
+              />
             </div>
-            <div className="lg:col-span-5 reveal-item" style={{ transitionDelay: "120ms" }}>
-              <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase mb-3">
-                {pageContent.oficinaTag || "VISÍTANOS"}
-              </span>
-              <h2 className="font-serif font-light text-3xl sm:text-4xl lg:text-5xl text-stone-900 tracking-tight leading-tight">
-                {pageContent.oficinaTitulo || "Nuestra oficina"}
-              </h2>
-              <div className="mt-8 space-y-5 border-t border-stone-300 pt-8">
-                <p className="flex items-start gap-4 text-lg text-stone-900 font-light leading-snug">
-                  <MapPin className="mt-1 h-4 w-4 shrink-0 text-amber-700" strokeWidth={1.5} aria-hidden="true" />
-                  {settings.direccion}
-                </p>
-                <p className="flex items-start gap-4 text-lg text-stone-900 font-light leading-snug">
-                  <Clock className="mt-1 h-4 w-4 shrink-0 text-amber-700" strokeWidth={1.5} aria-hidden="true" />
-                  {settings.horario}
-                </p>
+            <figcaption className="mt-4 flex items-center gap-4 text-mid">
+              <span className="text-[10px] uppercase tracking-[0.22em]">Oficina</span>
+              <span className="cota flex-1 text-ink" aria-hidden="true" />
+              <span className="text-[10px] uppercase tracking-[0.22em]">Madrid</span>
+            </figcaption>
+          </figure>
+          <div className="reveal-item col-span-12 lg:col-span-4 lg:col-start-9" style={{ transitionDelay: "120ms" }}>
+            <p className="eyebrow">{pageContent.oficinaTag || "Visítanos"}</p>
+            <h2 className="display-title mt-6 text-5xl leading-none">{pageContent.oficinaTitulo || "Nuestra oficina"}</h2>
+            <dl className="mt-10 divide-y divide-ink/10 border-y border-ink/10 text-sm">
+              <div className="flex justify-between gap-6 py-3">
+                <dt className="text-mid">Dirección</dt>
+                <dd className="text-right">{settings.direccion}</dd>
               </div>
-              <a
-                href={mapsHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group mt-10 inline-flex items-center gap-3 rounded-full border border-stone-900 px-6 py-3 text-[11px] font-light uppercase tracking-[0.16em] text-stone-900 transition-colors hover:bg-stone-900 hover:text-white"
-              >
-                Cómo llegar
-                <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">
-                  →
-                </span>
-              </a>
-            </div>
+              {settings.horario && (
+                <div className="flex justify-between gap-6 py-3">
+                  <dt className="text-mid">Horario</dt>
+                  <dd className="text-right">{settings.horario}</dd>
+                </div>
+              )}
+            </dl>
+            <a href={mapsHref} target="_blank" rel="noopener noreferrer" className="btn btn-outline mt-10">
+              Cómo llegar <span aria-hidden="true">→</span>
+            </a>
           </div>
-        </Container>
+        </div>
       </section>
     </main>
   );

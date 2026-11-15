@@ -25,7 +25,7 @@ export default function ProjectsList({ projects }: { projects: Project[] }) {
               <span className="font-light tracking-wide text-stone-500">
                 {project.ubicacion}
               </span>
-              <span className="px-4 py-1 rounded-full border border-stone-300 text-[11px] font-mono text-stone-700 bg-white/70">
+              <span className="px-4 py-1 border border-stone-300 text-[11px] font-mono text-stone-700 bg-white/70">
                 {project.anio}
               </span>
               <span className="font-light tracking-wider text-stone-900 group-hover:underline flex items-center gap-1">
@@ -36,7 +36,7 @@ export default function ProjectsList({ projects }: { projects: Project[] }) {
 
           <div
             data-parallax="10"
-            className="reveal-scale relative mt-4 w-full h-[380px] sm:h-[500px] lg:h-[600px] overflow-hidden shadow-lg rounded-none"
+            className="reveal-scale relative mt-4 w-full h-[380px] sm:h-[500px] lg:h-[600px] overflow-hidden rounded-none"
           >
             <Image
               src={project.imagen}

@@ -1,52 +1,39 @@
-import Image from "next/image";
+import ManufacturerLogo from "@/components/home/ManufacturerLogo";
 import type { Fabricante, HomeContent } from "@/lib/types";
 
+/** Fabricantes en losetas blancas · Propuesta 6 (V5). Textos editables desde el panel. */
 export default function Materials({ fabricantes, content }: { fabricantes: Fabricante[]; content?: HomeContent }) {
-  const doubled = [...fabricantes, ...fabricantes];
+  if (fabricantes.length === 0) return null;
+  // Cuatro columnas solo si llenan filas completas; si no, tres.
+  const cols = fabricantes.length % 4 === 0 ? "lg:grid-cols-4" : "lg:grid-cols-3";
+  const tile = "group grid aspect-[16/7] place-items-center bg-white";
 
   return (
-    <section
-      id="materiales"
-      className="relative bg-paper text-stone-900 py-24 sm:py-32 border-t border-stone-300/80 overflow-hidden"
-    >
-      <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-16 mb-16 sm:mb-20">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-stone-300/70">
-          <div className="max-w-2xl reveal-item">
-            <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-stone-500 uppercase mb-3">
-              {content?.materialesTag ?? "ESPECIFICACIÓN TÉCNICA & CALIDAD"}
-            </span>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-light text-stone-900 tracking-tight leading-none">
-              {content?.materialesTitulo ?? "Materiales y fabricantes"}
-            </h2>
-          </div>
-          <div className="max-w-md reveal-item">
-            <p className="font-sans text-xs sm:text-sm text-stone-600 leading-relaxed font-normal">
-              {content?.materialesDescripcion ?? "Soluciones y materiales seleccionados según las necesidades técnicas de cada proyecto."}
-            </p>
-          </div>
-        </div>
+    <section id="materiales" aria-labelledby="materiales-titulo" className="bg-paper py-24 text-ink md:py-28">
+      <div className="site-wrap text-center">
+        <p className="eyebrow reveal-item">{content?.materialesTag || "Materiales de confianza"}</p>
+        <h2 id="materiales-titulo" className="reveal-item display-title mt-5 text-[40px] md:text-[56px]">
+          {content?.materialesTitulo || "Trabajamos con fabricantes de referencia"}
+        </h2>
+        {content?.materialesDescripcion && (
+          <p className="reveal-item mx-auto mt-6 max-w-xl leading-relaxed text-mid">{content.materialesDescripcion}</p>
+        )}
       </div>
-
-      <div className="relative w-full overflow-hidden py-6 sm:py-8">
-        <div className="absolute left-0 top-0 bottom-0 w-24 sm:w-44 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
-        <div className="absolute right-0 top-0 bottom-0 w-24 sm:w-44 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
-        <div className="animate-marquee flex items-center">
-          <div className="flex items-center gap-20 sm:gap-28 lg:gap-36 shrink-0 pr-20 sm:pr-28 lg:pr-36">
-            {doubled.map((fab, i) => (
-              <div key={`${fab.id}-${i}`} className="flex items-center h-12 sm:h-16 lg:h-20">
-                <Image
-                  src={fab.logo}
-                  alt={fab.name}
-                  width={120}
-                  height={48}
-                  className="h-9 sm:h-11 lg:h-14 w-auto max-w-[240px] sm:max-w-[300px] lg:max-w-[340px] object-contain opacity-70 hover:opacity-100 transition duration-300 filter grayscale hover:grayscale-0"
-                  unoptimized
-                />
+      <ul className={`site-wrap mt-14 grid grid-cols-1 gap-4 sm:grid-cols-3 ${cols}`}>
+        {fabricantes.map((fab) => (
+          <li key={fab.id} className="reveal-item">
+            {fab.url ? (
+              <a href={fab.url} target="_blank" rel="noopener noreferrer" className={tile}>
+                <ManufacturerLogo src={fab.logo} name={fab.name} />
+              </a>
+            ) : (
+              <div className={tile}>
+                <ManufacturerLogo src={fab.logo} name={fab.name} />
               </div>
-            ))}
-          </div>
-        </div>
-      </div>
+            )}
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }

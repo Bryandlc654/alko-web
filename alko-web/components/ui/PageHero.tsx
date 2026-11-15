@@ -1,15 +1,12 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
 import Breadcrumbs, { type Crumb } from "./Breadcrumbs";
-import Container from "./Container";
 
 /**
- * Cabecera de las páginas interiores (listados y detalles).
- *
- * Siempre lleva imagen de fondo a plena opacidad, con degradados para que el
- * texto se lea, igual que las cabeceras de Proyectos y Contacto. La navegación
- * es transparente sobre ella (ver TRANSPARENT_HEADER_ROUTES en lib/site.ts), por
- * eso deja el espacio superior (pt-36) para no solaparse con la barra.
+ * Cabecera de las páginas interiores · Propuesta 6 (hero de la V4 en versión baja):
+ * foto a sangre con un único velo abajo, titular grande abajo a la izquierda y la
+ * descripción en la columna derecha. La navegación es transparente sobre ella (ver
+ * TRANSPARENT_HEADER_ROUTES en lib/site.ts), por eso deja espacio arriba.
  */
 export default function PageHero({
   eyebrow,
@@ -33,36 +30,41 @@ export default function PageHero({
   children?: ReactNode;
 }) {
   return (
-    <header className="relative isolate flex min-h-[560px] sm:min-h-[620px] lg:min-h-[72vh] items-end overflow-hidden bg-stone-950 text-white pt-36 sm:pt-44 pb-14 sm:pb-20">
+    <header className="relative isolate flex min-h-[560px] items-end overflow-hidden bg-ink pb-10 pt-36 text-paper sm:min-h-[620px] sm:pt-44 lg:min-h-[78vh] lg:pb-14">
       <Image
         src={image}
         alt={imageAlt}
         fill
         priority
         sizes="100vw"
-        className={`-z-10 object-cover ${imagePosition}`}
+        className={`hh-zoom -z-20 object-cover ${imagePosition}`}
       />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-stone-950/90 via-stone-950/55 to-stone-950/10" />
-      <div className="absolute inset-x-0 bottom-0 -z-10 h-2/3 bg-gradient-to-t from-stone-950/90 via-stone-950/40 to-transparent" />
-      <div className="absolute inset-x-0 top-0 -z-10 h-40 bg-gradient-to-b from-stone-950/70 to-transparent" />
+      {/* Velo único, más denso abajo: imagen limpia y titular legible */}
+      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-ink/85 via-ink/35 to-ink/40" />
 
-      <Container className="relative w-full">
-        {breadcrumbs && <Breadcrumbs items={breadcrumbs} className="mb-8" />}
-        {eyebrow && (
-          <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-white/70 uppercase mb-4">
-            {eyebrow}
-          </span>
-        )}
-        <h1 className="max-w-5xl font-display font-light text-4xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tight leading-[1.02] drop-shadow-[0_2px_20px_rgba(0,0,0,0.35)]">
-          {title}
-        </h1>
-        {description && (
-          <div className="mt-6 max-w-2xl text-base sm:text-lg text-white/85 font-light leading-relaxed font-sans">
-            {description}
+      <div className="site-wrap relative w-full">
+        {breadcrumbs && <Breadcrumbs items={breadcrumbs} className="hh-rise mb-8" />}
+        <div className="grid grid-cols-12 items-end gap-x-6 gap-y-8">
+          <div className="col-span-12 lg:col-span-8">
+            {eyebrow && <p className="hh-rise eyebrow eyebrow-light mb-6">{eyebrow}</p>}
+            <h1 className="hh-rise display-title max-w-5xl text-[2.6rem] leading-[1] sm:text-6xl xl:text-[5.2rem]">{title}</h1>
+          </div>
+          {description && (
+            <div
+              className="hh-rise col-span-12 max-w-md leading-relaxed text-paper/80 lg:col-span-4 lg:justify-self-end"
+              style={{ animationDelay: ".2s" }}
+            >
+              {description}
+            </div>
+          )}
+        </div>
+        {children && (
+          <div className="hh-rise" style={{ animationDelay: ".3s" }}>
+            {children}
           </div>
         )}
-        {children}
-      </Container>
+        <span className="cota mt-10 block text-paper lg:mt-14" aria-hidden="true" />
+      </div>
     </header>
   );
 }

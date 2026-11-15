@@ -39,7 +39,7 @@ export default async function GuideDetail({
   const others = guides.filter((g) => g.slug !== guide.slug);
 
   return (
-    <main className="bg-paper text-stone-900">
+    <main className="bg-paper text-ink">
       <PageHero
         eyebrow={`${guide.numero} — GUÍA · ${guide.tema}`}
         title={guide.title}
@@ -56,15 +56,15 @@ export default async function GuideDetail({
 
           <aside className="lg:col-span-4">
             <div className="border border-stone-200 p-6">
-              <h2 className="font-serif text-xl">Sobre esta guía</h2>
+              <h2 className="display-title text-xl">Sobre esta guía</h2>
               <dl className="mt-4 space-y-3 text-sm">
                 <div className="flex justify-between gap-4 border-b border-stone-200 pb-3">
-                  <dt className="font-mono text-[11px] uppercase tracking-widest text-stone-500">Tema</dt>
+                  <dt className="text-[10px] tracking-[0.22em] uppercase text-stone-500">Tema</dt>
                   <dd className="text-stone-700">{guide.tema}</dd>
                 </div>
                 {guide.lectura && (
                   <div className="flex justify-between gap-4">
-                    <dt className="font-mono text-[11px] uppercase tracking-widest text-stone-500">Lectura</dt>
+                    <dt className="text-[10px] tracking-[0.22em] uppercase text-stone-500">Lectura</dt>
                     <dd className="text-stone-700">{guide.lectura}</dd>
                   </div>
                 )}
@@ -73,7 +73,7 @@ export default async function GuideDetail({
 
             {others.length > 0 && (
               <div className="mt-6 border border-stone-200 p-6">
-                <h2 className="font-serif text-xl">Otras guías</h2>
+                <h2 className="display-title text-xl">Otras guías</h2>
                 <ul className="mt-4 divide-y divide-stone-200">
                   {others.map((other) => (
                     <li key={other.id}>
@@ -82,10 +82,10 @@ export default async function GuideDetail({
                         className="group flex items-start justify-between gap-4 py-3"
                       >
                         <span>
-                          <span className="block font-mono text-[10px] uppercase tracking-widest text-stone-400">
+                          <span className="text-[10px] tracking-[0.22em] block uppercase text-stone-400">
                             {other.numero} — {other.tema}
                           </span>
-                          <span className="mt-1 block font-serif text-lg font-light text-stone-900 leading-snug group-hover:text-amber-800 transition-colors">
+                          <span className="display-title mt-1 block text-lg text-ink leading-snug group-hover:text-amber-800 transition-colors">
                             {other.title}
                           </span>
                         </span>

@@ -1,8 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
-import { FOOTER_NAV, FOOTER_NAV_SECONDARY, SITE } from "@/lib/site";
+import ContactTrigger from "@/components/contact/ContactTrigger";
+import { FOOTER_NAV, FOOTER_NAV_SECONDARY, METHOD_HREF, ROUTES, SITE } from "@/lib/site";
 import type { SiteSettings } from "@/lib/types";
 
+const heading = "text-[10px] uppercase tracking-[0.22em] text-white/50";
+const linkCls = "transition-colors hover:text-piedra";
+
+/** Pie de la propuesta 6 (cierre de la V5): frase de marca, cuatro columnas y barra legal. */
 export default function Footer({ settings }: { settings: SiteSettings }) {
   const telHref = `tel:${settings.telefono.replace(/[^+\d]/g, "")}`;
   const socials = [
@@ -10,88 +15,104 @@ export default function Footer({ settings }: { settings: SiteSettings }) {
     { label: "Instagram", href: settings.instagram },
     { label: "Facebook", href: settings.facebook },
   ].filter((social) => social.href && social.href !== "#");
+  const resources = [
+    { href: ROUTES.articlesList, label: "Artículos" },
+    { href: ROUTES.guides, label: "Guías" },
+    { href: `${ROUTES.home}#preguntas`, label: "Preguntas frecuentes" },
+    { href: METHOD_HREF, label: "Nuestro método" },
+  ];
 
   return (
-    <footer className="w-full bg-[#242520] text-paper">
-      <div className="site-wrap pb-7 pt-[clamp(56px,7vw,96px)]">
-        <div className="grid grid-cols-1 gap-12 pb-[clamp(56px,7vw,100px)] md:grid-cols-12 md:gap-8">
-          {/* Marca */}
-          <div className="md:col-span-5">
-            <Image
-              src="/logo.webp"
-              alt={SITE.legalName}
-              width={500}
-              height={130}
-              sizes="220px"
-              className="h-12 w-auto object-contain sm:h-14"
-            />
-            <p className="mt-8 max-w-[370px] text-[13px] leading-[1.85] text-[#B8B6AF]">
-              Construcción integral y coordinación técnica para viviendas, espacios corporativos y
-              proyectos singulares en Madrid.
-            </p>
-          </div>
-
-          {/* Navegación */}
-          <nav aria-label="Pie de página" className="grid grid-cols-2 gap-8 md:col-span-4">
-            <div>
-              <h2 className="mb-5 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#AFA99E]">
-                Explorar
-              </h2>
-              {FOOTER_NAV.map((link) => (
-                <Link key={link.href} href={link.href} className="mb-3 block text-[13px] hover:underline">
-                  {link.label}
-                </Link>
-              ))}
-            </div>
-            <div>
-              <h2 className="mb-5 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#AFA99E]">
-                ALKO
-              </h2>
-              {FOOTER_NAV_SECONDARY.map((link) => (
-                <Link key={link.href} href={link.href} className="mb-3 block text-[13px] hover:underline">
-                  {link.label}
-                </Link>
-              ))}
-            </div>
-          </nav>
-
-          {/* Contacto */}
-          <div className="md:col-span-3">
-            <h2 className="mb-5 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#AFA99E]">
-              Contacto
-            </h2>
-            <address className="space-y-3 text-[13px] not-italic leading-relaxed">
-              <span className="block text-[#B8B6AF]">{settings.direccion}</span>
-              <a href={telHref} className="block hover:underline">
-                {settings.telefono}
-              </a>
-              <a href={`mailto:${settings.email}`} className="block break-all hover:underline">
-                {settings.email}
-              </a>
-              {settings.horario && <span className="block text-[#B8B6AF]">{settings.horario}</span>}
-            </address>
-          </div>
+    <footer className="w-full bg-ink text-white">
+      <div className="site-wrap grid gap-y-12 pb-14 pt-20 md:grid-cols-3">
+        <div className="flex flex-col md:pr-10">
+          <p className="display-title text-[30px] leading-[1.08] md:text-[38px]">Construimos espacios que permanecen</p>
+          <Image
+            src="/logo.webp"
+            alt={SITE.legalName}
+            width={500}
+            height={130}
+            sizes="200px"
+            className="mt-12 h-10 w-auto self-start object-contain md:mt-auto"
+          />
         </div>
 
-        <div className="flex flex-col gap-4 border-t border-[#51514C] pt-5 text-[11px] tracking-[0.06em] text-[#A8A69E] sm:flex-row sm:items-center sm:justify-between">
-          <span>
-            © {new Date().getFullYear()} {SITE.legalName} · Madrid, España
-          </span>
-          {socials.length > 0 && (
-            <div className="flex items-center gap-6">
-              {socials.map((social) => (
-                <a
-                  key={social.label}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="transition-colors hover:text-white"
-                >
-                  {social.label}
-                </a>
+        <div className="grid grid-cols-2 gap-8 sm:grid-cols-4 md:col-span-2 md:pl-4">
+          <nav aria-label="Explorar">
+            <h2 className={heading}>Explorar</h2>
+            <ul className="mt-5 space-y-2.5 text-[15px] text-white/70">
+              {FOOTER_NAV.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className={linkCls}>
+                    {link.label}
+                  </Link>
+                </li>
               ))}
-            </div>
-          )}
+            </ul>
+          </nav>
+          <nav aria-label="ALKO">
+            <h2 className={heading}>ALKO</h2>
+            <ul className="mt-5 space-y-2.5 text-[15px] text-white/70">
+              {FOOTER_NAV_SECONDARY.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className={linkCls}>
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          <nav aria-label="Recursos">
+            <h2 className={heading}>Recursos</h2>
+            <ul className="mt-5 space-y-2.5 text-[15px] text-white/70">
+              {resources.map((link) => (
+                <li key={link.label}>
+                  <Link href={link.href} className={linkCls}>
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          <div className="col-span-2 sm:col-span-1">
+            <h2 className={heading}>Proyecto</h2>
+            <address className="mt-5 space-y-2.5 text-[15px] not-italic text-white/70">
+              {settings.direccion && <span className="block">{settings.direccion}</span>}
+              <a href={telHref} className={`block ${linkCls}`}>
+                {settings.telefono}
+              </a>
+              <a href={`mailto:${settings.email}`} className={`block break-all ${linkCls}`}>
+                {settings.email}
+              </a>
+            </address>
+            <ContactTrigger mode="avanzado" source="Pie" className="btn btn-paper mt-6">
+              Presentar <span aria-hidden="true">→</span>
+            </ContactTrigger>
+            {socials.length > 0 && (
+              <>
+                <h2 className={`${heading} mt-10`}>Redes</h2>
+                <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-[14px] text-white/70">
+                  {socials.map((social) => (
+                    <li key={social.label}>
+                      <a href={social.href} target="_blank" rel="noopener noreferrer" className={linkCls}>
+                        {social.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="border-t border-white/10">
+        <div className="site-wrap flex flex-col justify-between gap-3 py-6 text-[10px] uppercase tracking-[0.22em] text-white/50 md:flex-row">
+          <span>
+            © {new Date().getFullYear()} {SITE.legalName}
+          </span>
+          {settings.horario && <span>{settings.horario}</span>}
+          <span>Madrid · España</span>
         </div>
       </div>
     </footer>

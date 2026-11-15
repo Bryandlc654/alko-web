@@ -1,3 +1,4 @@
+import { divisionForSector } from "@/lib/divisions";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -214,7 +215,7 @@ export default async function SectorDetailPage({
   ];
 
   return (
-    <main className="bg-paper text-stone-900 selection:bg-[#8B7560]/20">
+    <main className="bg-paper text-ink selection:bg-[#8B7560]/20">
       {jsonLd.map((data, index) => (
         <script key={index} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }} />
       ))}
@@ -237,15 +238,15 @@ export default async function SectorDetailPage({
           <ContactTrigger
             mode="avanzado"
             source={`Servicio ${sector.title}`}
-            tipo={sector.title}
-            className="inline-flex items-center gap-2 px-6 py-3.5 bg-[#8B7560] hover:bg-[#75624F] text-stone-950 font-semibold text-xs tracking-widest uppercase transition-all shadow-lg active:scale-95"
+            tipo={divisionForSector(sector.slug)}
+            className="btn btn-paper"
           >
             <span>Solicitar valoración de proyecto</span>
             <ArrowRight className="w-4 h-4" />
           </ContactTrigger>
           <Link
             href={ROUTES.projects}
-            className="inline-flex items-center gap-2 px-6 py-3.5 bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs tracking-widest uppercase backdrop-blur-sm transition-all"
+            className="btn btn-ghost-light"
           >
             <span>Ver casos de éxito</span>
           </Link>
@@ -263,10 +264,10 @@ export default async function SectorDetailPage({
                 key={idx}
                 className={`pt-6 sm:pt-0 ${idx !== 0 ? "sm:pl-8 lg:pl-12" : ""}`}
               >
-                <span className="block font-serif text-3xl sm:text-4xl lg:text-5xl font-light text-stone-950 tracking-tight">
+                <span className="display-title block text-3xl sm:text-4xl lg:text-5xl text-stone-950">
                   {m.valor}
                 </span>
-                <span className="block font-sans text-xs sm:text-sm text-stone-600 mt-2 leading-relaxed">
+                <span className="block font-sans text-xs sm:text-sm text-mid mt-2 leading-relaxed">
                   {m.label}
                 </span>
               </div>
@@ -282,33 +283,33 @@ export default async function SectorDetailPage({
         <Container>
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             <div className="lg:col-span-6 space-y-6">
-              <span className="font-mono text-xs text-[#8B7560] uppercase tracking-[0.2em] font-semibold">
+              <span className="eyebrow">
                 EL ENFOQUE ALKO EN {sector.title.toUpperCase()}
               </span>
-              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-light text-stone-900 leading-tight">
+              <h2 className="display-title text-3xl sm:text-4xl lg:text-5xl text-ink leading-tight">
                 {landing?.problemsHeadline || "Rigor constructivo, fidelidad al diseño y presupuesto cerrado."}
               </h2>
-              <p className="text-base sm:text-lg text-stone-600 leading-relaxed font-light">
+              <p className="text-base sm:text-lg text-mid leading-relaxed font-light">
                 {sector.descripcion}
               </p>
-              <p className="text-sm sm:text-base text-stone-600 leading-relaxed font-light">
+              <p className="text-sm sm:text-base text-mid leading-relaxed font-light">
                 En ALKO integramos bajo una sola dirección técnica la arquitectura interior, el cálculo
                 de instalaciones y la gestión de compras. Así evitamos las fricciones habituales entre proyectistas
                 y contratistas, garantizando que el presupuesto pactado sea el definitivo.
               </p>
 
               <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="flex items-start gap-3 p-4 rounded-lg bg-stone-50 border border-stone-200">
-                  <CheckCircle2 className="w-5 h-5 text-[#8B7560] shrink-0 mt-0.5" />
+                <div className="flex items-start gap-3 p-4 bg-stone-50 border border-stone-200">
+                  <CheckCircle2 className="w-5 h-5 text-bronze shrink-0 mt-0.5" />
                   <div>
-                    <h3 className="text-sm font-semibold text-stone-900">Dirección 360°</h3>
+                    <h3 className="text-sm font-semibold text-ink">Dirección 360°</h3>
                     <p className="text-xs text-stone-500 mt-1">Un solo responsable para obra, clima y licencias.</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3 p-4 rounded-lg bg-stone-50 border border-stone-200">
-                  <CheckCircle2 className="w-5 h-5 text-[#8B7560] shrink-0 mt-0.5" />
+                <div className="flex items-start gap-3 p-4 bg-stone-50 border border-stone-200">
+                  <CheckCircle2 className="w-5 h-5 text-bronze shrink-0 mt-0.5" />
                   <div>
-                    <h3 className="text-sm font-semibold text-stone-900">Plazos Innegociables</h3>
+                    <h3 className="text-sm font-semibold text-ink">Plazos Innegociables</h3>
                     <p className="text-xs text-stone-500 mt-1">Planificación milimétrica con compras anticipadas.</p>
                   </div>
                 </div>
@@ -316,7 +317,7 @@ export default async function SectorDetailPage({
             </div>
 
             <div className="lg:col-span-6">
-              <div className="relative aspect-[4/3] w-full overflow-hidden shadow-2xl bg-stone-200">
+              <div className="relative aspect-[4/3] w-full overflow-hidden bg-stone-200">
                 <Image
                   src={landing?.includesImage || sector.imagen || "/p2.jpg"}
                   alt={`Obra destacada de ${sector.title}`}
@@ -326,10 +327,10 @@ export default async function SectorDetailPage({
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                 <div className="absolute bottom-6 left-6 right-6 text-white">
-                  <span className="font-mono text-[11px] uppercase tracking-widest text-[#8B7560] block mb-1">
+                  <span className="text-[10px] tracking-[0.22em] uppercase text-bronze block mb-1">
                     ESTÁNDAR ALKO
                   </span>
-                  <p className="text-sm sm:text-base font-serif font-light">
+                  <p className="display-title text-sm sm:text-base">
                     {commitments[0]?.title}: {commitments[0]?.text}.
                   </p>
                 </div>
@@ -346,10 +347,10 @@ export default async function SectorDetailPage({
         <Container>
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-8 mb-10 border-b border-stone-200">
             <div>
-              <span className="font-mono text-xs text-[#8B7560] uppercase tracking-[0.25em] font-semibold">
+              <span className="eyebrow">
                 {landing?.capacidadesSubtitle || "DISCIPLINAS TÉCNICAS & METODOLOGÍA"}
               </span>
-              <h2 className="mt-2 font-serif text-3xl sm:text-4xl font-light text-stone-900">
+              <h2 className="display-title mt-2 text-3xl sm:text-4xl text-ink">
                 {landing?.capacidadesHeadline || "Capacidades Técnicas"}
               </h2>
             </div>
@@ -364,27 +365,27 @@ export default async function SectorDetailPage({
               return (
                 <div
                   key={cap.codigo}
-                  className="bg-paper border border-stone-200/90 p-6 sm:p-7 shadow-xs hover:border-[#8B7560]/60 hover:shadow-md transition-all flex flex-col justify-between"
+                  className="bg-paper border border-stone-200/90 p-6 sm:p-7 shadow-xs hover:border-[#8B7560]/60 transition-all flex flex-col justify-between"
                 >
                   <div>
                     <div className="flex items-center justify-between mb-4">
                       <span className="font-mono text-xs text-stone-400 font-medium">
                         {cap.codigo}
                       </span>
-                      <div className="w-8 h-8 rounded-full bg-stone-50 border border-stone-200 flex items-center justify-center text-[#8B7560]">
+                      <div className="w-8 h-8 rounded-full bg-stone-50 border border-stone-200 flex items-center justify-center text-bronze">
                         <Icon className="w-4 h-4" />
                       </div>
                     </div>
 
-                    <span className="inline-block font-mono text-[10px] uppercase tracking-wider text-[#75624F] bg-[#8B7560]/10 px-2 py-0.5 rounded-xs border border-[#8B7560]/20 mb-3">
+                    <span className="inline-block font-mono text-[10px] uppercase tracking-wider text-[#75624F] bg-[#8B7560]/10 px-2 py-0.5 border border-[#8B7560]/20 mb-3">
                       {cap.metrica}
                     </span>
 
-                    <h3 className="font-serif text-xl font-normal text-stone-900 mb-2">
+                    <h3 className="display-title text-xl text-ink mb-2">
                       {cap.titulo}
                     </h3>
 
-                    <p className="text-xs sm:text-sm text-stone-600 font-light leading-relaxed mb-4">
+                    <p className="text-xs sm:text-sm text-mid font-light leading-relaxed mb-4">
                       {cap.resumen}
                     </p>
                   </div>
@@ -395,7 +396,7 @@ export default async function SectorDetailPage({
                         key={pIdx}
                         className="flex items-center gap-2 text-xs text-stone-700 font-light"
                       >
-                        <Check className="w-3.5 h-3.5 text-[#8B7560] shrink-0" />
+                        <Check className="w-3.5 h-3.5 text-bronze shrink-0" />
                         <span>{punto}</span>
                       </li>
                     ))}
@@ -413,13 +414,13 @@ export default async function SectorDetailPage({
       <section className="py-16 sm:py-24 bg-paper border-b border-stone-200">
         <Container>
           <div className="max-w-3xl mb-12">
-            <span className="font-mono text-xs text-[#8B7560] uppercase tracking-[0.2em] font-semibold">
+            <span className="eyebrow">
               {includesSubtitle}
             </span>
-            <h2 className="mt-3 font-serif text-3xl sm:text-4xl font-light text-stone-900">
+            <h2 className="display-title mt-3 text-3xl sm:text-4xl text-ink">
               {includesHeadline}
             </h2>
-            <p className="mt-4 text-stone-600 font-light">
+            <p className="mt-4 text-mid font-light">
               Partidas integradas y gestionadas de inicio a fin bajo una misma responsabilidad contractual.
             </p>
           </div>
@@ -430,7 +431,7 @@ export default async function SectorDetailPage({
                 key={idx}
                 className="p-6 bg-[#fbfbfa] border border-stone-200/90 flex items-start gap-3 hover:border-[#8B7560]/40 transition-colors"
               >
-                <FileCheck2 className="w-5 h-5 text-[#8B7560] shrink-0 mt-0.5" />
+                <FileCheck2 className="w-5 h-5 text-bronze shrink-0 mt-0.5" />
                 <span className="text-sm font-light text-stone-800 leading-snug">
                   {item}
                 </span>
@@ -448,16 +449,16 @@ export default async function SectorDetailPage({
           <Container>
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12">
               <div>
-                <span className="font-mono text-xs text-[#8B7560] uppercase tracking-[0.2em] font-semibold">
+                <span className="eyebrow">
                   PROYECTOS REPRESENTATIVOS
                 </span>
-                <h2 className="mt-2 font-serif text-3xl sm:text-4xl font-light text-stone-900">
+                <h2 className="display-title mt-2 text-3xl sm:text-4xl text-ink">
                   Obras ejecutadas en Madrid
                 </h2>
               </div>
               <Link
                 href={ROUTES.projects}
-                className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-stone-900 hover:text-[#8B7560] border-b border-stone-900 hover:border-[#8B7560] pb-1 transition-colors"
+                className="text-[10px] tracking-[0.22em] inline-flex items-center gap-2 uppercase text-ink hover:text-[#8B7560] border-b border-stone-900 hover:border-[#8B7560] pb-1 transition-colors"
               >
                 <span>Ver todos los proyectos</span>
                 <ChevronRight className="w-3.5 h-3.5" />
@@ -468,7 +469,7 @@ export default async function SectorDetailPage({
               {showcase.slice(0, 2).map((p) => (
                 <article
                   key={p.slug}
-                  className="group border border-stone-200 bg-paper overflow-hidden shadow-sm hover:shadow-lg transition-all"
+                  className="group border border-stone-200 bg-paper overflow-hidden transition-all"
                 >
                   <div className="relative aspect-[16/10] overflow-hidden bg-stone-200">
                     <Image
@@ -496,16 +497,16 @@ export default async function SectorDetailPage({
                       <span>•</span>
                       <span>Plazo: {p.plazo || "Cronograma cerrado"}</span>
                     </div>
-                    <h3 className="font-serif text-2xl font-light text-stone-900 group-hover:text-[#8B7560] transition-colors">
+                    <h3 className="display-title text-2xl text-ink group-hover:text-[#8B7560] transition-colors">
                       {p.title}
                     </h3>
-                    <p className="mt-3 text-sm text-stone-600 leading-relaxed font-light">
+                    <p className="mt-3 text-sm text-mid leading-relaxed font-light">
                       {p.reto || p.solucion || p.resultado}
                     </p>
                     <div className="mt-6 pt-6 border-t border-stone-100 flex items-center justify-between">
                       <Link
                         href={`/proyectos/${p.slug}`}
-                        className="inline-flex items-center gap-2 text-xs font-mono tracking-widest uppercase text-stone-900 group-hover:text-[#8B7560] transition-colors"
+                        className="text-[10px] tracking-[0.22em] inline-flex items-center gap-2 uppercase text-ink group-hover:text-[#8B7560] transition-colors"
                       >
                         <span>Ver ficha técnica completa</span>
                         <ArrowRight className="w-3.5 h-3.5" />
@@ -526,10 +527,10 @@ export default async function SectorDetailPage({
         <Container>
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-8 mb-10 border-b border-stone-200">
             <div>
-              <span className="font-mono text-xs text-[#8B7560] uppercase tracking-[0.25em] font-semibold">
+              <span className="eyebrow">
                 SECUENCIA OPERATIVA
               </span>
-              <h2 className="mt-2 font-serif text-3xl sm:text-4xl font-light text-stone-900">
+              <h2 className="display-title mt-2 text-3xl sm:text-4xl text-ink">
                 Metodología de Ejecución
               </h2>
             </div>
@@ -582,7 +583,7 @@ export default async function SectorDetailPage({
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <span className="font-mono text-2xl font-light text-[#8B7560]">
+                    <span className="font-mono text-2xl font-light text-bronze">
                       ({etapa.fase})
                     </span>
                     <span className="font-mono text-[10px] uppercase tracking-wider bg-stone-200/70 text-stone-700 px-2 py-0.5 font-medium">
@@ -590,17 +591,17 @@ export default async function SectorDetailPage({
                     </span>
                   </div>
 
-                  <h3 className="font-serif text-lg font-normal text-stone-900 mb-2">
+                  <h3 className="display-title text-lg text-ink mb-2">
                     {etapa.titulo}
                   </h3>
 
-                  <p className="text-xs text-stone-600 font-light leading-relaxed mb-4">
+                  <p className="text-xs text-mid font-light leading-relaxed mb-4">
                     {etapa.resumen}
                   </p>
                 </div>
 
                 <div className="pt-3 border-t border-stone-200/80">
-                  <span className="font-mono text-[10px] uppercase tracking-wider text-stone-400 block mb-1">
+                  <span className="text-[10px] tracking-[0.22em] uppercase text-stone-400 block mb-1">
                     Entregable
                   </span>
                   <span className="text-xs text-stone-800 font-medium leading-tight block">
@@ -613,22 +614,22 @@ export default async function SectorDetailPage({
 
           <div className="mt-10 p-6 bg-stone-50 border border-stone-200 flex flex-col sm:flex-row items-center justify-around gap-4 text-center sm:text-left">
             <div className="flex items-center gap-2.5">
-              <CheckCircle2 className="w-4 h-4 text-[#8B7560] shrink-0" />
-              <span className="text-xs font-mono tracking-wider uppercase text-stone-800 font-medium">
+              <CheckCircle2 className="w-4 h-4 text-bronze shrink-0" />
+              <span className="text-[10px] tracking-[0.22em] uppercase text-stone-800">
                 Compras anticipadas en fábrica
               </span>
             </div>
             <span className="hidden sm:inline text-stone-300">•</span>
             <div className="flex items-center gap-2.5">
-              <CheckCircle2 className="w-4 h-4 text-[#8B7560] shrink-0" />
-              <span className="text-xs font-mono tracking-wider uppercase text-stone-800 font-medium">
+              <CheckCircle2 className="w-4 h-4 text-bronze shrink-0" />
+              <span className="text-[10px] tracking-[0.22em] uppercase text-stone-800">
                 1 único interlocutor técnico
               </span>
             </div>
             <span className="hidden sm:inline text-stone-300">•</span>
             <div className="flex items-center gap-2.5">
-              <CheckCircle2 className="w-4 h-4 text-[#8B7560] shrink-0" />
-              <span className="text-xs font-mono tracking-wider uppercase text-stone-800 font-medium">
+              <CheckCircle2 className="w-4 h-4 text-bronze shrink-0" />
+              <span className="text-[10px] tracking-[0.22em] uppercase text-stone-800">
                 Presupuesto y plazo cerrados
               </span>
             </div>
@@ -645,10 +646,10 @@ export default async function SectorDetailPage({
       <section className="py-16 sm:py-24 border-b border-stone-200 bg-[#fbfbfa]">
         <Container>
           <div className="max-w-3xl mb-12">
-            <span className="font-mono text-xs text-[#8B7560] uppercase tracking-[0.2em] font-semibold">
+            <span className="eyebrow">
               RESOLVEMOS TUS DUDAS
             </span>
-            <h2 className="mt-3 font-serif text-3xl sm:text-4xl font-light text-stone-900">
+            <h2 className="display-title mt-3 text-3xl sm:text-4xl text-ink">
               Preguntas habituales sobre {sector.title.toLowerCase()}
             </h2>
           </div>
@@ -659,10 +660,10 @@ export default async function SectorDetailPage({
                 key={idx}
                 className="p-8 bg-paper border border-stone-200 space-y-3 shadow-xs"
               >
-                <h3 className="font-serif text-lg font-normal text-stone-900">
+                <h3 className="display-title text-lg text-ink">
                   {faq.q}
                 </h3>
-                <p className="text-sm text-stone-600 leading-relaxed font-light">
+                <p className="text-sm text-mid leading-relaxed font-light">
                   {faq.a}
                 </p>
               </div>
@@ -678,12 +679,12 @@ export default async function SectorDetailPage({
         <section className="py-16 sm:py-20 border-b border-stone-200 bg-paper">
           <Container>
             <div className="flex items-center justify-between mb-8">
-              <h2 className="font-mono text-xs uppercase tracking-[0.25em] text-[#8B7560] font-semibold">
+              <h2 className="eyebrow">
                 OTRAS ESPECIALIDADES ALKO
               </h2>
               <Link
                 href={ROUTES.sectors}
-                className="text-xs font-mono uppercase tracking-wider text-stone-500 hover:text-stone-900 border-b border-transparent hover:border-stone-900 transition-colors"
+                className="text-[10px] tracking-[0.22em] uppercase text-stone-500 hover:text-stone-900 border-b border-transparent hover:border-stone-900 transition-colors"
               >
                 Ver todos los servicios →
               </Link>
@@ -693,18 +694,18 @@ export default async function SectorDetailPage({
                 <Link
                   key={item.id}
                   href={`${ROUTES.sectors}/${item.slug}`}
-                  className="group block border border-stone-200 bg-[#fbfbfa] p-6 hover:border-[#8B7560]/60 hover:shadow-md transition-all"
+                  className="group block border border-stone-200 bg-[#fbfbfa] p-6 hover:border-[#8B7560]/60 transition-all"
                 >
                   <span className="font-mono text-xs text-stone-400 block mb-2">
                     ({item.numero || "00"})
                   </span>
-                  <h3 className="font-serif text-xl font-normal text-stone-900 group-hover:text-[#8B7560] transition-colors">
+                  <h3 className="display-title text-xl text-ink group-hover:text-[#8B7560] transition-colors">
                     {item.title}
                   </h3>
-                  <p className="mt-2 text-xs text-stone-600 line-clamp-2 font-light">
+                  <p className="mt-2 text-xs text-mid line-clamp-2 font-light">
                     {item.descripcion}
                   </p>
-                  <div className="mt-4 pt-4 border-t border-stone-200/60 flex items-center gap-2 text-xs font-mono tracking-wider uppercase text-stone-900 group-hover:text-[#8B7560]">
+                  <div className="text-[10px] tracking-[0.22em] mt-4 pt-4 border-t border-stone-200/60 flex items-center gap-2 uppercase text-ink group-hover:text-[#8B7560]">
                     <span>Explorar especialidad</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </div>

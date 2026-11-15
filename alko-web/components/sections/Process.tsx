@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
-import type { Fase, HomeContent } from "@/lib/types";
+import { useState } from "react";
+import type { Fase } from "@/lib/types";
 
 /** Extrae el número de fase (p. ej. "(01)") a partir del tag o del índice. */
 function phaseNumber(fase: Fase, index: number) {
@@ -7,6 +10,10 @@ function phaseNumber(fase: Fase, index: number) {
   return (match ? match[0] : String(index + 1)).padStart(2, "0");
 }
 
+/**
+ * Fases del proceso · Propuesta 6 (método de la V4): fondo carbón, introducción fija
+ * con una imagen que cambia según la fase señalada y la lista de fases a la derecha.
+ */
 export default function Process({
   fases,
   id = "metodo",
@@ -21,97 +28,60 @@ export default function Process({
     procesoColText?: string;
   };
 }) {
-  const first = fases[0];
+  const [active, setActive] = useState(0);
+  if (fases.length === 0) return null;
 
   return (
-    <section
-      id={id}
-      className="relative bg-paper text-stone-900 py-24 sm:py-32 px-6 sm:px-10 lg:px-12 overflow-hidden border-t border-stone-200"
-    >
-      <div className="max-w-7xl mx-auto">
-        {/* Cabecera */}
-        <div className="reveal-item flex items-baseline justify-between pb-12 sm:pb-16 border-b border-stone-300/60">
-          <div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-light text-stone-900 tracking-tight leading-none">
-              {content?.procesoTitulo ?? "Nuestro proceso"}
+    <section id={id} className="bg-ink text-paper">
+      <div className="site-wrap grid grid-cols-12 gap-x-6 gap-y-14 py-24 lg:py-36">
+        <div className="col-span-12 lg:col-span-4">
+          <div className="lg:sticky lg:top-36">
+            <p className="eyebrow eyebrow-light reveal-item">
+              {content?.procesoSubtitulo || `Nuestro proceso · ${fases.length} fases · 1 equipo`}
+            </p>
+            <h2 className="reveal-item display-title mt-6 text-5xl leading-[1.02] sm:text-6xl">
+              {content?.procesoTitulo || "Nuestro proceso"}
             </h2>
-            <span className="block mt-2 font-mono text-[11px] tracking-[0.25em] text-stone-500 uppercase">
-              {content?.procesoSubtitulo ?? "SECUENCIA DE COORDINACIÓN INTEGRAL · 6 FASES · 1 EQUIPO"}
-            </span>
+            <p className="reveal-item mt-8 max-w-sm leading-relaxed text-paper/60">
+              {content?.procesoColText ||
+                "Un único equipo coordina construcción, instalaciones, compras y gestión técnica para mantener el proyecto bajo control."}
+            </p>
+            <div className="reveal-item relative mt-12 hidden aspect-[4/3] overflow-hidden lg:block">
+              {fases.map((fase, i) => (
+                <Image
+                  key={fase.id}
+                  src={fase.imagen}
+                  alt={i === active ? `ALKO · Fase ${phaseNumber(fase, i)} · ${fase.title}` : ""}
+                  fill
+                  sizes="30vw"
+                  className={`object-cover transition-opacity duration-500 ${i === active ? "opacity-90" : "opacity-0"}`}
+                />
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Layout */}
-        <div className="mt-14 sm:mt-20 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-start">
-          {/* Columna 1: Tabs */}
-          <div className="lg:col-span-4 flex flex-col space-y-4 sm:space-y-6">
-            {fases.map((fase, i) => (
-              <button
-                key={fase.id}
-                type="button"
-                data-phase={i}
-                data-text={fase.texto}
-                data-img={fase.imagen}
-                className={`process-tab text-left group flex items-baseline gap-3 transition-all duration-300 focus:outline-none ${
-                  i === 0 ? "is-active" : ""
+        <ol className="col-span-12 border-t border-paper/15 lg:col-span-7 lg:col-start-6">
+          {fases.map((fase, i) => (
+            <li
+              key={fase.id}
+              onMouseEnter={() => setActive(i)}
+              className="reveal-item group grid grid-cols-[64px_1fr] gap-4 border-b border-paper/15 py-10 sm:grid-cols-[110px_1fr]"
+            >
+              <span
+                className={`display-title text-4xl transition-colors sm:text-5xl ${
+                  i === active ? "text-bronze-light" : "text-paper/30 group-hover:text-bronze-light"
                 }`}
               >
-                <span
-                  className={`phase-badge font-mono text-xs transition ${
-                    i === 0 ? "text-stone-900" : "text-stone-400 group-hover:text-stone-700"
-                  }`}
-                >
-                  ({phaseNumber(fase, i)})
-                </span>
-                <span
-                  className={`phase-title text-3xl sm:text-4xl lg:text-5xl font-serif border-b-2 pb-1 transition-all ${
-                    i === 0
-                      ? "text-stone-900 border-stone-900"
-                      : "text-stone-400 border-transparent group-hover:text-stone-700"
-                  }`}
-                >
-                  {fase.title}
-                </span>
-              </button>
-            ))}
-          </div>
-
-          {/* Columna 2: Imagen */}
-          <div className="lg:col-span-4 reveal-scale">
-            <div className="relative w-full aspect-[3/4] overflow-hidden bg-stone-200 shadow-md">
-              <Image
-                id="process-image"
-                src={first.imagen}
-                alt={`ALKO - Fase ${first.tag} - ${first.title}`}
-                fill
-                sizes="(max-width: 1024px) 100vw, 576px"
-                className="object-cover object-center transition-all duration-700 ease-out"
-              />
-            </div>
-          </div>
-
-          {/* Columna 3: Texto */}
-          <div className="lg:col-span-4 flex flex-col justify-between self-stretch space-y-8 lg:pl-6 reveal-item">
-            <div>
-              <h3 className="text-xl sm:text-2xl font-serif font-light text-stone-900 tracking-tight leading-snug">
-                {content?.procesoColHeading ?? "Una única dirección para todo el proyecto"}
-              </h3>
-              <p className="mt-4 text-base sm:text-lg text-stone-600 font-light leading-relaxed font-sans">
-                {content?.procesoColText || "Un único equipo coordina construcción, instalaciones, compras y gestión técnica para mantener el proyecto bajo control."}
-
-              </p>
-            </div>
-
-            <div className="pt-6 border-t border-stone-300/60">
-              <p
-                id="phase-detail-text"
-                className="text-base sm:text-lg text-stone-600 font-light leading-relaxed transition-opacity duration-300 font-sans"
-              >
-                {first.texto}
-              </p>
-            </div>
-          </div>
-        </div>
+                {phaseNumber(fase, i)}
+              </span>
+              <div>
+                <h3 className="display-title text-2xl sm:text-3xl">{fase.title}</h3>
+                <p className="mt-3 max-w-lg leading-relaxed text-paper/60">{fase.texto}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
       </div>
     </section>
   );
