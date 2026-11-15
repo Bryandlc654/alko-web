@@ -11,7 +11,20 @@ export interface Crumb {
  * Migas de pan para las cabeceras sobre imagen (texto claro). Siempre empiezan en «Inicio»;
  * el último elemento es la página actual. Incluye los datos estructurados BreadcrumbList.
  */
-export default function Breadcrumbs({ items, className = "" }: { items: Crumb[]; className?: string }) {
+export default function Breadcrumbs({
+  items,
+  className = "",
+  tone = "light",
+}: {
+  items: Crumb[];
+  className?: string;
+  /** «light»: texto blanco sobre foto; «dark»: texto tinta sobre fondo claro. */
+  tone?: "light" | "dark";
+}) {
+  const c =
+    tone === "dark"
+      ? { base: "text-mid", hover: "hover:text-ink", current: "text-ink", sep: "text-ink/30" }
+      : { base: "text-white/70", hover: "hover:text-white", current: "text-white", sep: "text-white/40" };
   const trail: Crumb[] = [{ label: "Inicio", href: ROUTES.home }, ...items];
 
   const jsonLd = {
@@ -27,22 +40,22 @@ export default function Breadcrumbs({ items, className = "" }: { items: Crumb[];
 
   return (
     <nav aria-label="Migas de pan" className={className}>
-      <ol className="text-[10px] tracking-[0.22em] flex flex-wrap items-center gap-x-2 gap-y-1 uppercase text-white/70">
+      <ol className={`text-[10px] tracking-[0.22em] flex flex-wrap items-center gap-x-2 gap-y-1 uppercase ${c.base}`}>
         {trail.map((item, index) => {
           const last = index === trail.length - 1;
           return (
             <li key={`${item.label}-${index}`} className="flex min-w-0 items-center gap-2">
               {item.href && !last ? (
-                <Link href={item.href} className="transition-colors hover:text-white">
+                <Link href={item.href} className={`transition-colors ${c.hover}`}>
                   {item.label}
                 </Link>
               ) : (
-                <span aria-current="page" className="min-w-0 truncate text-white">
+                <span aria-current="page" className={`min-w-0 truncate ${c.current}`}>
                   {item.label}
                 </span>
               )}
               {!last && (
-                <span aria-hidden="true" className="text-white/40">
+                <span aria-hidden="true" className={c.sep}>
                   /
                 </span>
               )}

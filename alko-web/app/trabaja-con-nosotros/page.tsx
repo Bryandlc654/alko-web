@@ -1,6 +1,7 @@
 import Image from "@/components/ui/Image";
-import Container from "@/components/ui/Container";
-import PageHero from "@/components/ui/PageHero";
+import EditorialHeader from "@/components/editorial/EditorialHeader";
+import EditorialSection from "@/components/editorial/EditorialSection";
+import EditorialCta from "@/components/editorial/EditorialCta";
 import { ROUTES } from "@/lib/site";
 import { pageJsonLd, pageMetadata } from "@/lib/seo";
 import type { PosicionEmpleo } from "@/lib/types";
@@ -79,126 +80,92 @@ export default async function TrabajaConNosotrosPage() {
   };
 
   return (
-    <main className="bg-white text-ink">
+    <main className="bg-paper text-ink">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <PageHero
+      <EditorialHeader
         breadcrumbs={[{ label: "Empresa", href: ROUTES.company }, { label: "Trabaja con nosotros" }]}
-        eyebrow={pageContent.headerBadge || "TRABAJA CON NOSOTROS"}
+        eyebrow={pageContent.headerBadge || "Trabaja con nosotros"}
         title={pageContent.headerTitulo || "Construimos con las personas"}
         description={
           pageContent.headerDescripcion ||
           "Buscamos profesionales que compartan nuestro criterio técnico y quieran crecer dentro de un equipo que trabaja como una dirección única."
         }
+        aside={
+          <a
+            href="#posiciones"
+            className="group flex items-end justify-between gap-6 border-t border-ink/15 pt-5 transition-colors hover:text-bronze"
+          >
+            <span>
+              <span className="block text-[10px] uppercase tracking-[0.22em] text-mid">Posiciones abiertas</span>
+              <span className="display-title mt-2 block text-5xl">{String(abiertas.length).padStart(2, "0")}</span>
+            </span>
+            <span className="pb-2 text-[11px] uppercase tracking-[0.22em]">
+              Ver puestos <span aria-hidden="true" className="inline-block transition-transform group-hover:translate-y-0.5">↓</span>
+            </span>
+          </a>
+        }
         image={pageContent.headerBgImage || "/proceso-control.jpg"}
+        imageAlt="Equipo de ALKO en obra"
+        caption="Trabajo en obra"
       />
 
-      {/* Cultura */}
-      <section className="relative isolate w-full overflow-hidden bg-white text-ink">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 z-[1] mx-auto hidden max-w-[1780px] grid-cols-6 px-6 sm:px-12 lg:grid lg:px-20"
-        >
-          <div className="h-full border-x border-black/[0.06]" />
-          <div className="h-full border-r border-black/[0.06]" />
-          <div className="h-full border-r border-black/[0.06]" />
-          <div className="h-full border-r border-black/[0.06]" />
-          <div className="h-full border-r border-black/[0.06]" />
-          <div className="h-full border-r border-black/[0.06]" />
+      {/* 01 · Cultura */}
+      <EditorialSection
+        number="01"
+        label={pageContent.culturaTag || "El equipo ALKO"}
+        title={pageContent.culturaTitulo || "Un equipo pequeño, con criterio y sin intermediarios"}
+      >
+        <div className="grid grid-cols-1 gap-x-10 gap-y-6 sm:grid-cols-2">
+          <p className="reveal-item text-lg leading-relaxed text-mid">
+            {pageContent.culturaParrafo1 ||
+              "En ALKO cada persona tiene responsabilidad real sobre el proyecto. Trabajamos cerca de la obra, con decisiones rápidas y una única dirección técnica."}
+          </p>
+          <p className="reveal-item text-lg leading-relaxed text-mid" style={{ transitionDelay: "100ms" }}>
+            {pageContent.culturaParrafo2 ||
+              "Buscamos perfiles con oficio y ambición de crecer: gente que disfrute resolviendo problemas constructivos y cuidando el detalle hasta la entrega."}
+          </p>
         </div>
-
-        <div className="relative z-10 mx-auto max-w-[1720px] px-6 py-16 sm:px-12 sm:py-24 lg:px-20">
-          <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12 lg:gap-14">
-            <div className="relative pt-1 lg:col-span-5 reveal-item">
-              <span className="text-[10px] tracking-[0.22em] text-stone-500 uppercase">
-                {pageContent.culturaTag || "El equipo ALKO"}
-              </span>
-            </div>
-
-            <div
-              className="lg:col-span-7 lg:pl-10 xl:pl-16 reveal-item"
-              style={{ transitionDelay: "120ms" }}
-            >
-              <h2 className="display-title text-3xl leading-tight sm:text-4xl lg:text-5xl">
-                {pageContent.culturaTitulo ||
-                  "Un equipo pequeño, con criterio y sin intermediarios"}
-              </h2>
-              <p className="mt-5 max-w-lg text-mid">
-                {pageContent.culturaParrafo1 ||
-                  "En ALKO cada persona tiene responsabilidad real sobre el proyecto. Trabajamos cerca de la obra, con decisiones rápidas y una única dirección técnica."}
-              </p>
-              <p className="mt-4 max-w-lg text-mid">
-                {pageContent.culturaParrafo2 ||
-                  "Buscamos perfiles con oficio y ambición de crecer: gente que disfrute resolviendo problemas constructivos y cuidando el detalle hasta la entrega."}
-              </p>
-            </div>
-          </div>
-
-          <div className="relative mt-12 aspect-[16/9] w-full overflow-hidden bg-stone-100 sm:aspect-[16/7] reveal-scale">
-            <Image
-              src={pageContent.culturaImagen || "/proceso-construccion.jpg"}
-              alt="Equipo de obra de ALKO trabajando en un proyecto"
-              fill
-              sizes="100vw"
-              className="object-cover object-center"
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* Posiciones abiertas */}
-      <section className="border-t border-stone-200 bg-stone-50 py-16 sm:py-24">
-        <Container>
-          <div className="flex flex-col justify-between gap-8 border-b border-stone-300/70 pb-10 lg:flex-row lg:items-end">
-            <div className="reveal-item">
-              <span className="text-[10px] tracking-[0.22em] text-stone-500 uppercase">
-                {pageContent.posicionesTag || "POSICIONES ABIERTAS"}
-              </span>
-              <h2 className="display-title mt-3 text-3xl leading-tight sm:text-4xl lg:text-5xl">
-                {pageContent.posicionesTitulo || "Únete al equipo"}
-              </h2>
-            </div>
-            <p className="max-w-sm text-sm text-mid">
-              {pageContent.posicionesSubtitulo ||
-                "Envíanos tu candidatura por correo. Valoramos perfiles técnicos con experiencia en obra."}
-            </p>
-          </div>
-
-          {/* Lista interactiva de vacantes con modal */}
-          <JobPositionsList posiciones={listaPosiciones} />
-        </Container>
-      </section>
-
-      {/* CTA final */}
-      <section className="relative w-full overflow-hidden bg-ink group">
-        <div className="relative h-[440px] w-full overflow-hidden sm:h-[500px] md:h-[560px]">
+        <div className="reveal-scale relative mt-14 aspect-[16/9] overflow-hidden bg-piedra">
           <Image
-            src={pageContent.ctaBgImage || "/cta-bg.jpg"}
-            alt="Trabaja con ALKO"
+            src={pageContent.culturaImagen || "/proceso-construccion.jpg"}
+            alt="Equipo de obra de ALKO trabajando en un proyecto"
             fill
-            sizes="100vw"
-            className="pointer-events-none select-none object-cover object-top transition-transform duration-1000 ease-out group-hover:scale-[1.01]"
+            sizes="(max-width: 1024px) 100vw, 75vw"
+            className="object-cover object-center"
           />
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-stone-950/95 via-stone-950/50 to-transparent" />
-          <div className="absolute inset-0 z-10 mx-auto flex max-w-7xl flex-col justify-between px-6 py-12 sm:px-12 sm:py-16 lg:px-16 lg:py-24">
-            <div className="pt-8 sm:pt-14">
-              <h2 className="display-title text-3xl leading-[1.08] text-white sm:text-5xl md:text-6xl lg:text-[68px]">
-                {pageContent.ctaTitulo || "¿No encuentras tu puesto ideal?"}
-              </h2>
-            </div>
-            <div className="flex flex-col justify-between gap-8 lg:flex-row lg:items-end">
-              <div className="max-w-xl">
-                <p className="text-sm leading-relaxed text-stone-200/85 sm:text-base">
-                  {pageContent.ctaDescripcion ||
-                    "Envíanos una candidatura espontánea. Nos interesa conocer perfiles con criterio técnico, aunque no haya una posición abierta."}
-                </p>
-              </div>
-              <div className="shrink-0">
-                <JobApplyCtaButton vacantes={listaPosiciones} />
-              </div>
-            </div>
-          </div>
         </div>
-      </section>
+      </EditorialSection>
+
+      {/* 02 · Posiciones abiertas */}
+      <EditorialSection
+        id="posiciones"
+        tone="white"
+        number="02"
+        label={pageContent.posicionesTag || "Posiciones abiertas"}
+        title={pageContent.posicionesTitulo || "Únete al equipo"}
+        intro={
+          pageContent.posicionesSubtitulo ||
+          "Envíanos tu candidatura por correo. Valoramos perfiles técnicos con experiencia en obra."
+        }
+      >
+        <JobPositionsList posiciones={listaPosiciones} />
+      </EditorialSection>
+
+      <EditorialCta
+        label="Candidatura espontánea"
+        title={pageContent.ctaTitulo || "¿No encuentras tu puesto ideal?"}
+        description={
+          pageContent.ctaDescripcion ||
+          "Envíanos una candidatura espontánea. Nos interesa conocer perfiles con criterio técnico, aunque no haya una posición abierta."
+        }
+        meta={
+          <a href={candidaturaHref()} className="break-all transition-colors hover:text-paper">
+            {settings.email}
+          </a>
+        }
+      >
+        <JobApplyCtaButton vacantes={listaPosiciones} />
+      </EditorialCta>
     </main>
   );
 }

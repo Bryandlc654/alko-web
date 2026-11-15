@@ -1,7 +1,8 @@
-import Image from "@/components/ui/Image";
+import Link from "next/link";
 import ContactTrigger from "@/components/contact/ContactTrigger";
-import Container from "@/components/ui/Container";
-import PageHero from "@/components/ui/PageHero";
+import EditorialHeader from "@/components/editorial/EditorialHeader";
+import EditorialSection from "@/components/editorial/EditorialSection";
+import EditorialCta from "@/components/editorial/EditorialCta";
 import { getSettings } from "@/lib/wordpress";
 import { getDbEquipoPageContent } from "@/lib/db/mysql";
 import { DEFAULT_EQUIPO_MEMBERS } from "@/lib/content";
@@ -41,164 +42,103 @@ export default async function EquipoPage() {
   });
 
   return (
-    <main className="bg-white text-ink">
+    <main className="bg-paper text-ink">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <PageHero
+      <EditorialHeader
         breadcrumbs={[{ label: "Empresa", href: ROUTES.company }, { label: "Equipo" }]}
-        eyebrow={pageContent.headerBadge || "EQUIPO"}
+        eyebrow={pageContent.headerBadge || "Equipo"}
         title={pageContent.headerTitulo || "Personas detrás de cada obra"}
         description={
           pageContent.headerDescripcion ||
           "Un equipo multidisciplinar que comparte un mismo criterio constructivo. Dirección técnica, arquitectura, obra, instalaciones y atención al cliente."
         }
-        image={pageContent.headerBgImage || "/proceso-coordinacion.jpg"}
+        aside={
+          <dl className="grid grid-cols-2 border-t border-ink/15">
+            <div className="pt-5 pr-4">
+              <dt className="text-[10px] uppercase tracking-[0.22em] text-mid">Profesionales</dt>
+              <dd className="display-title mt-2 text-4xl">{String(listaMiembros.length).padStart(2, "0")}</dd>
+            </div>
+            <div className="border-l border-ink/15 pl-4 pt-5">
+              <dt className="text-[10px] uppercase tracking-[0.22em] text-mid">Dirección de obra</dt>
+              <dd className="display-title mt-2 text-4xl">01</dd>
+            </div>
+          </dl>
+        }
+        image={pageContent.imagenDestacada || pageContent.headerBgImage || "/90dias.jpg"}
+        imageAlt="Interior de un proyecto de ALKO"
+        imagePosition="object-top"
+        caption="El equipo, en obra"
       />
 
-      {/* QUIÉNES SOMOS */}
-      <section className="w-full overflow-hidden bg-stone-100">
-        <div className="relative h-[380px] w-full sm:h-[460px] md:h-[540px] lg:h-[620px]">
-          <Image
-            src={pageContent.imagenDestacada || "/90dias.jpg"}
-            alt="Interior de un proyecto de ALKO"
-            fill
-            sizes="100vw"
-            className="select-none object-cover object-top"
-          />
-        </div>
-      </section>
-
-      <section className="flex w-full flex-col items-center bg-[#faf9f5] px-6 pb-28 pt-16 text-center md:pb-36 md:pt-24">
-        <h2 className="display-title text-5xl leading-[1.05] sm:text-6xl md:text-7xl lg:text-[5.5rem]">
-          {pageContent.filosofiaTitulo || "Menos compartimentos. Más equipo."}
-        </h2>
-        <div aria-hidden="true" className="my-10 flex w-full justify-center md:my-12">
-          <div className="h-14 w-[1px] bg-[#d2d1cb] md:h-16" />
-        </div>
-        <p className="mx-auto max-w-xl px-4 text-[13px] leading-relaxed text-[#4a4a48] sm:text-[14px] md:max-w-2xl md:text-[15px]">
+      {/* 01 · Filosofía */}
+      <EditorialSection number="01" label="Cómo trabajamos" title={pageContent.filosofiaTitulo || "Menos compartimentos. Más equipo."}>
+        <p className="reveal-item display-title max-w-3xl text-2xl leading-snug text-ink sm:text-3xl">
           {pageContent.filosofiaTexto ||
             "Trabajamos como un solo equipo, no como departamentos aislados. Eso reduce interfaces, acelera decisiones y mantiene la coherencia del proyecto de principio a fin."}
         </p>
-      </section>
+      </EditorialSection>
 
-      {/* Grid del equipo */}
-      <section className="relative isolate py-14 sm:py-20 lg:py-24 bg-[#F6F5F2] text-[#141414] border-y border-[#E5E3DC] overflow-hidden">
-        <div
-          aria-hidden="true"
-          className="hidden md:grid absolute inset-0 pointer-events-none grid-cols-[14%_36%_38%_12%]"
-        >
-          <div className="h-full border-r border-[rgba(215,212,204,0.45)]" />
-          <div className="h-full border-r border-[rgba(215,212,204,0.45)]" />
-          <div className="h-full border-r border-[rgba(215,212,204,0.45)]" />
-          <div />
-        </div>
+      {/* 02 · Profesionales: solo nombre y función, sin fotos. */}
+      <EditorialSection
+        tone="white"
+        number="02"
+        label={pageContent.gridTag || "Nuestro equipo"}
+        title={pageContent.gridTitulo || "Nuestros profesionales"}
+        intro={
+          pageContent.gridDescripcion ||
+          "Perfiles que comparten un mismo criterio constructivo y una sola dirección de obra."
+        }
+      >
+        <ul className="grid grid-cols-1 border-t border-ink/15 sm:grid-cols-2">
+          {listaMiembros.map((m, i) => (
+            <li
+              key={m.nombre + i}
+              className="reveal-item group flex items-baseline gap-6 border-b border-ink/15 py-7 sm:py-9 sm:odd:pr-8 sm:even:border-l sm:even:pl-8"
+              style={{ transitionDelay: `${(i % 2) * 80}ms` }}
+            >
+              <span className="w-8 shrink-0 text-[10px] tracking-[0.22em] text-bronze">{String(i + 1).padStart(2, "0")}</span>
+              <div className="min-w-0 flex-1">
+                <h3 className="display-title text-2xl leading-tight sm:text-3xl">{m.nombre}</h3>
+                <p className="mt-2 text-[11px] uppercase tracking-[0.18em] text-mid">{m.rol}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </EditorialSection>
 
-        <Container>
-          <div className="flex items-center gap-2 pb-6 text-sm text-[#403E3B] sm:pb-8 reveal-item">
-            <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#403E3B]" />
-            <span>{pageContent.gridTag || "Nuestro equipo"}</span>
-          </div>
-
-          <div className="max-w-4xl pt-1 md:pt-4 reveal-item">
-            <h2 className="display-title text-5xl leading-[1.05] sm:text-6xl md:text-7xl lg:text-[5.5rem]">
-              {pageContent.gridTitulo || "Nuestros profesionales"}
-            </h2>
-            <p className="mt-5 max-w-md text-sm leading-relaxed text-[#302F2C] sm:mt-6 sm:text-base">
-              {pageContent.gridDescripcion ||
-                "Perfiles que comparten un mismo criterio constructivo y una sola dirección de obra."}
-            </p>
-          </div>
-
-          {/* Solo nombre y función, sin fotos. */}
-          <ul className="mt-12 grid grid-cols-1 border-t border-[rgba(64,62,59,0.2)] sm:mt-16 sm:grid-cols-2 lg:mt-20 lg:grid-cols-3">
-            {listaMiembros.map((m, i) => (
-              <li
-                key={m.nombre + i}
-                className="flex items-baseline gap-5 border-b border-[rgba(64,62,59,0.2)] py-7 sm:py-9 sm:pr-8 reveal-item"
-                style={{ transitionDelay: `${i * 80}ms` }}
-              >
-                <span className="w-8 shrink-0 font-mono text-xs tracking-wider text-[#8a8783]">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <div className="min-w-0">
-                  <h3 className="text-2xl font-normal leading-tight tracking-tight sm:text-3xl">{m.nombre}</h3>
-                  <p className="mt-1.5 text-sm text-[#686663] sm:text-base">{m.rol}</p>
-                </div>
-              </li>
-            ))}
+      <EditorialCta
+        label="Siguiente paso"
+        title={pageContent.ctaTitulo || "¿Sumamos tu proyecto al equipo?"}
+        description={
+          pageContent.ctaDescripcion || "Cuéntanos qué necesitas y te ponemos en contacto con la persona adecuada."
+        }
+        meta={
+          <ul className="space-y-1">
+            <li>
+              <a href={`tel:${settings.telefono.replace(/[^+\d]/g, "")}`} className="transition-colors hover:text-paper">
+                {settings.telefono}
+              </a>
+            </li>
+            <li>
+              <a href={`mailto:${settings.email}`} className="break-all transition-colors hover:text-paper">
+                {settings.email}
+              </a>
+            </li>
+            {settings.direccion && <li className="text-paper/50">{settings.direccion}</li>}
           </ul>
-        </Container>
-      </section>
-
-      {/* CTA final */}
-      <section className="bg-ink text-white">
-        <div className="group relative w-full overflow-hidden">
-          <div className="relative h-[440px] w-full overflow-hidden sm:h-[500px] md:h-[560px]">
-            <Image
-              src={pageContent.ctaBgImage || "/cta-bg.jpg"}
-              alt="Hablemos de tu próximo proyecto"
-              fill
-              sizes="100vw"
-              className="pointer-events-none select-none object-cover object-top transition-transform duration-1000 ease-out group-hover:scale-[1.01]"
-            />
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-stone-950/95 via-stone-950/50 to-transparent" />
-            <div className="absolute inset-0 z-10 mx-auto flex max-w-7xl flex-col justify-between px-6 py-12 sm:px-12 sm:py-16 lg:px-16 lg:py-24">
-              <div className="pt-8 sm:pt-14">
-                <h2 className="display-title text-3xl leading-tight text-white sm:text-5xl md:text-6xl lg:text-[68px]">
-                  {pageContent.ctaTitulo || "¿Sumamos tu proyecto al equipo?"}
-                </h2>
-              </div>
-              <div className="flex flex-col justify-between gap-8 lg:flex-row lg:items-end">
-                <div className="max-w-xl">
-                  <p className="text-sm leading-relaxed text-stone-200/85 sm:text-base">
-                    {pageContent.ctaDescripcion ||
-                      "Cuéntanos qué necesitas y te ponemos en contacto con la persona adecuada."}
-                  </p>
-                  <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
-                    <a
-                      href={`tel:${settings.telefono.replace(/\s+/g, "")}`}
-                      className="inline-flex items-center gap-2 transition-colors hover:text-white"
-                    >
-                      <span className="text-[10px] tracking-[0.22em] uppercase text-white/70">
-                        TEL
-                      </span>
-                      <span className="tracking-wide">{settings.telefono}</span>
-                    </a>
-                    <span className="hidden text-white/40 sm:inline">•</span>
-                    <a
-                      href={`mailto:${settings.email}`}
-                      className="inline-flex items-center gap-2 transition-colors hover:text-white"
-                    >
-                      <span className="text-[10px] tracking-[0.22em] uppercase text-white/70">
-                        ESCRÍBENOS
-                      </span>
-                      <span className="underline decoration-white/50 underline-offset-4 hover:decoration-white">
-                        {settings.email}
-                      </span>
-                    </a>
-                    <span className="hidden text-white/40 sm:inline">•</span>
-                    <div className="inline-flex items-center gap-2">
-                      <span className="text-[10px] tracking-[0.22em] uppercase text-white/70">
-                        VISÍTANOS
-                      </span>
-                      <span>{settings.direccion}</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="shrink-0">
-                  <ContactTrigger mode="rapido" source="Equipo" className="btn btn-paper">
-                    <span>SOLICITAR CONSULTORÍA</span>
-                    <span>→</span>
-                  </ContactTrigger>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+        }
+      >
+        <ContactTrigger mode="rapido" source="Equipo" className="btn btn-paper">
+          Solicitar consultoría <span aria-hidden="true">→</span>
+        </ContactTrigger>
+        <Link href={ROUTES.careers} className="btn btn-ghost-light">
+          Trabaja con nosotros
+        </Link>
+      </EditorialCta>
     </main>
   );
 }

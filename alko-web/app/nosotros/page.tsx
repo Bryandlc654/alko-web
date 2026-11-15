@@ -1,8 +1,7 @@
 import Image from "@/components/ui/Image";
 import Link from "next/link";
-import { BadgeCheck, CalendarClock, Handshake, Wallet } from "lucide-react";
-import Container from "@/components/ui/Container";
-import PageHero from "@/components/ui/PageHero";
+import EditorialHeader from "@/components/editorial/EditorialHeader";
+import EditorialSection from "@/components/editorial/EditorialSection";
 import ContactCta from "@/components/sections/ContactCta";
 import Materials from "@/components/sections/Materials";
 import Process from "@/components/sections/Process";
@@ -22,8 +21,6 @@ export const metadata = pageMetadata({
   description: NOSOTROS_DESCRIPTION,
   path: ROUTES.company,
 });
-
-const VALOR_ICONS = [Handshake, CalendarClock, Wallet, BadgeCheck];
 
 export default async function NosotrosPage() {
   const [settings, projects, sectors, fases, fabricantes, pageContent, homeContent] = await Promise.all([
@@ -76,228 +73,140 @@ export default async function NosotrosPage() {
   });
 
   return (
-    <main className="bg-white text-ink">
+    <main className="bg-paper text-ink">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <PageHero
+      <EditorialHeader
         breadcrumbs={[{ label: "Nosotros" }]}
-        eyebrow={pageContent.headerBadge || "NOSOTROS"}
-        title={
-          <span className="whitespace-pre-line">
-            {pageContent.headerTitulo}
-          </span>
-        }
+        eyebrow={pageContent.headerBadge || "Estudio"}
+        title={<span className="whitespace-pre-line">{pageContent.headerTitulo || "Una constructora con sensibilidad arquitectónica."}</span>}
         description={
-          <span className="whitespace-pre-line">
-            {pageContent.headerDescripcion}
-          </span>
+          pageContent.headerDescripcion ? <span className="whitespace-pre-line">{pageContent.headerDescripcion}</span> : undefined
         }
-        image={pageContent.headerBgImage || "/oficinas.jpg"}
-      />
-
-      {/* Introducción */}
-      <section className="relative isolate overflow-clip">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 -z-10 mx-auto hidden max-w-7xl grid-cols-6 px-6 sm:px-10 lg:grid lg:px-12"
-        >
-          <div className="h-full border-x border-black/[0.06]" />
-          <div className="h-full border-r border-black/[0.06]" />
-          <div className="h-full border-r border-black/[0.06]" />
-          <div className="h-full border-r border-black/[0.06]" />
-          <div className="h-full border-r border-black/[0.06]" />
-          <div className="h-full border-r border-black/[0.06]" />
-        </div>
-
-        <Container className="py-20 sm:py-28 lg:py-32">
-          <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-16">
-            <div className="reveal-item lg:col-span-5">
-              <div className="flex items-center gap-4">
-                <span className="eyebrow">
-                  {pageContent.introTag}
-                </span>
-              </div>
-              <h2 className="display-title mt-8 text-4xl sm:text-5xl lg:text-6xl text-ink leading-[1.05] whitespace-pre-line">
-                {pageContent.introTitulo}
-              </h2>
-            </div>
-
-            <div className="reveal-item lg:col-span-7 lg:pt-14" style={{ transitionDelay: "120ms" }}>
-              <p className="display-title text-2xl sm:text-3xl text-ink leading-snug whitespace-pre-line">
-                {pageContent.introLead}
-              </p>
-              <div className="mt-10 grid grid-cols-1 gap-6 border-t border-stone-900/15 pt-10 sm:grid-cols-2">
-                <p className="text-base sm:text-lg font-light text-mid leading-relaxed whitespace-pre-line">
-                  {pageContent.introCol1}
-                </p>
-                <p className="text-base sm:text-lg font-light text-mid leading-relaxed whitespace-pre-line">
-                  {pageContent.introCol2}
-                </p>
-              </div>
-              <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
-                <Link
-                  href={ROUTES.projects}
-                  className="btn btn-ink"
-                >
-                  Ver proyectos
-                </Link>
-                <Link
-                  href={METHOD_HREF}
-                  className="group inline-flex items-center gap-2 border-b border-stone-900 pb-1.5 text-xs font-semibold uppercase tracking-[0.22em] transition hover:border-amber-700 hover:text-amber-700"
-                >
-                  Conoce el método
-                  <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">
-                    →
-                  </span>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </Container>
-      </section>
-
-      {/* Imagen de un proyecto real */}
-      {destacado && (
-        <section className="relative">
-          <Link
-            href={`${ROUTES.projects}/${destacado.slug}`}
-            className="group relative block aspect-[4/3] w-full overflow-hidden bg-ink sm:aspect-[16/9] lg:aspect-[21/9]"
-            data-parallax="8"
-          >
-            <Image
-              src={destacado.imagen}
-              alt={destacado.title}
-              fill
-              sizes="100vw"
-              className="object-cover object-center transition duration-700 ease-out group-hover:scale-[1.02]"
-            />
-            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-stone-950/80 to-transparent" />
-            <Container className="absolute inset-x-0 bottom-0 pb-8 sm:pb-12 text-white">
-              <span className="text-[10px] tracking-[0.22em] uppercase text-white/70">
-                Proyecto · {[destacado.tipologia, destacado.anio].filter(Boolean).join(" · ")}
-              </span>
-              <span className="display-title mt-3 flex items-center gap-3 text-2xl sm:text-4xl">
-                {destacado.title}
-                <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">
-                  →
-                </span>
-              </span>
-            </Container>
-          </Link>
-        </section>
-      )}
-
-      {/* Cifras */}
-      <section aria-label="ALKO en cifras" className="bg-ink text-white">
-        <Container className="py-16 sm:py-20">
-          <dl
-            className={`grid grid-cols-2 gap-x-6 gap-y-10 ${cifras.length === 3 ? "lg:grid-cols-3" : "lg:grid-cols-4"}`}
-          >
-            {cifras.map((cifra, i) => (
-              <div
-                key={cifra.etiqueta + i}
-                className="reveal-item flex flex-col-reverse justify-end border-t border-white/20 pt-6"
-                style={{ transitionDelay: `${i * 90}ms` }}
-              >
-                <dt className="mt-4 max-w-[14rem] text-sm sm:text-base font-light text-white/70 leading-snug">
-                  {cifra.etiqueta}
-                </dt>
-                <dd className="display-title text-5xl sm:text-6xl lg:text-7xl text-amber-500 leading-none">
-                  {cifra.valor}
-                </dd>
+        aside={
+          <dl className="grid grid-cols-2 border-t border-ink/15">
+            {cifras.slice(0, 2).map((cifra, i) => (
+              <div key={cifra.etiqueta + i} className={`pt-5 ${i > 0 ? "border-l border-ink/15 pl-4" : "pr-4"}`}>
+                <dt className="text-[10px] uppercase leading-relaxed tracking-[0.22em] text-mid">{cifra.etiqueta}</dt>
+                <dd className="display-title mt-2 text-4xl">{cifra.valor}</dd>
               </div>
             ))}
           </dl>
-        </Container>
-      </section>
+        }
+        image={pageContent.headerBgImage || "/oficinas.jpg"}
+        imageAlt="Oficina de ALKO en Madrid"
+        caption="Estudio ALKO"
+      />
 
-      {/* Cómo trabajamos (Pilares) */}
-      <section className="py-20 sm:py-28">
-        <Container>
-          <div className="flex flex-col gap-6 border-b border-stone-900/15 pb-10 md:flex-row md:items-end md:justify-between">
-            <div className="reveal-item max-w-2xl">
-              <span className="eyebrow">
-                {pageContent.pilaresTag}
-              </span>
-              <h2 className="display-title mt-6 text-3xl sm:text-4xl lg:text-5xl text-ink leading-tight whitespace-pre-line">
-                {pageContent.pilaresTitulo}
-              </h2>
-            </div>
-            <p className="reveal-item max-w-md text-base font-light text-mid leading-relaxed whitespace-pre-line">
-              {pageContent.pilaresDescripcion}
-            </p>
-          </div>
+      {/* 01 · Introducción */}
+      <EditorialSection number="01" label={pageContent.introTag || "Quiénes somos"} title={pageContent.introTitulo}>
+        {pageContent.introLead && (
+          <p className="reveal-item display-title max-w-3xl whitespace-pre-line text-2xl leading-snug sm:text-3xl">
+            {pageContent.introLead}
+          </p>
+        )}
+        <div className="reveal-item mt-10 grid grid-cols-1 gap-x-10 gap-y-6 border-t border-ink/15 pt-10 sm:grid-cols-2">
+          <p className="whitespace-pre-line text-lg leading-relaxed text-mid">{pageContent.introCol1}</p>
+          <p className="whitespace-pre-line text-lg leading-relaxed text-mid">{pageContent.introCol2}</p>
+        </div>
+        <div className="reveal-item mt-12 flex flex-wrap items-center gap-x-8 gap-y-4">
+          <Link href={ROUTES.projects} className="btn btn-ink">
+            Ver proyectos <span aria-hidden="true">→</span>
+          </Link>
+          <Link href={METHOD_HREF} className="arrow-link">
+            Conoce el método <span aria-hidden="true">↗</span>
+          </Link>
+        </div>
+      </EditorialSection>
 
-          <div className="mt-12 grid grid-cols-1 gap-12 md:grid-cols-3 md:gap-8">
-            {(pageContent.pilares || []).map((pilar, i) => (
-              <article
-                key={pilar.numero + i}
-                className="reveal-item"
-                style={{ transitionDelay: `${i * 120}ms` }}
-              >
-                <div className="relative aspect-[4/5] overflow-hidden bg-stone-200">
-                  <Image
-                    src={pilar.imagen}
-                    alt={pilar.titulo}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                    className="object-cover object-center"
-                  />
-                </div>
-                <span className="mt-6 block font-mono text-[11px] tracking-[0.2em] text-amber-700">
-                  {pilar.numero}
+      {/* Obra real, enmarcada */}
+      {destacado && (
+        <section className="bg-paper">
+          <div className="site-wrap pb-6">
+            <Link href={`${ROUTES.projects}/${destacado.slug}`} className="group block">
+              <div className="reveal-scale relative aspect-[4/3] overflow-hidden bg-piedra sm:aspect-[21/9]">
+                <Image
+                  src={destacado.imagen}
+                  alt={destacado.title}
+                  fill
+                  sizes="100vw"
+                  className="object-cover transition-transform duration-[1.6s] ease-alko group-hover:scale-[1.03]"
+                />
+              </div>
+              <div className="mt-4 flex flex-wrap items-baseline justify-between gap-4 border-b border-ink/15 pb-4">
+                <span className="text-[10px] uppercase tracking-[0.22em] text-mid">
+                  Proyecto · {[destacado.tipologia, destacado.anio].filter(Boolean).join(" · ")}
                 </span>
-                <h3 className="display-title mt-3 text-2xl sm:text-3xl text-ink whitespace-pre-line">
-                  {pilar.titulo}
-                </h3>
-                <p className="mt-3 text-base font-light text-mid leading-relaxed whitespace-pre-line">{pilar.texto}</p>
-              </article>
-            ))}
+                <span className="display-title text-2xl transition-colors group-hover:text-bronze sm:text-3xl">
+                  {destacado.title} <span aria-hidden="true">↗</span>
+                </span>
+              </div>
+            </Link>
           </div>
-        </Container>
-      </section>
-
-      {/* Método ALKO */}
-      <div id="metodo">
-        <section className="relative isolate overflow-clip border-t border-stone-300">
-          <Container className="py-20 sm:py-28">
-            <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-16">
-              <div className="reveal-item lg:col-span-5">
-                <div className="flex items-center gap-4">
-                  <span className="eyebrow">
-                    {pageContent.metodoTag}
-                  </span>
-                </div>
-                <h2 className="display-title mt-8 text-4xl sm:text-5xl text-ink leading-[1.05] whitespace-pre-line">
-                  {pageContent.metodoTitulo}
-                </h2>
-              </div>
-
-              <div className="reveal-item lg:col-span-7 lg:pt-4" style={{ transitionDelay: "120ms" }}>
-                <p className="display-title text-2xl sm:text-3xl text-ink leading-snug whitespace-pre-line">
-                  {pageContent.metodoLead}
-                </p>
-                <div className="mt-10 grid grid-cols-1 gap-6 border-t border-stone-900/15 pt-10 sm:grid-cols-2">
-                  <p className="text-base sm:text-lg font-light text-mid leading-relaxed whitespace-pre-line">
-                    {pageContent.metodoCol1}
-                  </p>
-                  <p className="text-base sm:text-lg font-light text-mid leading-relaxed whitespace-pre-line">
-                    {pageContent.metodoCol2}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="reveal-scale relative mt-14 aspect-[16/9] w-full overflow-hidden bg-stone-200 sm:mt-20 sm:aspect-[16/7]">
-              <Image
-                src={pageContent.metodoImagen || "/proceso-compras.jpg"}
-                alt="Compras y planificación de la obra por el equipo de ALKO"
-                fill
-                sizes="(max-width: 1280px) 100vw, 1200px"
-                className="object-cover object-center"
-              />
-            </div>
-          </Container>
         </section>
+      )}
+
+      {/* 02 · Cifras */}
+      <EditorialSection number="02" label="ALKO en cifras" tone="ink">
+        <dl className={`grid grid-cols-1 border-t border-paper/15 sm:grid-cols-2 ${cifras.length >= 4 ? "xl:grid-cols-4" : ""}`}>
+          {cifras.map((cifra, i) => (
+            <div
+              key={cifra.etiqueta + i}
+              className="reveal-item flex flex-col-reverse justify-end border-b border-paper/15 py-8 sm:odd:pr-8 sm:even:border-l sm:even:pl-8 xl:border-l xl:px-8 xl:first:border-l-0 xl:first:pl-0"
+              style={{ transitionDelay: `${i * 90}ms` }}
+            >
+              <dt className="mt-4 max-w-[16rem] leading-snug text-paper/60">{cifra.etiqueta}</dt>
+              <dd className="display-title text-6xl leading-none text-bronze-light sm:text-7xl">{cifra.valor}</dd>
+            </div>
+          ))}
+        </dl>
+      </EditorialSection>
+
+      {/* 03 · Pilares */}
+      <EditorialSection
+        number="03"
+        label={pageContent.pilaresTag || "Cómo trabajamos"}
+        title={pageContent.pilaresTitulo}
+        intro={pageContent.pilaresDescripcion}
+        wide
+      >
+        <div className="grid grid-cols-1 gap-x-6 gap-y-14 md:grid-cols-3">
+          {(pageContent.pilares || []).map((pilar, i) => (
+            <article key={pilar.numero + i} className="reveal-item" style={{ transitionDelay: `${i * 120}ms` }}>
+              <div className="relative aspect-[4/5] overflow-hidden bg-piedra">
+                <Image src={pilar.imagen} alt={pilar.titulo} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover" />
+              </div>
+              <div className="mt-6 flex items-baseline gap-4 border-t border-ink/15 pt-5">
+                <span className="text-[10px] tracking-[0.22em] text-bronze">{pilar.numero}</span>
+                <h3 className="display-title whitespace-pre-line text-2xl sm:text-3xl">{pilar.titulo}</h3>
+              </div>
+              <p className="mt-3 whitespace-pre-line leading-relaxed text-mid">{pilar.texto}</p>
+            </article>
+          ))}
+        </div>
+      </EditorialSection>
+
+      {/* 04 · Método ALKO */}
+      <div id="metodo">
+        <EditorialSection tone="white" number="04" label={pageContent.metodoTag || "Método ALKO"} title={pageContent.metodoTitulo}>
+          {pageContent.metodoLead && (
+            <p className="reveal-item display-title max-w-3xl whitespace-pre-line text-2xl leading-snug sm:text-3xl">
+              {pageContent.metodoLead}
+            </p>
+          )}
+          <div className="reveal-item mt-10 grid grid-cols-1 gap-x-10 gap-y-6 border-t border-ink/15 pt-10 sm:grid-cols-2">
+            <p className="whitespace-pre-line text-lg leading-relaxed text-mid">{pageContent.metodoCol1}</p>
+            <p className="whitespace-pre-line text-lg leading-relaxed text-mid">{pageContent.metodoCol2}</p>
+          </div>
+          <div className="reveal-scale relative mt-14 aspect-[16/9] overflow-hidden bg-piedra">
+            <Image
+              src={pageContent.metodoImagen || "/proceso-compras.jpg"}
+              alt="Compras y planificación de la obra por el equipo de ALKO"
+              fill
+              sizes="(max-width: 1024px) 100vw, 75vw"
+              className="object-cover"
+            />
+          </div>
+        </EditorialSection>
 
         {/* Las fases del proceso: las mismas de la portada (se editan en cualquiera de las dos). */}
         <Process
@@ -307,82 +216,63 @@ export default async function NosotrosPage() {
         />
       </div>
 
-      {/* Valores */}
-      <section className="bg-stone-100 py-20 sm:py-28">
-        <Container>
-          <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-16">
-            <div className="reveal-item lg:col-span-4">
-              <span className="eyebrow">
-                {pageContent.valoresTag}
-              </span>
-              <h2 className="display-title mt-6 text-3xl sm:text-4xl lg:text-5xl text-ink leading-tight whitespace-pre-line">
-                {pageContent.valoresTitulo}
-              </h2>
-              <p className="mt-6 max-w-sm text-base font-light text-mid leading-relaxed whitespace-pre-line">
-                {pageContent.valoresDescripcion}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 gap-px bg-stone-900/15 border border-stone-900/15 sm:grid-cols-2 lg:col-span-8">
-              {(pageContent.valores || []).map((valor, i) => {
-                const IconComponent = VALOR_ICONS[i % VALOR_ICONS.length];
-                return (
-                  <div
-                    key={valor.numero + i}
-                    className="reveal-item flex flex-col bg-stone-100 p-8 sm:p-10"
-                    style={{ transitionDelay: `${i * 90}ms` }}
-                  >
-                    <div className="flex items-center justify-between">
-                      <IconComponent className="h-7 w-7 text-amber-700" strokeWidth={1.25} aria-hidden="true" />
-                      <span className="font-mono text-[11px] tracking-[0.2em] text-stone-500">{valor.numero}</span>
-                    </div>
-                    <h3 className="display-title mt-8 text-2xl sm:text-3xl text-ink whitespace-pre-line">
-                      {valor.titulo}
-                    </h3>
-                    <p className="mt-3 text-base font-light text-mid leading-relaxed whitespace-pre-line">{valor.texto}</p>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </Container>
-      </section>
+      {/* 05 · Valores */}
+      <EditorialSection
+        number="05"
+        label={pageContent.valoresTag || "Valores"}
+        title={pageContent.valoresTitulo}
+        intro={pageContent.valoresDescripcion}
+      >
+        <ol className="border-t border-ink/15">
+          {(pageContent.valores || []).map((valor, i) => (
+            <li
+              key={valor.numero + i}
+              className="reveal-item grid grid-cols-12 items-baseline gap-x-6 gap-y-3 border-b border-ink/15 py-8"
+              style={{ transitionDelay: `${i * 90}ms` }}
+            >
+              <span className="col-span-12 text-[10px] tracking-[0.22em] text-bronze sm:col-span-1">{valor.numero}</span>
+              <h3 className="display-title col-span-12 whitespace-pre-line text-2xl sm:col-span-5 sm:text-3xl">{valor.titulo}</h3>
+              <p className="col-span-12 whitespace-pre-line leading-relaxed text-mid sm:col-span-6">{valor.texto}</p>
+            </li>
+          ))}
+        </ol>
+      </EditorialSection>
 
       {/* Fabricantes */}
       {fabricantes.length > 0 && <Materials fabricantes={fabricantes} />}
 
-      {/* Equipo y empleo */}
-      <section className="border-t border-stone-300">
-        <div className="grid grid-cols-1 md:grid-cols-2">
-          {enlaces.map((enlace) => (
-            <Link
-              key={enlace.href}
-              href={enlace.href}
-              className="group relative isolate flex min-h-[320px] items-end overflow-hidden bg-ink p-6 text-white sm:min-h-[380px] sm:p-10 lg:p-12"
-            >
-              <Image
-                src={enlace.imagen}
-                alt=""
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="-z-10 object-cover object-center opacity-60 transition duration-700 ease-out group-hover:scale-105 group-hover:opacity-75"
-              />
-              <div className="absolute inset-0 -z-10 bg-gradient-to-t from-stone-950/90 via-stone-950/30 to-transparent" />
-              <div>
-                <span className="text-[10px] tracking-[0.22em] uppercase text-white/70">
-                  {enlace.etiqueta}
-                </span>
-                <span className="display-title mt-3 flex items-center gap-3 text-2xl sm:text-3xl lg:text-4xl leading-tight">
-                  {enlace.titulo}
-                  <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">
-                    →
+      {/* 06 · Equipo y empleo */}
+      <EditorialSection number="06" label="Más sobre ALKO" tone="white">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          {enlaces.map((enlace, i) => (
+            <Link key={enlace.href} href={enlace.href} className="reveal-item group block" style={{ transitionDelay: `${i * 100}ms` }}>
+              <div className="relative aspect-[16/10] overflow-hidden bg-piedra">
+                <Image
+                  src={enlace.imagen}
+                  alt=""
+                  fill
+                  sizes="(max-width: 768px) 100vw, 40vw"
+                  className="object-cover transition-transform duration-[1.6s] ease-alko group-hover:scale-[1.04]"
+                />
+              </div>
+              <div className="mt-5 flex items-start justify-between gap-6 border-t border-ink/15 pt-5">
+                <div>
+                  <span className="text-[10px] uppercase tracking-[0.22em] text-mid">{enlace.etiqueta}</span>
+                  <span className="display-title mt-2 block text-2xl transition-colors group-hover:text-bronze sm:text-3xl">
+                    {enlace.titulo}
                   </span>
+                </div>
+                <span
+                  aria-hidden="true"
+                  className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-ink/30 transition-colors group-hover:border-ink group-hover:bg-ink group-hover:text-paper"
+                >
+                  ↗
                 </span>
               </div>
             </Link>
           ))}
         </div>
-      </section>
+      </EditorialSection>
 
       <ContactCta settings={settings} />
     </main>

@@ -1,5 +1,6 @@
-import Image from "next/image";
-import PageHero from "@/components/ui/PageHero";
+import Image from "@/components/ui/Image";
+import EditorialHeader from "@/components/editorial/EditorialHeader";
+import EditorialSection from "@/components/editorial/EditorialSection";
 import QuickContactForm from "@/components/ui/QuickContactForm";
 import { getSettings } from "@/lib/wordpress";
 import { getDbContactoPageContent } from "@/lib/db/mysql";
@@ -34,7 +35,7 @@ interface Channel {
   external?: boolean;
 }
 
-/** Contacto · Propuesta 6: hero V4, canales + formulario, pasos y oficina. */
+/** Contacto · línea editorial clara: cabecera tipográfica, formulario, canales, pasos y oficina. */
 export default async function ContactoPage() {
   const [settings, pageContent] = await Promise.all([
     getSettings(),
@@ -49,168 +50,165 @@ export default async function ContactoPage() {
     { label: "Teléfono", value: settings.telefono, href: telHref },
     { label: "Email", value: settings.email, href: `mailto:${settings.email}` },
     { label: "WhatsApp", value: "Escríbenos al momento", href: whatsappHref, external: true },
-    { label: "Horario", value: settings.horario },
+    ...(settings.horario ? [{ label: "Horario", value: settings.horario }] : []),
   ];
   const steps = pageContent.pasos && pageContent.pasos.length > 0 ? pageContent.pasos : NEXT_STEPS;
 
   return (
     <main className="bg-paper text-ink">
-      <PageHero
-        eyebrow={pageContent.headerBadge || "CONTACTO"}
+      <EditorialHeader
+        breadcrumbs={[{ label: "Contacto" }]}
+        eyebrow={pageContent.headerBadge || "Contacto"}
         title={<span className="whitespace-pre-line">{pageContent.headerTitulo || "Hablemos de tu próxima obra."}</span>}
-        description={pageContent.headerDescripcion ? <span className="whitespace-pre-line">{pageContent.headerDescripcion}</span> : undefined}
-        image={pageContent.headerBgImage || "/cta-bg.jpg"}
-        imagePosition="object-top"
-      >
-        <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
-          <a href="#formulario" className="btn btn-paper">
-            Solicitar presupuesto <span aria-hidden="true">↓</span>
-          </a>
-          <a href={telHref} className="border-b border-paper/50 pb-1 text-[11px] uppercase tracking-[0.22em] transition-colors hover:border-paper">
-            Llamar
-          </a>
-          <a
-            href={whatsappHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="border-b border-paper/50 pb-1 text-[11px] uppercase tracking-[0.22em] transition-colors hover:border-paper"
-          >
-            WhatsApp
-          </a>
-        </div>
-      </PageHero>
-
-      {/* Canales + formulario */}
-      <section className="plan-lines bg-surface">
-        <div className="site-wrap grid grid-cols-12 gap-x-6 gap-y-14 py-24 lg:py-32">
-          <aside className="reveal-item col-span-12 lg:sticky lg:top-32 lg:col-span-5 lg:self-start">
-            <p className="eyebrow">{pageContent.canalesTag || "ALKO Madrid"}</p>
-            <h2 className="display-title mt-6 text-[2.4rem] leading-[1.05] sm:text-5xl">
-              {pageContent.canalesTitulo || "Un único interlocutor, desde la primera llamada."}
-            </h2>
-            <p className="mt-8 max-w-md leading-relaxed text-mid">
-              {pageContent.canalesDescripcion ||
-                "Elige el canal que prefieras. Te atenderá directamente el equipo técnico que llevará tu obra."}
-            </p>
-
-            <ul className="mt-12 border-t border-ink/15">
-              {channels.map(({ label, value, href, external }) => {
-                const content = (
-                  <>
-                    <span className="w-20 shrink-0 text-[10px] uppercase tracking-[0.22em] text-mid sm:w-24">{label}</span>
-                    <span className="display-title min-w-0 flex-1 break-words text-lg transition-colors group-hover:text-bronze sm:text-xl">
-                      {value}
-                    </span>
-                    {href && (
-                      <span aria-hidden="true" className="text-mid transition-colors group-hover:text-bronze">
-                        ↗
-                      </span>
-                    )}
-                  </>
-                );
-                return (
-                  <li key={label} className="border-b border-ink/15">
-                    {href ? (
-                      <a
-                        href={href}
-                        {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                        className="group flex items-center gap-5 py-5"
-                      >
-                        {content}
-                      </a>
-                    ) : (
-                      <div className="flex items-center gap-5 py-5">{content}</div>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          </aside>
-
-          <section
-            id="formulario"
-            aria-labelledby="form-title"
-            className="reveal-item col-span-12 scroll-mt-28 lg:col-span-7"
-            style={{ transitionDelay: "120ms" }}
-          >
-            <div className="bg-ink p-6 text-white sm:p-10 lg:p-12">
-              <p className="eyebrow eyebrow-light">{pageContent.formTag || "Solicitud de presupuesto"}</p>
-              <h2 id="form-title" className="display-title mb-12 mt-5 text-4xl lg:text-5xl">
-                {pageContent.formTitulo || "Cuéntanos tu proyecto"}
-              </h2>
-              <QuickContactForm email={settings.email} whatsappHref={whatsappHref} source="Página de contacto" />
-            </div>
-          </section>
-        </div>
-      </section>
-
-      {/* Pasos */}
-      <section className="bg-ink text-paper">
-        <div className="site-wrap py-24 lg:py-32">
-          <div className="grid grid-cols-12 items-end gap-6">
-            <div className="col-span-12 lg:col-span-7">
-              <p className="eyebrow eyebrow-light reveal-item">{pageContent.pasosTag || "Después de escribirnos"}</p>
-              <h2 className="reveal-item display-title mt-6 text-5xl leading-none sm:text-6xl">
-                {pageContent.pasosTitulo || "Qué pasa a continuación"}
-              </h2>
-            </div>
+        description={
+          <span className="whitespace-pre-line">
+            {pageContent.headerDescripcion ||
+              "Cuéntanos qué tienes entre manos. Te responde directamente el equipo técnico que llevará tu obra."}
+          </span>
+        }
+        aside={
+          <div className="flex flex-col gap-3">
+            <a
+              href="#formulario"
+              className="group flex items-center justify-between border-b border-ink/15 pb-3 text-[11px] uppercase tracking-[0.22em] transition-colors hover:text-bronze"
+            >
+              Solicitar presupuesto <span aria-hidden="true" className="transition-transform group-hover:translate-y-0.5">↓</span>
+            </a>
+            <a
+              href={telHref}
+              className="group flex items-center justify-between border-b border-ink/15 pb-3 text-[11px] uppercase tracking-[0.22em] transition-colors hover:text-bronze"
+            >
+              Llamar · {settings.telefono} <span aria-hidden="true">↗</span>
+            </a>
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center justify-between border-b border-ink/15 pb-3 text-[11px] uppercase tracking-[0.22em] transition-colors hover:text-bronze"
+            >
+              WhatsApp <span aria-hidden="true">↗</span>
+            </a>
           </div>
-          <ol className="mt-16 grid grid-cols-1 border-t border-paper/15 md:grid-cols-3">
-            {steps.map((step, i) => (
-              <li
-                key={step.title}
-                className={`reveal-item py-10 md:pr-10 ${i > 0 ? "border-t border-paper/15 md:border-l md:border-t-0 md:pl-10" : ""}`}
-                style={{ transitionDelay: `${i * 120}ms` }}
-              >
-                <span className="display-title text-5xl text-bronze-light">{String(i + 1).padStart(2, "0")}</span>
-                <h3 className="display-title mt-6 text-2xl sm:text-3xl">{step.title}</h3>
-                <p className="mt-3 max-w-xs leading-relaxed text-paper/60">{step.text}</p>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
+        }
+      />
 
-      {/* Oficina */}
-      <section className="bg-paper">
-        <div className="site-wrap grid grid-cols-12 items-center gap-x-6 gap-y-12 py-24 lg:py-32">
-          <figure className="col-span-12 lg:col-span-7">
-            <div className="reveal-scale relative aspect-[16/10] overflow-hidden bg-piedra">
-              <Image
-                src={pageContent.oficinaImagen || "/oficinas.jpg"}
-                alt="Oficina de ALKO en Madrid"
-                fill
-                sizes="(max-width: 1024px) 100vw, 58vw"
-                className="object-cover"
-              />
-            </div>
-            <figcaption className="mt-4 flex items-center gap-4 text-mid">
-              <span className="text-[10px] uppercase tracking-[0.22em]">Oficina</span>
-              <span className="cota flex-1 text-ink" aria-hidden="true" />
-              <span className="text-[10px] uppercase tracking-[0.22em]">Madrid</span>
-            </figcaption>
-          </figure>
-          <div className="reveal-item col-span-12 lg:col-span-4 lg:col-start-9" style={{ transitionDelay: "120ms" }}>
-            <p className="eyebrow">{pageContent.oficinaTag || "Visítanos"}</p>
-            <h2 className="display-title mt-6 text-5xl leading-none">{pageContent.oficinaTitulo || "Nuestra oficina"}</h2>
-            <dl className="mt-10 divide-y divide-ink/10 border-y border-ink/10 text-sm">
-              <div className="flex justify-between gap-6 py-3">
-                <dt className="text-mid">Dirección</dt>
-                <dd className="text-right">{settings.direccion}</dd>
+      {/* 01 · Formulario */}
+      <EditorialSection
+        id="formulario"
+        number="01"
+        label={pageContent.formTag || "Solicitud de presupuesto"}
+        title={pageContent.formTitulo || "Cuéntanos tu proyecto"}
+        intro="Solo necesitamos tu nombre y un correo o teléfono. Con eso te llamamos para concretar."
+      >
+        <div className="reveal-item bg-ink p-6 text-white sm:p-10 lg:p-14">
+          <QuickContactForm email={settings.email} whatsappHref={whatsappHref} source="Página de contacto" />
+        </div>
+      </EditorialSection>
+
+      {/* 02 · Canales */}
+      <EditorialSection
+        tone="white"
+        number="02"
+        label={pageContent.canalesTag || "ALKO Madrid"}
+        title={pageContent.canalesTitulo || "Un único interlocutor, desde la primera llamada."}
+        intro={
+          pageContent.canalesDescripcion ||
+          "Elige el canal que prefieras. Te atenderá directamente el equipo técnico que llevará tu obra."
+        }
+      >
+        <ul className="grid grid-cols-1 border-l border-t border-ink/15 sm:grid-cols-2">
+          {channels.map(({ label, value, href, external }, i) => {
+            const content = (
+              <>
+                <span className="flex items-center justify-between text-[10px] uppercase tracking-[0.22em] text-mid">
+                  <span>
+                    <span className="text-bronze">{String(i + 1).padStart(2, "0")}</span> · {label}
+                  </span>
+                  {href && (
+                    <span aria-hidden="true" className="text-sm transition-colors group-hover:text-bronze">
+                      ↗
+                    </span>
+                  )}
+                </span>
+                <span className="display-title mt-10 block break-words text-2xl transition-colors group-hover:text-bronze sm:text-[1.7rem]">
+                  {value}
+                </span>
+              </>
+            );
+            return (
+              <li key={label} className="reveal-item border-b border-r border-ink/15" style={{ transitionDelay: `${i * 80}ms` }}>
+                {href ? (
+                  <a
+                    href={href}
+                    {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                    className="group block h-full p-6 transition-colors hover:bg-paper sm:p-8"
+                  >
+                    {content}
+                  </a>
+                ) : (
+                  <div className="h-full p-6 sm:p-8">{content}</div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </EditorialSection>
+
+      {/* 03 · Pasos */}
+      <EditorialSection
+        tone="ink"
+        number="03"
+        label={pageContent.pasosTag || "Después de escribirnos"}
+        title={pageContent.pasosTitulo || "Qué pasa a continuación"}
+      >
+        <ol className="border-t border-paper/15">
+          {steps.map((step, i) => (
+            <li
+              key={step.title}
+              className="reveal-item grid grid-cols-12 items-baseline gap-x-6 gap-y-3 border-b border-paper/15 py-8 sm:py-10"
+              style={{ transitionDelay: `${i * 100}ms` }}
+            >
+              <span className="col-span-12 text-[10px] uppercase tracking-[0.22em] text-bronze-light sm:col-span-2">
+                Paso {String(i + 1).padStart(2, "0")}
+              </span>
+              <h3 className="display-title col-span-12 text-3xl sm:col-span-5 sm:text-4xl">{step.title}</h3>
+              <p className="col-span-12 max-w-md leading-relaxed text-paper/60 sm:col-span-5">{step.text}</p>
+            </li>
+          ))}
+        </ol>
+      </EditorialSection>
+
+      {/* 04 · Oficina */}
+      <EditorialSection number="04" label={pageContent.oficinaTag || "Visítanos"} title={pageContent.oficinaTitulo || "Nuestra oficina"}>
+        <div className="grid grid-cols-12 gap-x-6 gap-y-10">
+          <div className="reveal-scale relative col-span-12 aspect-[16/10] overflow-hidden bg-piedra lg:col-span-8">
+            <Image
+              src={pageContent.oficinaImagen || "/oficinas.jpg"}
+              alt="Oficina de ALKO en Madrid"
+              fill
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="object-cover"
+            />
+          </div>
+          <div className="reveal-item col-span-12 flex flex-col justify-between lg:col-span-4">
+            <dl className="divide-y divide-ink/10 border-y border-ink/10 text-sm">
+              <div className="py-4">
+                <dt className="text-[10px] uppercase tracking-[0.22em] text-mid">Dirección</dt>
+                <dd className="mt-2 text-base">{settings.direccion}</dd>
               </div>
               {settings.horario && (
-                <div className="flex justify-between gap-6 py-3">
-                  <dt className="text-mid">Horario</dt>
-                  <dd className="text-right">{settings.horario}</dd>
+                <div className="py-4">
+                  <dt className="text-[10px] uppercase tracking-[0.22em] text-mid">Horario</dt>
+                  <dd className="mt-2 text-base">{settings.horario}</dd>
                 </div>
               )}
             </dl>
-            <a href={mapsHref} target="_blank" rel="noopener noreferrer" className="btn btn-outline mt-10">
+            <a href={mapsHref} target="_blank" rel="noopener noreferrer" className="btn btn-ink mt-10 self-start">
               Cómo llegar <span aria-hidden="true">→</span>
             </a>
           </div>
         </div>
-      </section>
+      </EditorialSection>
     </main>
   );
 }

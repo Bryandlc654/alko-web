@@ -7,14 +7,14 @@ import { ROUTES } from "@/lib/site";
 import type { Article } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
 
-const ALL = "TODOS";
+const ALL = "Todos";
 
 /**
- * Índice editorial de artículos con filtro por categoría.
+ * Archivo del Journal: filtro por categoría y rejilla de tarjetas a tres columnas.
  *
- * Las filas no usan `reveal-item`: SiteScripts solo anima los elementos que
- * existen al cargar la ruta, así que las filas que aparecen al filtrar se
- * quedarían ocultas. La animación de entrada se aplica al contenedor.
+ * Las tarjetas no usan `reveal-item`: SiteScripts solo anima los elementos que existen al cargar
+ * la ruta, así que las que aparecen al filtrar se quedarían ocultas. Usan `hh-rise` (CSS), que se
+ * dispara al montarse.
  */
 export default function ArticlesIndex({ articles }: { articles: Article[] }) {
   const [active, setActive] = useState(ALL);
@@ -22,117 +22,81 @@ export default function ArticlesIndex({ articles }: { articles: Article[] }) {
   const categories = useMemo(() => {
     const counts = new Map<string, number>();
     for (const article of articles) {
-      const category = article.category || "GENERAL";
+      const category = article.category || "General";
       counts.set(category, (counts.get(category) ?? 0) + 1);
     }
     return Array.from(counts, ([name, count]) => ({ name, count }));
   }, [articles]);
 
   const visible =
-    active === ALL
-      ? articles
-      : articles.filter((article) => (article.category || "GENERAL") === active);
+    active === ALL ? articles : articles.filter((article) => (article.category || "General") === active);
 
   const filters = [{ name: ALL, count: articles.length }, ...categories];
 
   return (
-    <div className="reveal-item">
-      <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between pb-8 border-b border-stone-300/60">
-        <div>
-          <span className="eyebrow block mb-2">
-            ARCHIVO
-          </span>
-          <h2 className="display-title text-3xl sm:text-4xl md:text-5xl text-ink leading-none">
-            Todos los artículos
-          </h2>
-        </div>
-
-        {categories.length > 1 && (
-          <div role="group" aria-label="Filtrar por categoría" className="flex flex-wrap gap-2">
-            {filters.map((filter) => {
-              const selected = filter.name === active;
-              return (
-                <button
-                  key={filter.name}
-                  type="button"
-                  aria-pressed={selected}
-                  onClick={() => setActive(filter.name)}
-                  className={`inline-flex items-center gap-2 border px-4 py-2 text-[11px] font-light uppercase tracking-[0.16em] transition-colors ${
-                    selected
-                      ? "border-stone-900 bg-stone-900 text-white"
-                      : "border-stone-300 text-stone-600 hover:border-stone-900 hover:text-stone-900"
-                  }`}
-                >
-                  {filter.name}
-                  <span className={`font-mono ${selected ? "text-white/50" : "text-stone-400"}`}>
-                    {filter.count}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
-      <ul>
-        {visible.map((article, i) => (
-          <li key={article.id} className="border-b border-[#D8D2C8]">
-            <Link
-              href={`${ROUTES.articles}/${article.slug}`}
-              className="group grid grid-cols-12 gap-x-4 gap-y-3 sm:gap-x-8 py-8 sm:py-10 items-center"
-            >
-              <span className="text-[10px] tracking-[0.22em] col-span-12 sm:col-span-2 uppercase text-stone-400 group-hover:text-stone-900 transition-colors">
-                {String(i + 1).padStart(2, "0")}
-                {article.date && (
-                  <span className="sm:block sm:mt-2">
-                    <span className="sm:hidden"> · </span>
-                    {formatDate(article.date)}
-                  </span>
-                )}
-              </span>
-
-              <div className="col-span-12 sm:col-span-7 lg:col-span-6">
-                <span className="eyebrow block mb-4">
-                  {article.category}
-                </span>
-                <h3 className="display-title text-2xl sm:text-3xl lg:text-4xl text-ink leading-tight group-hover:text-amber-800 transition-colors duration-300">
-                  {article.title}
-                </h3>
-                {article.excerpt && (
-                  <p className="mt-3 max-w-xl text-sm sm:text-base text-mid font-light leading-relaxed">
-                    {article.excerpt}
-                  </p>
-                )}
-              </div>
-
-              <div className="hidden sm:block sm:col-span-3 lg:col-span-3 lg:col-start-9">
-                <div className="relative overflow-hidden aspect-[4/3] bg-stone-200">
-                  <Image
-                    src={article.image}
-                    alt=""
-                    fill
-                    sizes="(max-width: 1024px) 25vw, 22vw"
-                    className="object-cover object-center grayscale-[35%] transition duration-700 ease-out group-hover:grayscale-0 group-hover:scale-105"
-                  />
-                </div>
-              </div>
-
-              <span
-                aria-hidden="true"
-                className="hidden lg:flex lg:col-span-1 justify-end text-2xl text-stone-300 group-hover:text-stone-900 transition-all duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"
+    <div>
+      {categories.length > 1 && (
+        <div
+          role="group"
+          aria-label="Filtrar por categoría"
+          className="no-scrollbar -mx-[var(--gutter)] flex gap-2 overflow-x-auto px-[var(--gutter)] sm:mx-0 sm:flex-wrap sm:px-0"
+        >
+          {filters.map((filter) => {
+            const selected = filter.name === active;
+            return (
+              <button
+                key={filter.name}
+                type="button"
+                aria-pressed={selected}
+                onClick={() => setActive(filter.name)}
+                className={`flex shrink-0 items-center gap-2 whitespace-nowrap border px-4 py-2.5 text-[11px] uppercase tracking-[0.18em] transition-colors duration-300 ${
+                  selected ? "border-ink bg-ink text-paper" : "border-ink/20 text-ink hover:border-ink"
+                }`}
               >
-                ↗
+                {filter.name}
+                <span className={`text-[10px] tracking-normal ${selected ? "text-paper/60" : "text-mid"}`}>
+                  {String(filter.count).padStart(2, "0")}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      <ul className="mt-10 grid grid-cols-1 gap-x-6 gap-y-14 md:grid-cols-2 lg:grid-cols-3">
+        {visible.map((article, i) => (
+          <li key={`${active}-${article.id}`} className="hh-rise" style={{ animationDuration: "1s", animationDelay: `${(i % 3) * 80}ms` }}>
+            <Link href={`${ROUTES.articles}/${article.slug}`} className="group flex h-full flex-col">
+              <span className="relative block aspect-[4/3] overflow-hidden bg-piedra">
+                <Image
+                  src={article.image}
+                  alt=""
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  className="object-cover transition-transform duration-[1.6s] ease-alko group-hover:scale-[1.04]"
+                />
+              </span>
+              <span className="mt-5 flex items-center justify-between gap-4 border-t border-ink/15 pt-4 text-[10px] uppercase tracking-[0.22em]">
+                <span className="text-bronze">{article.category}</span>
+                {article.date && <time className="text-mid">{formatDate(article.date)}</time>}
+              </span>
+              <span className="display-title mt-4 block text-2xl leading-tight transition-colors group-hover:text-bronze sm:text-[1.7rem]">
+                {article.title}
+              </span>
+              {article.excerpt && (
+                <span className="mt-3 line-clamp-3 block leading-relaxed text-mid">{article.excerpt}</span>
+              )}
+              <span className="mt-auto block pt-6">
+                <span className="arrow-link">
+                  Leer <span aria-hidden="true">↗</span>
+                </span>
               </span>
             </Link>
           </li>
         ))}
       </ul>
 
-      {visible.length === 0 && (
-        <p className="py-16 text-center text-stone-500 font-light">
-          No hay artículos en esta categoría todavía.
-        </p>
-      )}
+      {visible.length === 0 && <p className="py-16 text-center text-mid">No hay artículos en esta categoría todavía.</p>}
     </div>
   );
 }

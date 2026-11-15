@@ -141,6 +141,29 @@ export function buildMainNav(services: ServiceLink[] = []): NavItem[] {
  */
 export const TRANSPARENT_HEADER_ROUTES: string[] = ["/*"];
 
+/**
+ * Excepciones: páginas con cabecera editorial clara (sin foto detrás), donde la navegación
+ * arranca sólida. Coincidencia exacta; «/journal/:slug» cubre los artículos (no las guías).
+ */
+export const SOLID_HEADER_ROUTES: string[] = [
+  "/contacto",
+  "/nosotros",
+  "/equipo",
+  "/trabaja-con-nosotros",
+  "/journal",
+  "/journal/:slug",
+];
+
+/** ¿La ruta lleva la navegación sólida desde el principio? */
+export function isSolidHeaderRoute(pathname: string) {
+  const path = pathname.replace(/\/+$/, "") || "/";
+  return SOLID_HEADER_ROUTES.some((route) =>
+    route.endsWith("/:slug")
+      ? new RegExp(`^${route.slice(0, -6)}/(?!guias(/|$))[^/]+$`).test(path)
+      : path === route,
+  );
+}
+
 /** Columnas del pie de página. */
 export const FOOTER_NAV: NavItem[] = [
   { href: ROUTES.projects, label: "Proyectos" },

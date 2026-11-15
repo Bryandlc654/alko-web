@@ -9,6 +9,7 @@ import {
   buildMainNav,
   ROUTES,
   TRANSPARENT_HEADER_ROUTES,
+  isSolidHeaderRoute,
   type NavItem,
   type ServiceLink,
 } from "@/lib/site";
@@ -39,9 +40,11 @@ export default function Nav({
 }) {
   const pathname = usePathname();
   const items = buildMainNav(services);
-  const transparent = TRANSPARENT_HEADER_ROUTES.some((route) =>
-    route.endsWith("/*") ? pathname.startsWith(route.slice(0, -1)) : pathname === route,
-  );
+  const transparent =
+    !isSolidHeaderRoute(pathname) &&
+    TRANSPARENT_HEADER_ROUTES.some((route) =>
+      route.endsWith("/*") ? pathname.startsWith(route.slice(0, -1)) : pathname === route,
+    );
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 

@@ -1,7 +1,7 @@
 import Image from "@/components/ui/Image";
 import Link from "next/link";
-import Container from "@/components/ui/Container";
-import PageHero from "@/components/ui/PageHero";
+import EditorialHeader from "@/components/editorial/EditorialHeader";
+import EditorialSection from "@/components/editorial/EditorialSection";
 import ArticlesIndex from "@/components/ui/ArticlesIndex";
 import GuidesIndex from "@/components/ui/GuidesIndex";
 import ContactCta from "@/components/sections/ContactCta";
@@ -32,140 +32,111 @@ export default async function JournalPage() {
   );
   const [featured] = articles;
 
-  const stats = [
-    { label: "Artículos", value: String(articles.length).padStart(2, "0") },
-    { label: "Guías", value: String(guides.length).padStart(2, "0") },
-    { label: "Última publicación", value: featured?.date ? formatDate(featured.date) : "—" },
-  ];
   const sections = [
     { href: "#articulos", label: "Artículos", count: articles.length },
     { href: "#guias", label: "Guías", count: guides.length },
   ];
 
   return (
-    <main className="bg-white text-ink">
-      <PageHero
+    <main className="bg-paper text-ink">
+      <EditorialHeader
         breadcrumbs={[{ label: "Journal" }]}
-        eyebrow={pageContent.headerBadge || "JOURNAL"}
+        eyebrow={pageContent.headerBadge || "Journal"}
         title={<span className="whitespace-pre-line">{pageContent.headerTitulo || "Criterio técnico,\npor escrito."}</span>}
-        description={pageContent.headerDescripcion || "Detalles constructivos, instalaciones y gestión de obra explicados por el equipo que los ejecuta cada día."}
-        image={pageContent.headerBgImage || featured?.image || "/proceso-instalaciones.jpg"}
-      >
-        <dl className="mt-12 sm:mt-16 grid grid-cols-1 sm:grid-cols-3 border-t border-white/15">
-          {stats.map((stat) => (
-            <div
-              key={stat.label}
-              className="flex items-baseline justify-between gap-4 sm:block border-b sm:border-b-0 sm:border-r last:border-r-0 border-white/15 py-4 sm:py-6 sm:pr-6 sm:[&:not(:first-child)]:pl-6"
-            >
-              <dt className="text-[10px] tracking-[0.22em] uppercase text-white/50">
-                {stat.label}
-              </dt>
-              <dd className="display-title sm:mt-2 text-xl sm:text-3xl text-white">
-                {stat.value}
-              </dd>
-            </div>
-          ))}
-        </dl>
-      </PageHero>
-
-      {/* Accesos a las dos partes del Journal. */}
-      <nav aria-label="Secciones del Journal" className="border-b border-stone-200 bg-white">
-        <Container>
-          <ul className="flex gap-8 overflow-x-auto no-scrollbar">
+        description={
+          pageContent.headerDescripcion ||
+          "Detalles constructivos, instalaciones y gestión de obra explicados por el equipo que los ejecuta cada día."
+        }
+        aside={
+          <nav aria-label="Secciones del Journal" className="flex flex-col">
             {sections.map((s) => (
-              <li key={s.href}>
-                <a
-                  href={s.href}
-                  className="text-[10px] tracking-[0.22em] inline-flex items-center gap-2 py-4 uppercase text-mid transition-colors hover:text-stone-900"
-                >
-                  {s.label}
-                  <span className="text-stone-400">{String(s.count).padStart(2, "0")}</span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </Container>
-      </nav>
-
-      {featured && (
-        <section className="bg-stone-100 border-b border-stone-300/70">
-          <Container className="py-16 sm:py-24">
-            <span className="eyebrow block mb-8">
-              Destacado
-            </span>
-            <article className="reveal-item group">
-              <Link
-                href={`${ROUTES.articles}/${featured.slug}`}
-                className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-end"
+              <a
+                key={s.href}
+                href={s.href}
+                className="group flex items-baseline justify-between gap-6 border-t border-ink/15 py-4 transition-colors hover:text-bronze"
               >
-                <div
-                  data-parallax="8"
-                  className="relative overflow-hidden aspect-[16/10] lg:col-span-7 bg-stone-200"
-                >
-                  <Image
-                    src={featured.image}
-                    alt={featured.title}
-                    fill
-                    priority
-                    sizes="(max-width: 1024px) 100vw, 58vw"
-                    className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
-                  />
-                </div>
-                <div className="lg:col-span-5 lg:pb-2">
-                  <div className="text-[10px] tracking-[0.22em] flex items-center gap-3 uppercase">
-                    <span className="text-amber-800">{featured.category}</span>
-                    {featured.date && (
-                      <>
-                        <span className="h-px w-6 bg-stone-400" />
-                        <time className="text-stone-500">{formatDate(featured.date)}</time>
-                      </>
-                    )}
-                  </div>
-                  <h2 className="display-title mt-5 text-3xl sm:text-4xl lg:text-5xl text-ink leading-[1.08] group-hover:text-amber-800 transition-colors duration-300">
+                <span className="text-[11px] uppercase tracking-[0.22em]">{s.label}</span>
+                <span className="flex items-baseline gap-3">
+                  <span className="display-title text-3xl">{String(s.count).padStart(2, "0")}</span>
+                  <span aria-hidden="true" className="transition-transform group-hover:translate-y-0.5">↓</span>
+                </span>
+              </a>
+            ))}
+            {featured?.date && (
+              <p className="border-t border-ink/15 pt-4 text-[10px] uppercase tracking-[0.22em] text-mid">
+                Última publicación · {formatDate(featured.date)}
+              </p>
+            )}
+          </nav>
+        }
+      />
+
+      {/* Destacado: foto a lo ancho y texto a dos columnas debajo. */}
+      {featured && (
+        <section className="bg-paper">
+          <div className="site-wrap pb-20 sm:pb-28">
+            <Link href={`${ROUTES.articles}/${featured.slug}`} className="group block">
+              <div className="relative mt-8 aspect-[4/3] overflow-hidden bg-piedra sm:aspect-[21/9]">
+                <Image
+                  src={featured.image}
+                  alt={featured.title}
+                  fill
+                  priority
+                  sizes="100vw"
+                  className="object-cover transition-transform duration-[1.6s] ease-alko group-hover:scale-[1.03]"
+                />
+                <span className="absolute left-4 top-4 bg-paper px-2.5 py-1.5 text-[10px] uppercase tracking-[0.22em] text-ink sm:left-6 sm:top-6">
+                  Destacado
+                </span>
+              </div>
+              <div className="mt-8 grid grid-cols-12 gap-x-6 gap-y-6">
+                <div className="col-span-12 lg:col-span-7">
+                  <p className="text-[10px] uppercase tracking-[0.22em] text-mid">
+                    <span className="text-bronze">{featured.category}</span>
+                    {featured.date && <> · {formatDate(featured.date)}</>}
+                  </p>
+                  <h2 className="display-title mt-4 text-[2.2rem] leading-[1.04] transition-colors group-hover:text-bronze sm:text-5xl lg:text-6xl">
                     {featured.title}
                   </h2>
-                  {featured.excerpt && (
-                    <p className="mt-5 text-base sm:text-lg text-mid font-light leading-relaxed">
-                      {featured.excerpt}
-                    </p>
-                  )}
-                  <span className="mt-8 inline-flex items-center gap-3 border border-stone-900 px-6 py-3 text-[11px] font-light uppercase tracking-[0.16em] text-ink transition-colors group-hover:bg-stone-900 group-hover:text-white">
-                    Leer artículo
-                    <span className="transition-transform group-hover:translate-x-1">→</span>
+                </div>
+                <div className="col-span-12 flex flex-col justify-end lg:col-span-4 lg:col-start-9">
+                  {featured.excerpt && <p className="text-lg leading-relaxed text-mid">{featured.excerpt}</p>}
+                  <span className="arrow-link mt-6 self-start">
+                    Leer artículo <span aria-hidden="true">↗</span>
                   </span>
                 </div>
-              </Link>
-            </article>
-          </Container>
+              </div>
+            </Link>
+          </div>
         </section>
       )}
 
-      <section id="articulos" className="scroll-mt-28">
-        <Container className="py-20 sm:py-28">
-          <ArticlesIndex articles={articles} />
-        </Container>
-      </section>
+      <EditorialSection
+        id="articulos"
+        tone="white"
+        number="01"
+        label="Archivo"
+        title="Todos los artículos"
+        intro="Filtra por tema. Cada artículo, escrito por quien lo ejecuta en obra."
+        wide
+      >
+        <ArticlesIndex articles={articles} />
+      </EditorialSection>
 
       {guides.length > 0 && (
-        <section id="guias" className="scroll-mt-28 border-t border-stone-200 bg-stone-50">
-          <Container className="py-20 sm:py-28">
-            <div className="reveal-item grid grid-cols-1 gap-6 pb-10 border-b border-stone-300/60 lg:grid-cols-12 lg:items-end">
-              <div className="lg:col-span-7">
-                <span className="eyebrow block mb-4">
-                  {String(guides.length).padStart(2, "0")} {guides.length === 1 ? "guía" : "guías"}
-                </span>
-                <h2 className="display-title text-4xl sm:text-5xl text-ink leading-tight">
-                  {guiasContent.headerTitulo || "Guías"}
-                </h2>
-              </div>
-              <p className="lg:col-span-5 text-base sm:text-lg text-mid font-light leading-relaxed">
-                {guiasContent.headerDescripcion ||
-                  "Recorridos paso a paso por las decisiones clave de una obra: planificación, presupuesto, materiales y entrega."}
-              </p>
-            </div>
-            <GuidesIndex guides={guides} />
-          </Container>
-        </section>
+        <EditorialSection
+          id="guias"
+          number="02"
+          label="Guías paso a paso"
+          title={guiasContent.headerTitulo || "Guías"}
+          intro={
+            guiasContent.headerDescripcion ||
+            "Recorridos paso a paso por las decisiones clave de una obra: planificación, presupuesto, materiales y entrega."
+          }
+          wide
+        >
+          <GuidesIndex guides={guides} />
+        </EditorialSection>
       )}
 
       <ContactCta settings={settings} />
