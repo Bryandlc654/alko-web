@@ -177,19 +177,22 @@ export default function Nav({
   );
 }
 
-/** Mega menú de escritorio: introducción a la izquierda y enlaces en dos columnas. */
+/**
+ * Mega menú de escritorio en horizontal: banda a todo el ancho con la introducción a la
+ * izquierda y los enlaces en fila, una columna por división.
+ */
 function MegaMenu({ item, pathname }: { item: NavItem; pathname: string }) {
   const intro = MEGA_INTRO[item.href];
 
   return (
     <div className="invisible absolute inset-x-0 top-full z-50 -translate-y-2 opacity-0 transition-all duration-300 ease-alko group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100">
       <div className="site-wrap pt-3">
-        <div className="ml-auto grid max-w-[900px] grid-cols-12 border border-line bg-surface text-ink">
+        <div className="flex border border-line bg-surface text-ink">
           {intro && (
-            <div className="col-span-4 flex flex-col justify-between border-r border-line p-8">
+            <div className="flex w-[280px] shrink-0 flex-col justify-between border-r border-line p-7 xl:w-[300px]">
               <div>
                 <span className="eyebrow">{intro.tag}</span>
-                <p className="display-title mt-4 text-[26px] text-ink">{intro.title}</p>
+                <p className="display-title mt-4 text-[24px] text-ink">{intro.title}</p>
                 <p className="mt-3 text-[13px] leading-relaxed text-mid">{intro.text}</p>
               </div>
               <Link href={item.href} className="arrow-link mt-8 self-start text-ink">
@@ -197,29 +200,27 @@ function MegaMenu({ item, pathname }: { item: NavItem; pathname: string }) {
               </Link>
             </div>
           )}
-          <div className={`${intro ? "col-span-8" : "col-span-12"} grid grid-cols-2 content-start`}>
-            {item.children?.map((child) => (
+          <div className="grid flex-1 grid-cols-3 content-start overflow-hidden xl:grid-cols-4">
+            {item.children?.map((child, i) => (
               <Link
                 key={child.href}
                 href={child.href}
-                className={`group/item border-b border-line p-6 transition-colors odd:border-r hover:bg-paper ${
+                className={`group/item -mb-px -mr-px flex gap-3 border-b border-r border-line px-5 py-4 transition-colors hover:bg-paper ${
                   pathname === child.href ? "bg-paper" : ""
                 }`}
               >
-                <span className="flex items-center justify-between gap-4 text-[15px] font-medium">
-                  {child.label}
-                  <span
-                    aria-hidden="true"
-                    className="text-bronze opacity-0 transition-opacity group-hover/item:opacity-100"
-                  >
-                    ↗
+                <span className="pt-[3px] text-[10px] tracking-[0.18em] text-bronze">{String(i + 1).padStart(2, "0")}</span>
+                <span className="min-w-0 flex-1">
+                  <span className="flex items-start justify-between gap-3 text-[14px] font-medium leading-snug">
+                    {child.label}
+                    <span aria-hidden="true" className="text-bronze opacity-0 transition-opacity group-hover/item:opacity-100">
+                      ↗
+                    </span>
                   </span>
+                  {child.description && (
+                    <span className="mt-1 line-clamp-1 text-[12px] leading-relaxed text-mid">{child.description}</span>
+                  )}
                 </span>
-                {child.description && (
-                  <span className="mt-1.5 line-clamp-2 block text-[12px] leading-relaxed text-mid">
-                    {child.description}
-                  </span>
-                )}
               </Link>
             ))}
           </div>
