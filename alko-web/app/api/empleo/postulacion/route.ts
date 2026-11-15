@@ -1,4 +1,6 @@
+import { randomBytes } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
+import { CV_DIR, CV_URL_PREFIX } from "@/lib/cv-storage";
 import fs from "fs";
 import path from "path";
 import { saveDbJobApplication } from "@/lib/db/mysql";
@@ -68,23 +70,12 @@ export async function POST(req: NextRequest) {
       const bytes = await cvFile.arrayBuffer();
       const buffer = Buffer.from(bytes);
 
-      const baseName = path
-        .basename(originalName, extension)
-        .toLowerCase()
-        .replace(/[^a-z0-9_-]/g, "-")
-        .slice(0, 30);
+      const fileName = `cv-${randomBytes(12).toString("hex")}${extension}`;
 
-      const fileName = `cv-${baseName}-${Date.now()}${extension}`;
-      const uploadDir = path.join(process.cwd(), "public", "uploads", "cvs");
+      fs.mkdirSync(CV_DIR, { recursive: true });
+      fs.writeFileSync(path.join(CV_DIR, fileName), buffer);
 
-      if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true });
-      }
-
-      const filePath = path.join(uploadDir, fileName);
-      fs.writeFileSync(filePath, buffer);
-
-      cvUrl = `/uploads/cvs/${fileName}`;
+      cvUrl = `${CV_URL_PREFIX}${fileName}`;
       cvNombre = originalName;
     }
 

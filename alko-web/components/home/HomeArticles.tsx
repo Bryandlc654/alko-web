@@ -19,7 +19,7 @@ export default function HomeArticles({ articles }: { articles: Article[] }) {
             por escrito
           </h2>
         </div>
-        <Link href={ROUTES.articlesList} className="btn btn-ink self-start md:self-auto">
+        <Link href={ROUTES.journal} className="btn btn-ink self-start md:self-auto">
           Ver todos <span aria-hidden="true">→</span>
         </Link>
       </div>

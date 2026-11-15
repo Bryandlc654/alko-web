@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image from "@/components/ui/Image";
 import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Lock, User, ArrowRight, ShieldCheck, AlertCircle, Eye, EyeOff } from "lucide-react";
@@ -127,6 +127,7 @@ export default function AdminLoginPage() {
             <div className="flex justify-center mb-5">
               <Image
                 src="/logo-alko-footer.webp"
+                skeleton={false}
                 alt="ALKO"
                 width={170}
                 height={45}

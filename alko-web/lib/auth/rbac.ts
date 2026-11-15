@@ -91,6 +91,13 @@ export const MODULE_DESCRIPTIONS: { id: Permission; name: string; path: string; 
 /**
  * Determina si un usuario tiene permiso para acceder a un módulo específico.
  */
+/** Módulos que editan contenido con imágenes: dan acceso a la biblioteca de medios. */
+export const MEDIA_PERMISSIONS: Permission[] = ["editor", "proyectos", "servicios", "articulos", "guias", "equipo", "empleo"];
+
+export function canUseMedia(user: { role?: string; permissions?: Permission[] } | null | undefined): boolean {
+  return MEDIA_PERMISSIONS.some((permission) => hasPermission(user, permission));
+}
+
 export function hasPermission(user: { role?: string; permissions?: Permission[] } | null | undefined, permission: Permission): boolean {
   if (!user) return false;
   if (user.role === "superadmin" || user.role === "admin") return true;

@@ -40,6 +40,12 @@ export function decodeEntities(value: string): string {
     .replace(/&[a-z#0-9]+;/gi, (entity) => NAMED_ENTITIES[entity] ?? entity);
 }
 
+/** Texto plano y recortado (sin cortar palabras) a partir de HTML, para resúmenes. */
+export function plainExcerpt(html: string | undefined, max = 220): string {
+  const plain = decodeEntities(stripHtml((html || "").replace(/<\/?(p|br|li|h\d)[^>]*>/gi, " "))).replace(/\s+/g, " ").trim();
+  return plain.length > max ? plain.slice(0, max).replace(/\s+\S*$/, "") + "…" : plain;
+}
+
 /** Normaliza un valor desconocido a string (nunca devuelve `null`/`undefined`). */
 export function text(value: unknown): string {
   return typeof value === "string" ? value : value == null ? "" : String(value);
@@ -48,12 +54,16 @@ export function text(value: unknown): string {
 /** Formatea una fecha ISO en un texto legible en español. */
 export function formatDate(value: string): string {
   if (!value) return "";
-  const date = new Date(value);
+  // «2026-10-28» se interpreta como medianoche UTC: en España (UTC-) o en el navegador de
+  // otra zona salía el día anterior. Las fechas sin hora se leen como día del calendario.
+  const dateOnly = /^\d{4}-\d{2}-\d{2}$/.test(value);
+  const date = new Date(dateOnly ? `${value}T12:00:00Z` : value);
   if (Number.isNaN(date.getTime())) return "";
   return new Intl.DateTimeFormat("es-ES", {
     day: "2-digit",
     month: "long",
     year: "numeric",
+    ...(dateOnly ? { timeZone: "UTC" } : {}),
   }).format(date);
 }
 

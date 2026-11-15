@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/components/ui/Image";
 import {
   Save,
   ArrowLeft,
@@ -37,10 +37,11 @@ import InlineText from "@/components/admin/InlineText";
 import InlineImage from "@/components/admin/InlineImage";
 import ProjectsList from "@/components/ui/ProjectsList";
 import SectorsList from "@/components/ui/SectorsList";
+import { HOME_SECTORS_LIMIT } from "@/components/sections/ServicesSection";
 import ArticleCard from "@/components/ui/ArticleCard";
 import Footer from "@/components/layout/Footer";
 import { ROUTES } from "@/lib/site";
-import { DEFAULT_PROJECTS_PAGE_CONTENT, DEFAULT_NOSOTROS_PAGE_CONTENT,
+import { DEFAULT_PROJECTS_PAGE_CONTENT, DEFAULT_NOSOTROS_PAGE_CONTENT, DEFAULT_HOME_CONTENT, DEFAULT_SHOWCASE_SLIDES,
   DEFAULT_CONTACTO_PAGE_CONTENT,
   DEFAULT_SERVICIOS_PAGE_CONTENT,
   DEFAULT_EQUIPO_PAGE_CONTENT,
@@ -55,22 +56,25 @@ import { DEFAULT_PROJECTS_PAGE_CONTENT, DEFAULT_NOSOTROS_PAGE_CONTENT,
 import { ArrowRight, Handshake, CalendarClock, Wallet, BadgeCheck, Phone, MessageCircle, Mail, MapPin, Clock } from "lucide-react";
 import Materials from "@/components/sections/Materials";
 import Process from "@/components/sections/Process";
+import Workshop from "@/components/sections/Workshop";
+import { getExperienceData } from "@/components/sections/Experience";
 import { METHOD_HREF } from "@/lib/site";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import ProjectsGallery from "@/components/ui/ProjectsGallery";
 import { splitLead } from "@/lib/utils";
 import { Layers } from "lucide-react";
+import { toast } from "@/components/admin/feedback";
+import { openMediaPicker } from "@/components/admin/media";
 
 const PAGES_LIST = [
   { id: "home", label: "Inicio (Home)", path: "/", group: "Principal" },
   { id: "projects", label: "Proyectos", path: "/proyectos", group: "Portfolio" },
   { id: "nosotros", label: "Nosotros", path: "/nosotros", group: "Corporativo" },
   { id: "servicios", label: "Servicios", path: "/servicios", group: "Servicios" },
-  { id: "oficinas", label: "Oficinas", path: "/oficinas", group: "Servicios" },
   { id: "equipo", label: "Equipo", path: "/equipo", group: "Corporativo" },
   { id: "empleo", label: "Trabaja con nosotros", path: "/trabaja-con-nosotros", group: "Corporativo" },
-  { id: "articulos", label: "Artículos (Blog)", path: "/conocimiento/articulos", group: "Conocimiento" },
-  { id: "guias", label: "Guías Técnicas", path: "/conocimiento/guias", group: "Conocimiento" },
+  { id: "articulos", label: "Artículos (Blog)", path: "/journal", group: "Journal" },
+  { id: "guias", label: "Guías Técnicas", path: "/journal", group: "Journal" },
   { id: "contacto", label: "Contacto", path: "/contacto", group: "Contacto" },
 ] as const;
 
@@ -93,6 +97,8 @@ interface LiveEditorProps {
   fabricantes: Fabricante[];
   articles: Article[];
   settings: SiteSettings;
+  /** Proyecto elegido para el bloque grande de la portada (Proyectos › Poner en bloque grande). */
+  showcaseProject?: Project | null;
 }
 
 function phaseNumber(fase: Fase, index: number) {
@@ -119,6 +125,7 @@ export default function LiveEditor({
   fabricantes,
   articles,
   settings,
+  showcaseProject = null,
 }: LiveEditorProps) {
   // Selector de página a editar: 'home' o 'projects'
   const [activePage, setActivePage] = useState<"home" | "projects" | "nosotros" | "contacto" | "servicios" | "equipo" | "empleo" | "oficinas" | "articulos" | "guias">("home");
@@ -306,10 +313,17 @@ export default function LiveEditor({
   );
 
   // Estado de contenido editable sincronizado (Home)
+  const showcaseExperience = showcaseProject ? getExperienceData(undefined, showcaseProject) : null;
+
   const [content, setContent] = useState<HomeContent>({
+    ...DEFAULT_HOME_CONTENT,
     ...initialContent,
     heroSlides: initialContent.heroSlides?.length ? initialContent.heroSlides : initialHeroSlides,
-    workshopSlides: initialContent.workshopSlides?.length ? initialContent.workshopSlides : initialShowcaseSlides,
+    workshopSlides: (initialContent.workshopSlides && initialContent.workshopSlides.length > 0)
+      ? initialContent.workshopSlides
+      : (initialShowcaseSlides && initialShowcaseSlides.length > 0)
+      ? initialShowcaseSlides
+      : DEFAULT_SHOWCASE_SLIDES,
     fases: initialContent.fases?.length ? initialContent.fases : fases,
   });
 
@@ -322,8 +336,31 @@ export default function LiveEditor({
   const [errorMessage, setErrorMessage] = useState("");
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
-  // Selector oculto para añadir slide al Hero
-  const newHeroSlideInputRef = useRef<HTMLInputElement>(null);
+  // Añadir slide al showcase: se elige o sube desde la biblioteca de medios.
+  const handleAddNewWorkshopSlide = async () => {
+    const url = await openMediaPicker({ title: "Añadir imagen al showcase" });
+    if (!url) return;
+    const slides = [...(content.workshopSlides || DEFAULT_SHOWCASE_SLIDES)];
+    const newSlide: Slide = {
+      id: `showcase-${Date.now()}`,
+      image: url,
+      alt: "Showcase ALKO",
+    };
+    slides.push(newSlide);
+    updateField("workshopSlides", slides);
+    setActiveShowcaseSlideIndex(slides.length - 1);
+  };
+
+  const handleDeleteWorkshopSlide = (index: number) => {
+    const slides = [...(content.workshopSlides || DEFAULT_SHOWCASE_SLIDES)];
+    if (slides.length <= 1) {
+      toast.info("Debe quedar al menos una imagen en el showcase");
+      return;
+    }
+    slides.splice(index, 1);
+    updateField("workshopSlides", slides);
+    setActiveShowcaseSlideIndex(0);
+  };
 
   const updateField = useCallback((field: keyof HomeContent, value: any) => {
     setContent((prev) => ({ ...prev, [field]: value }));
@@ -379,6 +416,24 @@ export default function LiveEditor({
         if (!res.ok) {
           const errorData = await res.json();
           throw new Error(errorData.error || "Error al guardar en el servidor");
+        }
+
+        // Las fases del proceso son las mismas que en la portada: se guardan con ella.
+        const procesoRes = await fetch("/api/admin/content/home", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            fases: content.fases,
+            procesoTitulo: content.procesoTitulo,
+            procesoSubtitulo: content.procesoSubtitulo,
+            procesoColHeading: content.procesoColHeading,
+            procesoColText: content.procesoColText,
+          }),
+        });
+
+        if (!procesoRes.ok) {
+          const errorData = await procesoRes.json();
+          throw new Error(errorData.error || "Error al guardar las fases del proceso");
         }
       } else if (activePage === "articulos") {
         const res = await fetch("/api/admin/content/articulos", {
@@ -478,39 +533,25 @@ export default function LiveEditor({
     }
   };
 
-  // Añadir slide al Hero
-  const handleAddNewHeroSlide = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const res = await fetch("/api/admin/upload", { method: "POST", body: formData });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-
-      const slides = [...(content.heroSlides || [])];
-      slides.push({
-        id: `hero-slide-${Date.now()}`,
-        image: data.url,
-        alt: "Slide de portada ALKO",
-      });
-      updateField("heroSlides", slides);
-      setActiveHeroSlideIndex(slides.length - 1);
-    } catch (err: any) {
-      alert("Error subiendo imagen de slide: " + err.message);
-    } finally {
-      if (newHeroSlideInputRef.current) newHeroSlideInputRef.current.value = "";
-    }
+  // Añadir slide al Hero: se elige o sube desde la biblioteca de medios.
+  const handleAddNewHeroSlide = async () => {
+    const url = await openMediaPicker({ title: "Añadir imagen a la portada" });
+    if (!url) return;
+    const slides = [...(content.heroSlides || [])];
+    slides.push({
+      id: `hero-slide-${Date.now()}`,
+      image: url,
+      alt: "Slide de portada ALKO",
+    });
+    updateField("heroSlides", slides);
+    setActiveHeroSlideIndex(slides.length - 1);
   };
 
   // Eliminar slide del Hero
   const handleDeleteHeroSlide = (index: number) => {
     const slides = [...(content.heroSlides || [])];
     if (slides.length <= 1) {
-      alert("Debe quedar al menos una imagen en la portada.");
+      toast.info("Debe quedar al menos una imagen en la portada.");
       return;
     }
     slides.splice(index, 1);
@@ -655,7 +696,7 @@ export default function LiveEditor({
           )}
 
           <Link
-            href={activePage === "home" ? "/" : activePage === "projects" ? "/proyectos" : activePage === "nosotros" ? "/nosotros" : activePage === "contacto" ? "/contacto" : activePage === "servicios" ? "/servicios" : activePage === "equipo" ? "/equipo" : activePage === "empleo" ? "/trabaja-con-nosotros" : activePage === "oficinas" ? "/oficinas" : activePage === "articulos" ? "/conocimiento/articulos" : "/conocimiento/guias"}
+            href={activePage === "home" ? "/" : activePage === "projects" ? "/proyectos" : activePage === "nosotros" ? "/nosotros" : activePage === "contacto" ? "/contacto" : activePage === "servicios" ? "/servicios" : activePage === "equipo" ? "/equipo" : activePage === "empleo" ? "/trabaja-con-nosotros" : activePage === "oficinas" ? "/oficinas" : activePage === "articulos" ? "/journal" : "/journal"}
             target="_blank"
             className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition shadow-sm"
           >
@@ -718,6 +759,7 @@ export default function LiveEditor({
             <div className="pointer-events-auto">
               <Image
                 src="/logo.webp"
+                skeleton={false}
                 alt="ALKO Arquitectura y Reformas"
                 width={170}
                 height={48}
@@ -730,7 +772,7 @@ export default function LiveEditor({
               <a href="#proyectos" className="hover:text-amber-500 transition">Proyectos</a>
               <a href="#servicios" className="hover:text-amber-500 transition">Especialidades</a>
               <a href="#metodo" className="hover:text-amber-500 transition">Método</a>
-              <a href="#workshop" className="hover:text-amber-500 transition">Taller</a>
+              <a href="#workshop" className="hover:text-amber-500 transition">Start Research</a>
               <a href="#contacto" className="hover:text-amber-500 transition">Contacto</a>
             </div>
           </nav>
@@ -761,19 +803,12 @@ export default function LiveEditor({
 
               <button
                 type="button"
-                onClick={() => newHeroSlideInputRef.current?.click()}
+                onClick={handleAddNewHeroSlide}
                 className="w-6 h-6 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center transition shadow"
                 title="Añadir nueva imagen al Hero"
               >
                 <Plus className="w-3.5 h-3.5" />
               </button>
-              <input
-                ref={newHeroSlideInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleAddNewHeroSlide}
-                className="hidden"
-              />
             </div>
 
             {/* Slider de Fondo con Reemplazo de Imagen en Línea */}
@@ -1099,18 +1134,39 @@ export default function LiveEditor({
                 </div>
               </div>
 
-              <SectorsList sectors={sectors} />
+              <SectorsList sectors={sectors.slice(0, HOME_SECTORS_LIMIT)} />
             </div>
           </section>
 
           {/* ========================================================
               5. SECCIÓN WORKSHOP / SHOWCASE (EDITABLE EN VIVO)
               ======================================================== */}
+          {showcaseProject ? (
+            /* El bloque muestra el proyecto elegido en Proyectos: se ve tal cual y se cambia desde allí. */
+            <div className="relative">
+              <div className="absolute top-6 left-6 z-40 bg-black/70 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 flex items-center gap-2 text-white font-poppins text-xs shadow-lg">
+                <span className="w-2 h-2 rounded-full bg-amber-500" />
+                <span className="font-semibold tracking-wide">
+                  Bloque grande: proyecto «{showcaseProject.title}». Se cambia en{" "}
+                  <Link href="/admin/proyectos" className="underline underline-offset-2 hover:text-amber-300">
+                    Proyectos
+                  </Link>
+                </span>
+              </div>
+              <Workshop slides={[]} content={content} project={showcaseProject} />
+            </div>
+          ) : (
           <section id="workshop" className="relative w-full h-[600px] sm:h-[700px] lg:h-[780px] overflow-hidden bg-stone-950 group">
+            {/* Indicador visible de sección editable */}
+            <div className="absolute top-6 left-6 z-40 bg-black/70 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 flex items-center gap-2 text-white font-poppins text-xs shadow-lg">
+              <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+              <span className="font-semibold tracking-wide">Bloque: Start Research (Showcase / Soluciones Técnicas)</span>
+            </div>
+
             {/* Controles para cambiar slides del showcase */}
-            <div className="absolute top-6 right-6 z-40 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 flex items-center gap-2 text-white font-poppins">
-              <span className="text-[10px] tracking-wider uppercase text-white/70">Showcase Slide:</span>
-              {(content.workshopSlides || []).map((slide, i) => (
+            <div className="absolute top-6 right-6 z-40 bg-black/70 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 flex items-center gap-2 text-white font-poppins shadow-lg">
+              <span className="text-[10px] tracking-wider uppercase text-white/70">Slide:</span>
+              {(content.workshopSlides && content.workshopSlides.length > 0 ? content.workshopSlides : DEFAULT_SHOWCASE_SLIDES).map((slide, i) => (
                 <button
                   key={slide.id || i}
                   type="button"
@@ -1124,11 +1180,19 @@ export default function LiveEditor({
                   {i + 1}
                 </button>
               ))}
+              <button
+                type="button"
+                onClick={handleAddNewWorkshopSlide}
+                className="w-6 h-6 rounded-full bg-blue-600/90 hover:bg-blue-600 text-white flex items-center justify-center text-xs font-bold transition ml-1"
+                title="Añadir nuevo slide de imagen"
+              >
+                <Plus className="w-3.5 h-3.5" />
+              </button>
             </div>
 
             {/* Slider de imágenes de showcase con edición directa */}
             <div id="showcase-slider" className="absolute inset-0">
-              {(content.workshopSlides || []).map((slide, i) => (
+              {(content.workshopSlides && content.workshopSlides.length > 0 ? content.workshopSlides : DEFAULT_SHOWCASE_SLIDES).map((slide, i) => (
                 <div
                   key={slide.id || i}
                   className={`showcase-slide absolute inset-0 transition-opacity duration-700 ease-in-out ${
@@ -1136,10 +1200,12 @@ export default function LiveEditor({
                   }`}
                 >
                   <InlineImage
-                    src={slide.image}
+                    src={slide.image || "/start-research-1.jpg"}
                     alt={slide.alt || "Showcase ALKO"}
-                    label={`Cambiar imagen de Taller #${i + 1}`}
+                    label={`Cambiar imagen de Showcase #${i + 1}`}
                     onImageChange={(newUrl) => handleWorkshopSlideImageChange(newUrl, i)}
+                    canDelete={(content.workshopSlides || DEFAULT_SHOWCASE_SLIDES).length > 1}
+                    onDelete={() => handleDeleteWorkshopSlide(i)}
                     className="w-full h-full"
                     imageClassName="object-cover object-center brightness-[0.98] contrast-[1.02]"
                   />
@@ -1149,38 +1215,161 @@ export default function LiveEditor({
 
             <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-stone-950/40 via-transparent to-transparent pointer-events-none z-15" />
 
-            {/* Tarjeta flotante con textos editables */}
+            {/* Tarjeta flotante con textos editables idéntica a la web pública */}
             <div id="showcase-card" className="absolute bottom-0 left-6 sm:left-12 lg:left-24 xl:left-32 z-30 max-w-sm sm:max-w-md lg:max-w-xl w-full">
               <div className="relative bg-white/95 backdrop-blur-sm px-6 sm:px-8 py-7 sm:py-9 shadow-2xl border border-white/60">
                 <span className="block font-mono text-[10px] sm:text-[11px] tracking-[0.28em] text-stone-600 uppercase mb-3">
                   <InlineText
-                    value={content.workshopBadge}
+                    value={content.workshopBadge || "START RESEARCH"}
                     onChange={(val) => updateField("workshopBadge", val)}
-                    placeholder="Badge..."
+                    placeholder="START RESEARCH"
                   />
                 </span>
                 <h3 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-light text-stone-900 tracking-tight leading-snug">
                   <InlineText
-                    value={content.workshopTitulo}
+                    value={content.workshopTitulo || "Soluciones arquitectónicas y técnicas con criterio constructivo."}
                     onChange={(val) => updateField("workshopTitulo", val)}
-                    placeholder="Título del taller..."
+                    placeholder="Título del bloque..."
                   />
                 </h3>
                 <div className="mt-4 text-sm sm:text-base text-stone-700 font-light leading-relaxed max-w-lg">
                   <InlineText
-                    value={content.workshopDescripcion}
+                    value={content.workshopDescripcion || "Investigar, coordinar y ejecutar: cada detalle responde a una exigencia funcional, constructiva y estética."}
                     onChange={(val) => updateField("workshopDescripcion", val)}
-                    placeholder="Descripción del taller..."
+                    placeholder="Descripción del bloque..."
                     multiline
                   />
                 </div>
+                <div className="mt-6 sm:mt-8">
+                  <span className="inline-flex items-center gap-2 text-xs sm:text-sm font-normal text-stone-900 group/link">
+                    <span className="text-base font-light transition-transform group-hover/link:translate-y-0.5">
+                      ↓
+                    </span>
+                    <span className="underline underline-offset-4 decoration-stone-900/40 hover:decoration-stone-900">
+                      <InlineText
+                        value={content.workshopBotonTexto || "Ver Solución"}
+                        onChange={(val) => updateField("workshopBotonTexto", val)}
+                        placeholder="Ver Solución"
+                      />
+                    </span>
+                  </span>
+                </div>
               </div>
             </div>
+
+            {/* Controles de navegación de slides inferiores idénticos a la portada */}
+            <div className="absolute bottom-6 sm:bottom-8 left-6 sm:left-12 z-30 flex items-center gap-6">
+              <button
+                type="button"
+                onClick={() =>
+                  setActiveShowcaseSlideIndex((prev) =>
+                    prev > 0
+                      ? prev - 1
+                      : (content.workshopSlides || DEFAULT_SHOWCASE_SLIDES).length - 1
+                  )
+                }
+                className="text-white/80 hover:text-white transition cursor-pointer text-xl font-light hover:-translate-x-1 duration-200 focus:outline-none"
+                title="Slide anterior"
+              >
+                ←
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  setActiveShowcaseSlideIndex((prev) =>
+                    prev < (content.workshopSlides || DEFAULT_SHOWCASE_SLIDES).length - 1
+                      ? prev + 1
+                      : 0
+                  )
+                }
+                className="text-white/80 hover:text-white transition cursor-pointer text-xl font-light hover:translate-x-1 duration-200 focus:outline-none"
+                title="Slide siguiente"
+              >
+                →
+              </button>
+            </div>
+
+            <div className="absolute bottom-6 sm:bottom-8 right-6 sm:right-12 z-30 flex items-center gap-2.5">
+              {(content.workshopSlides && content.workshopSlides.length > 0 ? content.workshopSlides : DEFAULT_SHOWCASE_SLIDES).map((_, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => setActiveShowcaseSlideIndex(idx)}
+                  className={`w-2.5 h-2.5 transition-all duration-300 focus:outline-none ${
+                    activeShowcaseSlideIndex === idx
+                      ? "bg-white"
+                      : "border border-white/60 bg-transparent hover:border-white"
+                  }`}
+                  aria-label={`Ir al slide ${idx + 1}`}
+                />
+              ))}
+            </div>
           </section>
+          )}
 
           {/* ========================================================
               6. SECCIÓN EXPERIENCIA (90 DÍAS) - RÉPLICA EXACTA CON EDITABILIDAD
               ======================================================== */}
+          {showcaseExperience ? (
+            /* Con un proyecto en el bloque grande, este bloque muestra sus datos y se cambia en Proyectos. */
+            <section id="experiencia" className="relative bg-white text-stone-900 border-t border-stone-200/80 py-24 px-6 sm:px-12 lg:px-16 overflow-hidden">
+              <div className="absolute top-6 left-6 z-40 bg-black/70 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 flex items-center gap-2 text-white font-poppins text-xs shadow-lg">
+                <span className="w-2 h-2 rounded-full bg-amber-500" />
+                <span className="font-semibold tracking-wide">
+                  Datos del proyecto «{showcaseProject?.title}». Se cambian en{" "}
+                  <Link href="/admin/proyectos" className="underline underline-offset-2 hover:text-amber-300">
+                    Proyectos
+                  </Link>
+                </span>
+              </div>
+              <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-12 lg:gap-16 items-center">
+                <div className="w-full lg:w-1/2 relative">
+                  <div className="relative w-full aspect-[4/5] max-w-[420px] mx-auto overflow-hidden shadow-2xl border border-stone-200">
+                    {showcaseExperience.image && (
+                      <Image src={showcaseExperience.image} alt={showcaseProject?.title || ""} fill sizes="420px" className="object-cover object-center" />
+                    )}
+                  </div>
+                </div>
+                <div className="w-full lg:w-1/2 flex flex-col space-y-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                      <span className="font-mono text-[11px] tracking-[0.2em] text-stone-500 uppercase block mb-1">01 / CONTEXTO</span>
+                      <h4 className="font-serif font-light text-xl text-stone-900 mb-2 tracking-tight">El Proyecto</h4>
+                      <p className="font-sans text-sm text-stone-600 font-light leading-relaxed">{showcaseExperience.contexto}</p>
+                    </div>
+                    <div>
+                      <span className="font-mono text-[11px] tracking-[0.2em] text-stone-500 uppercase block mb-1">02 / CONDICIONANTES REALES</span>
+                      <h4 className="font-serif font-light text-xl text-stone-900 mb-2 tracking-tight">El Reto</h4>
+                      <p className="font-sans text-sm text-stone-600 font-light leading-relaxed mb-3">{showcaseExperience.reto}</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {showcaseExperience.badges.map((badge) => (
+                          <span key={badge} className="px-2.5 py-1 text-[10px] uppercase font-sans border border-stone-300 rounded-full text-stone-700 bg-stone-100/60">
+                            {badge}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="border-b border-stone-200" />
+                  {[
+                    { label: "03 / QUÉ EJECUTÓ ALKO · EL ALCANCE", metric: showcaseExperience.metric1, text: showcaseExperience.alcance },
+                    { label: "04 / DECISIONES TÉCNICAS · LA SOLUCIÓN", metric: showcaseExperience.metric2, text: showcaseExperience.solucion },
+                  ].map((item) => (
+                    <div key={item.label} className="space-y-2">
+                      <span className="font-serif text-xs text-stone-600">{item.label}</span>
+                      {item.metric && (
+                        <div className="flex items-baseline">
+                          <span className="font-sans text-5xl font-light text-stone-900 tracking-tight">{item.metric.value}</span>
+                          <span className="text-2xl font-light text-stone-900 ml-1.5">{item.metric.unit}</span>
+                        </div>
+                      )}
+                      <p className="font-sans text-sm text-stone-600 font-light leading-relaxed">{item.text}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          ) : (
           <section id="experiencia" className="relative bg-white text-stone-900 border-t border-stone-200/80 py-24 px-6 sm:px-12 lg:px-16 overflow-hidden">
             <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-12 lg:gap-16 items-center">
               {/* Contenedor de Imagen de 90 días con recuadro arquitectónico */}
@@ -1268,6 +1457,7 @@ export default function LiveEditor({
               </div>
             </div>
           </section>
+          )}
 
           {/* ========================================================
               7. SECCIÓN MATERIALES (EDITABLE EN VIVO)
@@ -1313,6 +1503,7 @@ export default function LiveEditor({
                   <div key={`${fab.id}-${i}`} className="flex items-center h-12 sm:h-16 shrink-0 opacity-70 hover:opacity-100 transition">
                     <Image
                       src={fab.logo}
+                      skeleton={false}
                       alt={fab.name}
                       width={120}
                       height={48}
@@ -1515,7 +1706,7 @@ export default function LiveEditor({
                 <ProjectsGallery projects={projectSummaries} />
               </div>
             </div>
-          ) : (
+          ) : activePage === "nosotros" ? (
             /* ========================================================
                VISTA EDITABLE: PÁGINA NOSOTROS (/nosotros)
                ======================================================== */
@@ -1827,7 +2018,7 @@ export default function LiveEditor({
               </section>
 
               {/* ========================================================
-                  5. FASES DEL PROCESO EN NOSOTROS (EDITABLE EN VIVO)
+                  5. FASES DEL PROCESO EN NOSOTROS (COMPARTIDAS CON LA PORTADA)
                   ======================================================== */}
               <section id="proceso-nosotros" className="relative bg-white text-stone-900 py-24 sm:py-32 px-6 sm:px-10 lg:px-12 overflow-hidden border-t border-stone-200">
                 <div className="max-w-7xl mx-auto">
@@ -1836,15 +2027,15 @@ export default function LiveEditor({
                     <div>
                       <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-light text-stone-900 tracking-tight leading-none">
                         <InlineText
-                          value={nosotrosContent.procesoTitulo || "Nuestro proceso"}
-                          onChange={(val) => updateNosotrosField("procesoTitulo", val)}
+                          value={content.procesoTitulo || "Nuestro proceso"}
+                          onChange={(val) => updateField("procesoTitulo", val)}
                           placeholder="Título del proceso..."
                         />
                       </h2>
                       <div className="mt-2 font-mono text-[11px] tracking-[0.25em] text-stone-500 uppercase">
                         <InlineText
-                          value={nosotrosContent.procesoSubtitulo || "SECUENCIA DE COORDINACIÓN INTEGRAL · 6 FASES · 1 EQUIPO"}
-                          onChange={(val) => updateNosotrosField("procesoSubtitulo", val)}
+                          value={content.procesoSubtitulo || "SECUENCIA DE COORDINACIÓN INTEGRAL · 6 FASES · 1 EQUIPO"}
+                          onChange={(val) => updateField("procesoSubtitulo", val)}
                           placeholder="Subtítulo del proceso..."
                         />
                       </div>
@@ -1855,7 +2046,7 @@ export default function LiveEditor({
                   <div className="mt-14 sm:mt-20 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-start">
                     {/* Columna 1: Tabs de fases con edición de título */}
                     <div className="lg:col-span-4 flex flex-col space-y-4 sm:space-y-6">
-                      {(nosotrosContent.fases && nosotrosContent.fases.length > 0 ? nosotrosContent.fases : fases).map((fase, i, allFases) => (
+                      {(content.fases && content.fases.length > 0 ? content.fases : fases).map((fase, i, allFases) => (
                         <div
                           key={fase.id || i}
                           onClick={() => setActiveNosotrosFaseIndex(i)}
@@ -1882,7 +2073,7 @@ export default function LiveEditor({
                               onChange={(val) => {
                                 const updated = [...allFases];
                                 updated[i] = { ...updated[i], title: val };
-                                updateNosotrosField("fases", updated);
+                                updateField("fases", updated);
                               }}
                               placeholder={`Título de fase ${i + 1}...`}
                             />
@@ -1893,7 +2084,7 @@ export default function LiveEditor({
 
                     {/* Columna 2: Imagen de la fase activa con edición en línea */}
                     {(() => {
-                      const activeFases = nosotrosContent.fases && nosotrosContent.fases.length > 0 ? nosotrosContent.fases : fases;
+                      const activeFases = content.fases && content.fases.length > 0 ? content.fases : fases;
                       const activeFase = activeFases[activeNosotrosFaseIndex] || activeFases[0];
                       if (!activeFase) return null;
 
@@ -1908,7 +2099,7 @@ export default function LiveEditor({
                                 onImageChange={(newUrl) => {
                                   const updated = [...activeFases];
                                   updated[activeNosotrosFaseIndex] = { ...updated[activeNosotrosFaseIndex], imagen: newUrl };
-                                  updateNosotrosField("fases", updated);
+                                  updateField("fases", updated);
                                 }}
                                 className="w-full h-full"
                                 imageClassName="object-cover object-center"
@@ -1921,15 +2112,15 @@ export default function LiveEditor({
                             <div>
                               <h3 className="text-xl sm:text-2xl font-serif font-light text-stone-900 tracking-tight leading-snug">
                                 <InlineText
-                                  value={nosotrosContent.procesoColHeading || "Una única dirección para todo el proyecto"}
-                                  onChange={(val) => updateNosotrosField("procesoColHeading", val)}
+                                  value={content.procesoColHeading || "Una única dirección para todo el proyecto"}
+                                  onChange={(val) => updateField("procesoColHeading", val)}
                                   placeholder="Encabezado lateral..."
                                 />
                               </h3>
                               <div className="mt-4 text-base sm:text-lg text-stone-600 font-light leading-relaxed font-sans">
                                 <InlineText
-                                  value={nosotrosContent.procesoColText || "Un único equipo coordina construcción, instalaciones, compras y gestión técnica para mantener el proyecto bajo control."}
-                                  onChange={(val) => updateNosotrosField("procesoColText", val)}
+                                  value={content.procesoColText || "Un único equipo coordina construcción, instalaciones, compras y gestión técnica para mantener el proyecto bajo control."}
+                                  onChange={(val) => updateField("procesoColText", val)}
                                   placeholder="Descripción lateral..."
                                   multiline
                                 />
@@ -1943,7 +2134,7 @@ export default function LiveEditor({
                                   onChange={(val) => {
                                     const updated = [...activeFases];
                                     updated[activeNosotrosFaseIndex] = { ...updated[activeNosotrosFaseIndex], texto: val };
-                                    updateNosotrosField("fases", updated);
+                                    updateField("fases", updated);
                                   }}
                                   placeholder={`Detalle explicativo de la fase ${activeNosotrosFaseIndex + 1}...`}
                                   multiline
@@ -2112,7 +2303,7 @@ export default function LiveEditor({
                 </div>
               </section>
             </div>
-          )}
+          ) : null}
 
 
           {/* ========================================================
@@ -3137,7 +3328,7 @@ export default function LiveEditor({
 
 
           {/* ========================================================
-              VISTA EDITABLE: PÁGINA ARTÍCULOS (/conocimiento/articulos)
+              VISTA EDITABLE: PÁGINA ARTÍCULOS (/journal)
               ======================================================== */}
           {activePage === "articulos" && (
             <div className="bg-white text-stone-900">
@@ -3160,7 +3351,7 @@ export default function LiveEditor({
                 <div className="relative max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 w-full z-10">
                   <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-white/70 uppercase mb-4">
                     <InlineText
-                      value={articulosContent.headerBadge || "CONOCIMIENTO · ARTÍCULOS"}
+                      value={articulosContent.headerBadge || "JOURNAL"}
                       onChange={(val) => updateArticulosField("headerBadge", val)}
                       placeholder="Badge..."
                     />
@@ -3199,7 +3390,7 @@ export default function LiveEditor({
           )}
 
           {/* ========================================================
-              VISTA EDITABLE: PÁGINA GUÍAS (/conocimiento/guias)
+              VISTA EDITABLE: PÁGINA GUÍAS (/journal, sección Guías)
               ======================================================== */}
           {activePage === "guias" && (
             <div className="bg-white text-stone-900">
@@ -3222,7 +3413,7 @@ export default function LiveEditor({
                 <div className="relative max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 w-full z-10">
                   <span className="block font-mono text-[11px] sm:text-xs tracking-[0.25em] text-white/70 uppercase mb-4">
                     <InlineText
-                      value={guiasContent.headerBadge || "CONOCIMIENTO · GUÍAS"}
+                      value={guiasContent.headerBadge || "JOURNAL · GUÍAS"}
                       onChange={(val) => updateGuiasField("headerBadge", val)}
                       placeholder="Badge..."
                     />

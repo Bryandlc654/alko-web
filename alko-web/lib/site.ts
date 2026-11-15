@@ -10,10 +10,26 @@ export const SITE = {
   legalName: "ALKO Construcción y Reformas Integrales",
   url: (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.alko.es").replace(/\/+$/, ""),
   locale: "es_ES",
-  title: "ALKO - Construcción y Reformas Integrales en Madrid",
+  title: "Reformas integrales y construcción en Madrid | ALKO",
   description:
-    "Ejecutamos proyectos residenciales y corporativos de alta exigencia, coordinando construcción, instalaciones, acabados y gestión técnica hasta la entrega final.",
-  keywords: ["construcción", "reformas integrales", "Madrid", "arquitectura", "obra", "ALKO"],
+    "Reformas integrales de viviendas, oficinas y locales en Madrid. Un único equipo de proyecto a entrega, con presupuesto cerrado y plazo por escrito.",
+  keywords: [
+    "reformas integrales Madrid",
+    "empresa de reformas Madrid",
+    "reforma de pisos Madrid",
+    "construcción Madrid",
+    "reforma de oficinas",
+    "reforma de locales",
+    "ALKO",
+  ],
+} as const;
+
+/** Imagen por defecto al compartir la web (Open Graph y X): 1200 × 630. */
+export const OG_IMAGE = {
+  url: "/og-image.jpg",
+  width: 1200,
+  height: 630,
+  alt: "ALKO, reformas integrales y construcción en Madrid",
 } as const;
 
 export interface NavItem {
@@ -38,12 +54,31 @@ export const ROUTES = {
   company: "/nosotros",
   team: "/equipo",
   careers: "/trabaja-con-nosotros",
-  /** Base de las URL de cada artículo; redirige a articlesList (no tiene página propia). */
-  articles: "/conocimiento",
-  articlesList: "/conocimiento/articulos",
-  guides: "/conocimiento/guias",
+  /** Journal: artículos y guías en una sola página. */
+  journal: "/journal",
+  /** Base de las URL de cada artículo (/journal/<slug>). */
+  articles: "/journal",
+  /** Base de las URL de cada guía (/journal/guias/<slug>); el listado está en el Journal. */
+  guides: "/journal/guias",
   contact: "/contacto",
+  privacy: "/politica-de-privacidad",
 } as const;
+
+/** Datos del titular para los textos legales. Si se rellena el NIF, aparece en la política de privacidad. */
+export const LEGAL = {
+  titular: "ALKO Construcción y Reformas Integrales",
+  nif: "",
+  actualizada: "noviembre de 2026",
+} as const;
+
+/** Redes de ALKO: solo Instagram y Facebook. La URL del panel manda; si está vacía, se usa la de aquí. */
+export const SOCIAL_LINKS = [
+  { key: "instagram", label: "Instagram", fallback: "https://www.instagram.com/alkoreformas" },
+  { key: "facebook", label: "Facebook", fallback: "https://www.facebook.com/alkoreformas/" },
+] as const;
+
+/** Listado de guías dentro del Journal. */
+export const GUIDES_HREF = `${ROUTES.journal}#guias`;
 
 /** El método ALKO es una sección de Nosotros (antes tenía página propia en /metodo). */
 export const METHOD_HREF = `${ROUTES.company}#metodo`;
@@ -51,7 +86,7 @@ export const METHOD_HREF = `${ROUTES.company}#metodo`;
 /**
  * Navegación principal (cabecera y menú móvil). Dirección V3: una navegación corta
  * con cuatro entradas; «Presentar proyecto» vive como CTA fijo de la cabecera.
- * Conocimiento y Contacto siguen enlazados desde el pie.
+ * Contacto sigue enlazado desde el pie y el CTA.
  */
 export const MAIN_NAV: NavItem[] = [
   { href: ROUTES.projects, label: "Proyectos" },
@@ -66,6 +101,7 @@ export const MAIN_NAV: NavItem[] = [
       { href: ROUTES.careers, label: "Trabaja con nosotros", description: "Vacantes y candidaturas" },
     ],
   },
+  { href: ROUTES.journal, label: "Journal" },
 ];
 
 /** Servicio mínimo que necesita el menú (los datos vienen del CMS). */
@@ -116,6 +152,6 @@ export const FOOTER_NAV: NavItem[] = [
 export const FOOTER_NAV_SECONDARY: NavItem[] = [
   { href: ROUTES.team, label: "Equipo" },
   { href: ROUTES.careers, label: "Trabaja con nosotros" },
-  { href: ROUTES.articlesList, label: "Conocimiento" },
+  { href: ROUTES.journal, label: "Journal" },
   { href: ROUTES.contact, label: "Contacto" },
 ];

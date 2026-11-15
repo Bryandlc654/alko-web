@@ -1,7 +1,14 @@
 import { cookies } from "next/headers";
 import type { Permission, RoleType } from "./rbac";
 
-const SECRET = process.env.ADMIN_JWT_SECRET || "alko-reformas-super-secret-jwt-key-2026-production";
+/** El secreto sale siempre del entorno; sin él no se firma ni se acepta ninguna sesión. */
+function getSecret(): string {
+  const secret = process.env.ADMIN_JWT_SECRET;
+  if (!secret || secret.length < 32) {
+    throw new Error("Falta ADMIN_JWT_SECRET (mínimo 32 caracteres) en las variables de entorno.");
+  }
+  return secret;
+}
 export const COOKIE_NAME = "alko_admin_session";
 
 export interface AdminUser {
@@ -38,7 +45,7 @@ export async function createSession(user: AdminUser) {
     exp: Date.now() + 7 * 24 * 60 * 60 * 1000,
   });
   const encodedPayload = btoa(payload).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-  const sig = await hmacSign(encodedPayload, SECRET);
+  const sig = await hmacSign(encodedPayload, getSecret());
   const token = `${encodedPayload}.${sig}`;
 
   const cookieStore = await cookies();
@@ -53,20 +60,12 @@ export async function createSession(user: AdminUser) {
   return token;
 }
 
-export async function getSession(): Promise<AdminUser | null> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(COOKIE_NAME)?.value;
-  if (!token) return null;
-
-  return verifyToken(token);
-}
-
 export async function verifyToken(token: string): Promise<AdminUser | null> {
   try {
     const [encodedPayload, sig] = token.split(".");
     if (!encodedPayload || !sig) return null;
 
-    const expectedSig = await hmacSign(encodedPayload, SECRET);
+    const expectedSig = await hmacSign(encodedPayload, getSecret());
     if (sig !== expectedSig) return null;
 
     // Decode base64url payload

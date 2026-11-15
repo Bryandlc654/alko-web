@@ -1,7 +1,7 @@
-import Image from "next/image";
+import Image from "@/components/ui/Image";
 import Link from "next/link";
 import ContactTrigger from "@/components/contact/ContactTrigger";
-import { FOOTER_NAV, FOOTER_NAV_SECONDARY, METHOD_HREF, ROUTES, SITE } from "@/lib/site";
+import { FOOTER_NAV, FOOTER_NAV_SECONDARY, GUIDES_HREF, METHOD_HREF, ROUTES, SITE, SOCIAL_LINKS } from "@/lib/site";
 import type { SiteSettings } from "@/lib/types";
 
 const heading = "text-[10px] uppercase tracking-[0.22em] text-white/50";
@@ -10,14 +10,11 @@ const linkCls = "transition-colors hover:text-piedra";
 /** Pie de la propuesta 6 (cierre de la V5): frase de marca, cuatro columnas y barra legal. */
 export default function Footer({ settings }: { settings: SiteSettings }) {
   const telHref = `tel:${settings.telefono.replace(/[^+\d]/g, "")}`;
-  const socials = [
-    { label: "LinkedIn", href: settings.linkedin },
-    { label: "Instagram", href: settings.instagram },
-    { label: "Facebook", href: settings.facebook },
-  ].filter((social) => social.href && social.href !== "#");
+  // Solo Instagram y Facebook: la URL del panel manda; si está vacía, la de lib/site.
+  const socials = SOCIAL_LINKS.map((social) => ({ label: social.label, href: settings[social.key] || social.fallback }));
   const resources = [
-    { href: ROUTES.articlesList, label: "Artículos" },
-    { href: ROUTES.guides, label: "Guías" },
+    { href: ROUTES.journal, label: "Journal" },
+    { href: GUIDES_HREF, label: "Guías" },
     { href: `${ROUTES.home}#preguntas`, label: "Preguntas frecuentes" },
     { href: METHOD_HREF, label: "Nuestro método" },
   ];
@@ -33,6 +30,7 @@ export default function Footer({ settings }: { settings: SiteSettings }) {
             width={500}
             height={130}
             sizes="200px"
+            skeleton={false}
             className="mt-12 h-10 w-auto self-start object-contain md:mt-auto"
           />
         </div>
@@ -112,7 +110,12 @@ export default function Footer({ settings }: { settings: SiteSettings }) {
             © {new Date().getFullYear()} {SITE.legalName}
           </span>
           {settings.horario && <span>{settings.horario}</span>}
-          <span>Madrid · España</span>
+          <span className="flex flex-wrap gap-x-6 gap-y-2">
+            <Link href={ROUTES.privacy} className="transition-colors hover:text-white">
+              Política de privacidad
+            </Link>
+            <span>Madrid · España</span>
+          </span>
         </div>
       </div>
     </footer>

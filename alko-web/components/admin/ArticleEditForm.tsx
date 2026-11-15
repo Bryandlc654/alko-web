@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useRef } from "react";
-import Image from "next/image";
+import { useState } from "react";
+import Image from "@/components/ui/Image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -18,6 +18,7 @@ import {
 import type { Article } from "@/lib/types";
 import { slugify } from "@/lib/utils";
 import RichTextEditor from "./RichTextEditor";
+import { openMediaPicker } from "@/components/admin/media";
 
 interface ArticleEditFormProps {
   initialArticle?: Article | null;
@@ -38,8 +39,6 @@ export default function ArticleEditForm({
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successToast, setSuccessToast] = useState("");
-  const [isUploading, setIsUploading] = useState(false);
-  const imageInputRef = useRef<HTMLInputElement>(null);
 
   // Controlar si el slug fue modificado manualmente por el usuario
   const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(!isNew);
@@ -53,7 +52,7 @@ export default function ArticleEditForm({
       category: categories[0] || "Metodología",
       excerpt: "",
       content: "<p>Entradilla técnica del artículo explicando los condicionantes y objetivos...</p>\n\n<h2>1. Criterios de partida</h2>\n<p>Detalle técnico de los factores clave a considerar durante la ejecución de obra...</p>\n\n<h2>2. Recomendaciones de los técnicos</h2>\n<p>Puntos de control recomendados para garantizar la calidad y durabilidad...</p>",
-      image: "/art1.jpg",
+      image: "/service-interior-2.jpg",
       date: new Date().toISOString().split("T")[0],
     };
   });
@@ -102,28 +101,10 @@ export default function ArticleEditForm({
     }
   };
 
-  const handleUploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setIsUploading(true);
-    setErrorMessage("");
-
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const res = await fetch("/api/admin/upload", { method: "POST", body: formData });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Error subiendo archivo");
-
-      setArticle((prev) => ({ ...prev, image: data.url }));
-    } catch (err: any) {
-      setErrorMessage(err.message || "Error al subir la fotografía");
-    } finally {
-      setIsUploading(false);
-      e.target.value = "";
-    }
+  // La fotografía se elige o se sube desde la biblioteca de medios.
+  const handlePickImage = async () => {
+    const url = await openMediaPicker({ current: article.image || undefined, title: "Elegir fotografía" });
+    if (url) setArticle((prev) => ({ ...prev, image: url }));
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -145,7 +126,7 @@ export default function ArticleEditForm({
       category: article.category || "Metodología",
       excerpt: article.excerpt || "",
       content: article.content || "",
-      image: article.image || "/art1.jpg",
+      image: article.image || "/service-interior-2.jpg",
       date: article.date || new Date().toISOString().split("T")[0],
     };
 
@@ -204,7 +185,7 @@ export default function ArticleEditForm({
         <div className="flex items-center gap-3">
           {article.slug && (
             <Link
-              href={`/conocimiento/${article.slug}`}
+              href={`/journal/${article.slug}`}
               target="_blank"
               className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium text-slate-600 hover:text-slate-900 bg-white border border-slate-200 hover:border-slate-300 rounded-xl shadow-2xs transition"
             >
@@ -329,7 +310,7 @@ export default function ArticleEditForm({
             </div>
             <div className="flex items-center">
               <span className="px-3.5 py-2.5 bg-slate-100 border border-r-0 border-slate-200 text-xs text-slate-500 rounded-l-xl font-mono">
-                /conocimiento/
+                /journal/
               </span>
               <input
                 type="text"
@@ -385,23 +366,12 @@ export default function ArticleEditForm({
               <div className="flex items-center gap-3">
                 <button
                   type="button"
-                  onClick={() => imageInputRef.current?.click()}
+                  onClick={handlePickImage}
                   className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 rounded-xl text-xs font-medium transition shadow-2xs"
                 >
-                  {isUploading ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-600" />
-                  ) : (
-                    <Upload className="w-3.5 h-3.5 text-blue-600" />
-                  )}
-                  <span>Subir fotografía desde tu equipo</span>
+                  <Upload className="w-3.5 h-3.5 text-blue-600" />
+                  <span>Elegir o subir fotografía</span>
                 </button>
-                <input
-                  type="file"
-                  ref={imageInputRef}
-                  accept="image/*"
-                  onChange={handleUploadImage}
-                  className="hidden"
-                />
               </div>
             </div>
           </div>

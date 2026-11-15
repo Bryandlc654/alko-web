@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/components/ui/Image";
 import Link from "next/link";
 import { ROUTES } from "@/lib/site";
 import type { Article } from "@/lib/types";

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { getDbHomeContent, saveDbHomeContent } from "@/lib/db/mysql";
-import { getSession } from "@/lib/auth/session";
+import { getSession } from "@/lib/auth/server-session";
 import { hasPermission } from "@/lib/auth/rbac";
 
 export async function GET() {
@@ -24,6 +24,8 @@ export async function POST(req: Request) {
 
     // Revalidar inmediatamente la página principal en Next.js
     revalidatePath("/");
+    // Las fases del proceso de la portada también se muestran en Nosotros.
+    revalidatePath("/nosotros");
 
     return NextResponse.json({ success: true, data: updated });
   } catch (err: any) {

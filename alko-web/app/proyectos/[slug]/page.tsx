@@ -1,9 +1,13 @@
 import { notFound } from "next/navigation";
-import Image from "next/image";
+import Image from "@/components/ui/Image";
 import Link from "next/link";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import Container from "@/components/ui/Container";
+import Lightbox from "@/components/ui/Lightbox";
 import PageHero from "@/components/ui/PageHero";
 import ContactCta from "@/components/sections/ContactCta";
+import ExclusiveProject from "@/components/projects/ExclusiveProject";
+import { projectCta } from "@/lib/project-cta";
 import { ROUTES } from "@/lib/site";
 import { getProjectBySlug, getProjects, getSectorBySlug, getSettings } from "@/lib/wordpress";
 import { splitLead } from "@/lib/utils";
@@ -33,7 +37,7 @@ export async function generateMetadata({
   const project = await getProjectBySlug(slug);
   if (!project) return {};
   return {
-    title: `${project.title} — ALKO`,
+    title: `${project.title} — ${project.exclusivo ? "ALKO Exclusiva" : "ALKO"}`,
     description: splitLead(project.content).lead.slice(0, 160),
     openGraph: { images: project.imagen ? [project.imagen] : undefined },
   };
@@ -70,9 +74,17 @@ export default async function ProjectDetail({
     next && next.slug !== prev?.slug && { label: "Proyecto siguiente", project: next, arrow: "→" },
   ].filter(Boolean) as { label: string; project: typeof project; arrow: string }[];
 
-  // Fotos de Antes y Después
-  const fotoAntes = project.fotoAntes || project.galeria[1] || "/start-research-1.jpg";
-  const fotoDespues = project.fotoDespues || project.imagen || "/p1.jpg";
+  const cta = projectCta(project);
+
+  // Los proyectos ALKO Exclusiva tienen su propia plantilla.
+  if (project.exclusivo) {
+    return <ExclusiveProject project={project} servicio={servicio} neighbours={neighbours} settings={settings} />;
+  }
+
+  // Antes y después solo si se han subido las dos; si no, se muestra únicamente la galería.
+  const fotoAntes = project.fotoAntes?.trim();
+  const fotoDespues = project.fotoDespues?.trim();
+  const showBeforeAfter = Boolean(fotoAntes && fotoDespues);
 
   // Galería de imágenes adicionales del proyecto
   const galeriaImagenes = [project.imagen, ...project.galeria].filter(
@@ -101,8 +113,8 @@ export default async function ProjectDetail({
   ].filter((item) => Boolean(item.value));
 
   return (
-    <main className="bg-paper text-ink">
-      {/* 1. Cabecera (hero de la propuesta 6) con la ficha técnica */}
+    <main className="bg-white text-ink">
+      {/* 1. Header Hero Principal */}
       <PageHero
         breadcrumbs={[{ label: "Proyectos", href: ROUTES.projects }, { label: project.title }]}
         eyebrow={project.indice ? `Proyecto ${project.indice}` : "Proyecto"}
@@ -169,97 +181,177 @@ export default async function ProjectDetail({
               </div>
             </div>
 
-            {/* Columna Derecha: Fotos Antes/Después + Galería Integrada */}
-            <div className="lg:col-span-8 reveal-item space-y-12 sm:space-y-16" style={{ transitionDelay: "120ms" }}>
-              {/* Bloque 1: Comparativa Antes y Después */}
-              <div>
-                <div className="mb-6 flex items-center gap-4">
-                  <span className="eyebrow">
-                    Registro fotográfico · Antes y Después
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
-                  {/* Foto ANTES */}
-                  <div className="group relative overflow-hidden bg-stone-100 border border-stone-200/80">
-                    <div className="relative aspect-[4/3] w-full overflow-hidden">
-                      <Image
-                        src={fotoAntes}
-                        alt={`Estado inicial / antes de ${project.title}`}
-                        fill
-                        sizes="(max-width: 768px) 100vw, 500px"
-                        className="object-cover object-center grayscale contrast-125 transition duration-500 group-hover:scale-105"
-                      />
-                    </div>
-                    <div className="p-4 bg-stone-900 text-white flex items-center justify-between">
-                      <span className="text-[10px] tracking-[0.22em] uppercase text-stone-400">
-                        Estado Inicial
-                      </span>
-                      <span className="display-title text-sm uppercase tracking-wider text-amber-500">
-                        Antes
+            {/* Columna Derecha: Antes/Después (opcional) + Galería */}
+            <div className="lg:col-span-8 reveal-item" style={{ transitionDelay: "120ms" }}>
+              <Lightbox className="space-y-12 sm:space-y-16">
+                {/* Bloque 1: Comparativa Antes y Después */}
+                {showBeforeAfter && fotoAntes && fotoDespues && (
+                  <div>
+                    <div className="mb-6 flex items-center gap-4">
+                      <span className="eyebrow">
+                        Registro fotográfico · Antes y Después
                       </span>
                     </div>
-                  </div>
 
-                  {/* Foto DESPUÉS */}
-                  <div className="group relative overflow-hidden bg-stone-100 border border-stone-200/80">
-                    <div className="relative aspect-[4/3] w-full overflow-hidden">
-                      <Image
-                        src={fotoDespues}
-                        alt={`Resultado / después de ${project.title}`}
-                        fill
-                        sizes="(max-width: 768px) 100vw, 500px"
-                        className="object-cover object-center transition duration-500 group-hover:scale-105"
-                      />
-                    </div>
-                    <div className="p-4 bg-amber-700 text-white flex items-center justify-between">
-                      <span className="text-[10px] tracking-[0.22em] uppercase text-amber-200">
-                        Obra Entregada
-                      </span>
-                      <span className="display-title text-sm uppercase tracking-wider text-white">
-                        Después
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Bloque 2: Galería de Imágenes dentro de la misma sección */}
-              {galeriaImagenes.length > 0 && (
-                <div className="pt-10 border-t border-stone-200">
-                  <div className="mb-6 flex items-center justify-between">
-                    <span className="eyebrow">
-                      Galería del proyecto · {galeriaImagenes.length} imágenes
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                    {galeriaImagenes.map((src, i, all) => {
-                      const wide = i === 0 || (all.length % 2 === 1 && i === all.length - 1);
-                      return (
-                        <figure
-                          key={`${src}-${i}`}
-                          className={`relative overflow-hidden bg-stone-200 border border-stone-200/80 group ${
-                            wide ? "sm:col-span-2 aspect-[16/9]" : "aspect-[4/3]"
-                          }`}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
+                      {/* Foto ANTES */}
+                      <div className="group relative overflow-hidden bg-stone-100 border border-stone-200/80">
+                        <button
+                          type="button"
+                          data-lightbox-src={fotoAntes}
+                          data-lightbox-alt={`${project.title} · Antes`}
+                          aria-label="Ver foto de antes en grande"
+                          className="relative block aspect-[4/3] w-full overflow-hidden cursor-zoom-in"
                         >
                           <Image
-                            src={src}
-                            alt={`${project.title} — imagen ${i + 1}`}
+                            src={fotoAntes}
+                            alt={`Estado inicial / antes de ${project.title}`}
                             fill
-                            sizes={wide ? "(max-width: 1280px) 100vw, 1000px" : "(max-width: 640px) 100vw, 500px"}
-                            className="object-cover object-center transition duration-700 ease-out group-hover:scale-105"
+                            sizes="(max-width: 768px) 100vw, 500px"
+                            className="object-cover object-center grayscale contrast-125 transition duration-500 group-hover:scale-105"
                           />
-                        </figure>
-                      );
-                    })}
+                        </button>
+                        <div className="p-4 bg-stone-900 text-white flex items-center justify-between">
+                          <span className="text-[10px] tracking-[0.22em] uppercase text-stone-400">
+                            Estado Inicial
+                          </span>
+                          <span className="display-title text-sm uppercase tracking-wider text-amber-500">
+                            Antes
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Foto DESPUÉS */}
+                      <div className="group relative overflow-hidden bg-stone-100 border border-stone-200/80">
+                        <button
+                          type="button"
+                          data-lightbox-src={fotoDespues}
+                          data-lightbox-alt={`${project.title} · Después`}
+                          aria-label="Ver foto de después en grande"
+                          className="relative block aspect-[4/3] w-full overflow-hidden cursor-zoom-in"
+                        >
+                          <Image
+                            src={fotoDespues}
+                            alt={`Resultado / después de ${project.title}`}
+                            fill
+                            sizes="(max-width: 768px) 100vw, 500px"
+                            className="object-cover object-center transition duration-500 group-hover:scale-105"
+                          />
+                        </button>
+                        <div className="p-4 bg-amber-700 text-white flex items-center justify-between">
+                          <span className="text-[10px] tracking-[0.22em] uppercase text-amber-200">
+                            Obra Entregada
+                          </span>
+                          <span className="display-title text-sm uppercase tracking-wider text-white">
+                            Después
+                          </span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              )}
+
+                )}
+
+                {/* Bloque 2: Galería de Imágenes dentro de la misma sección */}
+                {galeriaImagenes.length > 0 && (
+                  <div className={showBeforeAfter ? "pt-10 border-t border-stone-200" : ""}>
+                    <div className="mb-6 flex items-center justify-between">
+                      <span className="eyebrow">
+                        Galería del proyecto · {galeriaImagenes.length} imágenes
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                      {galeriaImagenes.map((src, i, all) => {
+                        const wide = i === 0 || (all.length % 2 === 1 && i === all.length - 1);
+                        return (
+                          <figure
+                            key={`${src}-${i}`}
+                            className={`relative overflow-hidden bg-stone-200 border border-stone-200/80 group ${
+                              wide ? "sm:col-span-2 aspect-[16/9]" : "aspect-[4/3]"
+                            }`}
+                          >
+                            <button
+                              type="button"
+                              data-lightbox-src={src}
+                              data-lightbox-alt={`${project.title} · Imagen ${i + 1}`}
+                              aria-label={`Ver imagen ${i + 1} en grande`}
+                              className="absolute inset-0 cursor-zoom-in"
+                            >
+                              <Image
+                                src={src}
+                                alt={`${project.title} — imagen ${i + 1}`}
+                                fill
+                                sizes={wide ? "(max-width: 1280px) 100vw, 1000px" : "(max-width: 640px) 100vw, 500px"}
+                                className="object-cover object-center transition duration-700 ease-out group-hover:scale-105"
+                              />
+                            </button>
+                          </figure>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </Lightbox>
             </div>
           </div>
         </Container>
       </section>
+
+      {/* Reseña del cliente (solo si se ha escrito en el panel) */}
+      {project.resenaTexto?.trim() && (
+        <section aria-labelledby="resena-titulo" className="border-t border-stone-200 bg-stone-50">
+          <Container className="py-20 sm:py-28">
+            <figure className="reveal-item mx-auto max-w-4xl">
+              <div className="flex items-center gap-4">
+                <h2 id="resena-titulo" className="eyebrow">
+                  Lo que dice el cliente
+                </h2>
+              </div>
+
+              {!!project.resenaValoracion && (
+                <div className="mt-10 flex gap-1 text-amber-700" role="img" aria-label={`${project.resenaValoracion} de 5 estrellas`}>
+                  {Array.from({ length: 5 }, (_, i) => (
+                    <svg
+                      key={i}
+                      viewBox="0 0 20 20"
+                      aria-hidden="true"
+                      className={`h-5 w-5 ${i < (project.resenaValoracion || 0) ? "fill-current" : "fill-stone-300"}`}
+                    >
+                      <path d="M10 1.5l2.6 5.4 5.9.8-4.3 4.1 1 5.9L10 14.9l-5.2 2.8 1-5.9L1.5 7.7l5.9-.8z" />
+                    </svg>
+                  ))}
+                </div>
+              )}
+
+              <blockquote className={project.resenaValoracion ? "mt-6" : "mt-10"}>
+                <span aria-hidden="true" className="display-title block text-7xl leading-none text-amber-700/40 sm:text-8xl">
+                  “
+                </span>
+                <p className="display-title -mt-6 text-2xl leading-snug text-ink sm:-mt-8 sm:text-3xl lg:text-4xl">
+                  {project.resenaTexto.trim()}
+                </p>
+              </blockquote>
+
+              {(project.resenaAutor || project.resenaCargo) && (
+                <figcaption className="mt-10 flex items-center gap-4 border-t border-stone-900/15 pt-6">
+                  <span aria-hidden="true" className="h-px w-10 bg-amber-700" />
+                  <span>
+                    {project.resenaAutor && (
+                      <span className="display-title block text-lg text-ink">{project.resenaAutor}</span>
+                    )}
+                    {project.resenaCargo && (
+                      <span className="eyebrow mt-0.5 block">
+                        {project.resenaCargo}
+                      </span>
+                    )}
+                  </span>
+                </figcaption>
+              )}
+            </figure>
+          </Container>
+        </section>
+      )}
 
       {/* 3. Navegación entre más proyectos */}
       {neighbours.length > 0 && (
@@ -298,8 +390,17 @@ export default async function ProjectDetail({
         </nav>
       )}
 
-      {/* 4. Contacto CTA Final */}
-      <ContactCta settings={settings} source={`Proyecto · ${project.title}`} />
+      {/* 4. Llamada a la acción final del proyecto (textos editables en el panel) */}
+      <ContactCta
+        settings={settings}
+        titulo={cta.titulo}
+        descripcion={cta.texto}
+        boton={cta.boton}
+        imagen={project.fotoDespues?.trim() || project.imagen}
+        source={`Proyecto ${project.title}`}
+        overlay
+        formulario="avanzado"
+      />
     </main>
   );
 }

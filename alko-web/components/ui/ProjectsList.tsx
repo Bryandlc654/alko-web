@@ -1,7 +1,8 @@
-import Image from "next/image";
+import Image from "@/components/ui/Image";
 import Link from "next/link";
 import { ROUTES } from "@/lib/site";
 import type { Project } from "@/lib/types";
+import ExclusiveSeal from "@/components/ui/ExclusiveSeal";
 
 /** Listado editorial de proyectos (reutilizado en el inicio y en /proyectos). */
 export default function ProjectsList({ projects }: { projects: Project[] }) {
@@ -16,19 +17,19 @@ export default function ProjectsList({ projects }: { projects: Project[] }) {
         >
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-4 cursor-pointer">
             <div className="flex items-center gap-4">
-              <h3 className="text-xl sm:text-2xl font-sans font-light text-stone-900 tracking-tight leading-snug group-hover:text-amber-800 transition">
+              <h3 className="text-xl sm:text-2xl font-sans font-light text-ink tracking-tight leading-snug group-hover:text-amber-800 transition">
                 {project.title}
               </h3>
             </div>
 
-            <div className="flex items-center justify-between sm:justify-end gap-6 sm:gap-12 text-xs text-stone-600">
+            <div className="flex items-center justify-between sm:justify-end gap-6 sm:gap-12 text-xs text-mid">
               <span className="font-light tracking-wide text-stone-500">
                 {project.ubicacion}
               </span>
               <span className="px-4 py-1 border border-stone-300 text-[11px] font-mono text-stone-700 bg-white/70">
                 {project.anio}
               </span>
-              <span className="font-light tracking-wider text-stone-900 group-hover:underline flex items-center gap-1">
+              <span className="font-light tracking-wider text-ink group-hover:underline flex items-center gap-1">
                 Ver Proyecto [{project.indice}] ↗
               </span>
             </div>
@@ -36,15 +37,20 @@ export default function ProjectsList({ projects }: { projects: Project[] }) {
 
           <div
             data-parallax="10"
-            className="reveal-scale relative mt-4 w-full h-[380px] sm:h-[500px] lg:h-[600px] overflow-hidden rounded-none"
+            className="reveal-scale relative mt-4 w-full h-[380px] sm:h-[500px] lg:h-[600px] overflow-hidden"
           >
             <Image
               src={project.imagen}
               alt={project.title}
               fill
               sizes="(max-width: 768px) 100vw, 1200px"
-              className="object-cover object-center filter brightness-100 contrast-[1.02] transition-transform duration-1000 ease-out group-hover:scale-105 rounded-none"
+              className="object-cover object-center filter brightness-100 contrast-[1.02] transition-transform duration-1000 ease-out group-hover:scale-105"
             />
+            {project.exclusivo && (
+              <span className="absolute right-5 top-5 bg-stone-950/55 p-1.5 backdrop-blur-sm sm:right-8 sm:top-8">
+                <ExclusiveSeal size={104} />
+              </span>
+            )}
           </div>
         </Link>
       ))}

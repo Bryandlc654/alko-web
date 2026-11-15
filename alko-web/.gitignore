@@ -9,3 +9,11 @@ npm-debug.log*
 .env
 next-env.d.ts
 *.tsbuildinfo
+
+# Restos locales
+chrome-dom.html
+start-*.log
+
+# Subidas locales (CV con datos personales; las imágenes van a GitHub)
+/public/uploads/
+/data/private/

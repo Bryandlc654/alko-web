@@ -1,15 +1,18 @@
 "use client";
 
-import Image from "next/image";
+import Image from "@/components/ui/Image";
 import Link from "next/link";
 import { useMemo, useState, useEffect, useRef } from "react";
 import { ROUTES } from "@/lib/site";
+import ExclusiveSeal, { EXCLUSIVE_GOLD } from "@/components/ui/ExclusiveSeal";
 import type { Project } from "@/lib/types";
+import { CATEGORY_ORDER, projectCategory } from "@/lib/project-category";
 import { Loader2 } from "lucide-react";
 
 const ALL = "Todos";
 const INITIAL_PAGE_SIZE = 4;
 const LOAD_MORE_STEP = 3;
+
 
 export interface ProjectSummary extends Project {
   /** Primer párrafo del contenido, sin HTML. */
@@ -29,14 +32,14 @@ export default function ProjectsGallery({ projects }: { projects: ProjectSummary
   const types = useMemo(() => {
     const counts = new Map<string, number>();
     for (const project of projects) {
-      if (!project.tipologia) continue;
-      counts.set(project.tipologia, (counts.get(project.tipologia) ?? 0) + 1);
+      const category = projectCategory(project.tipologia || "");
+      counts.set(category, (counts.get(category) ?? 0) + 1);
     }
-    return Array.from(counts, ([name, count]) => ({ name, count }));
+    return CATEGORY_ORDER.filter((name) => counts.has(name)).map((name) => ({ name, count: counts.get(name)! }));
   }, [projects]);
 
   const filtered = useMemo(() => {
-    return active === ALL ? projects : projects.filter((p) => p.tipologia === active);
+    return active === ALL ? projects : projects.filter((p) => projectCategory(p.tipologia || "") === active);
   }, [active, projects]);
 
   // Al cambiar de categoría restablecer el contador
@@ -97,7 +100,12 @@ export default function ProjectsGallery({ projects }: { projects: ProjectSummary
         </div>
 
         {types.length > 1 && (
-          <div role="group" aria-label="Filtrar por tipología" className="flex flex-wrap gap-2">
+          // Filtros como pestañas de texto: sin cajas, solo una línea bajo la activa.
+          <div
+            role="group"
+            aria-label="Filtrar por tipología"
+            className="no-scrollbar -mx-6 flex gap-7 overflow-x-auto px-6 sm:mx-0 sm:gap-9 sm:px-0"
+          >
             {filters.map((filter) => {
               const selected = filter.name === active;
               return (
@@ -106,16 +114,18 @@ export default function ProjectsGallery({ projects }: { projects: ProjectSummary
                   type="button"
                   aria-pressed={selected}
                   onClick={() => handleFilterChange(filter.name)}
-                  className={`inline-flex items-center gap-2 border px-4 py-2.5 text-[12px] transition-colors ${
-                    selected
-                      ? "border-ink bg-ink text-paper"
-                      : "border-piedra text-mid hover:border-ink hover:text-ink"
+                  className={`group relative shrink-0 whitespace-nowrap pb-2 text-[11px] uppercase tracking-[0.2em] transition-colors duration-300 ${
+                    selected ? "text-ink" : "text-mid hover:text-ink"
                   }`}
                 >
                   {filter.name}
-                  <span className={selected ? "text-paper/50" : "text-mid/60"}>
-                    {filter.count}
-                  </span>
+                  <sup className="ml-1 text-[9px] tracking-normal text-mid/70">{filter.count}</sup>
+                  <span
+                    aria-hidden="true"
+                    className={`absolute inset-x-0 -bottom-px h-px origin-left bg-ink transition-transform duration-300 ${
+                      selected ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100 group-hover:bg-stone-400"
+                    }`}
+                  />
                 </button>
               );
             })}
@@ -144,12 +154,26 @@ export default function ProjectsGallery({ projects }: { projects: ProjectSummary
                     <span className="absolute left-4 top-4 border border-white/60 px-2 py-1 text-[10px] uppercase tracking-[0.18em] text-white">
                       {project.anio}
                     </span>
+                    {project.exclusivo && (
+                      <span className="absolute right-4 top-4 bg-stone-950/55 p-1.5 backdrop-blur-sm sm:right-6 sm:top-6">
+                        <ExclusiveSeal size={92} className="transition-transform duration-1000 ease-out group-hover:rotate-[20deg]" />
+                      </span>
+                    )}
                   </div>
                 </div>
 
                 <div className={`lg:col-span-5 ${reversed ? "lg:order-1" : ""}`}>
                   <span className="display-title select-none text-7xl text-bronze/70">{project.indice}</span>
 
+                  {project.exclusivo && (
+                    <span
+                      className="mt-4 flex items-center gap-3 text-[10px] uppercase tracking-[0.22em]"
+                      style={{ color: EXCLUSIVE_GOLD }}
+                    >
+                      <span aria-hidden="true" className="h-px w-8" style={{ backgroundColor: EXCLUSIVE_GOLD }} />
+                      ALKO Exclusiva
+                    </span>
+                  )}
                   <h3 className="display-title mt-4 text-3xl transition-colors group-hover:text-bronze lg:text-4xl">
                     {project.title}
                   </h3>

@@ -565,3 +565,12 @@ html {
   .hh-slide, .hh-slide img, .div-panel, .div-panel-body { transition: none !important; }
   .hh-rise, .hh-zoom { animation: none; }
 }
+
+/* Desplazamiento sin barra visible (modales, menús laterales, carruseles). */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

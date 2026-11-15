@@ -104,10 +104,22 @@ export default function SiteScripts() {
 
     if (!prefersReducedMotion) {
       const runGsap = async () => {
-        const [{ default: gsap }, { ScrollTrigger }] = await Promise.all([
-          import("gsap"),
-          import("gsap/ScrollTrigger"),
-        ]);
+        // Justo después de un despliegue en Render el trozo de GSAP puede fallar (el archivo ya no
+        // existe o llega cortado). Se reintenta una vez y, si sigue fallando, se muestra todo sin
+        // animación: el contenido nunca debe quedarse invisible.
+        const loadGsap = () => Promise.all([import("gsap"), import("gsap/ScrollTrigger")]);
+        let modules: Awaited<ReturnType<typeof loadGsap>>;
+        try {
+          modules = await loadGsap().catch(
+            () => new Promise<Awaited<ReturnType<typeof loadGsap>>>((resolve, reject) => {
+              timers.push(setTimeout(() => loadGsap().then(resolve, reject), 1500) as unknown as number);
+            }),
+          );
+        } catch {
+          animatedElements.forEach((el) => el.classList.add("is-visible"));
+          return;
+        }
+        const [{ default: gsap }, { ScrollTrigger }] = modules;
         if (cancelled) return;
         scrollTrigger = ScrollTrigger;
 
@@ -240,7 +252,7 @@ export default function SiteScripts() {
 
     /* ---------- Interactividad de fases ---------- */
     const phaseTabs = Array.from(document.querySelectorAll<HTMLElement>(".process-tab"));
-    const processImg = document.getElementById("process-image") as HTMLImageElement | null;
+    const phaseImages = Array.from(document.querySelectorAll<HTMLElement>("[data-phase-img]"));
     const detailText = document.getElementById("phase-detail-text");
 
     function activatePhase(idx: number) {
@@ -248,7 +260,6 @@ export default function SiteScripts() {
       if (!tab) return;
 
       const nextText = tab.dataset.text ?? "";
-      const nextImg = tab.dataset.img ?? "";
 
       phaseTabs.forEach((t, i) => {
         const badge = t.querySelector(".phase-badge");
@@ -268,15 +279,13 @@ export default function SiteScripts() {
         }
       });
 
-      if (processImg && nextImg && !processImg.src.endsWith(nextImg)) {
-        processImg.style.opacity = "0.3";
-        timers.push(
-          window.setTimeout(() => {
-            processImg.src = nextImg;
-            processImg.style.opacity = "1";
-          }, 180),
-        );
-      }
+      phaseImages.forEach((img, i) => {
+        const active = i === idx;
+        img.classList.toggle("opacity-100", active);
+        img.classList.toggle("opacity-0", !active);
+        if (active) img.removeAttribute("aria-hidden");
+        else img.setAttribute("aria-hidden", "true");
+      });
 
       if (detailText && nextText) {
         detailText.style.opacity = "0.2";
@@ -452,21 +461,23 @@ export default function SiteScripts() {
 
       const duration = 1400;
       const startTime = performance.now();
+      // Cada cifra anima hasta su propio valor (data-target); las que no son un entero simple
+      // (p. ej. «1.450») se muestran tal cual.
+      const metrics = [metricClients, metricAwards]
+        .filter((el): el is HTMLElement => !!el)
+        .map((el) => ({ el, final: el.dataset.target || el.textContent || "", target: Number(el.dataset.target) }))
+        .filter((metric) => Number.isInteger(metric.target) && metric.target > 0);
 
       function step(now: number) {
         const elapsed = now - startTime;
         const p = Math.min(1, elapsed / duration);
         const easeP = 1 - Math.pow(1 - p, 3);
 
-        if (metricClients) metricClients.textContent = String(Math.floor(90 * easeP));
-        if (metricAwards) metricAwards.textContent = String(Math.floor(2 * easeP));
-
-        if (p < 1) {
-          requestAnimationFrame(step);
-        } else {
-          if (metricClients) metricClients.textContent = "90";
-          if (metricAwards) metricAwards.textContent = "2";
+        for (const metric of metrics) {
+          metric.el.textContent = p < 1 ? String(Math.floor(metric.target * easeP)) : metric.final;
         }
+
+        if (p < 1) requestAnimationFrame(step);
       }
       requestAnimationFrame(step);
     }

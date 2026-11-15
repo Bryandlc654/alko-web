@@ -8,6 +8,7 @@ import {
   getArticles,
   getSettings,
   getHomeContent,
+  getShowcaseProject,
 } from "@/lib/wordpress";
 import {
   getDbProjectsPageContent,
@@ -44,6 +45,7 @@ export default async function AdminEditorPage() {
     fabricantes,
     articles,
     settings,
+    showcaseProject,
   ] = await Promise.all([
     getHomeContent(),
     getDbProjectsPageContent(),
@@ -63,6 +65,7 @@ export default async function AdminEditorPage() {
     getFabricantes(),
     getArticles(),
     getSettings(),
+    getShowcaseProject(),
   ]);
 
   return (
@@ -85,6 +88,7 @@ export default async function AdminEditorPage() {
       fabricantes={fabricantes}
       articles={articles}
       settings={settings}
+      showcaseProject={showcaseProject}
     />
   );
 }

@@ -38,6 +38,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const initialPassword = process.env.ADMIN_INITIAL_PASSWORD || "";
+    const initialPasswordOk = initialPassword.length >= 12 && password === initialPassword;
+
     let authenticatedUser: any = null;
 
     // 1. Buscar primero en la base de datos de usuarios administradores RBAC
@@ -69,9 +72,9 @@ export async function POST(req: NextRequest) {
           // Actualizar último login
           saveDbUser({ id: storedUser.id, last_login: new Date().toISOString() }).catch(() => {});
         }
-      } else if (storedUser.username === "admin" && password === "alko2026!") {
-        // Inicializar contraseña por defecto para el superadmin
-        const hash = await bcrypt.hash("alko2026!", 10);
+      } else if (storedUser.username === "admin" && initialPasswordOk) {
+        // Primer acceso: la contraseña inicial sale de ADMIN_INITIAL_PASSWORD y se guarda ya cifrada.
+        const hash = await bcrypt.hash(password, 10);
         saveDbUser({ id: storedUser.id, password_hash: hash, last_login: new Date().toISOString() }).catch(() => {});
 
         authenticatedUser = {
@@ -83,18 +86,6 @@ export async function POST(req: NextRequest) {
           permissions: ROLE_DEFINITIONS.superadmin.permissions,
         };
       }
-    }
-
-    // 2. Fallback de administrador si la BD aún no tiene usuarios
-    if (!authenticatedUser && username === "admin" && password === "alko2026!") {
-      authenticatedUser = {
-        id: 1,
-        username: "admin",
-        name: "Administrador ALKO",
-        email: "admin@alkoreformas.com",
-        role: "superadmin",
-        permissions: ROLE_DEFINITIONS.superadmin.permissions,
-      };
     }
 
     if (!authenticatedUser) {
@@ -118,7 +109,7 @@ export async function POST(req: NextRequest) {
     });
   } catch (err: any) {
     return NextResponse.json(
-      { error: "Error en el servidor: " + err.message },
+      { error: "Error en el servidor" },
       { status: 500 }
     );
   }

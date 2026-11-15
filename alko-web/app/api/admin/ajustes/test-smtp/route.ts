@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { verifySmtpConnection } from "@/lib/email/mailer";
-import { getSession } from "@/lib/auth/session";
+import { getSession } from "@/lib/auth/server-session";
 import { hasPermission } from "@/lib/auth/rbac";
 
 export async function POST(req: Request) {

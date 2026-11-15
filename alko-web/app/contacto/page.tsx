@@ -1,9 +1,8 @@
 import Image from "next/image";
 import PageHero from "@/components/ui/PageHero";
-import ContactForm from "@/components/ui/ContactForm";
+import QuickContactForm from "@/components/ui/QuickContactForm";
 import { getSettings } from "@/lib/wordpress";
 import { getDbContactoPageContent } from "@/lib/db/mysql";
-import { DIVISION_OPTIONS } from "@/lib/divisions";
 
 export const revalidate = 60;
 
@@ -139,12 +138,7 @@ export default async function ContactoPage() {
               <h2 id="form-title" className="display-title mb-12 mt-5 text-4xl lg:text-5xl">
                 {pageContent.formTitulo || "Cuéntanos tu proyecto"}
               </h2>
-              <ContactForm
-                projectTypes={DIVISION_OPTIONS}
-                email={settings.email}
-                whatsappHref={whatsappHref}
-                source="Página de contacto"
-              />
+              <QuickContactForm email={settings.email} whatsappHref={whatsappHref} source="Página de contacto" />
             </div>
           </section>
         </div>

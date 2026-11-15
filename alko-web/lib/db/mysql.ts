@@ -4,21 +4,33 @@ import path from "path";
 import { DEFAULT_HOME_CONTENT, DEFAULT_PROJECTS_PAGE_CONTENT, DEFAULT_NOSOTROS_PAGE_CONTENT, DEFAULT_CONTACTO_PAGE_CONTENT, DEFAULT_SERVICIOS_PAGE_CONTENT, DEFAULT_EQUIPO_PAGE_CONTENT, DEFAULT_EMPLEO_PAGE_CONTENT, DEFAULT_OFICINAS_PAGE_CONTENT, DEFAULT_ARTICULOS_PAGE_CONTENT, DEFAULT_GUIAS_PAGE_CONTENT, DEFAULT_PROJECTS, DEFAULT_SECTORS, DEFAULT_ARTICLES, DEFAULT_GUIDES, DEFAULT_SETTINGS, DEFAULT_POSICIONES_EMPLEO, DEFAULT_EQUIPO_MEMBERS } from "../content";
 import type { Project, Sector, Article, Guide, HomeContent, ProjectsPageContent, NosotrosPageContent, ContactoPageContent, ServiciosPageContent, EquipoPageContent, EmpleoPageContent, OficinasPageContent, ArticulosPageContent, GuiasPageContent, Slide, SiteSettings, Candidatura, CandidaturaEstado, PosicionEmpleo, MiembroEquipo, Lead, LeadEstado } from "../types";
 
-let pool: Pool | null = null;
+// El hosting limita las conexiones nuevas por hora (500). El pool se guarda en globalThis para que la
+// recarga en caliente de desarrollo no abra uno nuevo en cada cambio, y las conexiones inactivas se
+// conservan 10 minutos en lugar de cerrarse y volver a abrirse en cada visita.
+const globalForDb = globalThis as unknown as { alkoDbPool?: Pool };
+let pool: Pool | null = globalForDb.alkoDbPool ?? null;
 
 export function getDbPool(): Pool {
   if (!pool) {
+    const { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME } = process.env;
+    if (!DB_HOST || !DB_USER || !DB_PASSWORD || !DB_NAME) {
+      throw new Error("Faltan variables de entorno de la base de datos (DB_HOST, DB_USER, DB_PASSWORD, DB_NAME).");
+    }
     pool = mysql.createPool({
-      host: process.env.DB_HOST || "193.203.175.226",
+      host: DB_HOST,
       port: Number(process.env.DB_PORT || 3306),
-      user: process.env.DB_USER || "u560058480_adminalko",
-      password: process.env.DB_PASSWORD || "^6A+7Gu3",
-      database: process.env.DB_NAME || "u560058480_alkoeditor",
+      user: DB_USER,
+      password: DB_PASSWORD,
+      database: DB_NAME,
       waitForConnections: true,
-      connectionLimit: 10,
+      connectionLimit: 5,
+      maxIdle: 5,
+      idleTimeout: 600000,
+      enableKeepAlive: true,
       queueLimit: 0,
       connectTimeout: 5000,
     });
+    globalForDb.alkoDbPool = pool;
   }
   return pool;
 }
@@ -41,6 +53,7 @@ interface LocalStoreData {
   guiasPage?: GuiasPageContent;
   slides: Slide[];
   featuredProjectIds?: string[];
+  showcaseProjectId?: string | null;
   customProjects?: Project[];
   customSectors?: Sector[];
   customArticles?: Article[];
@@ -236,10 +249,62 @@ export async function saveFeaturedProjectIds(ids: string[]): Promise<string[]> {
       [JSON.stringify(limited)]
     );
   } catch (err: any) {
+    // Sin MySQL la selección solo quedaría en el disco del servidor, que se borra en cada despliegue:
+    // mejor avisar en el panel que dar por guardado algo que la portada no va a usar.
     console.warn("Aviso: Fallo al guardar destacados en MySQL:", err.message);
+    throw new Error("No se pudo guardar la selección en la base de datos");
   }
 
   return limited;
+}
+
+/**
+ * Proyecto del bloque a pantalla completa de la portada (el que va tras los servicios). Solo uno.
+ */
+export async function getShowcaseProjectId(): Promise<string | null> {
+  try {
+    const db = getDbPool();
+    const [rows] = await db.execute<any[]>(
+      "SELECT data FROM alko_site_content WHERE id = 'showcase_project' LIMIT 1"
+    );
+    if (rows && rows.length > 0) {
+      // La columna es JSON: mysql2 ya la devuelve decodificada, así que el id llega como texto
+      // plano («project-…») y JSON.parse fallaba; el error hacía creer que no había ninguno.
+      let parsed: unknown = rows[0].data;
+      if (typeof parsed === "string") {
+        try {
+          parsed = JSON.parse(parsed);
+        } catch {
+          // Ya era el id.
+        }
+      }
+      return parsed ? String(parsed) : null;
+    }
+  } catch (err: any) {
+    console.warn("Aviso: Error obteniendo el proyecto del bloque de portada de MySQL:", err.message);
+  }
+
+  return getLocalContent().showcaseProjectId ?? null;
+}
+
+/** Guarda el proyecto del bloque de portada; null lo quita y el bloque vuelve a sus diapositivas. */
+export async function saveShowcaseProjectId(id: string | null): Promise<string | null> {
+  saveLocalContent({ showcaseProjectId: id });
+
+  try {
+    const db = getDbPool();
+    await db.execute(
+      `INSERT INTO alko_site_content (id, data) 
+       VALUES ('showcase_project', ?) 
+       ON DUPLICATE KEY UPDATE data = VALUES(data)`,
+      [JSON.stringify(id)]
+    );
+  } catch (err: any) {
+    console.warn("Aviso: Fallo al guardar el proyecto del bloque de portada en MySQL:", err.message);
+    throw new Error("No se pudo guardar la selección en la base de datos");
+  }
+
+  return id;
 }
 
 /**
@@ -335,6 +400,11 @@ export async function saveDbContactoPageContent(content: Partial<ContactoPageCon
   return updated;
 }
 
+/** El número de cada proyecto es su posición en la lista (01, 02…): se calcula, no se escribe. */
+function numberProjects(list: Project[]): Project[] {
+  return list.map((p, i) => ({ ...p, indice: String(i + 1).padStart(2, "0") }));
+}
+
 export async function getDbProjects(): Promise<Project[]> {
   try {
     const db = getDbPool();
@@ -344,7 +414,7 @@ export async function getDbProjects(): Promise<Project[]> {
     if (rows && rows.length > 0) {
       const data = typeof rows[0].data === "string" ? JSON.parse(rows[0].data) : rows[0].data;
       if (Array.isArray(data) && data.length > 0) {
-        return data;
+        return numberProjects(data);
       }
     }
   } catch (err: any) {
@@ -353,10 +423,10 @@ export async function getDbProjects(): Promise<Project[]> {
 
   const local = getLocalContent();
   if (local.customProjects && local.customProjects.length > 0) {
-    return local.customProjects;
+    return numberProjects(local.customProjects);
   }
 
-  return DEFAULT_PROJECTS;
+  return numberProjects(DEFAULT_PROJECTS);
 }
 
 /**
@@ -367,9 +437,14 @@ export async function saveDbProject(projectData: Partial<Project> & { id?: strin
   let updatedList = [...currentProjects];
 
   const projectId = projectData.id && projectData.id.trim() !== "" ? projectData.id : "project-" + Date.now();
-  const slug = projectData.slug || projectData.title.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  const baseSlug = projectData.slug || projectData.title.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
-  const existingIndex = updatedList.findIndex(p => String(p.id) === String(projectId) || p.slug === slug);
+  // Solo se actualiza el proyecto con el mismo id: un proyecto nuevo con el mismo t\u00edtulo
+  // no debe reemplazar al existente, sino recibir una URL propia (reforma-alicante-2\u2026).
+  const existingIndex = updatedList.findIndex(p => String(p.id) === String(projectId));
+  const slugTaken = (s: string) => updatedList.some((p, i) => i !== existingIndex && p.slug === s);
+  let slug = baseSlug;
+  for (let n = 2; slugTaken(slug); n++) slug = `${baseSlug}-${n}`;
 
   const baseProject = existingIndex >= 0 ? updatedList[existingIndex] : null;
 
@@ -377,17 +452,19 @@ export async function saveDbProject(projectData: Partial<Project> & { id?: strin
     id: projectId,
     slug: slug,
     title: projectData.title,
-    indice: projectData.indice || baseProject?.indice || String(existingIndex >= 0 ? existingIndex + 1 : updatedList.length + 1).padStart(2, "0"),
+    // Posición en la lista; getDbProjects lo vuelve a calcular al leer.
+    indice: String(existingIndex >= 0 ? existingIndex + 1 : updatedList.length + 1).padStart(2, "0"),
     anio: projectData.anio || baseProject?.anio || new Date().getFullYear().toString(),
     ubicacion: projectData.ubicacion || baseProject?.ubicacion || "Madrid",
     tipologia: projectData.tipologia || baseProject?.tipologia || "Residencial",
     cliente: projectData.cliente ?? baseProject?.cliente ?? "",
-    servicio: projectData.servicio || baseProject?.servicio || "reformas-integrales",
+    servicio: projectData.servicio || baseProject?.servicio || "residencial",
     superficie: projectData.superficie ?? baseProject?.superficie ?? "",
     plazo: projectData.plazo ?? baseProject?.plazo ?? "",
     imagen: projectData.imagen || baseProject?.imagen || "/start-research-1.jpg",
-    fotoAntes: projectData.fotoAntes || baseProject?.fotoAntes || "/start-research-1.jpg",
-    fotoDespues: projectData.fotoDespues || baseProject?.fotoDespues || projectData.imagen || "/start-research-2.jpg",
+    // Opcionales: una cadena vacía significa que se han eliminado.
+    fotoAntes: projectData.fotoAntes ?? baseProject?.fotoAntes ?? "",
+    fotoDespues: projectData.fotoDespues ?? baseProject?.fotoDespues ?? "",
     galeria: Array.isArray(projectData.galeria) ? projectData.galeria : (baseProject?.galeria || []),
     enlace: projectData.enlace || baseProject?.enlace || ("/proyectos/" + slug),
     content: projectData.content ?? baseProject?.content ?? "",
@@ -398,6 +475,15 @@ export async function saveDbProject(projectData: Partial<Project> & { id?: strin
     cronograma: Array.isArray(projectData.cronograma) ? projectData.cronograma : (baseProject?.cronograma || []),
     materiales: Array.isArray(projectData.materiales) ? projectData.materiales : (baseProject?.materiales || []),
     resultado: projectData.resultado ?? baseProject?.resultado ?? "",
+    exclusivo: Boolean(projectData.exclusivo ?? baseProject?.exclusivo ?? false),
+    oculto: Boolean(projectData.oculto ?? baseProject?.oculto ?? false),
+    ctaTitulo: projectData.ctaTitulo ?? baseProject?.ctaTitulo ?? "",
+    ctaTexto: projectData.ctaTexto ?? baseProject?.ctaTexto ?? "",
+    ctaBoton: projectData.ctaBoton ?? baseProject?.ctaBoton ?? "",
+    resenaTexto: projectData.resenaTexto ?? baseProject?.resenaTexto ?? "",
+    resenaAutor: projectData.resenaAutor ?? baseProject?.resenaAutor ?? "",
+    resenaCargo: projectData.resenaCargo ?? baseProject?.resenaCargo ?? "",
+    resenaValoracion: Math.max(0, Math.min(5, Number(projectData.resenaValoracion ?? baseProject?.resenaValoracion ?? 0) || 0)),
   };
 
   if (existingIndex >= 0) {
@@ -628,7 +714,7 @@ export async function saveDbOficinasPageContent(content: Partial<OficinasPageCon
 }
 
 /**
- * Obtiene el contenido de la Página de Artículos (/conocimiento/articulos) desde MySQL.
+ * Obtiene el contenido de la Página de Artículos (/journal) desde MySQL.
  */
 export async function getDbArticulosPageContent(): Promise<ArticulosPageContent> {
   try {
@@ -649,7 +735,7 @@ export async function getDbArticulosPageContent(): Promise<ArticulosPageContent>
 }
 
 /**
- * Guarda el contenido de la Página de Artículos (/conocimiento/articulos) en MySQL.
+ * Guarda el contenido de la Página de Artículos (/journal) en MySQL.
  */
 export async function saveDbArticulosPageContent(content: Partial<ArticulosPageContent>): Promise<ArticulosPageContent> {
   const current = await getDbArticulosPageContent();
@@ -673,7 +759,7 @@ export async function saveDbArticulosPageContent(content: Partial<ArticulosPageC
 }
 
 /**
- * Obtiene el contenido de la Página de Guías (/conocimiento/guias) desde MySQL.
+ * Obtiene el contenido de la Página de Guías (/journal, sección Guías) desde MySQL.
  */
 export async function getDbGuiasPageContent(): Promise<GuiasPageContent> {
   try {
@@ -694,7 +780,7 @@ export async function getDbGuiasPageContent(): Promise<GuiasPageContent> {
 }
 
 /**
- * Guarda el contenido de la Página de Guías (/conocimiento/guias) en MySQL.
+ * Guarda el contenido de la Página de Guías (/journal, sección Guías) en MySQL.
  */
 export async function saveDbGuiasPageContent(content: Partial<GuiasPageContent>): Promise<GuiasPageContent> {
   const current = await getDbGuiasPageContent();
@@ -859,7 +945,7 @@ export async function saveDbArticle(articleData: Partial<Article>): Promise<Arti
     category: articleData.category || baseArticle?.category || "Metodología",
     excerpt: articleData.excerpt || baseArticle?.excerpt || "",
     content: articleData.content ?? baseArticle?.content ?? "",
-    image: articleData.image || baseArticle?.image || "/art1.jpg",
+    image: articleData.image || baseArticle?.image || "/service-interior-2.jpg",
     date: articleData.date || baseArticle?.date || new Date().toISOString().split("T")[0],
   };
 
@@ -1068,7 +1154,8 @@ export async function deleteDbGuide(id: string): Promise<boolean> {
 /**
  * Obtiene los Ajustes Globales de la Empresa (teléfono, email, redes, etc.) de MySQL.
  */
-export async function getDbSettings(): Promise<SiteSettings> {
+/** Ajustes completos, con la configuración SMTP. Solo para el panel y el servidor de correo. */
+export async function getDbSettingsFull(): Promise<SiteSettings> {
   try {
     const db = getDbPool();
     const [rows] = await db.execute<any[]>(
@@ -1086,11 +1173,17 @@ export async function getDbSettings(): Promise<SiteSettings> {
   return { ...DEFAULT_SETTINGS, ...(local.settings || {}) };
 }
 
+/** Ajustes para las páginas públicas: sin la configuración SMTP, que nunca debe llegar al navegador. */
+export async function getDbSettings(): Promise<SiteSettings> {
+  const { smtp: _smtp, ...publicSettings } = await getDbSettingsFull();
+  return publicSettings;
+}
+
 /**
  * Guarda los Ajustes Globales de la Empresa en MySQL.
  */
 export async function saveDbSettings(settings: Partial<SiteSettings>): Promise<SiteSettings> {
-  const current = await getDbSettings();
+  const current = await getDbSettingsFull();
   const updated: SiteSettings = { ...current, ...settings };
 
   saveLocalContent({ settings: updated });

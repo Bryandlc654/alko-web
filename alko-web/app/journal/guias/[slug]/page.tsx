@@ -1,9 +1,12 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import ContactTrigger from "@/components/contact/ContactTrigger";
+import TableOfContents from "@/components/article/TableOfContents";
 import Container from "@/components/ui/Container";
 import PageHero from "@/components/ui/PageHero";
 import Prose from "@/components/ui/Prose";
-import { ROUTES } from "@/lib/site";
+import { prepareArticle } from "@/lib/articles";
+import { GUIDES_HREF, ROUTES } from "@/lib/site";
 import { getGuideBySlug, getGuides } from "@/lib/wordpress";
 
 export const revalidate = 60;
@@ -37,9 +40,12 @@ export default async function GuideDetail({
   if (!guide) return notFound();
 
   const others = guides.filter((g) => g.slug !== guide.slug);
+  // Igual que en los artículos: entradilla, índice con los apartados (h2) y tiempo de lectura.
+  const { lead, body, toc, minutes } = prepareArticle(guide.content);
+  const showToc = toc.length >= 3;
 
   return (
-    <main className="bg-paper text-ink">
+    <main className="bg-white text-ink">
       <PageHero
         eyebrow={`${guide.numero} — GUÍA · ${guide.tema}`}
         title={guide.title}
@@ -51,10 +57,60 @@ export default async function GuideDetail({
       <Container className="py-12 sm:py-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           <div className="lg:col-span-8">
-            <Prose html={guide.content} />
+            <div className="max-w-3xl">
+              {lead && (
+                <p className="display-title mb-14 text-2xl leading-snug text-ink sm:text-3xl">
+                  <span aria-hidden="true" className="mb-6 block h-0.5 w-12 bg-amber-700" />
+                  {lead}
+                </p>
+              )}
+
+              {/* Móvil: índice plegable antes del texto. */}
+              {showToc && (
+                <details className="group mb-12 border border-stone-200 lg:hidden">
+                  <summary className="text-[10px] tracking-[0.22em] flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 uppercase text-stone-700">
+                    En esta guía
+                    <span aria-hidden="true" className="text-lg leading-none transition-transform group-open:rotate-45">
+                      +
+                    </span>
+                  </summary>
+                  <div className="border-t border-stone-200 px-5 py-4">
+                    <TableOfContents items={toc} />
+                  </div>
+                </details>
+              )}
+
+              <Prose html={body} variant="article" />
+
+              <div className="mt-16 border-t border-stone-200 pt-10">
+                <h2 className="display-title text-2xl text-ink sm:text-3xl">
+                  ¿Estás preparando una reforma?
+                </h2>
+                <p className="mt-3 max-w-xl text-base font-light leading-relaxed text-mid">
+                  Cuéntanos qué tienes en mente y te ayudamos a plantearla: alcance, plazos y presupuesto.
+                </p>
+                <ContactTrigger
+                  mode="avanzado"
+                  source={`Guía ${guide.title}`}
+                  className="mt-6 inline-flex items-center gap-3 bg-stone-900 px-7 py-4 font-mono text-[11px] uppercase tracking-[0.25em] text-white transition-colors hover:bg-amber-800"
+                >
+                  <span>Solicitar valoración</span>
+                  <span aria-hidden="true">→</span>
+                </ContactTrigger>
+              </div>
+            </div>
           </div>
 
           <aside className="lg:col-span-4">
+            {showToc && (
+              <div className="mb-6 hidden border border-stone-200 p-6 lg:block">
+                <span className="eyebrow mb-5 block">
+                  En esta guía
+                </span>
+                <TableOfContents items={toc} />
+              </div>
+            )}
+
             <div className="border border-stone-200 p-6">
               <h2 className="display-title text-xl">Sobre esta guía</h2>
               <dl className="mt-4 space-y-3 text-sm">
@@ -62,12 +118,10 @@ export default async function GuideDetail({
                   <dt className="text-[10px] tracking-[0.22em] uppercase text-stone-500">Tema</dt>
                   <dd className="text-stone-700">{guide.tema}</dd>
                 </div>
-                {guide.lectura && (
-                  <div className="flex justify-between gap-4">
-                    <dt className="text-[10px] tracking-[0.22em] uppercase text-stone-500">Lectura</dt>
-                    <dd className="text-stone-700">{guide.lectura}</dd>
-                  </div>
-                )}
+                <div className="flex justify-between gap-4">
+                  <dt className="text-[10px] tracking-[0.22em] uppercase text-stone-500">Lectura</dt>
+                  <dd className="text-stone-700">{guide.lectura || `${minutes} min`}</dd>
+                </div>
               </dl>
             </div>
 
@@ -100,10 +154,10 @@ export default async function GuideDetail({
             )}
 
             <Link
-              href={ROUTES.guides}
+              href={GUIDES_HREF}
               className="mt-6 inline-flex items-center gap-2 text-xs uppercase tracking-widest border-b border-stone-900 pb-1 hover:text-amber-800 hover:border-amber-800"
             >
-              ← Volver a guías
+              ← Volver al Journal
             </Link>
           </aside>
         </div>

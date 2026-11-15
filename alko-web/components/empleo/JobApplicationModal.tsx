@@ -105,7 +105,7 @@ export default function JobApplicationModal({
               <Briefcase className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="display-title text-base sm:text-lg font-medium text-stone-900">
+              <h2 className="display-title text-base sm:text-lg font-medium text-ink">
                 Postular a ALKO
               </h2>
               <p className="text-xs text-stone-500 font-sans">
@@ -123,16 +123,16 @@ export default function JobApplicationModal({
         </div>
 
         {/* Cuerpo / Formulario */}
-        <div className="p-6 sm:p-8 overflow-y-auto">
+        <div className="no-scrollbar p-6 sm:p-8 overflow-y-auto">
           {success ? (
             <div className="py-12 text-center space-y-4">
               <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 mx-auto flex items-center justify-center">
                 <CheckCircle2 className="w-8 h-8" />
               </div>
-              <h3 className="display-title text-xl font-medium text-stone-900">
+              <h3 className="display-title text-xl font-medium text-ink">
                 ¡Candidatura recibida con éxito!
               </h3>
-              <p className="text-sm text-stone-600 max-w-md mx-auto leading-relaxed">
+              <p className="text-sm text-mid max-w-md mx-auto leading-relaxed">
                 Gracias por tu interés en unirte a ALKO. Nuestro equipo de dirección técnica revisará
                 tu perfil detalladamente y nos pondremos en contacto contigo.
               </p>

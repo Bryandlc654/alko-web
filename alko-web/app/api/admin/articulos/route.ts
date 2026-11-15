@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { getDbArticles, saveDbArticle, deleteDbArticle } from "@/lib/db/mysql";
-import { getSession } from "@/lib/auth/session";
+import { getSession } from "@/lib/auth/server-session";
 import { hasPermission } from "@/lib/auth/rbac";
 
 export async function GET() {
@@ -26,8 +26,8 @@ export async function POST(req: Request) {
 
     const saved = await saveDbArticle(body);
 
-    revalidatePath("/conocimiento/articulos");
-    revalidatePath(`/conocimiento/${saved.slug}`);
+    revalidatePath("/journal");
+    revalidatePath(`/journal/${saved.slug}`);
     revalidatePath("/");
     revalidatePath("/admin/articulos");
 
@@ -61,7 +61,7 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: "No se pudo eliminar el artículo" }, { status: 500 });
     }
 
-    revalidatePath("/conocimiento/articulos");
+    revalidatePath("/journal");
     revalidatePath("/");
     revalidatePath("/admin/articulos");
 

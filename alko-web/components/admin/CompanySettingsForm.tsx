@@ -17,14 +17,6 @@ import {
 } from "lucide-react";
 import type { SiteSettings } from "@/lib/types";
 
-function LinkedinIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76c-.95 0-1.72.77-1.72 1.72s.77 1.72 1.72 1.72 1.72-.77 1.72-1.72-.77-1.72-1.72-1.72m1.39 9.74v-8.37H5.07v8.37h2.78z" />
-    </svg>
-  );
-}
-
 function InstagramIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -315,20 +307,6 @@ export default function CompanySettingsForm({ initialSettings }: CompanySettings
             <div className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1.5 flex items-center gap-1.5">
-                  <LinkedinIcon className="w-3.5 h-3.5 text-blue-700" />
-                  Perfil de LinkedIn
-                </label>
-                <input
-                  type="text"
-                  value={settings.linkedin}
-                  onChange={(e) => handleChange("linkedin", e.target.value)}
-                  placeholder="https://www.linkedin.com/company/alko-reformas"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5 flex items-center gap-1.5">
                   <InstagramIcon className="w-3.5 h-3.5 text-pink-600" />
                   Perfil de Instagram
                 </label>
@@ -336,7 +314,7 @@ export default function CompanySettingsForm({ initialSettings }: CompanySettings
                   type="text"
                   value={settings.instagram}
                   onChange={(e) => handleChange("instagram", e.target.value)}
-                  placeholder="https://www.instagram.com/alko_reformas"
+                  placeholder="https://www.instagram.com/alkoreformas"
                   className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                 />
               </div>
@@ -350,7 +328,7 @@ export default function CompanySettingsForm({ initialSettings }: CompanySettings
                   type="text"
                   value={settings.facebook}
                   onChange={(e) => handleChange("facebook", e.target.value)}
-                  placeholder="https://www.facebook.com/alkoreformas"
+                  placeholder="https://www.facebook.com/alkoreformas/"
                   className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                 />
               </div>

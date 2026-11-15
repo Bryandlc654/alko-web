@@ -21,7 +21,7 @@ npm install
 cp .env.example .env.local
 ```
 
-Edita `.env.local` con tus credenciales de base de datos y un secreto `JWT_SECRET` seguro.
+Edita `.env.local` con tus credenciales de base de datos y un secreto `ADMIN_JWT_SECRET` seguro.
 
 ### 3. Ejecución
 ```bash

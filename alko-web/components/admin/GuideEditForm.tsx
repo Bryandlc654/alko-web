@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useRef } from "react";
-import Image from "next/image";
+import { useState } from "react";
+import Image from "@/components/ui/Image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -17,6 +17,7 @@ import {
 import type { Guide } from "@/lib/types";
 import { slugify } from "@/lib/utils";
 import RichTextEditor from "./RichTextEditor";
+import { openMediaPicker } from "@/components/admin/media";
 
 interface GuideEditFormProps {
   initialGuide?: Guide | null;
@@ -28,8 +29,6 @@ export default function GuideEditForm({ initialGuide, isNew = false }: GuideEdit
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successToast, setSuccessToast] = useState("");
-  const [isUploading, setIsUploading] = useState(false);
-  const imageInputRef = useRef<HTMLInputElement>(null);
 
   const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(!isNew);
 
@@ -61,28 +60,10 @@ export default function GuideEditForm({ initialGuide, isNew = false }: GuideEdit
     setGuide({ ...guide, slug: newSlug });
   };
 
-  const handleUploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setIsUploading(true);
-    setErrorMessage("");
-
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const res = await fetch("/api/admin/upload", { method: "POST", body: formData });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Error subiendo archivo");
-
-      setGuide((prev) => ({ ...prev, imagen: data.url }));
-    } catch (err: any) {
-      setErrorMessage(err.message || "Error al subir la fotografía");
-    } finally {
-      setIsUploading(false);
-      e.target.value = "";
-    }
+  // La fotografía se elige o se sube desde la biblioteca de medios.
+  const handlePickImage = async () => {
+    const url = await openMediaPicker({ current: guide.imagen || undefined, title: "Elegir fotografía" });
+    if (url) setGuide((prev) => ({ ...prev, imagen: url }));
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -164,7 +145,7 @@ export default function GuideEditForm({ initialGuide, isNew = false }: GuideEdit
         <div className="flex items-center gap-3">
           {guide.slug && (
             <Link
-              href={`/conocimiento/guias/${guide.slug}`}
+              href={`/journal/guias/${guide.slug}`}
               target="_blank"
               className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium text-slate-600 hover:text-slate-900 bg-white border border-slate-200 hover:border-slate-300 rounded-xl shadow-2xs transition"
             >
@@ -269,7 +250,7 @@ export default function GuideEditForm({ initialGuide, isNew = false }: GuideEdit
             </div>
             <div className="flex items-center">
               <span className="px-3.5 py-2.5 bg-slate-100 border border-r-0 border-slate-200 text-xs text-slate-500 rounded-l-xl font-mono">
-                /conocimiento/guias/
+                /journal/guias/
               </span>
               <input
                 type="text"
@@ -326,23 +307,12 @@ export default function GuideEditForm({ initialGuide, isNew = false }: GuideEdit
               <div className="flex items-center gap-3">
                 <button
                   type="button"
-                  onClick={() => imageInputRef.current?.click()}
+                  onClick={handlePickImage}
                   className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 rounded-xl text-xs font-medium transition shadow-2xs"
                 >
-                  {isUploading ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-600" />
-                  ) : (
-                    <Upload className="w-3.5 h-3.5 text-blue-600" />
-                  )}
-                  <span>Subir fotografía desde tu equipo</span>
+                  <Upload className="w-3.5 h-3.5 text-blue-600" />
+                  <span>Elegir o subir fotografía</span>
                 </button>
-                <input
-                  type="file"
-                  ref={imageInputRef}
-                  accept="image/*"
-                  onChange={handleUploadImage}
-                  className="hidden"
-                />
               </div>
             </div>
           </div>

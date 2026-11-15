@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image from "@/components/ui/Image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -90,6 +90,7 @@ export default function Nav({
           <Link href={ROUTES.home} className="flex shrink-0 items-center" aria-label="ALKO · Inicio">
             <Image
               src={solid ? "/logo-dark.png" : "/logo.webp"}
+              skeleton={false}
               alt="ALKO"
               width={500}
               height={130}
@@ -284,7 +285,7 @@ function MobileDrawer({
       >
         <div>
           <div className="flex items-center justify-between border-b border-line pb-5">
-            <Image src="/logo-dark.png" alt="ALKO" width={140} height={36} className="h-8 w-auto object-contain" />
+            <Image src="/logo-dark.png" skeleton={false} alt="ALKO" width={140} height={36} className="h-8 w-auto object-contain" />
             <button
               ref={closeRef}
               type="button"

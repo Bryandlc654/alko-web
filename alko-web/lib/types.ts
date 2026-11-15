@@ -78,6 +78,22 @@ export interface Project {
   materiales: ProjectMaterial[];
   /** Cierre: qué se consiguió con el proyecto. */
   resultado: string;
+  /** Llamada a la acción final de la página del proyecto (vacío = texto por defecto). */
+  ctaTitulo?: string;
+  ctaTexto?: string;
+  ctaBoton?: string;
+  /** Proyecto de la línea ALKO Exclusiva: sello en los listados y plantilla propia. */
+  exclusivo?: boolean;
+  /** Oculto: no se ve en la web pública (listados, portada, ficha ni sitemap); sigue en el panel. */
+  oculto?: boolean;
+  /** Reseña del cliente (si está vacía, la página no muestra el bloque). */
+  resenaTexto?: string;
+  /** Nombre de quien firma la reseña (p. ej. «Laura M.»). */
+  resenaAutor?: string;
+  /** Cargo, empresa o tipo de cliente (p. ej. «Propietaria de la vivienda»). */
+  resenaCargo?: string;
+  /** Valoración de 1 a 5 estrellas; 0 o vacío = sin estrellas. */
+  resenaValoracion?: number;
 }
 
 export interface SectorCommitment {
@@ -169,7 +185,7 @@ export interface Article {
   date: string;
 }
 
-/** Guía práctica paso a paso (sección Conocimiento → Guías). */
+/** Guía práctica paso a paso (sección Guías del Journal). */
 export interface Guide {
   id: string;
   slug: string;
@@ -283,6 +299,7 @@ export interface HomeContent {
   workshopBadge: string;
   workshopTitulo: string;
   workshopDescripcion: string;
+  workshopBotonTexto?: string;
   workshopSlides?: Slide[];
 
   // Bloque Experiencia (90 días)
@@ -316,6 +333,8 @@ export interface HomeData {
   articles: Article[];
   settings: SiteSettings;
   homeContent: HomeContent;
+  /** Proyecto elegido en el panel para el bloque a pantalla completa; sin él se usan las diapositivas. */
+  showcaseProject: Project | null;
 }
 
 export interface ProjectsPageContent {

@@ -1,5 +1,9 @@
-import PageHero from "@/components/ui/PageHero";
+import Image from "@/components/ui/Image";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
+import Container from "@/components/ui/Container";
 import ProjectsGallery from "@/components/ui/ProjectsGallery";
+import { projectCategory } from "@/lib/project-category";
+import PageHero from "@/components/ui/PageHero";
 import ContactCta from "@/components/sections/ContactCta";
 import { getProjects, getSettings } from "@/lib/wordpress";
 import { getDbProjectsPageContent } from "@/lib/db/mysql";
@@ -25,7 +29,8 @@ export default async function ProyectosPage() {
   }));
 
   const years = projects.map((p) => Number(p.anio)).filter(Boolean);
-  const types = new Set(projects.map((p) => p.tipologia).filter(Boolean));
+  // Las mismas categorías que el filtro del listado.
+  const types = new Set(projects.map((p) => projectCategory(p.tipologia || "")));
   const stats = [
     { label: "Obras", value: String(projects.length).padStart(2, "0") },
     { label: "Tipologías", value: String(types.size).padStart(2, "0") },
@@ -41,7 +46,7 @@ export default async function ProyectosPage() {
   const heroImage = pageContent.headerBgImage || projects[0]?.imagen || "/start-research-1.jpg";
 
   return (
-    <main className="bg-paper text-ink">
+    <main className="bg-white text-ink">
       <PageHero
         breadcrumbs={[{ label: "Proyectos" }]}
         eyebrow={pageContent.headerBadge || "PROYECTOS"}
@@ -63,13 +68,11 @@ export default async function ProyectosPage() {
         </dl>
       </PageHero>
 
-      <section className="bg-piedra/45">
-        <div className="site-wrap pb-12 pt-24 lg:pt-32">
-          <ProjectsGallery projects={summaries} />
-        </div>
-      </section>
+      <Container className="pt-20 sm:pt-28 pb-8 sm:pb-12">
+        <ProjectsGallery projects={summaries} />
+      </Container>
 
-      <ContactCta settings={settings} source="Proyectos" />
+      <ContactCta settings={settings} />
     </main>
   );
 }

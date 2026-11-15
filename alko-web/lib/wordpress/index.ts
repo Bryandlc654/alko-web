@@ -18,4 +18,5 @@ export {
   getSettings,
   getHomeContent,
   getHomeData,
+  getShowcaseProject,
 } from "./queries";

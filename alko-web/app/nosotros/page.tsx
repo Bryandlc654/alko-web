@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/components/ui/Image";
 import Link from "next/link";
 import { BadgeCheck, CalendarClock, Handshake, Wallet } from "lucide-react";
 import Container from "@/components/ui/Container";
@@ -7,35 +7,33 @@ import ContactCta from "@/components/sections/ContactCta";
 import Materials from "@/components/sections/Materials";
 import Process from "@/components/sections/Process";
 import { METHOD_HREF, ROUTES } from "@/lib/site";
+import { pageJsonLd, pageMetadata } from "@/lib/seo";
 import { getFabricantes, getFases, getProjects, getSectors, getSettings } from "@/lib/wordpress";
-import { getDbNosotrosPageContent } from "@/lib/db/mysql";
+import { getDbHomeContent, getDbNosotrosPageContent } from "@/lib/db/mysql";
 
 export const revalidate = 60;
 
-export const metadata = {
-  title: "Nosotros | ALKO — Construcción y reformas integrales en Madrid",
-  description:
-    "ALKO: construcción, rehabilitación y reformas integrales en Madrid. Un único interlocutor, ejecución controlada y criterio constructivo.",
-  openGraph: {
-    title: "Nosotros | ALKO",
-    description: "Un único interlocutor, ejecución controlada y criterio constructivo.",
-    type: "website",
-  },
-  alternates: {
-    canonical: "https://www.alko.es/nosotros",
-  },
-};
+const NOSOTROS_TITLE = "Sobre ALKO, empresa de reformas integrales en Madrid";
+const NOSOTROS_DESCRIPTION =
+  "Empresa de construcción y reformas integrales en Madrid. Un único responsable de proyecto, compras, instalaciones y acabados, de la primera visita a la entrega.";
+
+export const metadata = pageMetadata({
+  title: NOSOTROS_TITLE,
+  description: NOSOTROS_DESCRIPTION,
+  path: ROUTES.company,
+});
 
 const VALOR_ICONS = [Handshake, CalendarClock, Wallet, BadgeCheck];
 
 export default async function NosotrosPage() {
-  const [settings, projects, sectors, fases, fabricantes, pageContent] = await Promise.all([
+  const [settings, projects, sectors, fases, fabricantes, pageContent, homeContent] = await Promise.all([
     getSettings(),
     getProjects(),
     getSectors(),
     getFases(),
     getFabricantes(),
     getDbNosotrosPageContent(),
+    getDbHomeContent(),
   ]);
 
   const destacado = projects[0];
@@ -61,9 +59,27 @@ export default async function NosotrosPage() {
     },
   ];
 
+  // Año de fundación, si figura entre las cifras del panel (p. ej. «1996»).
+  const fundacion = cifras.find((c) => /^(19|20)\d{2}$/.test(c.valor.trim()))?.valor.trim();
+  const jsonLd = pageJsonLd({
+    type: "AboutPage",
+    path: ROUTES.company,
+    name: NOSOTROS_TITLE,
+    description: NOSOTROS_DESCRIPTION,
+    organization: {
+      description: NOSOTROS_DESCRIPTION,
+      ...(fundacion && { foundingDate: fundacion }),
+      ...(settings.telefono && { telephone: settings.telefono }),
+      ...(settings.email && { email: settings.email }),
+      ...(sectors.length > 0 && { knowsAbout: sectors.map((s) => s.title) }),
+    },
+  });
+
   return (
-    <main className="bg-paper text-ink">
+    <main className="bg-white text-ink">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <PageHero
+        breadcrumbs={[{ label: "Nosotros" }]}
         eyebrow={pageContent.headerBadge || "NOSOTROS"}
         title={
           <span className="whitespace-pre-line">
@@ -283,16 +299,11 @@ export default async function NosotrosPage() {
           </Container>
         </section>
 
-        {/* Las fases del proceso */}
+        {/* Las fases del proceso: las mismas de la portada (se editan en cualquiera de las dos). */}
         <Process
-          fases={pageContent.fases && pageContent.fases.length > 0 ? pageContent.fases : fases}
+          fases={homeContent.fases && homeContent.fases.length > 0 ? homeContent.fases : fases}
           id="fases"
-          content={{
-            procesoTitulo: pageContent.procesoTitulo,
-            procesoSubtitulo: pageContent.procesoSubtitulo,
-            procesoColHeading: pageContent.procesoColHeading,
-            procesoColText: pageContent.procesoColText,
-          }}
+          content={homeContent}
         />
       </div>
 

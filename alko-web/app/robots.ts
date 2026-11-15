@@ -7,6 +7,8 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
+        // Panel y API: no son páginas públicas.
+        disallow: ["/admin", "/api/"],
       },
     ],
     sitemap: `${SITE.url}/sitemap.xml`,

@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
-import { getSession } from "@/lib/auth/session";
+import sharp from "sharp";
+import { getSession } from "@/lib/auth/server-session";
+import { canUseMedia } from "@/lib/auth/rbac";
+import { githubMediaEnabled, uploadImageToGithub } from "@/lib/github-media";
 
 const ALLOWED_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".webp", ".avif"]);
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10MB máximo
@@ -10,6 +13,9 @@ export async function POST(req: Request) {
   const session = await getSession();
   if (!session) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (!canUseMedia(session)) {
+    return NextResponse.json({ error: "Acceso denegado: no tienes permiso para subir imágenes" }, { status: 403 });
   }
 
   try {
@@ -34,13 +40,24 @@ export async function POST(req: Request) {
     // Validación de tipo de archivo permitido
     if (!ALLOWED_EXTENSIONS.has(extension)) {
       return NextResponse.json(
-        { error: "Formato no permitido. Solo se admiten imágenes JPG, PNG, WEBP, SVG o AVIF." },
+        { error: "Formato no permitido. Solo se admiten imágenes JPG, PNG, WEBP o AVIF." },
         { status: 400 }
       );
     }
 
     const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    // Las fotos de cámara (5000-7000 px) son demasiado grandes para el optimizador de imágenes del servidor,
+    // que acababa sirviendo el original. Se guardan ya reducidas a 1920 px de ancho y en WebP.
+    let buffer: Buffer;
+    try {
+      buffer = await sharp(Buffer.from(bytes))
+        .rotate()
+        .resize({ width: 1920, withoutEnlargement: true })
+        .webp({ quality: 78 })
+        .toBuffer();
+    } catch {
+      return NextResponse.json({ error: "No se pudo procesar la imagen" }, { status: 400 });
+    }
 
     // Sanitizar nombre de archivo contra path traversal
     const baseName = path
@@ -49,17 +66,17 @@ export async function POST(req: Request) {
       .replace(/[^a-z0-9_-]/g, "-")
       .slice(0, 40);
 
-    const fileName = `${baseName}-${Date.now()}${extension}`;
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
-
-    if (!fs.existsSync(uploadDir)) {
+    const fileName = `${baseName}-${Date.now()}.webp`;
+    // Con GITHUB_TOKEN las imágenes viven en GitHub; sin él (desarrollo local) se guardan en public/uploads.
+    let publicUrl: string;
+    if (githubMediaEnabled()) {
+      publicUrl = await uploadImageToGithub(fileName, buffer);
+    } else {
+      const uploadDir = path.join(process.cwd(), "public", "uploads");
       fs.mkdirSync(uploadDir, { recursive: true });
+      fs.writeFileSync(path.join(uploadDir, fileName), buffer);
+      publicUrl = `/uploads/${fileName}`;
     }
-
-    const filePath = path.join(uploadDir, fileName);
-    fs.writeFileSync(filePath, buffer);
-
-    const publicUrl = `/uploads/${fileName}`;
 
     return NextResponse.json({
       success: true,

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+import Image from "@/components/ui/Image";
 import Link from "next/link";
 import {
   Plus,
@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import type { Article } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
+import { toast, confirmDialog } from "@/components/admin/feedback";
 
 interface ArticlesManagerProps {
   articles: Article[];
@@ -75,7 +76,7 @@ export default function ArticlesManager({
   };
 
   const handleDeleteCategory = async (catToDelete: string) => {
-    if (!confirm(`¿Eliminar la categoría "${catToDelete}"? Los artículos asignados no se borrarán.`)) {
+    if (!(await confirmDialog({ title: `¿Eliminar la categoría "${catToDelete}"? Los artículos asignados no se borrarán.`, danger: true }))) {
       return;
     }
 
@@ -99,7 +100,7 @@ export default function ArticlesManager({
   };
 
   const handleDelete = async (id: string, title: string) => {
-    if (!confirm(`¿Estás seguro de que deseas eliminar permanentemente el artículo "${title}"?`)) {
+    if (!(await confirmDialog({ title: `¿Estás seguro de que deseas eliminar permanentemente el artículo "${title}"?`, danger: true }))) {
       return;
     }
 
@@ -114,7 +115,7 @@ export default function ArticlesManager({
       setSuccessToast(`Artículo "${title}" eliminado`);
       setTimeout(() => setSuccessToast(""), 3500);
     } catch (err: any) {
-      alert("Error eliminando artículo: " + err.message);
+      toast.error("Error eliminando artículo: " + err.message);
     }
   };
 
@@ -136,7 +137,7 @@ export default function ArticlesManager({
             <span>Módulo de Artículos Técnicos</span>
           </div>
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
-            Gestión de Conocimiento y Artículos
+            Journal: artículos
           </h1>
           <p className="text-xs text-slate-500 mt-1 max-w-xl">
             Publica, edita y organiza los artículos técnicos de ALKO Studio. Cada artículo genera automáticamente su índice de contenidos (TOC) y calcula el tiempo de lectura.
@@ -248,7 +249,7 @@ export default function ArticlesManager({
 
                   <div className="absolute top-3 right-3 flex items-center gap-1.5">
                     <Link
-                      href={`/conocimiento/${art.slug}`}
+                      href={`/journal/${art.slug}`}
                       target="_blank"
                       title="Ver artículo público"
                       className="p-1.5 bg-white/90 hover:bg-white text-slate-700 rounded-lg shadow-xs backdrop-blur-sm transition"
@@ -280,7 +281,7 @@ export default function ArticlesManager({
               {/* Botones inferiores */}
               <div className="px-5 py-3.5 bg-slate-50/80 border-t border-slate-100 flex items-center justify-between gap-2">
                 <Link
-                  href={`/conocimiento/${art.slug}`}
+                  href={`/journal/${art.slug}`}
                   target="_blank"
                   className="text-[11px] font-medium text-slate-600 hover:text-blue-600 flex items-center gap-1 transition"
                 >

@@ -12,8 +12,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]);
   const articles = [...articleList, ...news];
 
-  const staticRoutes: MetadataRoute.Sitemap = Object.values(ROUTES)
-    .filter((route) => route !== ROUTES.articles)
+  // Sin repetir (artículos y Journal comparten base) y sin la base de guías, que no es una página.
+  const staticRoutes: MetadataRoute.Sitemap = [...new Set<string>(Object.values(ROUTES))]
+    .filter((route) => route !== ROUTES.guides)
     .map((route) => ({
       url: `${SITE.url}${route}`,
       lastModified: new Date(),

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+import Image from "@/components/ui/Image";
 import Link from "next/link";
 import {
   Plus,
@@ -14,6 +14,7 @@ import {
   Clock,
 } from "lucide-react";
 import type { Guide } from "@/lib/types";
+import { toast, confirmDialog } from "@/components/admin/feedback";
 
 interface GuidesManagerProps {
   guides: Guide[];
@@ -35,7 +36,7 @@ export default function GuidesManager({ guides }: GuidesManagerProps) {
   });
 
   const handleDelete = async (id: string, title: string) => {
-    if (!confirm(`¿Estás seguro de que deseas eliminar permanentemente la guía "${title}"?`)) {
+    if (!(await confirmDialog({ title: `¿Estás seguro de que deseas eliminar permanentemente la guía "${title}"?`, danger: true }))) {
       return;
     }
 
@@ -50,7 +51,7 @@ export default function GuidesManager({ guides }: GuidesManagerProps) {
       setSuccessToast(`Guía "${title}" eliminada`);
       setTimeout(() => setSuccessToast(""), 3500);
     } catch (err: any) {
-      alert("Error eliminando guía: " + err.message);
+      toast.error("Error eliminando guía: " + err.message);
     }
   };
 
@@ -147,7 +148,7 @@ export default function GuidesManager({ guides }: GuidesManagerProps) {
 
                   <div className="absolute top-3 right-3 flex items-center gap-1.5">
                     <Link
-                      href={`/conocimiento/guias/${guide.slug}`}
+                      href={`/journal/guias/${guide.slug}`}
                       target="_blank"
                       title="Ver guía en vivo"
                       className="p-1.5 bg-white/90 hover:bg-white text-slate-700 rounded-lg shadow-xs backdrop-blur-sm transition"
@@ -187,7 +188,7 @@ export default function GuidesManager({ guides }: GuidesManagerProps) {
               {/* Botones inferiores */}
               <div className="px-5 py-3.5 bg-slate-50/80 border-t border-slate-100 flex items-center justify-between gap-2">
                 <Link
-                  href={`/conocimiento/guias/${guide.slug}`}
+                  href={`/journal/guias/${guide.slug}`}
                   target="_blank"
                   className="text-[11px] font-medium text-slate-600 hover:text-blue-600 flex items-center gap-1 transition"
                 >

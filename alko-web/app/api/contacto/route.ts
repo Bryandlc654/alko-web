@@ -12,7 +12,6 @@ import { clientIp, isSameOrigin } from "@/lib/http";
 import { createRateLimiter } from "@/lib/rate-limit";
 import { WP_API_URL } from "@/lib/wordpress/client";
 import { saveDbLead } from "@/lib/db/mysql";
-import { sendLeadNotificationEmail } from "@/lib/email/mailer";
 
 export const runtime = "nodejs";
 
@@ -153,14 +152,7 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // 5. Enviar notificación por correo SMTP (si está configurado)
-  if (savedLead) {
-    sendLeadNotificationEmail(savedLead).catch((smtpErr) => {
-      console.warn("[SMTP] Error al enviar correo de notificación:", smtpErr);
-    });
-  }
-
-  // 6. Envío opcional a Fluent Forms de WordPress si está disponible
+  // 5. Envío opcional a Fluent Forms de WordPress si está disponible
   if (WP_API_URL) {
     const body = new URLSearchParams({
       action: "fluentform_submit",

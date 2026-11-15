@@ -2,6 +2,8 @@
 
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { CheckCircle2, ChevronDown, Loader2 } from "lucide-react";
+import Link from "next/link";
+import { ROUTES } from "@/lib/site";
 import {
   CONTACT_LIMITS,
   CONTACT_MESSAGES,
@@ -383,7 +385,10 @@ export default function ContactForm({
 
       <div className="mt-12 flex flex-col justify-between gap-6 border-t border-white/15 pt-8 sm:flex-row sm:items-center">
         <p className="max-w-sm text-sm font-light leading-relaxed text-white/50">
-          Usaremos tus datos solo para responder a tu consulta.
+          Usaremos tus datos solo para responder a tu consulta.{" "}
+          <Link href={ROUTES.privacy} className="underline underline-offset-2 hover:text-white">
+            Política de privacidad
+          </Link>
         </p>
         <button
           type="submit"

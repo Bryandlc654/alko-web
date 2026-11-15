@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { getFeaturedProjectIds, saveFeaturedProjectIds } from "@/lib/db/mysql";
-import { getSession } from "@/lib/auth/session";
+import { getSession } from "@/lib/auth/server-session";
 import { hasPermission } from "@/lib/auth/rbac";
 
 export async function GET() {

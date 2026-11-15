@@ -1,6 +1,9 @@
-import Image from "next/image";
+import Image from "@/components/ui/Image";
 import Container from "@/components/ui/Container";
 import PageHero from "@/components/ui/PageHero";
+import { ROUTES } from "@/lib/site";
+import { pageJsonLd, pageMetadata } from "@/lib/seo";
+import type { PosicionEmpleo } from "@/lib/types";
 import { getSettings } from "@/lib/wordpress";
 import { getDbEmpleoPageContent } from "@/lib/db/mysql";
 import { DEFAULT_POSICIONES_EMPLEO } from "@/lib/content";
@@ -9,20 +12,31 @@ import JobApplyCtaButton from "@/components/empleo/JobApplyCtaButton";
 
 export const revalidate = 60;
 
-export const metadata = {
-  title: "Trabaja con nosotros | ALKO — Empleo en construcción en Madrid",
-  description:
-    "Únete al equipo de ALKO. Buscamos jefatura de obra, arquitectura técnica, instalaciones y compras para proyectos de construcción y reforma integral en Madrid.",
-  openGraph: {
-    title: "Trabaja con nosotros | ALKO",
-    description:
-      "Un equipo sin compartimentos, con criterio técnico y dirección única. Descubre las posiciones abiertas.",
-    type: "website",
-  },
-  alternates: {
-    canonical: "https://www.alko.es/trabaja-con-nosotros",
-  },
-};
+const EMPLEO_TITLE = "Empleo en construcción en Madrid: trabaja en ALKO";
+
+/** Posiciones abiertas (las desactivadas en el panel no cuentan). */
+function posicionesAbiertas(posiciones?: PosicionEmpleo[]) {
+  const lista = posiciones && posiciones.length > 0 ? posiciones : DEFAULT_POSICIONES_EMPLEO;
+  return lista.filter((p) => p.activa !== false);
+}
+
+function empleoDescription(posiciones: PosicionEmpleo[]) {
+  const puestos = posiciones.map((p) => p.titulo.trim().toLowerCase()).filter(Boolean);
+  if (puestos.length === 0) {
+    return "Únete al equipo de ALKO, empresa de construcción y reformas integrales en Madrid. Envíanos tu candidatura espontánea.";
+  }
+  // Separados solo por comas: un puesto puede llevar «y» en su nombre (compras y aprovisionamiento).
+  return `Únete a ALKO, construcción y reformas integrales en Madrid. Buscamos: ${puestos.join(", ")}.`;
+}
+
+export async function generateMetadata() {
+  const pageContent = await getDbEmpleoPageContent();
+  return pageMetadata({
+    title: EMPLEO_TITLE,
+    description: empleoDescription(posicionesAbiertas(pageContent.posiciones)),
+    path: ROUTES.careers,
+  });
+}
 
 export default async function TrabajaConNosotrosPage() {
   const [settings, pageContent] = await Promise.all([
@@ -35,14 +49,40 @@ export default async function TrabajaConNosotrosPage() {
       ? pageContent.posiciones
       : DEFAULT_POSICIONES_EMPLEO;
 
+  const abiertas = posicionesAbiertas(pageContent.posiciones);
+  const jsonLd = pageJsonLd({
+    path: ROUTES.careers,
+    name: EMPLEO_TITLE,
+    description: empleoDescription(abiertas),
+    // Puestos abiertos como lista; para ofertas de empleo completas (JobPosting) Google pide
+    // fecha de publicación de cada una, que el panel no guarda.
+    extra:
+      abiertas.length > 0
+        ? {
+            mainEntity: {
+              "@type": "ItemList",
+              name: "Posiciones abiertas",
+              itemListElement: abiertas.map((p, i) => ({
+                "@type": "ListItem",
+                position: i + 1,
+                name: p.titulo,
+                ...(p.resumen && { description: p.resumen }),
+              })),
+            },
+          }
+        : {},
+  });
+
   const candidaturaHref = (puesto?: string) => {
     const subject = puesto ? `Candidatura — ${puesto}` : "Candidatura espontánea ALKO";
     return `mailto:${settings.email}?subject=${encodeURIComponent(subject)}`;
   };
 
   return (
-    <main className="bg-paper text-ink">
+    <main className="bg-white text-ink">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <PageHero
+        breadcrumbs={[{ label: "Empresa", href: ROUTES.company }, { label: "Trabaja con nosotros" }]}
         eyebrow={pageContent.headerBadge || "TRABAJA CON NOSOTROS"}
         title={pageContent.headerTitulo || "Construimos con las personas"}
         description={
@@ -53,7 +93,7 @@ export default async function TrabajaConNosotrosPage() {
       />
 
       {/* Cultura */}
-      <section className="relative isolate w-full overflow-hidden bg-paper text-ink">
+      <section className="relative isolate w-full overflow-hidden bg-white text-ink">
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 z-[1] mx-auto hidden max-w-[1780px] grid-cols-6 px-6 sm:px-12 lg:grid lg:px-20"

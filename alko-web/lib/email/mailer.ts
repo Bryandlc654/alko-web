@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import { getDbSettings } from "@/lib/db/mysql";
+import { getDbSettingsFull } from "@/lib/db/mysql";
 import type { Lead, SmtpConfig } from "@/lib/types";
 
 /**
@@ -45,7 +45,7 @@ export async function verifySmtpConnection(config: SmtpConfig): Promise<{ ok: bo
  */
 export async function sendLeadNotificationEmail(lead: Lead): Promise<boolean> {
   try {
-    const settings = await getDbSettings();
+    const settings = await getDbSettingsFull();
     const smtp = settings.smtp;
 
     if (!smtp || !smtp.enabled || !smtp.host || !smtp.user) {

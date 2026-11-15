@@ -1,3 +1,34 @@
+import sanitizeHtml from "sanitize-html";
+
+/** El HTML viene del CMS y del editor del panel: se limpia antes de pintarlo (sin scripts ni eventos). */
+function clean(html: string): string {
+  return sanitizeHtml(html, {
+    allowedTags: [
+      "p", "br", "hr", "h2", "h3", "h4", "ul", "ol", "li", "strong", "b", "em", "i", "u", "s", "a", "blockquote",
+      "img", "figure", "figcaption", "span", "code", "pre", "table", "thead", "tbody", "tr", "th", "td", "sup", "sub",
+    ],
+    allowedAttributes: {
+      a: ["href", "target", "rel", "title"],
+      img: ["src", "alt", "title", "width", "height", "loading"],
+      h2: ["id"],
+      h3: ["id"],
+      h4: ["id"],
+      th: ["colspan", "rowspan"],
+      td: ["colspan", "rowspan"],
+      "*": ["style"],
+    },
+    allowedStyles: { "*": { "text-align": [/^(left|right|center|justify)$/] } },
+    allowedSchemes: ["http", "https", "mailto", "tel"],
+    allowedSchemesByTag: { img: ["http", "https"] },
+    transformTags: {
+      a: (tagName, attribs) => ({
+        tagName,
+        attribs: attribs.target === "_blank" ? { ...attribs, rel: "noopener noreferrer" } : attribs,
+      }),
+    },
+  });
+}
+
 /**
  * Renderiza contenido HTML procedente del CMS con los estilos tipográficos del
  * sistema de diseño (sin depender de plugins de tipografía).
@@ -23,13 +54,13 @@ export default function Prose({
     default:
       "text-base sm:text-lg text-stone-600 font-light leading-relaxed space-y-5 [&_h2]:text-2xl sm:[&_h2]:text-3xl [&_h2]:leading-snug [&_h2]:mt-10 [&_h3]:text-xl sm:[&_h3]:text-2xl [&_h3]:mt-8 [&_ul]:pl-5 [&_ul]:space-y-2 [&_ol]:pl-5 [&_ol]:space-y-2",
     article:
-      "text-[1.0625rem] sm:text-[1.1875rem] text-stone-700 font-normal leading-[1.85] space-y-6 [&_h2]:scroll-mt-28 [&_h2]:mt-16 [&_h2]:border-t [&_h2]:border-stone-200 [&_h2]:pt-8 [&_h2]:text-3xl sm:[&_h2]:text-4xl [&_h2]:leading-tight [&_h2]:tracking-tight [&_h2:first-child]:mt-0 [&_h2:first-child]:border-t-0 [&_h2:first-child]:pt-0 [&_h3]:mt-10 [&_h3]:text-2xl [&_h3]:leading-snug [&_ul]:space-y-3 [&_ul]:pl-6 [&_ul>li]:marker:text-amber-700 [&_ol]:space-y-3 [&_ol]:pl-6 [&_ol>li]:marker:font-mono [&_ol>li]:marker:text-amber-700",
+      "text-[1.0625rem] sm:text-[1.1875rem] text-stone-700 font-normal leading-[1.85] space-y-6 [&_h2]:scroll-mt-28 [&_h2]:mt-16 [&_h2]:border-t [&_h2]:border-stone-200 [&_h2]:pt-8 [&_h2]:text-3xl sm:[&_h2]:text-4xl [&_h2]:leading-tight [&_h2]:tracking-tight [&_h2:first-child]:mt-0 [&_h2:first-child]:border-t-0 [&_h2:first-child]:pt-0 [&_h3]:mt-10 [&_h3]:text-2xl [&_h3]:leading-snug [&_ul]:space-y-3 [&_ul]:pl-6 [&_ul>li]:marker:text-amber-700 [&_ol]:space-y-3 [&_ol]:pl-6 [&_ol>li]:marker:font-mono [&_ol>li]:marker:text-amber-700 [&_blockquote]:my-12 [&_blockquote]:border-l-2 [&_blockquote]:border-amber-700 [&_blockquote]:pl-6 [&_blockquote]:font-serif [&_blockquote]:text-2xl sm:[&_blockquote]:text-3xl [&_blockquote]:font-light [&_blockquote]:leading-snug [&_blockquote]:tracking-tight [&_blockquote]:text-stone-900 [&_table]:my-10 [&_table]:w-full [&_table]:border-collapse [&_table]:text-left [&_table]:text-sm sm:[&_table]:text-base [&_th]:border-b-2 [&_th]:border-stone-900 [&_th]:py-3 [&_th]:pr-4 [&_th]:font-mono [&_th]:text-[11px] [&_th]:font-normal [&_th]:uppercase [&_th]:tracking-[0.2em] [&_th]:text-stone-500 [&_td]:border-b [&_td]:border-stone-200 [&_td]:py-3.5 [&_td]:pr-4 [&_td]:align-top [&_td]:leading-relaxed [&_td:first-child]:font-medium [&_td:first-child]:text-stone-900",
   };
 
   return (
     <div
       className={`${variants[variant]} ${shared} ${className}`}
-      dangerouslySetInnerHTML={{ __html: html }}
+      dangerouslySetInnerHTML={{ __html: clean(html) }}
     />
   );
 }

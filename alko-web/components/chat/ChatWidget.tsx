@@ -130,12 +130,12 @@ export default function ChatWidget() {
           {/* Cabecera del chat */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-stone-200/80 bg-stone-50/80">
             <div className="flex items-center gap-3">
-              <div className="relative flex items-center justify-center w-9 h-9 rounded-full bg-paper border border-[#8B7560]/40 text-[#8B7560]">
-                <Sparkles className="w-4 h-4 text-[#8B7560]" />
+              <div className="relative flex items-center justify-center w-9 h-9 rounded-full bg-paper border border-[#8B7560]/40 text-bronze">
+                <Sparkles className="w-4 h-4 text-bronze" />
                 <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white" />
               </div>
               <div>
-                <h3 className="text-sm font-semibold tracking-wide text-stone-900 flex items-center gap-1.5 font-sans">
+                <h3 className="text-sm font-semibold tracking-wide text-ink flex items-center gap-1.5 font-sans">
                   ALKO Asistente
                 </h3>
                 <p className="text-[11px] text-stone-500">Arquitectura & Reformas</p>
@@ -174,7 +174,7 @@ export default function ChatWidget() {
                   className={`flex gap-2.5 ${isAssistant ? "justify-start" : "justify-end"}`}
                 >
                   {isAssistant && (
-                    <div className="w-7 h-7 rounded-full bg-paper border border-stone-200/80 flex items-center justify-center text-[#8B7560] flex-shrink-0 mt-0.5 shadow-xs">
+                    <div className="w-7 h-7 rounded-full bg-paper border border-stone-200/80 flex items-center justify-center text-bronze flex-shrink-0 mt-0.5 shadow-xs">
                       <Bot className="w-3.5 h-3.5" />
                     </div>
                   )}
@@ -205,15 +205,15 @@ export default function ChatWidget() {
             {/* Indicador de carga */}
             {isLoading && (
               <div className="flex gap-2.5 justify-start items-center text-stone-500">
-                <div className="w-7 h-7 rounded-full bg-paper border border-stone-200/80 flex items-center justify-center text-[#8B7560] flex-shrink-0 shadow-xs">
-                  <Loader2 className="w-3.5 h-3.5 animate-spin text-[#8B7560]" />
+                <div className="w-7 h-7 rounded-full bg-paper border border-stone-200/80 flex items-center justify-center text-bronze flex-shrink-0 shadow-xs">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-bronze" />
                 </div>
-                <div className="px-4 py-2.5 bg-paper border border-stone-200/90 text-xs text-stone-600 flex items-center gap-1.5">
+                <div className="px-4 py-2.5 bg-paper border border-stone-200/90 text-xs text-mid flex items-center gap-1.5">
                   <span>Consultando asistente</span>
                   <span className="inline-flex gap-1">
-                    <span className="w-1 h-1 bg-[#8B7560] rounded-full animate-bounce [animation-delay:-0.3s]" />
-                    <span className="w-1 h-1 bg-[#8B7560] rounded-full animate-bounce [animation-delay:-0.15s]" />
-                    <span className="w-1 h-1 bg-[#8B7560] rounded-full animate-bounce" />
+                    <span className="w-1 h-1 bg-bronze rounded-full animate-bounce [animation-delay:-0.3s]" />
+                    <span className="w-1 h-1 bg-bronze rounded-full animate-bounce [animation-delay:-0.15s]" />
+                    <span className="w-1 h-1 bg-bronze rounded-full animate-bounce" />
                   </span>
                 </div>
               </div>
@@ -261,13 +261,13 @@ export default function ChatWidget() {
                 onKeyDown={handleKeyDown}
                 placeholder="Escribe tu consulta sobre tu obra o proyecto..."
                 disabled={isLoading}
-                className="flex-1 bg-paper border border-stone-200/90 focus:border-[#8B7560] focus:ring-1 focus:ring-[#8B7560]/30 px-3.5 py-2.5 text-sm text-stone-900 placeholder-stone-400 focus:outline-none transition-colors shadow-xs"
+                className="flex-1 bg-paper border border-stone-200/90 focus:border-[#8B7560] focus:ring-1 focus:ring-[#8B7560]/30 px-3.5 py-2.5 text-sm text-ink placeholder-stone-400 focus:outline-none transition-colors shadow-xs"
               />
               <button
                 type="submit"
                 disabled={!input.trim() || isLoading}
                 aria-label="Enviar mensaje"
-                className="flex items-center justify-center w-10 h-10 bg-[#8B7560] hover:bg-[#75624F] text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all active:scale-95 flex-shrink-0"
+                className="flex items-center justify-center w-10 h-10 bg-bronze hover:bg-[#75624F] text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all active:scale-95 flex-shrink-0"
               >
                 {isLoading ? (
                   <Loader2 className="w-4 h-4 animate-spin text-white" />
@@ -288,7 +288,7 @@ export default function ChatWidget() {
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
         aria-label={isOpen ? "Cerrar asistente" : "Abrir asistente de arquitectura"}
-        className="group relative flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-paper border border-stone-200/90 hover:border-[#8B7560]/60 text-[#8B7560] shadow-stone-900/10 transition-all duration-300 hover:scale-105 active:scale-95"
+        className="group relative flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-paper border border-stone-200/90 hover:border-[#8B7560]/60 text-bronze shadow-stone-900/10 transition-all duration-300 hover:scale-105 active:scale-95"
       >
         {/* Anillo de pulso sutil */}
         {!isOpen && (
@@ -299,8 +299,8 @@ export default function ChatWidget() {
           <X className="w-6 h-6 text-stone-800 transition-transform duration-200" />
         ) : (
           <div className="relative">
-            <MessageSquare className="w-6 h-6 text-[#8B7560] group-hover:text-[#75624F] transition-colors" />
-            <Sparkles className="w-3 h-3 text-[#8B7560] absolute -top-1 -right-1.5" />
+            <MessageSquare className="w-6 h-6 text-bronze group-hover:text-[#75624F] transition-colors" />
+            <Sparkles className="w-3 h-3 text-bronze absolute -top-1 -right-1.5" />
           </div>
         )}
 

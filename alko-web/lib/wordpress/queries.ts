@@ -1,4 +1,4 @@
-import { getDbHomeContent, getFeaturedProjectIds, getDbProjects, getDbSectors, getDbArticles, getDbGuides, getDbSettings } from "../db/mysql";
+import { getDbHomeContent, getFeaturedProjectIds, getShowcaseProjectId, getDbProjects, getDbSectors, getDbArticles, getDbGuides, getDbSettings } from "../db/mysql";
 import {
   DEFAULT_ARTICLES,
   DEFAULT_DESCARGAS,
@@ -11,6 +11,7 @@ import {
   DEFAULT_SECTORS,
   DEFAULT_SETTINGS,
   DEFAULT_SHOWCASE_SLIDES,
+  sectorSlug,
 } from "../content";
 import type {
   Article,
@@ -94,11 +95,19 @@ export async function getShowcaseSlides(): Promise<Slide[]> {
 
 /* ------------------------------- Proyectos -------------------------------- */
 
-export async function getProjects(): Promise<Project[]> {
+/** Quita los proyectos ocultos y renumera los visibles (01, 02…) para que no queden huecos. */
+function visibleProjects(list: Project[]): Project[] {
+  return list
+    .filter((p) => !p.oculto)
+    .map((p, i) => ({ ...p, indice: String(i + 1).padStart(2, "0") }));
+}
+
+/** Proyectos de la web pública. El panel pasa `includeHidden` para ver también los ocultos. */
+export async function getProjects({ includeHidden = false }: { includeHidden?: boolean } = {}): Promise<Project[]> {
   try {
     const dbProjects = await getDbProjects();
     if (dbProjects && dbProjects.length > 0) {
-      return dbProjects;
+      return includeHidden ? dbProjects : visibleProjects(dbProjects);
     }
   } catch (err) {
     console.warn("Error leyendo proyectos de MySQL:", err);
@@ -135,11 +144,30 @@ export async function getFeaturedHomeProjects(): Promise<Project[]> {
   return allProjects.slice(0, 3);
 }
 
-export async function getProjectBySlug(slug: string): Promise<Project | null> {
+export async function getShowcaseProject(): Promise<Project | null> {
+  try {
+    const id = await getShowcaseProjectId();
+    if (!id) return null;
+    const allProjects = await getProjects();
+    return allProjects.find((p) => String(p.id) === id || p.slug === id) ?? null;
+  } catch (err) {
+    console.warn("Aviso: Error obteniendo el proyecto del bloque de portada:", err);
+    return null;
+  }
+}
+
+export async function getProjectBySlug(
+  slug: string,
+  { includeHidden = false }: { includeHidden?: boolean } = {},
+): Promise<Project | null> {
   try {
     const dbProjects = await getDbProjects();
-    const found = dbProjects.find((p) => p.slug === slug || String(p.id) === slug);
+    const list = includeHidden ? dbProjects : visibleProjects(dbProjects);
+    const found = list.find((p) => p.slug === slug || String(p.id) === slug);
     if (found) return found;
+    // Si el panel ya gestiona los proyectos, su lista manda: un proyecto eliminado no debe
+    // reaparecer desde WordPress ni desde los de ejemplo.
+    if (dbProjects.length > 0) return null;
   } catch (err) {
     console.warn("Error buscando proyecto en MySQL:", err);
   }
@@ -149,9 +177,9 @@ export async function getProjectBySlug(slug: string): Promise<Project | null> {
   return DEFAULT_PROJECTS.find((project) => project.slug === slug) ?? null;
 }
 
-export async function getProjectsBySector(sectorSlug: string): Promise<Project[]> {
+export async function getProjectsBySector(slug: string): Promise<Project[]> {
   const all = await getProjects();
-  return all.filter((p) => p.servicio === sectorSlug);
+  return all.filter((p) => sectorSlug(p.servicio) === sectorSlug(slug));
 }
 
 /* -------------------------------- Sectores -------------------------------- */
@@ -173,7 +201,8 @@ export async function getSectors(): Promise<Sector[]> {
   );
 }
 
-export async function getSectorBySlug(slug: string): Promise<Sector | null> {
+export async function getSectorBySlug(rawSlug: string): Promise<Sector | null> {
+  const slug = sectorSlug(rawSlug);
   try {
     const dbSectors = await getDbSectors();
     const found = dbSectors.find((s) => s.slug === slug || String(s.id) === slug);
@@ -383,7 +412,7 @@ export async function getHomeContent(): Promise<HomeContent> {
 }
 
 export async function getHomeData(): Promise<HomeData> {
-  const [heroSlides, showcaseSlides, projects, sectors, fases, fabricantes, articles, settings, homeContent] =
+  const [heroSlides, showcaseSlides, projects, sectors, fases, fabricantes, articles, settings, homeContent, showcaseProject] =
     await Promise.all([
       getHeroSlides(),
       getShowcaseSlides(),
@@ -394,7 +423,8 @@ export async function getHomeData(): Promise<HomeData> {
       getArticles(),
       getSettings(),
       getHomeContent(),
+      getShowcaseProject(),
     ]);
 
-  return { heroSlides, showcaseSlides, projects, sectors, fases, fabricantes, articles, settings, homeContent };
+  return { heroSlides, showcaseSlides, projects, sectors, fases, fabricantes, articles, settings, homeContent, showcaseProject };
 }

@@ -1,28 +1,24 @@
-import Image from "next/image";
+import Image from "@/components/ui/Image";
 import ContactTrigger from "@/components/contact/ContactTrigger";
 import Container from "@/components/ui/Container";
 import PageHero from "@/components/ui/PageHero";
 import { getSettings } from "@/lib/wordpress";
 import { getDbEquipoPageContent } from "@/lib/db/mysql";
 import { DEFAULT_EQUIPO_MEMBERS } from "@/lib/content";
-import { SITE } from "@/lib/site";
+import { ROUTES } from "@/lib/site";
+import { pageJsonLd, pageMetadata } from "@/lib/seo";
 
 export const revalidate = 60;
 
-export const metadata = {
-  title: "Equipo | ALKO — Personas detrás de cada obra en Madrid",
-  description:
-    "Conoce al equipo de ALKO: dirección técnica, arquitectura, jefatura de obra, instalaciones y atención al cliente. Un equipo multidisciplinar detrás de cada proyecto.",
-  openGraph: {
-    title: "Equipo | ALKO",
-    description:
-      "Dirección técnica, arquitectura, jefatura de obra, instalaciones y atención al cliente bajo un mismo criterio.",
-    type: "website",
-  },
-  alternates: {
-    canonical: "https://www.alko.es/equipo",
-  },
-};
+const EQUIPO_TITLE = "Equipo de ALKO, construcción y reformas en Madrid";
+const EQUIPO_DESCRIPTION =
+  "Conoce al equipo de ALKO: dirección técnica, arquitectura, jefatura de obra, instalaciones y atención al cliente, bajo un mismo criterio en cada obra de Madrid.";
+
+export const metadata = pageMetadata({
+  title: EQUIPO_TITLE,
+  description: EQUIPO_DESCRIPTION,
+  path: ROUTES.team,
+});
 
 export default async function EquipoPage() {
   const [settings, pageContent] = await Promise.all([
@@ -35,32 +31,24 @@ export default async function EquipoPage() {
       ? pageContent.miembros
       : DEFAULT_EQUIPO_MEMBERS;
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: SITE.legalName,
-    url: SITE.url,
-    address: {
-      "@type": "PostalAddress",
-      addressLocality: "Madrid",
-      addressCountry: "ES",
-    },
-    employee: listaMiembros.map((m) => ({
-      "@type": "Person",
-      name: m.nombre,
-      jobTitle: m.rol,
-      worksFor: { "@type": "Organization", name: SITE.name },
-    })),
-  };
+  // Sin la lista de personas: solo se publicaría en los datos estructurados con el equipo real
+  // (nombres y fotos de cada persona) cargado en el panel.
+  const jsonLd = pageJsonLd({
+    type: "AboutPage",
+    path: ROUTES.team,
+    name: EQUIPO_TITLE,
+    description: EQUIPO_DESCRIPTION,
+  });
 
   return (
-    <main className="bg-paper text-ink">
+    <main className="bg-white text-ink">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
       <PageHero
+        breadcrumbs={[{ label: "Empresa", href: ROUTES.company }, { label: "Equipo" }]}
         eyebrow={pageContent.headerBadge || "EQUIPO"}
         title={pageContent.headerTitulo || "Personas detrás de cada obra"}
         description={
@@ -84,7 +72,7 @@ export default async function EquipoPage() {
       </section>
 
       <section className="flex w-full flex-col items-center bg-[#faf9f5] px-6 pb-28 pt-16 text-center md:pb-36 md:pt-24">
-        <h2 className="display-title mx-auto max-w-4xl text-5xl leading-[1.05] sm:text-6xl md:text-7xl lg:text-[5.5rem]">
+        <h2 className="display-title text-5xl leading-[1.05] sm:text-6xl md:text-7xl lg:text-[5.5rem]">
           {pageContent.filosofiaTitulo || "Menos compartimentos. Más equipo."}
         </h2>
         <div aria-hidden="true" className="my-10 flex w-full justify-center md:my-12">
@@ -109,12 +97,13 @@ export default async function EquipoPage() {
         </div>
 
         <Container>
-          <div className="reveal-item pb-6 sm:pb-8">
-            <span className="eyebrow">{pageContent.gridTag || "Nuestro equipo"}</span>
+          <div className="flex items-center gap-2 pb-6 text-sm text-[#403E3B] sm:pb-8 reveal-item">
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#403E3B]" />
+            <span>{pageContent.gridTag || "Nuestro equipo"}</span>
           </div>
 
           <div className="max-w-4xl pt-1 md:pt-4 reveal-item">
-            <h2 className="display-title text-5xl leading-[1.05] sm:text-6xl md:text-7xl lg:text-[5.5rem]">
+            <h2 className="display-title text-5xl leading-[1.05] sm:text-6xl md:text-7xl lg:text-[5.5rem]">
               {pageContent.gridTitulo || "Nuestros profesionales"}
             </h2>
             <p className="mt-5 max-w-md text-sm leading-relaxed text-[#302F2C] sm:mt-6 sm:text-base">
@@ -123,29 +112,24 @@ export default async function EquipoPage() {
             </p>
           </div>
 
-          <div className="mt-12 grid grid-cols-1 gap-6 sm:mt-16 sm:grid-cols-2 lg:mt-20 lg:grid-cols-4 xl:gap-8">
+          {/* Solo nombre y función, sin fotos. */}
+          <ul className="mt-12 grid grid-cols-1 border-t border-[rgba(64,62,59,0.2)] sm:mt-16 sm:grid-cols-2 lg:mt-20 lg:grid-cols-3">
             {listaMiembros.map((m, i) => (
-              <article
+              <li
                 key={m.nombre + i}
-                className="flex flex-col reveal-item"
+                className="flex items-baseline gap-5 border-b border-[rgba(64,62,59,0.2)] py-7 sm:py-9 sm:pr-8 reveal-item"
                 style={{ transitionDelay: `${i * 80}ms` }}
               >
-                <div className="relative aspect-[4/5] w-full overflow-hidden bg-neutral-200">
-                  <Image
-                    src={m.foto}
-                    alt={`${m.nombre}, ${m.rol}`}
-                    fill
-                    sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 25vw"
-                    className="object-cover object-center grayscale transition-transform duration-500 hover:scale-[1.03]"
-                  />
+                <span className="w-8 shrink-0 font-mono text-xs tracking-wider text-[#8a8783]">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <div className="min-w-0">
+                  <h3 className="text-2xl font-normal leading-tight tracking-tight sm:text-3xl">{m.nombre}</h3>
+                  <p className="mt-1.5 text-sm text-[#686663] sm:text-base">{m.rol}</p>
                 </div>
-                <div className="pt-4">
-                  <h3 className="display-title text-xl">{m.nombre}</h3>
-                  <p className="mt-0.5 text-sm text-[#686663]">{m.rol}</p>
-                </div>
-              </article>
+              </li>
             ))}
-          </div>
+          </ul>
         </Container>
       </section>
 

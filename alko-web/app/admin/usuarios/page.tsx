@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getSession } from "@/lib/auth/session";
+import { getSession } from "@/lib/auth/server-session";
 import { hasPermission } from "@/lib/auth/rbac";
 import { getDbUsers } from "@/lib/db/mysql";
 import AdminSidebar from "@/components/admin/AdminSidebar";

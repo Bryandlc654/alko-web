@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getSession } from "@/lib/auth/session";
+import { getSession } from "@/lib/auth/server-session";
 import { getArticles } from "@/lib/wordpress";
 import { getDbArticleCategories } from "@/lib/db/mysql";
 import AdminSidebar from "@/components/admin/AdminSidebar";
@@ -40,7 +40,7 @@ export default async function AdminArticlesPage() {
 
           <div className="flex items-center gap-4">
             <Link
-              href="/conocimiento/articulos"
+              href="/journal"
               target="_blank"
               className="inline-flex items-center gap-1.5 text-xs text-slate-600 hover:text-slate-900 px-3.5 py-1.5 rounded-xl border border-slate-200 hover:border-slate-300 bg-white shadow-xs transition font-medium"
             >
