@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
-import PageHero from "@/components/ui/PageHero";
-import Container from "@/components/ui/Container";
+import EditorialHeader from "@/components/editorial/EditorialHeader";
 import { getSettings } from "@/lib/wordpress";
 import { LEGAL, ROUTES, SITE } from "@/lib/site";
 
@@ -16,36 +15,68 @@ export const metadata: Metadata = {
 
 function Section({ n, title, children }: { n: string; title: string; children: ReactNode }) {
   return (
-    <section className="grid grid-cols-1 gap-4 border-t border-stone-300 py-10 sm:py-12 lg:grid-cols-12 lg:gap-12">
-      <div className="lg:col-span-4">
-        <span className="block font-mono text-[11px] tracking-[0.25em] text-stone-400">{n}</span>
-        <h2 className="display-title mt-2 text-2xl leading-tight text-ink sm:text-3xl">
-          {title}
-        </h2>
+    <section id={`apartado-${n}`} className="grid scroll-mt-28 grid-cols-12 gap-x-6 gap-y-4 border-t border-ink/15 py-10 sm:py-12">
+      <div className="col-span-12 lg:col-span-4">
+        <div className="flex items-baseline gap-4 lg:sticky lg:top-32 lg:block">
+          <span className="display-title text-3xl text-bronze lg:text-5xl">{n}</span>
+          <h2 className="display-title text-2xl leading-tight sm:text-3xl lg:mt-4">{title}</h2>
+        </div>
       </div>
-      <div className="space-y-4 text-base font-light leading-relaxed text-mid lg:col-span-8 [&_strong]:font-normal [&_strong]:text-stone-900 [&_a]:text-stone-900 [&_a]:underline [&_a]:underline-offset-2 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5">
+      <div className="col-span-12 max-w-2xl space-y-4 leading-relaxed text-mid lg:col-span-7 lg:col-start-6 [&_a]:text-ink [&_a]:underline [&_a]:decoration-bronze [&_a]:underline-offset-4 [&_strong]:font-medium [&_strong]:text-ink [&_ul]:space-y-2 [&_ul>li]:relative [&_ul>li]:pl-6 [&_ul>li]:before:absolute [&_ul>li]:before:left-0 [&_ul>li]:before:text-bronze [&_ul>li]:before:content-['—']">
         {children}
       </div>
     </section>
   );
 }
 
+const APARTADOS = [
+  "Responsable del tratamiento",
+  "Qué datos tratamos",
+  "Para qué los usamos",
+  "Base legal",
+  "Cuánto tiempo los conservamos",
+  "Quién más puede acceder",
+  "Tus derechos",
+  "Seguridad",
+  "Cookies",
+  "Cambios en esta política",
+];
+
 export default async function PrivacyPage() {
   const settings = await getSettings();
   const email = settings.email;
 
   return (
-    <main className="bg-white text-ink">
-      <PageHero
-        eyebrow="LEGAL"
+    <main className="bg-paper text-ink">
+      <EditorialHeader
+        breadcrumbs={[{ label: "Política de privacidad" }]}
+        eyebrow="Legal"
         title="Política de privacidad"
         description="Qué datos recogemos en esta web, para qué los usamos y cómo puedes ejercer tus derechos."
-        image="/cta-bg.jpg"
-        breadcrumbs={[{ label: "Política de privacidad" }]}
+        aside={
+          <nav aria-label="Apartados">
+            <ol className="grid grid-cols-1 border-t border-ink/15 sm:grid-cols-2 sm:gap-x-6">
+              {APARTADOS.map((label, i) => {
+                const n = String(i + 1).padStart(2, "0");
+                return (
+                  <li key={n}>
+                    <a
+                      href={`#apartado-${n}`}
+                      className="flex items-baseline gap-3 border-b border-ink/15 py-2.5 text-sm transition-colors hover:text-bronze"
+                    >
+                      <span className="text-[10px] tracking-[0.18em] text-bronze">{n}</span>
+                      {label}
+                    </a>
+                  </li>
+                );
+              })}
+            </ol>
+          </nav>
+        }
       />
 
-      <Container className="py-16 sm:py-24">
-        <p className="max-w-3xl pb-10 text-lg font-light leading-relaxed text-mid sm:pb-12">
+      <div className="site-wrap pb-20 pt-10 sm:pb-28">
+        <p className="max-w-3xl pb-10 text-lg leading-relaxed text-mid sm:pb-12">
           En ALKO tratamos tus datos personales conforme al Reglamento (UE) 2016/679 (RGPD) y a la Ley Orgánica
           3/2018 de Protección de Datos Personales y garantía de los derechos digitales (LOPDGDD). Aquí te explicamos
           de forma clara cómo lo hacemos.
@@ -177,12 +208,12 @@ export default async function PrivacyPage() {
             Podemos actualizar esta política para adaptarla a cambios legales o de nuestros servicios. La versión
             vigente es siempre la publicada en esta página.
           </p>
-          <p className="text-[10px] tracking-[0.22em] uppercase text-stone-400">
+          <p className="text-[10px] uppercase tracking-[0.22em] text-mid">
             Última actualización: {LEGAL.actualizada}
           </p>
         </Section>
 
-        <div className="border-t border-stone-300 pt-10">
+        <div className="border-t border-ink/15 pt-10">
           <Link
             href={ROUTES.contact}
             className="btn btn-outline"
@@ -190,7 +221,7 @@ export default async function PrivacyPage() {
             Contactar con {SITE.name} <span aria-hidden="true">→</span>
           </Link>
         </div>
-      </Container>
+      </div>
     </main>
   );
 }
