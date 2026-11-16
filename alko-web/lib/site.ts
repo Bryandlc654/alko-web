@@ -89,9 +89,9 @@ export const METHOD_HREF = `${ROUTES.company}#metodo`;
  * Contacto sigue enlazado desde el pie y el CTA.
  */
 export const MAIN_NAV: NavItem[] = [
+  { href: ROUTES.home, label: "Inicio" },
   { href: ROUTES.projects, label: "Proyectos" },
   { href: ROUTES.sectors, label: "Divisiones" },
-  { href: METHOD_HREF, label: "Método" },
   {
     href: ROUTES.company,
     label: "Estudio",
@@ -168,9 +168,9 @@ export function isSolidHeaderRoute(pathname: string) {
 
 /** Columnas del pie de página. */
 export const FOOTER_NAV: NavItem[] = [
+  { href: ROUTES.home, label: "Inicio" },
   { href: ROUTES.projects, label: "Proyectos" },
   { href: ROUTES.sectors, label: "Divisiones" },
-  { href: METHOD_HREF, label: "Método" },
   { href: ROUTES.company, label: "Estudio" },
 ];
 
