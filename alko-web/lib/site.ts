@@ -153,7 +153,6 @@ export const SOLID_HEADER_ROUTES: string[] = [
   "/journal",
   "/journal/:slug",
   "/proyectos/:slug",
-  "/servicios/:slug",
 ];
 
 /** ¿La ruta lleva la navegación sólida desde el principio? */
