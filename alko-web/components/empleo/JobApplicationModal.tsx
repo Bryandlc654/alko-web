@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { X, Upload, CheckCircle2, AlertCircle, FileText, Briefcase, User, Mail, Phone } from "lucide-react";
 import type { PosicionEmpleo } from "@/lib/types";
 
 interface JobApplicationModalProps {
@@ -92,188 +91,167 @@ export default function JobApplicationModal({
     }
   };
 
+  const field =
+    "w-full border-0 border-b border-ink/20 bg-transparent px-0 py-2.5 text-base text-ink placeholder:text-ink/35 transition-colors focus:border-ink focus:outline-none focus:ring-0";
+  const label = "block text-[10px] uppercase tracking-[0.22em] text-mid";
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ink/70 p-4 backdrop-blur-sm sm:p-6"
+      onClick={onClose}
+    >
       <div
-        className="relative w-full max-w-xl bg-paper border border-stone-200 overflow-hidden flex flex-col max-h-[90vh]"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="job-modal-title"
+        className="relative flex max-h-[90vh] w-full max-w-xl flex-col overflow-hidden bg-paper text-ink"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Cabecera */}
-        <div className="px-6 sm:px-8 py-5 border-b border-stone-100 flex items-center justify-between bg-stone-50/70">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-amber-100/70 text-amber-900 flex items-center justify-center font-bold">
-              <Briefcase className="w-5 h-5" />
-            </div>
-            <div>
-              <h2 className="display-title text-base sm:text-lg font-medium text-ink">
-                Postular a ALKO
-              </h2>
-              <p className="text-xs text-stone-500 font-sans">
-                Forma parte de nuestro equipo de construcción y reformas
-              </p>
-            </div>
+        <div className="flex items-start justify-between gap-6 border-b border-ink/15 px-6 py-5 sm:px-8">
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.22em] text-bronze">Trabaja con nosotros</p>
+            <h2 id="job-modal-title" className="display-title mt-2 text-2xl leading-tight sm:text-3xl">
+              Envía tu candidatura
+            </h2>
           </div>
-
           <button
+            type="button"
             onClick={onClose}
-            className="p-2 text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition"
+            aria-label="Cerrar"
+            className="flex h-10 w-10 shrink-0 items-center justify-center border border-ink/15 text-lg transition-colors hover:border-ink"
           >
-            <X className="w-5 h-5" />
+            <span aria-hidden="true">×</span>
           </button>
         </div>
 
         {/* Cuerpo / Formulario */}
-        <div className="no-scrollbar p-6 sm:p-8 overflow-y-auto">
+        <div className="no-scrollbar overflow-y-auto px-6 py-6 sm:px-8 sm:py-8">
           {success ? (
-            <div className="py-12 text-center space-y-4">
-              <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 mx-auto flex items-center justify-center">
-                <CheckCircle2 className="w-8 h-8" />
-              </div>
-              <h3 className="display-title text-xl font-medium text-ink">
-                ¡Candidatura recibida con éxito!
-              </h3>
-              <p className="text-sm text-mid max-w-md mx-auto leading-relaxed">
-                Gracias por tu interés en unirte a ALKO. Nuestro equipo de dirección técnica revisará
-                tu perfil detalladamente y nos pondremos en contacto contigo.
+            <div className="py-10">
+              <span aria-hidden="true" className="display-title block text-5xl text-bronze">✓</span>
+              <h3 className="display-title mt-6 text-2xl">Candidatura recibida</h3>
+              <p className="mt-3 max-w-md leading-relaxed text-mid">
+                Gracias por tu interés en unirte a ALKO. Nuestro equipo de dirección técnica revisará tu perfil y nos
+                pondremos en contacto contigo.
               </p>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-6">
               {error && (
-                <div className="p-3.5 bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  <span>{error}</span>
-                </div>
+                <p role="alert" className="border-l-2 border-red-700 bg-red-700/5 px-4 py-3 text-sm text-red-800">
+                  {error}
+                </p>
               )}
 
-              {/* Puesto */}
               <div>
-                <label className="block text-xs font-semibold text-stone-700 mb-1.5 uppercase tracking-wider">
-                  Puesto o Vacante
+                <label htmlFor="job-puesto" className={label}>
+                  Puesto o vacante
                 </label>
-                <select
-                  value={puesto}
-                  onChange={(e) => setPuesto(e.target.value)}
-                  className="w-full px-3.5 py-2.5 border border-stone-200 text-xs font-medium text-stone-800 bg-paper focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700"
-                >
-                  <option value="Candidatura espontánea">Candidatura espontánea (General)</option>
+                <select id="job-puesto" value={puesto} onChange={(e) => setPuesto(e.target.value)} className={`${field} cursor-pointer`}>
+                  <option value="Candidatura espontánea">Candidatura espontánea (general)</option>
                   {vacantes.map((v) => (
                     <option key={v.id || v.titulo} value={v.titulo}>
-                      {v.titulo} ({v.departamento} - {v.ubicacion})
+                      {v.titulo} ({v.departamento} · {v.ubicacion})
                     </option>
                   ))}
                 </select>
               </div>
 
-              {/* Nombre completo */}
               <div>
-                <label className="block text-xs font-semibold text-stone-700 mb-1.5 flex items-center gap-1.5 uppercase tracking-wider">
-                  <User className="w-3.5 h-3.5 text-stone-400" />
-                  Nombre y Apellidos *
+                <label htmlFor="job-nombre" className={label}>
+                  Nombre y apellidos *
                 </label>
                 <input
+                  id="job-nombre"
                   type="text"
                   required
                   value={nombre}
                   onChange={(e) => setNombre(e.target.value)}
-                  placeholder="Ej: Marcos Gómez"
-                  className="w-full px-3.5 py-2.5 border border-stone-200 text-xs font-medium text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700"
+                  placeholder="Ej.: Marcos Gómez"
+                  className={field}
                 />
               </div>
 
-              {/* Email y Teléfono */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 <div>
-                  <label className="block text-xs font-semibold text-stone-700 mb-1.5 flex items-center gap-1.5 uppercase tracking-wider">
-                    <Mail className="w-3.5 h-3.5 text-stone-400" />
-                    Correo Electrónico *
+                  <label htmlFor="job-email" className={label}>
+                    Correo electrónico *
                   </label>
                   <input
+                    id="job-email"
                     type="email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="marcos@ejemplo.com"
-                    className="w-full px-3.5 py-2.5 border border-stone-200 text-xs font-medium text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700"
+                    className={field}
                   />
                 </div>
-
                 <div>
-                  <label className="block text-xs font-semibold text-stone-700 mb-1.5 flex items-center gap-1.5 uppercase tracking-wider">
-                    <Phone className="w-3.5 h-3.5 text-stone-400" />
+                  <label htmlFor="job-telefono" className={label}>
                     Teléfono *
                   </label>
                   <input
+                    id="job-telefono"
                     type="tel"
                     required
                     value={telefono}
                     onChange={(e) => setTelefono(e.target.value)}
                     placeholder="+34 600 000 000"
-                    className="w-full px-3.5 py-2.5 border border-stone-200 text-xs font-medium text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700"
+                    className={field}
                   />
                 </div>
               </div>
 
-              {/* Archivo CV */}
               <div>
-                <label className="block text-xs font-semibold text-stone-700 mb-1.5 uppercase tracking-wider">
-                  Curriculum Vitae (PDF o DOCX, máx 10MB)
-                </label>
-                <div
+                <span className={label}>Currículum (PDF o DOCX, máx. 10 MB)</span>
+                <button
+                  type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="border-2 border-dashed border-stone-300 hover:border-amber-700 p-4 text-center cursor-pointer transition bg-stone-50/50 hover:bg-stone-50 group"
+                  className="group mt-3 flex w-full items-center justify-between gap-4 border border-dashed border-ink/25 px-4 py-4 text-left transition-colors hover:border-ink"
                 >
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept=".pdf,.doc,.docx"
-                    onChange={handleFileChange}
-                    className="hidden"
-                  />
                   {file ? (
-                    <div className="flex items-center justify-center gap-2 text-stone-800">
-                      <FileText className="w-5 h-5 text-amber-700" />
-                      <span className="text-xs font-medium">{file.name}</span>
-                      <span className="text-[11px] text-stone-400">
-                        ({(file.size / (1024 * 1024)).toFixed(2)} MB)
-                      </span>
-                    </div>
+                    <span className="min-w-0">
+                      <span className="block truncate text-sm">{file.name}</span>
+                      <span className="block text-xs text-mid">{(file.size / (1024 * 1024)).toFixed(2)} MB · Pulsa para cambiarlo</span>
+                    </span>
                   ) : (
-                    <div className="space-y-1">
-                      <Upload className="w-6 h-6 text-stone-400 mx-auto group-hover:text-amber-700 transition" />
-                      <span className="text-xs font-medium text-stone-700 block">
-                        Haz clic aquí para seleccionar tu CV
-                      </span>
-                      <span className="text-[10px] text-stone-400 block">
-                        Archivos admitidos: PDF, DOC, DOCX
-                      </span>
-                    </div>
+                    <span>
+                      <span className="block text-sm">Selecciona tu CV</span>
+                      <span className="block text-xs text-mid">PDF, DOC o DOCX</span>
+                    </span>
                   )}
-                </div>
+                  <span aria-hidden="true" className="text-[10px] uppercase tracking-[0.22em] text-bronze transition-transform group-hover:-translate-y-0.5">
+                    {file ? "✓" : "↑ Subir"}
+                  </span>
+                </button>
+                <input ref={fileInputRef} type="file" accept=".pdf,.doc,.docx" onChange={handleFileChange} className="hidden" />
               </div>
 
-              {/* Mensaje breve */}
               <div>
-                <label className="block text-xs font-semibold text-stone-700 mb-1.5 uppercase tracking-wider">
-                  Carta de presentación o comentarios (Opcional)
+                <label htmlFor="job-mensaje" className={label}>
+                  Carta de presentación o comentarios (opcional)
                 </label>
                 <textarea
+                  id="job-mensaje"
                   rows={3}
                   value={mensaje}
                   onChange={(e) => setMensaje(e.target.value)}
-                  placeholder="Cuéntanos brevemente sobre tu experiencia en obra o proyectos..."
-                  className="w-full px-3.5 py-2.5 border border-stone-200 text-xs font-medium text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700 resize-none"
+                  placeholder="Cuéntanos brevemente tu experiencia en obra o proyectos…"
+                  className={`${field} resize-none`}
                 />
               </div>
 
-              <div className="pt-2">
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="btn btn-ink w-full disabled:opacity-50"
-                >
-                  <span>{loading ? "Enviando postulación..." : "Enviar Candidatura"}</span>
-                  <span>→</span>
+              <div className="flex flex-col gap-4 border-t border-ink/15 pt-6 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-xs leading-relaxed text-mid">
+                  Usaremos tus datos solo para este proceso de selección.{" "}
+                  <a href="/politica-de-privacidad" className="underline underline-offset-2 hover:text-ink">
+                    Política de privacidad
+                  </a>
+                </p>
+                <button type="submit" disabled={loading} className="btn btn-ink shrink-0 disabled:opacity-50">
+                  {loading ? "Enviando…" : "Enviar candidatura"} <span aria-hidden="true">→</span>
                 </button>
               </div>
             </form>

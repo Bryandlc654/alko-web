@@ -153,6 +153,7 @@ export const SOLID_HEADER_ROUTES: string[] = [
   "/journal",
   "/journal/:slug",
   "/journal/guias/:slug",
+  "/proyectos",
   "/proyectos/:slug",
   "/servicios",
   "/politica-de-privacidad",

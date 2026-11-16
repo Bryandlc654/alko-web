@@ -6,23 +6,24 @@ import type { Guide } from "@/lib/types";
 /** Índice de guías del Journal: una fila por guía con tema, lectura e imagen. */
 export default function GuidesIndex({ guides }: { guides: Guide[] }) {
   return (
-    <div>
+    <div className="border-t border-ink/15">
       {guides.map((guide) => (
-        <article key={guide.id} className="reveal-item group border-b border-[#e1e1df]">
+        <article key={guide.id} className="reveal-item group border-b border-ink/15">
           <Link
             href={`${ROUTES.guides}/${guide.slug}`}
             className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 py-10 sm:py-12 lg:items-center"
           >
-            <span className="lg:col-span-2 font-mono text-xs sm:text-sm text-stone-400 group-hover:text-stone-900 tracking-wider transition-colors">
-              {guide.numero} — GUÍA
+            <span className="flex items-baseline gap-3 lg:col-span-2 lg:block">
+              <span className="display-title block text-4xl text-bronze lg:text-6xl">{guide.numero}</span>
+              <span className="text-[10px] uppercase tracking-[0.22em] text-mid lg:mt-3 lg:block">Guía</span>
             </span>
 
             <div className="lg:col-span-6">
-              <span className="eyebrow block mb-4">
+              <span className="mb-4 block text-[10px] uppercase tracking-[0.22em] text-mid">
                 {guide.tema}
                 {guide.lectura && ` · ${guide.lectura} de lectura`}
               </span>
-              <h3 className="display-title text-3xl sm:text-4xl lg:text-5xl text-ink leading-tight group-hover:text-amber-800 transition-colors duration-300">
+              <h3 className="display-title text-3xl sm:text-4xl lg:text-5xl text-ink leading-tight group-hover:text-bronze transition-colors duration-300">
                 {guide.title}
               </h3>
               {guide.descripcion && (
@@ -30,20 +31,21 @@ export default function GuidesIndex({ guides }: { guides: Guide[] }) {
                   {guide.descripcion}
                 </p>
               )}
-              <span className="text-[10px] tracking-[0.22em] mt-6 inline-flex items-center gap-1.5 uppercase text-ink group-hover:text-amber-800 transition-colors border-b border-stone-900 group-hover:border-amber-800 pb-0.5">
-                Leer guía
-                <span className="transition-transform group-hover:translate-x-1">→</span>
+              <span className="mt-6 block">
+                <span className="arrow-link">
+                  Leer guía <span aria-hidden="true">↗</span>
+                </span>
               </span>
             </div>
 
             <div className="lg:col-span-4">
-              <div className="relative overflow-hidden aspect-[4/3] bg-stone-200">
+              <div className="relative overflow-hidden aspect-[4/3] bg-piedra">
                 <Image
                   src={guide.imagen}
                   alt={guide.title}
                   fill
                   sizes="(max-width: 1024px) 100vw, 33vw"
-                  className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
+                  className="object-cover object-center transition-transform duration-[1.6s] ease-alko group-hover:scale-[1.04]"
                 />
               </div>
             </div>

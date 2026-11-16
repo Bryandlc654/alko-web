@@ -12,21 +12,21 @@ export default function ProjectsList({ projects }: { projects: Project[] }) {
         <Link
           key={project.id}
           href={`${ROUTES.projects}/${project.slug}`}
-          className="project-card reveal-item block border-b border-stone-300/70 pb-6 group"
+          className="project-card reveal-item block border-b border-ink/20 pb-6 group"
           style={{ transitionDelay: `${(i + 1) * 100}ms` }}
         >
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-4 cursor-pointer">
             <div className="flex items-center gap-4">
-              <h3 className="text-xl sm:text-2xl font-sans font-light text-ink tracking-tight leading-snug group-hover:text-amber-800 transition">
+              <h3 className="text-xl sm:text-2xl font-sans font-light text-ink tracking-tight leading-snug group-hover:text-bronze transition">
                 {project.title}
               </h3>
             </div>
 
             <div className="flex items-center justify-between sm:justify-end gap-6 sm:gap-12 text-xs text-mid">
-              <span className="font-light tracking-wide text-stone-500">
+              <span className="font-light tracking-wide text-mid">
                 {project.ubicacion}
               </span>
-              <span className="px-4 py-1 border border-stone-300 text-[11px] font-mono text-stone-700 bg-white/70">
+              <span className="px-4 py-1 border border-ink/20 text-[11px] font-mono text-ink bg-white/70">
                 {project.anio}
               </span>
               <span className="font-light tracking-wider text-ink group-hover:underline flex items-center gap-1">
@@ -47,7 +47,7 @@ export default function ProjectsList({ projects }: { projects: Project[] }) {
               className="object-cover object-center filter brightness-100 contrast-[1.02] transition-transform duration-1000 ease-out group-hover:scale-105"
             />
             {project.exclusivo && (
-              <span className="absolute right-5 top-5 bg-stone-950/55 p-1.5 backdrop-blur-sm sm:right-8 sm:top-8">
+              <span className="absolute right-5 top-5 bg-ink/55 p-1.5 backdrop-blur-sm sm:right-8 sm:top-8">
                 <ExclusiveSeal size={104} />
               </span>
             )}

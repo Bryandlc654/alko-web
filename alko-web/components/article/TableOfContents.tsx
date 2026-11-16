@@ -29,7 +29,7 @@ export default function TableOfContents({ items }: { items: TocItem[] }) {
 
   return (
     <nav aria-label="Índice del artículo">
-      <ol className="space-y-1 border-l border-stone-200">
+      <ol className="space-y-1 border-l border-ink/15">
         {items.map((item, index) => {
           const current = item.id === active;
           return (
@@ -39,11 +39,11 @@ export default function TableOfContents({ items }: { items: TocItem[] }) {
                 aria-current={current ? "true" : undefined}
                 className={`-ml-px flex gap-3 border-l-2 py-1.5 pl-4 pr-2 text-sm leading-snug transition-colors ${
                   current
-                    ? "border-amber-700 text-stone-900"
-                    : "border-transparent text-stone-500 hover:text-stone-900"
+                    ? "border-bronze text-ink"
+                    : "border-transparent text-mid hover:text-ink"
                 }`}
               >
-                <span className="font-mono text-[11px] tabular-nums text-amber-700">
+                <span className="font-mono text-[11px] tabular-nums text-bronze">
                   {String(index + 1).padStart(2, "0")}
                 </span>
                 <span>{item.label}</span>

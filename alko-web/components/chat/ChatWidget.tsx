@@ -125,10 +125,10 @@ export default function ChatWidget() {
         <div
           role="dialog"
           aria-label="Asistente Virtual ALKO"
-          className="mb-4 w-[calc(100vw-2.5rem)] sm:w-[420px] h-[560px] max-h-[82vh] flex flex-col bg-white/95 backdrop-blur-2xl border border-stone-200/90 shadow-stone-900/15 overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200"
+          className="mb-4 w-[calc(100vw-2.5rem)] sm:w-[420px] h-[560px] max-h-[82vh] flex flex-col bg-white/95 backdrop-blur-2xl border border-ink/15 shadow-ink/15 overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200"
         >
           {/* Cabecera del chat */}
-          <div className="flex items-center justify-between px-5 py-4 border-b border-stone-200/80 bg-stone-50/80">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-ink/15 bg-surface/80">
             <div className="flex items-center gap-3">
               <div className="relative flex items-center justify-center w-9 h-9 rounded-full bg-paper border border-[#8B7560]/40 text-bronze">
                 <Sparkles className="w-4 h-4 text-bronze" />
@@ -138,7 +138,7 @@ export default function ChatWidget() {
                 <h3 className="text-sm font-semibold tracking-wide text-ink flex items-center gap-1.5 font-sans">
                   ALKO Asistente
                 </h3>
-                <p className="text-[11px] text-stone-500">Arquitectura & Reformas</p>
+                <p className="text-[11px] text-mid">Arquitectura & Reformas</p>
               </div>
             </div>
 
@@ -147,7 +147,7 @@ export default function ChatWidget() {
                 type="button"
                 onClick={handleReset}
                 title="Reiniciar conversación"
-                className="p-1.5 text-stone-400 hover:text-stone-800 hover:bg-stone-200/60 transition-colors"
+                className="p-1.5 text-mid hover:text-ink hover:bg-piedra/60 transition-colors"
                 aria-label="Reiniciar conversación"
               >
                 <RotateCcw className="w-4 h-4" />
@@ -156,7 +156,7 @@ export default function ChatWidget() {
                 type="button"
                 onClick={() => setIsOpen(false)}
                 title="Cerrar chat"
-                className="p-1.5 text-stone-400 hover:text-stone-800 hover:bg-stone-200/60 transition-colors"
+                className="p-1.5 text-mid hover:text-ink hover:bg-piedra/60 transition-colors"
                 aria-label="Cerrar ventana de chat"
               >
                 <X className="w-4 h-4" />
@@ -174,7 +174,7 @@ export default function ChatWidget() {
                   className={`flex gap-2.5 ${isAssistant ? "justify-start" : "justify-end"}`}
                 >
                   {isAssistant && (
-                    <div className="w-7 h-7 rounded-full bg-paper border border-stone-200/80 flex items-center justify-center text-bronze flex-shrink-0 mt-0.5 shadow-xs">
+                    <div className="w-7 h-7 rounded-full bg-paper border border-ink/15 flex items-center justify-center text-bronze flex-shrink-0 mt-0.5 shadow-xs">
                       <Bot className="w-3.5 h-3.5" />
                     </div>
                   )}
@@ -182,14 +182,14 @@ export default function ChatWidget() {
                   <div
                     className={`max-w-[82%] px-4 py-2.5 whitespace-pre-line leading-relaxed ${
                       isAssistant
-                        ? "bg-paper border border-stone-200/90 text-stone-800 "
+                        ? "bg-paper border border-ink/15 text-ink "
                         : "bg-[#8B7560] text-white border border-[#75624F] "
                     }`}
                   >
                     {m.content}
                     <div
                       className={`text-[10px] mt-1.5 select-none ${
-                        isAssistant ? "text-stone-400" : "text-amber-100/80 text-right"
+                        isAssistant ? "text-mid" : "text-paper/80 text-right"
                       }`}
                     >
                       {m.timestamp.toLocaleTimeString([], {
@@ -204,11 +204,11 @@ export default function ChatWidget() {
 
             {/* Indicador de carga */}
             {isLoading && (
-              <div className="flex gap-2.5 justify-start items-center text-stone-500">
-                <div className="w-7 h-7 rounded-full bg-paper border border-stone-200/80 flex items-center justify-center text-bronze flex-shrink-0 shadow-xs">
+              <div className="flex gap-2.5 justify-start items-center text-mid">
+                <div className="w-7 h-7 rounded-full bg-paper border border-ink/15 flex items-center justify-center text-bronze flex-shrink-0 shadow-xs">
                   <Loader2 className="w-3.5 h-3.5 animate-spin text-bronze" />
                 </div>
-                <div className="px-4 py-2.5 bg-paper border border-stone-200/90 text-xs text-mid flex items-center gap-1.5">
+                <div className="px-4 py-2.5 bg-paper border border-ink/15 text-xs text-mid flex items-center gap-1.5">
                   <span>Consultando asistente</span>
                   <span className="inline-flex gap-1">
                     <span className="w-1 h-1 bg-bronze rounded-full animate-bounce [animation-delay:-0.3s]" />
@@ -222,7 +222,7 @@ export default function ChatWidget() {
             {/* Sugerencias de preguntas rápidas (cuando solo está el mensaje de bienvenida) */}
             {messages.length === 1 && !isLoading && (
               <div className="pt-2">
-                <p className="text-[11px] uppercase tracking-wider text-stone-400 font-medium mb-2 px-1">
+                <p className="text-[11px] uppercase tracking-wider text-mid font-medium mb-2 px-1">
                   Preguntas frecuentes:
                 </p>
                 <div className="flex flex-col gap-1.5">
@@ -231,7 +231,7 @@ export default function ChatWidget() {
                       key={idx}
                       type="button"
                       onClick={() => handleSend(suggestion)}
-                      className="text-left text-xs px-3.5 py-2.5 bg-paper hover:bg-stone-50 border border-stone-200/90 hover:border-[#8B7560]/50 text-stone-700 hover:text-stone-950 transition-all duration-200 shadow-xs"
+                      className="text-left text-xs px-3.5 py-2.5 bg-paper hover:bg-surface border border-ink/15 hover:border-[#8B7560]/50 text-ink hover:text-ink transition-all duration-200 shadow-xs"
                     >
                       {suggestion}
                     </button>
@@ -244,7 +244,7 @@ export default function ChatWidget() {
           </div>
 
           {/* Formulario de entrada */}
-          <div className="p-3 border-t border-stone-200/80 bg-stone-50/80">
+          <div className="p-3 border-t border-ink/15 bg-surface/80">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -261,7 +261,7 @@ export default function ChatWidget() {
                 onKeyDown={handleKeyDown}
                 placeholder="Escribe tu consulta sobre tu obra o proyecto..."
                 disabled={isLoading}
-                className="flex-1 bg-paper border border-stone-200/90 focus:border-[#8B7560] focus:ring-1 focus:ring-[#8B7560]/30 px-3.5 py-2.5 text-sm text-ink placeholder-stone-400 focus:outline-none transition-colors shadow-xs"
+                className="flex-1 bg-paper border border-ink/15 focus:border-[#8B7560] focus:ring-1 focus:ring-[#8B7560]/30 px-3.5 py-2.5 text-sm text-ink placeholder-mid focus:outline-none transition-colors shadow-xs"
               />
               <button
                 type="submit"
@@ -276,7 +276,7 @@ export default function ChatWidget() {
                 )}
               </button>
             </form>
-            <div className="text-[10px] text-center text-stone-400 mt-2">
+            <div className="text-[10px] text-center text-mid mt-2">
               ALKO IA · Atención preliminar y orientación técnica
             </div>
           </div>
@@ -288,7 +288,7 @@ export default function ChatWidget() {
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
         aria-label={isOpen ? "Cerrar asistente" : "Abrir asistente de arquitectura"}
-        className="group relative flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-paper border border-stone-200/90 hover:border-[#8B7560]/60 text-bronze shadow-stone-900/10 transition-all duration-300 hover:scale-105 active:scale-95"
+        className="group relative flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-paper border border-ink/15 hover:border-[#8B7560]/60 text-bronze shadow-ink/10 transition-all duration-300 hover:scale-105 active:scale-95"
       >
         {/* Anillo de pulso sutil */}
         {!isOpen && (
@@ -296,7 +296,7 @@ export default function ChatWidget() {
         )}
 
         {isOpen ? (
-          <X className="w-6 h-6 text-stone-800 transition-transform duration-200" />
+          <X className="w-6 h-6 text-ink transition-transform duration-200" />
         ) : (
           <div className="relative">
             <MessageSquare className="w-6 h-6 text-bronze group-hover:text-[#75624F] transition-colors" />
@@ -306,7 +306,7 @@ export default function ChatWidget() {
 
         {/* Tooltip visible en desktop */}
         {!isOpen && (
-          <span className="hidden sm:inline-block absolute right-full mr-3 whitespace-nowrap bg-paper border border-stone-200/90 px-3.5 py-1.5 text-xs text-stone-800 font-medium opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 pointer-events-none">
+          <span className="hidden sm:inline-block absolute right-full mr-3 whitespace-nowrap bg-paper border border-ink/15 px-3.5 py-1.5 text-xs text-ink font-medium opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 pointer-events-none">
             Asistente ALKO
           </span>
         )}

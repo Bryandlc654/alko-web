@@ -76,7 +76,7 @@ export default function Lightbox({ children, className }: { children: ReactNode;
             role="dialog"
             aria-modal="true"
             aria-label="Visor de imágenes"
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-stone-950/95"
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-ink/95"
             onClick={(event) => {
               if (event.target === event.currentTarget) close();
             }}

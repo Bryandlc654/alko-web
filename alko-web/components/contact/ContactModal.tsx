@@ -104,7 +104,7 @@ export default function ContactModal({
 
   const rapido = mode === "rapido";
   const switchClass =
-    "group inline-flex items-center gap-2 border-b border-white/60 pb-1 text-left text-[11px] font-semibold uppercase tracking-[0.2em] text-white transition hover:border-amber-500 hover:text-amber-500";
+    "group inline-flex items-center gap-2 border-b border-white/60 pb-1 text-left text-[11px] font-semibold uppercase tracking-[0.2em] text-white transition hover:border-bronze-light hover:text-bronze-light";
 
   return (
     <div className="fixed inset-0 z-[90]">
@@ -112,7 +112,7 @@ export default function ContactModal({
       <div
         aria-hidden="true"
         onMouseDown={(event) => event.target === event.currentTarget && onClose()}
-        className={`absolute inset-0 bg-stone-950/75 backdrop-blur-sm transition-opacity duration-300 motion-reduce:transition-none ${
+        className={`absolute inset-0 bg-ink/75 backdrop-blur-sm transition-opacity duration-300 motion-reduce:transition-none ${
           entered ? "opacity-100" : "opacity-0"
         }`}
       />
@@ -125,7 +125,7 @@ export default function ContactModal({
           role="dialog"
           aria-modal="true"
           aria-labelledby={titleId}
-          className={`pointer-events-auto flex max-h-[96dvh] w-full flex-col overflow-hidden bg-stone-950 text-white transition-all duration-300 motion-reduce:transition-none sm:max-h-[90dvh] ${
+          className={`pointer-events-auto flex max-h-[96dvh] w-full flex-col overflow-hidden bg-ink text-white transition-all duration-300 motion-reduce:transition-none sm:max-h-[90dvh] ${
             rapido ? "sm:max-w-lg" : "sm:max-w-3xl"
           } ${entered ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"}`}
         >

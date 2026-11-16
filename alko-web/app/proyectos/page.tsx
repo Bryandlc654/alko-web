@@ -1,6 +1,6 @@
 import ProjectsGallery from "@/components/ui/ProjectsGallery";
 import { projectCategory } from "@/lib/project-category";
-import PageHero from "@/components/ui/PageHero";
+import EditorialHeader from "@/components/editorial/EditorialHeader";
 import ContactCta from "@/components/sections/ContactCta";
 import { getProjects, getSettings } from "@/lib/wordpress";
 import { getDbProjectsPageContent } from "@/lib/db/mysql";
@@ -40,32 +40,32 @@ export default async function ProyectosPage() {
         : "—",
     },
   ];
-  const heroImage = pageContent.headerBgImage || projects[0]?.imagen || "/start-research-1.jpg";
 
   return (
     <main className="bg-paper text-ink">
-      <PageHero
+      <EditorialHeader
         breadcrumbs={[{ label: "Proyectos" }]}
-        eyebrow={pageContent.headerBadge || "PROYECTOS"}
+        eyebrow={pageContent.headerBadge || "Proyectos"}
         title={<span className="whitespace-pre-line">{pageContent.headerTitulo || "Proyectos"}</span>}
         description={
-          pageContent.headerDescripcion ? (
-            <span className="whitespace-pre-line">{pageContent.headerDescripcion}</span>
-          ) : undefined
+          <span className="whitespace-pre-line">
+            {pageContent.headerDescripcion ||
+              "Obras residenciales y corporativas ejecutadas con dirección técnica unificada y rigor constructivo."}
+          </span>
         }
-        image={heroImage}
-      >
-        <dl className="mt-12 grid max-w-2xl grid-cols-3 border-t border-paper/20">
-          {stats.map((stat, i) => (
-            <div key={stat.label} className={`pt-5 pr-4 ${i > 0 ? "border-l border-paper/20 pl-4" : ""}`}>
-              <dt className="text-[10px] uppercase tracking-[0.22em] text-paper/60">{stat.label}</dt>
-              <dd className="display-title mt-2 text-2xl sm:text-3xl">{stat.value}</dd>
-            </div>
-          ))}
-        </dl>
-      </PageHero>
+        aside={
+          <dl>
+            {stats.map((stat) => (
+              <div key={stat.label} className="flex items-baseline justify-between gap-6 border-t border-ink/15 py-4 last:border-b">
+                <dt className="text-[11px] uppercase tracking-[0.22em]">{stat.label}</dt>
+                <dd className="display-title text-3xl sm:text-4xl">{stat.value}</dd>
+              </div>
+            ))}
+          </dl>
+        }
+      />
 
-      <div className="site-wrap pb-16 pt-20 sm:pb-24 sm:pt-28">
+      <div className="site-wrap pb-16 pt-12 sm:pb-24 sm:pt-16">
         <ProjectsGallery projects={summaries} />
       </div>
 

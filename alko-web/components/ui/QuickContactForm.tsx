@@ -95,14 +95,14 @@ export default function QuickContactForm({
   const label = `block text-[10px] tracking-[0.22em] uppercase ${compact ? "text-white/60" : "text-white/50"} mb-1`;
   const input = `w-full border-0 border-b border-white/25 bg-transparent px-0 ${
     compact ? "py-2 text-base" : "py-3 text-lg"
-  } text-white font-light placeholder:text-white/35 focus:border-amber-700 focus:outline-none focus:ring-0 transition-colors aria-[invalid=true]:border-amber-500`;
-  const error = "mt-2 text-sm text-amber-500";
+  } text-white font-light placeholder:text-white/35 focus:border-bronze-light focus:outline-none focus:ring-0 transition-colors aria-[invalid=true]:border-bronze-light`;
+  const error = "mt-2 text-sm text-bronze-light";
 
   // --- Confirmación ---------------------------------------------------------------------------
   if (status === "sent" && sent) {
     return (
       <div ref={confirmRef} tabIndex={-1} role="status" aria-live="polite" className="py-2 outline-none">
-        <CheckCircle2 className={compact ? "h-9 w-9 text-amber-500" : "h-12 w-12 text-amber-500"} strokeWidth={1.25} aria-hidden="true" />
+        <CheckCircle2 className={compact ? "h-9 w-9 text-bronze-light" : "h-12 w-12 text-bronze-light"} strokeWidth={1.25} aria-hidden="true" />
         <h3 className={`display-title leading-tight text-white ${compact ? "mt-4 text-2xl" : "mt-6 text-3xl"}`}>
           Hemos recibido tus datos
         </h3>
@@ -113,7 +113,7 @@ export default function QuickContactForm({
         <button
           type="button"
           onClick={onClose ?? (() => setStatus("idle"))}
-          className={`${compact ? "mt-6" : "mt-10"} inline-flex items-center gap-2 border-b border-white pb-1 text-xs font-semibold uppercase tracking-[0.22em] text-white transition hover:border-amber-500 hover:text-amber-500`}
+          className={`${compact ? "mt-6" : "mt-10"} inline-flex items-center gap-2 border-b border-white pb-1 text-xs font-semibold uppercase tracking-[0.22em] text-white transition hover:border-bronze-light hover:text-bronze-light`}
         >
           {onClose ? "Cerrar" : "Enviar otra solicitud"}
         </button>
@@ -221,7 +221,7 @@ export default function QuickContactForm({
       </div>
 
       {status === "error" && (
-        <div role="alert" className="mt-8 border-l-2 border-amber-500 pl-4 text-sm font-light leading-relaxed text-white/80">
+        <div role="alert" className="mt-8 border-l-2 border-bronze-light pl-4 text-sm font-light leading-relaxed text-white/80">
           <p>{serverError}</p>
           <p className="mt-2">
             <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className="text-white underline underline-offset-4">

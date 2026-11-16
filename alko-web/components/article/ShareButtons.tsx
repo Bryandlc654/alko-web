@@ -20,7 +20,7 @@ export default function ShareButtons({ url, title }: { url: string; title: strin
   }
 
   const item =
-    "inline-flex h-11 w-11 items-center justify-center rounded-full border border-stone-300 text-stone-700 transition hover:border-stone-900 hover:bg-stone-900 hover:text-white";
+    "inline-flex h-11 w-11 items-center justify-center rounded-full border border-ink/20 text-ink transition hover:border-ink hover:bg-ink hover:text-white";
   const icon = "h-[18px] w-[18px]";
 
   return (
@@ -51,7 +51,7 @@ export default function ShareButtons({ url, title }: { url: string; title: strin
       <a href={`mailto:?subject=${text}&body=${link}`} className={item} aria-label="Compartir por correo">
         <Mail className={icon} aria-hidden="true" />
       </a>
-      <span role="status" aria-live="polite" className="text-sm text-stone-500">
+      <span role="status" aria-live="polite" className="text-sm text-mid">
         {copied ? "Enlace copiado" : ""}
       </span>
     </div>

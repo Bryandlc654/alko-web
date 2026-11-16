@@ -160,7 +160,7 @@ export default function ProjectsGallery({ projects }: { projects: ProjectSummary
                   {project.anio && ` · ${project.anio}`}
                 </span>
                 {project.exclusivo && (
-                  <span className="absolute right-4 top-4 bg-stone-950/55 p-1.5 backdrop-blur-sm md:right-6 md:top-6">
+                  <span className="absolute right-4 top-4 bg-ink/55 p-1.5 backdrop-blur-sm md:right-6 md:top-6">
                     <ExclusiveSeal
                       size={wide ? 92 : 76}
                       className="transition-transform duration-1000 ease-out group-hover:rotate-[20deg]"

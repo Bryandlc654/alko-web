@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowRight, Sparkles } from "lucide-react";
 import type { PosicionEmpleo } from "@/lib/types";
 import JobApplicationModal from "./JobApplicationModal";
 
@@ -24,7 +23,7 @@ export default function JobPositionsList({ posiciones }: JobPositionsListProps) 
   return (
     <>
       {vacantesActivas.length === 0 ? (
-        <div className="py-14 text-center border-b border-stone-200/90 space-y-4">
+        <div className="py-14 text-center border-b border-ink/15 space-y-4">
           <p className="text-mid text-sm max-w-md mx-auto leading-relaxed">
             Actualmente no hay vacantes específicas abiertas, pero en ALKO siempre estamos abiertos a incorporar talento cualificado en obra, instalaciones y proyectos.
           </p>
@@ -33,39 +32,33 @@ export default function JobPositionsList({ posiciones }: JobPositionsListProps) 
             onClick={() => openApplication("Candidatura espontánea")}
             className="btn btn-ink"
           >
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-            <span>Enviar candidatura espontánea</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            Enviar candidatura espontánea <span aria-hidden="true">→</span>
           </button>
         </div>
       ) : (
-        <ul className="mt-4 divide-y divide-stone-200 border-b border-stone-200">
+        <ul className="mt-4 divide-y divide-ink/15 border-b border-ink/15">
           {vacantesActivas.map((p, i) => (
             <li key={p.id || p.titulo + i} className="reveal-item" style={{ transitionDelay: `${i * 80}ms` }}>
               <button
                 type="button"
                 onClick={() => openApplication(p.titulo)}
-                className="w-full text-left group flex flex-col gap-4 py-7 transition-colors hover:bg-white/60 sm:flex-row sm:items-center sm:justify-between sm:gap-8 sm:px-4 cursor-pointer"
+                className="w-full text-left group flex flex-col gap-4 py-7 transition-colors hover:bg-white/70 sm:flex-row sm:items-center sm:justify-between sm:gap-8 sm:px-4 cursor-pointer"
               >
                 <div className="min-w-0">
-                  <h3 className="display-title text-2xl leading-snug sm:text-3xl text-ink group-hover:text-amber-900 transition-colors">
+                  <h3 className="display-title text-2xl leading-snug sm:text-3xl text-ink group-hover:text-bronze transition-colors">
                     {p.titulo}
                   </h3>
                   <p className="mt-2 max-w-xl text-sm text-mid leading-relaxed">{p.resumen}</p>
                 </div>
 
-                <div className="flex shrink-0 flex-wrap items-center gap-x-4 gap-y-2 text-[11px] uppercase tracking-[0.18em] text-stone-500">
-                  <span className="font-mono">{p.departamento}</span>
-                  <span className="text-stone-300">•</span>
-                  <span className="font-mono">{p.ubicacion}</span>
-                  <span className="hidden text-stone-300 sm:inline">•</span>
-                  <span className="hidden font-mono sm:inline">{p.tipo}</span>
-                  <span className="ml-1 inline-flex items-center gap-1.5 font-semibold text-ink transition-colors group-hover:text-amber-800">
-                    <span>POSTULAR</span>
-                    <ArrowRight
-                      className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
-                      strokeWidth={1.75}
-                    />
+                <div className="flex shrink-0 flex-wrap items-center gap-x-4 gap-y-2 text-[11px] uppercase tracking-[0.18em] text-mid">
+                  <span>{p.departamento}</span>
+                  <span className="text-ink/30">·</span>
+                  <span>{p.ubicacion}</span>
+                  <span className="hidden text-ink/30 sm:inline">·</span>
+                  <span className="hidden sm:inline">{p.tipo}</span>
+                  <span className="arrow-link ml-2 text-ink">
+                    Postular <span aria-hidden="true">→</span>
                   </span>
                 </div>
               </button>

@@ -121,9 +121,9 @@ export default function ContactForm({
   const group = "flex items-center gap-4 mb-8 text-[10px] tracking-[0.22em] uppercase text-white/50";
   const label = "block text-[10px] tracking-[0.22em] uppercase text-white/50 mb-1";
   const input =
-    "w-full border-0 border-b border-white/25 bg-transparent px-0 py-3 text-lg text-white font-light placeholder:text-white/30 focus:border-amber-700 focus:outline-none focus:ring-0 transition-colors aria-[invalid=true]:border-amber-500";
+    "w-full border-0 border-b border-white/25 bg-transparent px-0 py-3 text-lg text-white font-light placeholder:text-white/30 focus:border-bronze-light focus:outline-none focus:ring-0 transition-colors aria-[invalid=true]:border-bronze-light";
   const hint = "mt-2 text-sm font-light text-white/50";
-  const error = "mt-2 text-sm text-amber-500";
+  const error = "mt-2 text-sm text-bronze-light";
 
   // --- Confirmación ---------------------------------------------------------------------------
   if (status === "sent" && sent) {
@@ -139,7 +139,7 @@ export default function ContactForm({
         aria-live="polite"
         className="py-4 outline-none sm:py-8"
       >
-        <CheckCircle2 className="h-12 w-12 text-amber-500" strokeWidth={1.25} aria-hidden="true" />
+        <CheckCircle2 className="h-12 w-12 text-bronze-light" strokeWidth={1.25} aria-hidden="true" />
         <h3 className="display-title mt-6 text-3xl sm:text-4xl leading-tight">
           Hemos recibido tu proyecto
         </h3>
@@ -168,7 +168,7 @@ export default function ContactForm({
               setSent(null);
             })
           }
-          className="mt-10 inline-flex items-center gap-2 border-b border-white pb-1 text-xs font-semibold uppercase tracking-[0.22em] text-white transition hover:border-amber-500 hover:text-amber-500"
+          className="mt-10 inline-flex items-center gap-2 border-b border-white pb-1 text-xs font-semibold uppercase tracking-[0.22em] text-white transition hover:border-bronze-light hover:text-bronze-light"
         >
           {onClose ? "Cerrar" : "Enviar otro proyecto"}
         </button>
@@ -190,11 +190,11 @@ export default function ContactForm({
           defaultValue=""
           className={`${input} appearance-none pr-8 [&:invalid]:text-white/30`}
         >
-          <option value="" className="bg-stone-900 text-white/60">
+          <option value="" className="bg-ink text-white/60">
             Sin indicar
           </option>
           {options.map((option) => (
-            <option key={option} value={option} className="bg-stone-900 text-white">
+            <option key={option} value={option} className="bg-ink text-white">
               {option}
             </option>
           ))}
@@ -224,7 +224,7 @@ export default function ContactForm({
       </div>
 
       <p className={group}>
-        <span className="text-amber-700">01</span>
+        <span className="text-bronze-light">01</span>
         <span>Tu proyecto</span>
         <span className="h-px flex-1 bg-white/15" />
       </p>
@@ -247,7 +247,7 @@ export default function ContactForm({
                   onChange={() => setErrors((prev) => ({ ...prev, tipo: undefined }))}
                   className="peer sr-only"
                 />
-                <span className="inline-flex border border-white/25 px-4 py-2 text-[11px] font-light uppercase tracking-[0.16em] text-white/70 transition-colors hover:border-white hover:text-white peer-checked:border-paper peer-checked:bg-paper peer-checked:text-ink peer-focus-visible:ring-2 peer-focus-visible:ring-white peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-stone-950 group-data-[invalid=true]:border-amber-500">
+                <span className="inline-flex border border-white/25 px-4 py-2 text-[11px] font-light uppercase tracking-[0.16em] text-white/70 transition-colors hover:border-white hover:text-white peer-checked:border-paper peer-checked:bg-paper peer-checked:text-ink peer-focus-visible:ring-2 peer-focus-visible:ring-white peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-ink group-data-[invalid=true]:border-bronze-light">
                   {type}
                 </span>
               </label>
@@ -300,7 +300,7 @@ export default function ContactForm({
       </div>
 
       <p className={`${group} mt-14`}>
-        <span className="text-amber-700">02</span>
+        <span className="text-bronze-light">02</span>
         <span>Tus datos</span>
         <span className="h-px flex-1 bg-white/15" />
       </p>
@@ -369,7 +369,7 @@ export default function ContactForm({
       </div>
 
       {status === "error" && (
-        <div role="alert" className="mt-10 border-l-2 border-amber-500 pl-4 text-sm font-light leading-relaxed text-white/80">
+        <div role="alert" className="mt-10 border-l-2 border-bronze-light pl-4 text-sm font-light leading-relaxed text-white/80">
           <p>{serverError}</p>
           <p className="mt-2">
             <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className="text-white underline underline-offset-4">
