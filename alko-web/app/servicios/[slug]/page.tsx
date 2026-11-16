@@ -2,8 +2,8 @@ import { notFound } from "next/navigation";
 import Image from "@/components/ui/Image";
 import Link from "next/link";
 import ContactTrigger from "@/components/contact/ContactTrigger";
-import Container from "@/components/ui/Container";
-import PageHero from "@/components/ui/PageHero";
+import EditorialHeader from "@/components/editorial/EditorialHeader";
+import EditorialSection from "@/components/editorial/EditorialSection";
 import Lightbox from "@/components/ui/Lightbox";
 import ArticleCard from "@/components/ui/ArticleCard";
 import ContactCta from "@/components/sections/ContactCta";
@@ -21,7 +21,6 @@ import {
   getSectors,
   getSettings,
 } from "@/lib/wordpress";
-import { ArrowRight, ArrowUpRight, Check } from "lucide-react";
 
 export const revalidate = 60;
 
@@ -129,15 +128,6 @@ const DEFAULT_CAPACIDADES = [
   },
 ];
 
-/** Secciones de la página, para el índice con anclas. */
-const SECTIONS = [
-  { id: "enfoque", label: "Enfoque" },
-  { id: "incluye", label: "Qué incluye" },
-  { id: "proceso", label: "Cómo trabajamos" },
-  { id: "proyectos", label: "Proyectos" },
-  { id: "preguntas", label: "Preguntas frecuentes" },
-];
-
 export default async function SectorDetailPage({
   params,
 }: {
@@ -240,431 +230,406 @@ export default async function SectorDetailPage({
     },
   ];
 
-  const eyebrowClass = "block font-mono text-[11px] sm:text-xs uppercase tracking-[0.25em] text-amber-700";
-  const h2Class = "display-title text-3xl sm:text-4xl lg:text-5xl leading-[1.08] text-ink";
+  // Numeración de las secciones según las que aparecen.
+  let n = 0;
+  const num = () => String(++n).padStart(2, "0");
+  const pad = (v: number) => String(v).padStart(2, "0");
+
+  const index = [
+    { id: "enfoque", label: "Enfoque" },
+    { id: "incluye", label: "Qué incluye" },
+    { id: "capacidades", label: "Capacidades" },
+    ...(fases.length > 0 ? [{ id: "proceso", label: "Método" }] : []),
+    ...(showcase.length > 0 ? [{ id: "proyectos", label: "Proyectos" }] : []),
+    { id: "preguntas", label: "Preguntas" },
+  ];
 
   return (
-    <main className="bg-white text-ink">
-      {jsonLd.map((data, index) => (
-        <script key={index} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }} />
+    <main className="bg-paper text-ink">
+      {jsonLd.map((data, i) => (
+        <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }} />
       ))}
 
-      {/* Cabecera */}
-      <PageHero
+      <EditorialHeader
         breadcrumbs={[{ label: "Servicios", href: ROUTES.sectors }, { label: name }]}
-        eyebrow={`Servicio ${sector.numero || ""} · ${name}`}
+        eyebrow="Servicio"
+        index={sector.numero || undefined}
         title={landing?.heroHeadline || `${Keyword} en Madrid`}
         description={lead}
         image={heroImage}
         imageAlt={`${Keyword} en Madrid, obra de ALKO`}
-      >
-        <div className="mt-8 flex flex-wrap items-center gap-4">
-          <ContactTrigger
-            mode="avanzado"
-            source={`Servicio ${name}`}
-            tipo={name}
-            className="btn btn-paper"
-          >
-            Solicitar valoración
-            <ArrowRight className="h-4 w-4" />
-          </ContactTrigger>
-          <a
-            href="#proyectos"
-            className="inline-flex items-center gap-2 border border-white/30 px-7 py-3.5 text-xs uppercase tracking-[0.18em] text-white backdrop-blur-sm transition hover:bg-white/10"
-          >
-            Ver proyectos
-          </a>
-        </div>
-      </PageHero>
+        caption={name}
+        aside={
+          <div>
+            <ul className="border-t border-ink/15">
+              {commitments.slice(0, 3).map((item, i) => (
+                <li key={item.title} className="grid grid-cols-[2rem_minmax(0,1fr)] gap-x-3 border-b border-ink/15 py-4">
+                  <span className="pt-1 text-[10px] tracking-[0.18em] text-bronze">{pad(i + 1)}</span>
+                  <span>
+                    <span className="display-title block text-lg leading-tight">{item.title}</span>
+                    <span className="mt-1 block text-sm leading-relaxed text-mid">{item.text}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <ContactTrigger mode="avanzado" source={`Servicio ${name}`} tipo={name} className="btn btn-ink">
+                Solicitar valoración <span aria-hidden="true">→</span>
+              </ContactTrigger>
+              {showcase.length > 0 && (
+                <a href="#proyectos" className="btn btn-outline">
+                  Ver proyectos <span aria-hidden="true">↓</span>
+                </a>
+              )}
+            </div>
+          </div>
+        }
+      />
 
-      {/* Índice de la página */}
-      <nav aria-label={`Contenido de ${name}`} className="border-b border-stone-200 bg-white">
-        <Container>
-          <ul className="-mx-2 flex gap-1 overflow-x-auto py-3 [scrollbar-width:none]">
-            {SECTIONS.map((item) => (
-              <li key={item.id} className="shrink-0">
+      {/* Índice de la página. */}
+      <nav aria-label={`Contenido de ${name}`} className="bg-paper">
+        <div className="site-wrap">
+          <ul className="no-scrollbar -mx-[var(--gutter)] flex overflow-x-auto border-y border-ink/15 px-[var(--gutter)] sm:mx-0 sm:px-0">
+            {index.map((item, i) => (
+              <li key={item.id} className="shrink-0 sm:flex-1">
                 <a
                   href={`#${item.id}`}
-                  className="text-[10px] tracking-[0.22em] block px-4 py-2 uppercase text-mid transition hover:bg-stone-100 hover:text-stone-900"
+                  className={`flex items-baseline gap-3 whitespace-nowrap py-4 pr-6 text-[10px] uppercase tracking-[0.22em] text-mid transition-colors hover:text-ink sm:pr-4 ${
+                    i > 0 ? "border-l border-ink/15 pl-6 sm:pl-4" : ""
+                  }`}
                 >
+                  <span className="text-bronze">{pad(i + 1)}</span>
                   {item.label}
                 </a>
               </li>
             ))}
           </ul>
-        </Container>
+        </div>
       </nav>
 
-      {/* Compromisos */}
-      <section aria-label="Compromisos" className="border-b border-stone-200 bg-stone-50">
-        <Container className="grid grid-cols-1 divide-y divide-stone-200 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-          {commitments.slice(0, 3).map((item, i) => (
-            <div key={item.title} className="flex gap-5 py-8 sm:px-8 sm:first:pl-0 sm:last:pr-0 lg:py-10">
-              <span className="font-mono text-xs text-amber-700">0{i + 1}</span>
-              <div>
-                <h3 className="display-title text-xl text-ink">{item.title}</h3>
-                <p className="mt-1.5 text-sm font-light leading-relaxed text-mid">{item.text}</p>
-              </div>
-            </div>
-          ))}
-        </Container>
-      </section>
-
-      {/* Enfoque: texto y composición de imágenes */}
-      <section id="enfoque" className="scroll-mt-36 py-20 sm:py-28">
-        <Container>
-          <div className="grid grid-cols-1 items-center gap-14 lg:grid-cols-12 lg:gap-20">
-            <div className="lg:col-span-5">
-              <span className={eyebrowClass}>{landing?.statsTitle || `${name} con ALKO`}</span>
-              <h2 className={`mt-4 ${h2Class}`}>
-                {landing?.problemsHeadline || `Especialistas en ${keyword} en Madrid`}
-              </h2>
-              <p className="mt-6 text-lg font-light leading-relaxed text-stone-700">{sector.descripcion}</p>
-              <p className="mt-4 text-base font-light leading-relaxed text-mid">
-                {landing?.supportContent ||
-                  "Integramos bajo una sola dirección técnica el proyecto, el cálculo de instalaciones, las compras y la obra. Así evitamos las fricciones habituales entre proyectistas y constructoras, y el presupuesto pactado es el definitivo."}
-              </p>
-              <ContactTrigger
-                mode="avanzado"
-                source={`Servicio ${name}`}
-                tipo={name}
-                className="group mt-8 inline-flex items-center gap-2 border-b border-stone-900 pb-1.5 text-xs font-semibold uppercase tracking-[0.22em] transition hover:border-amber-700 hover:text-amber-700"
-              >
-                Hablar con un técnico
-                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
-              </ContactTrigger>
-            </div>
-
-            <div className="relative lg:col-span-7">
-              <div className="relative ml-auto aspect-[4/5] w-[82%] overflow-hidden bg-stone-200 sm:aspect-[5/4]">
-                <Image src={introImage} alt={`${Keyword} en Madrid por ALKO`} fill sizes="(max-width: 1024px) 82vw, 45vw" className="object-cover" />
-              </div>
-              <div className="absolute bottom-[-8%] left-0 aspect-square w-[42%] overflow-hidden border-8 border-white bg-stone-200">
-                <Image src={introDetailImage} alt={`Detalle de ${keyword}`} fill sizes="(max-width: 1024px) 42vw, 22vw" className="object-cover" />
-              </div>
-            </div>
+      {/* Enfoque: texto, composición de fotos y lo que evitamos frente a lo que garantizamos. */}
+      <EditorialSection
+        id="enfoque"
+        number={num()}
+        label={landing?.statsTitle || `${name} con ALKO`}
+        title={landing?.problemsHeadline || `Especialistas en ${keyword} en Madrid`}
+        intro={sector.descripcion}
+      >
+        <div className="grid grid-cols-12 gap-x-6 gap-y-10">
+          <div className="reveal-item col-span-12 xl:col-span-5">
+            <p className="leading-relaxed text-mid">
+              {landing?.supportContent ||
+                "Integramos bajo una sola dirección técnica el proyecto, el cálculo de instalaciones, las compras y la obra. Así evitamos las fricciones habituales entre proyectistas y constructoras, y el presupuesto pactado es el definitivo."}
+            </p>
+            <ContactTrigger mode="avanzado" source={`Servicio ${name}`} tipo={name} className="arrow-link mt-8">
+              Hablar con un técnico <span aria-hidden="true">→</span>
+            </ContactTrigger>
           </div>
-        </Container>
-      </section>
-
-      {/* Lo que evitamos y lo que garantizamos (si el servicio lo tiene en el panel) */}
-      {problems.length > 0 && (
-        <section className="border-t border-stone-200 py-16 sm:py-24">
-          <Container>
-            <h2 className={`max-w-3xl ${h2Class}`}>Lo que evitamos y lo que garantizamos</h2>
-            <div className="mt-12 divide-y divide-stone-200 border-y border-stone-200">
-              {problems.map((p, i) => (
-                <div key={i} className="grid grid-cols-1 gap-3 py-6 sm:grid-cols-2 sm:gap-10">
-                  <p className="text-base font-light text-stone-500 line-through decoration-stone-300">{p.avoid}</p>
-                  <p className="flex items-start gap-3 text-base text-ink">
-                    <Check className="mt-1 h-4 w-4 shrink-0 text-amber-700" />
-                    {p.promise}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </Container>
-        </section>
-      )}
-
-      {/* Qué incluye: bloque oscuro con imagen */}
-      <section id="incluye" className="scroll-mt-36 bg-ink text-white">
-        <div className="grid grid-cols-1 lg:grid-cols-2">
-          <div className="relative min-h-[320px] sm:min-h-[460px] lg:min-h-full">
-            <Image src={includesImage} alt={`Qué incluye nuestro servicio de ${keyword}`} fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover" />
-          </div>
-          <div className="px-6 py-16 sm:px-12 sm:py-24 lg:px-16 xl:px-24">
-            <span className="text-[10px] tracking-[0.22em] block uppercase text-amber-500">
-              {landing?.includesSubtitle || parsedIncludes?.title || `Qué incluye nuestro servicio de ${keyword}`}
-            </span>
-            <h2 className="display-title mt-4 text-3xl leading-[1.08] sm:text-4xl lg:text-5xl">
-              {landing?.includesHeadline || "Todo en un mismo equipo técnico."}
-            </h2>
-            <ol className="mt-10 divide-y divide-white/10 border-y border-white/10">
-              {includesItems.map((item, i) => (
-                <li key={i} className="flex items-baseline gap-5 py-4">
-                  <span className="font-mono text-xs text-amber-500">{String(i + 1).padStart(2, "0")}</span>
-                  <span className="text-base font-light leading-snug text-white/90 sm:text-lg">{item}</span>
-                </li>
-              ))}
-            </ol>
+          <div className="reveal-item col-span-12 grid grid-cols-12 gap-4 xl:col-span-7">
+            <figure className="col-span-8">
+              <div className="relative aspect-[4/5] overflow-hidden bg-piedra">
+                <Image src={introImage} alt={`${Keyword} en Madrid por ALKO`} fill sizes="(max-width: 1280px) 60vw, 35vw" className="object-cover" />
+              </div>
+            </figure>
+            <figure className="col-span-4 flex flex-col justify-end">
+              <div className="relative aspect-[3/4] overflow-hidden bg-piedra">
+                <Image src={introDetailImage} alt={`Detalle de ${keyword}`} fill sizes="(max-width: 1280px) 30vw, 18vw" className="object-cover" />
+              </div>
+              <figcaption className="mt-3 text-[10px] uppercase tracking-[0.22em] text-mid">Detalle · {name}</figcaption>
+            </figure>
           </div>
         </div>
-      </section>
 
-      {/* Capacidades técnicas */}
-      <section className="py-20 sm:py-28">
-        <Container>
-          <div className="flex flex-col justify-between gap-6 border-b border-stone-200 pb-10 lg:flex-row lg:items-end">
-            <div className="max-w-2xl">
-              <span className={eyebrowClass}>{landing?.capacidadesSubtitle || "Disciplinas técnicas"}</span>
-              <h2 className={`mt-4 ${h2Class}`}>
-                {landing?.capacidadesHeadline || `Capacidades técnicas para ${keyword}`}
-              </h2>
+        {problems.length > 0 && (
+          <div className="reveal-item mt-16 sm:mt-20">
+            <div className="grid grid-cols-2 gap-6 border-b border-ink pb-3 text-[10px] uppercase tracking-[0.22em]">
+              <span className="text-mid">Lo que evitamos</span>
+              <span className="text-bronze">Lo que garantizamos</span>
             </div>
-            <p className="max-w-sm text-sm font-light leading-relaxed text-stone-500">
-              Coordinamos las disciplinas críticas de cada proyecto bajo una sola responsabilidad.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-x-12 sm:grid-cols-2 lg:grid-cols-3">
-            {capacidades.map((cap) => (
-              <article key={cap.codigo} className="border-b border-stone-200 py-10">
-                <div className="flex items-baseline justify-between gap-4">
-                  <span className="display-title text-5xl text-stone-300">{cap.codigo}</span>
-                  <span className="eyebrow">{cap.metrica}</span>
-                </div>
-                <h3 className="display-title mt-5 text-2xl text-ink">{cap.titulo}</h3>
-                <p className="mt-3 text-sm font-light leading-relaxed text-mid">{cap.resumen}</p>
-                {cap.puntos.length > 0 && (
-                  <ul className="mt-5 space-y-2">
-                    {cap.puntos.map((punto, i) => (
-                      <li key={i} className="flex items-start gap-2.5 text-sm text-stone-800">
-                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" />
-                        {punto}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </article>
-            ))}
-          </div>
-        </Container>
-      </section>
-
-      {/* Cómo trabajamos: fases con imagen */}
-      {fases.length > 0 && (
-        <section id="proceso" className="scroll-mt-36 bg-stone-100 py-20 sm:py-28">
-          <Container>
-            <div className="max-w-3xl">
-              <span className={eyebrowClass}>Método ALKO</span>
-              <h2 className={`mt-4 ${h2Class}`}>
-                {landing?.processHeadline || `Cómo planificamos y ejecutamos ${keyword}`}
-              </h2>
-              <p className="mt-5 text-base font-light leading-relaxed text-mid">
-                Un mismo equipo recorre todas las fases, con entregables y control en cada una.
-              </p>
-            </div>
-            <ol className="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {fases.map((fase, i) => (
-                <li key={fase.id} className="group overflow-hidden bg-white">
-                  <div className="relative aspect-[16/10] overflow-hidden bg-stone-200">
-                    {processImage(i, fase.imagen) && (
-                      <Image
-                        src={processImage(i, fase.imagen)!}
-                        alt={`Fase ${i + 1}: ${fase.title}`}
-                        fill
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        className="object-cover transition-transform duration-700 group-hover:scale-105"
-                      />
-                    )}
-                    <span className="absolute left-4 top-4 bg-stone-950/80 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.2em] text-white backdrop-blur-sm">
-                      Fase {String(i + 1).padStart(2, "0")}
-                    </span>
-                  </div>
-                  <div className="p-6 sm:p-7">
-                    <h3 className="display-title text-2xl text-ink">{fase.title}</h3>
-                    <p className="mt-3 text-sm font-light leading-relaxed text-mid">{fase.texto}</p>
-                  </div>
+            <ul>
+              {problems.map((p, i) => (
+                <li key={i} className="grid grid-cols-1 gap-2 border-b border-ink/15 py-5 sm:grid-cols-2 sm:gap-6">
+                  <span className="text-mid line-through decoration-ink/25">{p.avoid}</span>
+                  <span className="flex gap-3">
+                    <span aria-hidden="true" className="text-bronze">↘</span>
+                    {p.promise}
+                  </span>
                 </li>
               ))}
-            </ol>
-          </Container>
-        </section>
-      )}
+            </ul>
+          </div>
+        )}
+      </EditorialSection>
 
-      {/* Proyectos del servicio */}
-      {showcase.length > 0 && (
-        <section id="proyectos" className="scroll-mt-36 py-20 sm:py-28">
-          <Container>
-            <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
-              <div>
-                <span className={eyebrowClass}>Proyectos</span>
-                <h2 className={`mt-4 ${h2Class}`}>
-                  {`Proyectos de ${keyword}`}
-                </h2>
+      {/* Qué incluye: lista numerada a dos columnas y foto, sobre carbón. */}
+      <EditorialSection
+        id="incluye"
+        tone="ink"
+        number={num()}
+        label={landing?.includesSubtitle || parsedIncludes?.title || "Qué incluye"}
+        title={landing?.includesHeadline || "Todo en un mismo equipo técnico."}
+      >
+        <div className="grid grid-cols-12 gap-x-6 gap-y-10">
+          <ol className="reveal-item col-span-12 grid grid-cols-1 content-start border-t border-paper/15 sm:grid-cols-2 sm:gap-x-8 xl:col-span-7">
+            {includesItems.map((item, i) => (
+              <li key={i} className="flex items-baseline gap-4 border-b border-paper/15 py-4">
+                <span className="text-[10px] tracking-[0.18em] text-bronze-light">{pad(i + 1)}</span>
+                <span className="leading-snug text-paper/90">{item}</span>
+              </li>
+            ))}
+          </ol>
+          <figure className="reveal-item col-span-12 xl:col-span-5">
+            <div className="relative aspect-[4/3] overflow-hidden bg-paper/10 xl:aspect-[4/5]">
+              <Image src={includesImage} alt={`Qué incluye nuestro servicio de ${keyword}`} fill sizes="(max-width: 1280px) 100vw, 30vw" className="object-cover" />
+            </div>
+            <figcaption className="mt-3 text-[10px] uppercase tracking-[0.22em] text-paper/50">{Keyword}</figcaption>
+          </figure>
+        </div>
+      </EditorialSection>
+
+      {/* Capacidades técnicas: rejilla de celdas con filetes. */}
+      <EditorialSection
+        id="capacidades"
+        tone="white"
+        number={num()}
+        label={landing?.capacidadesSubtitle || "Disciplinas técnicas"}
+        title={landing?.capacidadesHeadline || `Capacidades técnicas para ${keyword}`}
+        intro="Coordinamos las disciplinas críticas de cada proyecto bajo una sola responsabilidad."
+        wide
+      >
+        <div className="grid grid-cols-1 overflow-hidden border-l border-t border-ink/15 sm:grid-cols-2 lg:grid-cols-3">
+          {capacidades.map((cap) => (
+            <article key={cap.codigo} className="reveal-item flex flex-col border-b border-r border-ink/15 p-6 sm:p-8">
+              <div className="flex items-baseline justify-between gap-4">
+                <span className="display-title text-4xl text-bronze">{cap.codigo}</span>
+                <span className="text-right text-[10px] uppercase tracking-[0.22em] text-mid">{cap.metrica}</span>
               </div>
-              <Link
-                href={ROUTES.projects}
-                className="group inline-flex items-center gap-2 self-start border-b border-stone-900 pb-1.5 text-xs font-semibold uppercase tracking-[0.22em] transition hover:border-amber-700 hover:text-amber-700 sm:self-auto"
-              >
-                Ver todos los proyectos
-                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
-              </Link>
-            </div>
+              <h3 className="display-title mt-8 text-2xl leading-tight">{cap.titulo}</h3>
+              <p className="mt-3 text-sm leading-relaxed text-mid">{cap.resumen}</p>
+              {cap.puntos.length > 0 && (
+                <ul className="mt-auto space-y-1.5 border-t border-ink/10 pt-4 text-sm [&:not(:first-child)]:mt-6">
+                  {cap.puntos.map((punto, i) => (
+                    <li key={i} className="flex gap-2.5">
+                      <span aria-hidden="true" className="text-bronze">—</span>
+                      {punto}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </article>
+          ))}
+        </div>
+      </EditorialSection>
 
-            <div className="mt-12 grid grid-cols-1 gap-6 lg:grid-cols-2 lg:grid-rows-2">
-              {showcase.map((p, i) => (
-                <Link
-                  key={p.slug}
-                  href={`${ROUTES.projects}/${p.slug}`}
-                  className={`group relative block overflow-hidden bg-stone-900 ${
-                    i === 0 ? "aspect-[4/3] lg:row-span-2 lg:aspect-auto" : "aspect-[16/9]"
-                  }`}
-                >
-                  <Image
-                    src={p.imagen}
-                    alt={`${p.title}: ${keyword} en ${p.ubicacion || "Madrid"}`}
-                    fill
-                    sizes={i === 0 ? "(max-width: 1024px) 100vw, 50vw" : "(max-width: 1024px) 100vw, 50vw"}
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-stone-950/85 via-stone-950/20 to-transparent" />
-                  <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-6 text-white sm:p-8">
-                    <div>
-                      <span className="text-[10px] tracking-[0.22em] uppercase text-white/70">
-                        {[p.ubicacion, p.superficie, p.plazo].filter(Boolean).join(" · ")}
-                      </span>
-                      <h3 className="display-title mt-2 text-2xl sm:text-3xl">{p.title}</h3>
-                    </div>
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/40 transition group-hover:bg-white group-hover:text-stone-900">
-                      <ArrowUpRight className="h-4 w-4" />
-                    </span>
+      {/* Método: fases en filas con miniatura. */}
+      {fases.length > 0 && (
+        <EditorialSection
+          id="proceso"
+          number={num()}
+          label="Método ALKO"
+          title={landing?.processHeadline || `Cómo planificamos y ejecutamos ${keyword}`}
+          intro="Un mismo equipo recorre todas las fases, con entregables y control en cada una."
+        >
+          <ol className="border-t border-ink/15">
+            {fases.map((fase, i) => {
+              const src = processImage(i, fase.imagen);
+              return (
+                <li key={fase.id} className="reveal-item grid grid-cols-12 items-start gap-x-6 gap-y-3 border-b border-ink/15 py-6">
+                  <span className="col-span-12 text-[10px] uppercase tracking-[0.22em] text-bronze sm:col-span-2 sm:pt-2">
+                    Fase {pad(i + 1)}
+                  </span>
+                  <h3 className="display-title col-span-12 text-2xl leading-tight sm:col-span-4">{fase.title}</h3>
+                  <p className="col-span-8 text-sm leading-relaxed text-mid sm:col-span-4">{fase.texto}</p>
+                  <div className="relative col-span-4 aspect-[4/3] overflow-hidden bg-piedra sm:col-span-2">
+                    {src && <Image src={src} alt={`Fase ${i + 1}: ${fase.title}`} fill sizes="(max-width: 640px) 30vw, 12vw" className="object-cover" />}
                   </div>
-                </Link>
-              ))}
-            </div>
-          </Container>
-        </section>
+                </li>
+              );
+            })}
+          </ol>
+        </EditorialSection>
       )}
 
-      {/* Imágenes de obra */}
-      {galleryPhotos.length >= 3 && (
-        <section aria-label={`Imágenes de ${keyword}`} className="pb-20 sm:pb-28">
-          <Container>
-            <Lightbox className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
+      {/* Proyectos del servicio y fotos de obra. */}
+      {showcase.length > 0 && (
+        <EditorialSection
+          id="proyectos"
+          tone="white"
+          number={num()}
+          label={`${pad(ownProjects.length)} ${ownProjects.length === 1 ? "proyecto" : "proyectos"}`}
+          title={`Proyectos de ${keyword}`}
+          wide
+        >
+          <ul className="grid grid-cols-1 gap-x-6 gap-y-12 md:grid-cols-2 lg:grid-cols-3">
+            {showcase.map((p, i) => (
+              <li key={p.slug} className="reveal-item">
+                <Link href={`${ROUTES.projects}/${p.slug}`} className="group flex h-full flex-col">
+                  <span className="relative block aspect-[4/5] overflow-hidden bg-piedra">
+                    <Image
+                      src={p.imagen}
+                      alt={`${p.title}: ${keyword} en ${p.ubicacion || "Madrid"}`}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover transition-transform duration-[1.6s] ease-alko group-hover:scale-[1.04]"
+                    />
+                    <span className="absolute left-4 top-4 bg-paper px-2 py-1 text-[10px] tracking-[0.18em] text-ink">{pad(i + 1)}</span>
+                  </span>
+                  <span className="mt-5 flex items-center justify-between gap-4 border-t border-ink/15 pt-4 text-[10px] uppercase tracking-[0.22em] text-mid">
+                    <span>{p.ubicacion || "Madrid"}</span>
+                    <span>{[p.superficie, p.anio].filter(Boolean).join(" · ")}</span>
+                  </span>
+                  <span className="display-title mt-3 block text-2xl leading-tight transition-colors group-hover:text-bronze">{p.title}</span>
+                  <span className="mt-auto block pt-5">
+                    <span className="arrow-link">
+                      Ver proyecto <span aria-hidden="true">↗</span>
+                    </span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+
+          {galleryPhotos.length >= 3 && (
+            <Lightbox className="mt-16 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-6">
               {galleryPhotos.map((src, i) => (
                 <button
                   key={src}
                   type="button"
                   data-lightbox-src={src}
                   data-lightbox-alt={`${Keyword} ${i + 1}`}
-                  className={`group relative block overflow-hidden bg-stone-200 ${i === 0 ? "col-span-2 row-span-2 aspect-square lg:col-span-2" : "aspect-square"}`}
                   aria-label={`Ampliar imagen ${i + 1}`}
+                  className="group relative block aspect-square cursor-zoom-in overflow-hidden bg-piedra"
                 >
                   <Image
                     src={src}
                     alt={`${Keyword} ${i + 1}`}
                     fill
-                    sizes={i === 0 ? "(max-width: 1024px) 100vw, 66vw" : "(max-width: 1024px) 50vw, 33vw"}
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    sizes="(max-width: 1024px) 50vw, 16vw"
+                    className="object-cover transition-transform duration-[1.6s] ease-alko group-hover:scale-[1.06]"
                   />
                 </button>
               ))}
             </Lightbox>
-          </Container>
-        </section>
+          )}
+
+          <div className="mt-12 flex justify-end">
+            <Link href={ROUTES.projects} className="arrow-link">
+              Ver todas las obras <span aria-hidden="true">↗</span>
+            </Link>
+          </div>
+        </EditorialSection>
       )}
 
-      {/* Bloque de apoyo editable (título e imagen propios del servicio) */}
+      {/* Bloque de apoyo editable (título e imagen propios del servicio). */}
       {landing?.supportTitle && (
-        <section className="border-t border-stone-200 py-20 sm:py-28">
-          <Container>
-            <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20">
-              <h2 className={h2Class}>{landing.supportTitle}</h2>
+        <section className="bg-paper">
+          <div className="site-wrap py-20 sm:py-28">
+            <div className="grid grid-cols-12 items-end gap-x-6 gap-y-10 border-t border-ink/15 pt-8">
+              <h2 className="reveal-item display-title col-span-12 text-[2.2rem] leading-[1.05] sm:text-5xl lg:col-span-6 lg:text-6xl">
+                {landing.supportTitle}
+              </h2>
               {landing.supportImage && (
-                <div className="relative aspect-[4/3] overflow-hidden bg-stone-200">
-                  <Image src={landing.supportImage} alt={landing.supportTitle} fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover" />
+                <div className="reveal-item relative col-span-12 aspect-[4/3] overflow-hidden bg-piedra lg:col-span-5 lg:col-start-8">
+                  <Image src={landing.supportImage} alt={landing.supportTitle} fill sizes="(max-width: 1024px) 100vw, 40vw" className="object-cover" />
                 </div>
               )}
             </div>
-          </Container>
+          </div>
         </section>
       )}
 
       {fabricantes.length > 0 && <Materials fabricantes={fabricantes} />}
 
-      {/* Preguntas frecuentes */}
-      <section id="preguntas" className="scroll-mt-36 border-t border-stone-200 py-20 sm:py-28">
-        <Container>
-          <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-20">
-            <div className="lg:col-span-4">
-              <span className={eyebrowClass}>Preguntas frecuentes</span>
-              <h2 className={`mt-4 ${h2Class}`}>
-                {landing?.faqHeadline || `Preguntas frecuentes sobre ${keyword}`}
-              </h2>
-              <p className="mt-5 text-base font-light leading-relaxed text-mid">
-                ¿No encuentras tu pregunta? Escríbenos y te responde un técnico.
-              </p>
-            </div>
-            <div className="divide-y divide-stone-200 border-y border-stone-200 lg:col-span-8">
-              {faqList.map((faq, i) => (
-                <details key={i} className="group py-6" open={i === 0}>
-                  <summary className="flex cursor-pointer list-none items-start justify-between gap-6">
-                    <h3 className="display-title text-xl text-ink sm:text-2xl">{faq.q}</h3>
-                    <span aria-hidden="true" className="mt-1 text-2xl leading-none text-amber-700 transition-transform group-open:rotate-45">
-                      +
-                    </span>
-                  </summary>
-                  <p className="mt-4 max-w-2xl text-base font-light leading-relaxed text-mid">{faq.a}</p>
-                </details>
-              ))}
-            </div>
-          </div>
-        </Container>
-      </section>
+      {/* Preguntas frecuentes. */}
+      <EditorialSection
+        id="preguntas"
+        number={num()}
+        label="Preguntas frecuentes"
+        title={landing?.faqHeadline || `Preguntas frecuentes sobre ${keyword}`}
+        intro="¿No encuentras tu pregunta? Escríbenos y te responde un técnico."
+      >
+        <div className="border-t border-ink/15">
+          {faqList.map((faq, i) => (
+            <details key={i} className="group border-b border-ink/15 py-6" open={i === 0}>
+              <summary className="flex cursor-pointer list-none items-start gap-5">
+                <span className="pt-1.5 text-[10px] tracking-[0.18em] text-bronze">{pad(i + 1)}</span>
+                <h3 className="display-title flex-1 text-xl leading-snug sm:text-2xl">{faq.q}</h3>
+                <span aria-hidden="true" className="text-2xl leading-none transition-transform duration-300 group-open:rotate-45">
+                  +
+                </span>
+              </summary>
+              <p className="ml-9 mt-4 max-w-2xl leading-relaxed text-mid">{faq.a}</p>
+            </details>
+          ))}
+        </div>
+      </EditorialSection>
 
-      {/* Otros servicios */}
+      {/* Otros servicios: índice en filas con miniatura. */}
       {otrosServicios.length > 0 && (
-        <section className="bg-ink py-20 text-white sm:py-28">
-          <Container>
-            <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
-              <h2 className="display-title text-3xl sm:text-4xl lg:text-5xl">Otros servicios</h2>
-              <Link
-                href={ROUTES.sectors}
-                className="group inline-flex items-center gap-2 self-start border-b border-white pb-1.5 text-xs font-semibold uppercase tracking-[0.22em] transition hover:border-amber-500 hover:text-amber-500 sm:self-auto"
-              >
-                Todos los servicios
-                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+        <section className="bg-ink text-paper">
+          <div className="site-wrap py-20 sm:py-28">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="eyebrow eyebrow-light">Divisiones</p>
+                <h2 className="display-title mt-4 text-4xl leading-none sm:text-5xl lg:text-6xl">Otros servicios</h2>
+              </div>
+              <Link href={ROUTES.sectors} className="arrow-link self-start text-paper sm:self-auto">
+                Todos los servicios <span aria-hidden="true">↗</span>
               </Link>
             </div>
-            <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {otrosServicios.map((item) => (
-                <Link key={item.id} href={`${ROUTES.sectors}/${item.slug}`} className="group block">
-                  <div className="relative aspect-[4/3] overflow-hidden bg-stone-800">
-                    {item.imagen && (
-                      <Image
-                        src={item.imagen}
-                        alt={`${item.title} en Madrid`}
-                        fill
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        className="object-cover opacity-90 transition duration-700 group-hover:scale-105 group-hover:opacity-100"
-                      />
-                    )}
-                  </div>
-                  <div className="mt-5 flex items-start justify-between gap-4">
-                    <div>
-                      <h3 className="display-title text-2xl transition-colors group-hover:text-amber-500">{item.title}</h3>
-                      <p className="mt-2 line-clamp-2 text-sm font-light leading-relaxed text-white/60">{item.descripcion}</p>
-                    </div>
-                    <ArrowUpRight className="mt-1.5 h-5 w-5 shrink-0 text-white/50 transition group-hover:text-amber-500" />
-                  </div>
-                </Link>
+            <ul className="mt-12 border-t border-paper/15">
+              {otrosServicios.map((item, i) => (
+                <li key={item.id}>
+                  <Link
+                    href={`${ROUTES.sectors}/${item.slug}`}
+                    className="group grid grid-cols-[2.5rem_minmax(0,1fr)_auto] items-center gap-4 border-b border-paper/15 py-5 sm:grid-cols-[3rem_minmax(0,4fr)_minmax(0,5fr)_6rem_auto] sm:gap-6"
+                  >
+                    <span className="text-[10px] tracking-[0.18em] text-bronze-light">{item.numero || pad(i + 1)}</span>
+                    <span className="display-title text-xl leading-tight transition-colors group-hover:text-bronze-light sm:text-2xl">
+                      {item.title}
+                    </span>
+                    <span className="hidden truncate text-sm text-paper/55 sm:block">{item.descripcion}</span>
+                    <span className="relative hidden aspect-[4/3] overflow-hidden bg-paper/10 sm:block">
+                      {item.imagen && (
+                        <Image
+                          src={item.imagen}
+                          alt=""
+                          fill
+                          sizes="96px"
+                          className="object-cover opacity-80 transition duration-700 group-hover:scale-110 group-hover:opacity-100"
+                        />
+                      )}
+                    </span>
+                    <span aria-hidden="true" className="text-paper/50 transition-transform group-hover:translate-x-1 group-hover:text-paper">
+                      →
+                    </span>
+                  </Link>
+                </li>
               ))}
-            </div>
-          </Container>
+            </ul>
+          </div>
         </section>
       )}
 
-      {/* Artículos relacionados */}
+      {/* Artículos relacionados. */}
       {articles.length > 0 && (
-        <section className="py-20 sm:py-28">
-          <Container>
-            <div className="flex flex-col justify-between gap-6 border-b border-stone-200 pb-8 sm:flex-row sm:items-end">
-              <h2 className="display-title text-3xl sm:text-4xl">Para saber más</h2>
-              <Link
-                href={ROUTES.journal}
-                className="group inline-flex items-center gap-2 self-start border-b border-stone-900 pb-1.5 text-xs font-semibold uppercase tracking-[0.22em] transition hover:border-amber-700 hover:text-amber-700 sm:self-auto"
-              >
-                Ver todos los artículos
-                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+        <section className="bg-paper">
+          <div className="site-wrap py-20 sm:py-28">
+            <div className="flex flex-col gap-4 border-t border-ink/15 pt-8 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.22em] text-mid">Journal</p>
+                <h2 className="display-title mt-4 text-4xl leading-none sm:text-5xl">Para saber más</h2>
+              </div>
+              <Link href={ROUTES.journal} className="arrow-link self-start sm:self-auto">
+                Ver el Journal <span aria-hidden="true">↗</span>
               </Link>
             </div>
-            <div className="mt-10 grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
               {articles.map((article) => (
                 <ArticleCard key={article.id} article={article} />
               ))}
             </div>
-          </Container>
+          </div>
         </section>
       )}
 
