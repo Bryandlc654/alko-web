@@ -1,7 +1,6 @@
 import Link from "next/link";
 import Image from "@/components/ui/Image";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
-import Container from "@/components/ui/Container";
 import Lightbox from "@/components/ui/Lightbox";
 import Prose from "@/components/ui/Prose";
 import QuickContactForm from "@/components/ui/QuickContactForm";
@@ -11,35 +10,93 @@ import { splitLead } from "@/lib/utils";
 import { projectCta } from "@/lib/project-cta";
 import type { Project, Sector, SiteSettings } from "@/lib/types";
 
-const IVORY = "#f5f1e8";
-const ROMAN = ["I", "II", "III", "IV"];
+const IVORY = "#f3eee3";
+const ROMAN = ["I", "II", "III", "IV", "V", "VI"];
+const pad = (n: number) => String(n).padStart(2, "0");
 
-/** Filete dorado con un rombo en el centro, separador de la plantilla exclusiva. */
-function GoldDivider({ className = "" }: { className?: string }) {
+/** Etiqueta pequeña en dorado. */
+function Gold({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <div aria-hidden="true" className={`flex items-center justify-center gap-4 ${className}`}>
-      <span className="h-px w-16 sm:w-24" style={{ backgroundColor: EXCLUSIVE_GOLD }} />
-      <span className="h-1.5 w-1.5 rotate-45" style={{ backgroundColor: EXCLUSIVE_GOLD }} />
-      <span className="h-px w-16 sm:w-24" style={{ backgroundColor: EXCLUSIVE_GOLD }} />
-    </div>
-  );
-}
-
-function Eyebrow({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return (
-    <span
-      className={`text-[10px] tracking-[0.22em] block uppercase ${className}`}
-      style={{ color: EXCLUSIVE_GOLD }}
-    >
+    <span className={`text-[10px] uppercase tracking-[0.24em] ${className}`} style={{ color: EXCLUSIVE_GOLD }}>
       {children}
     </span>
   );
 }
 
+/** Filete dorado a todo el ancho con una marca en el centro. */
+function Rule({ mark, className = "" }: { mark?: string; className?: string }) {
+  return (
+    <div aria-hidden="true" className={`flex items-center gap-5 ${className}`}>
+      <span className="h-px flex-1" style={{ backgroundColor: `${EXCLUSIVE_GOLD}80` }} />
+      {mark ? <Gold>{mark}</Gold> : <span className="h-1.5 w-1.5 rotate-45" style={{ backgroundColor: EXCLUSIVE_GOLD }} />}
+      <span className="h-px flex-1" style={{ backgroundColor: `${EXCLUSIVE_GOLD}80` }} />
+    </div>
+  );
+}
+
+/** Foto enmarcada con un filete dorado interior y pie «Lámina». */
+function Plate({
+  src,
+  alt,
+  number,
+  caption,
+  aspect,
+  sizes,
+  priority = false,
+  lightbox = false,
+}: {
+  src: string;
+  alt: string;
+  number: number;
+  caption?: string;
+  aspect: string;
+  sizes: string;
+  priority?: boolean;
+  lightbox?: boolean;
+}) {
+  const img = (
+    <>
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        priority={priority}
+        sizes={sizes}
+        className="object-cover transition-transform duration-[1.8s] ease-alko group-hover:scale-[1.03]"
+      />
+      <span aria-hidden="true" className="pointer-events-none absolute inset-3 border sm:inset-4" style={{ borderColor: `${EXCLUSIVE_GOLD}99` }} />
+    </>
+  );
+  return (
+    <figure>
+      {lightbox ? (
+        <button
+          type="button"
+          data-lightbox-src={src}
+          data-lightbox-alt={alt}
+          aria-label={`Ver lámina ${number} en grande`}
+          className={`group relative block w-full cursor-zoom-in overflow-hidden bg-stone-300 ${aspect}`}
+        >
+          {img}
+        </button>
+      ) : (
+        <div className={`group relative overflow-hidden bg-stone-300 ${aspect}`}>{img}</div>
+      )}
+      <figcaption className="mt-3 flex items-baseline justify-between gap-4 text-[10px] uppercase tracking-[0.24em] text-stone-500">
+        <span>
+          <span style={{ color: EXCLUSIVE_GOLD }}>Lámina {ROMAN[number - 1] || number}</span>
+          {caption && <> · {caption}</>}
+        </span>
+      </figcaption>
+    </figure>
+  );
+}
+
 /**
- * Plantilla de página para los proyectos ALKO Exclusiva: más editorial y sobria que la normal,
- * con portada centrada, sello, relato por capítulos, galería sobre fondo oscuro y una llamada
- * a la acción propia. Cada bloque solo aparece si el proyecto tiene ese contenido.
+ * Plantilla de los proyectos ALKO Exclusiva, a modo de monografía impresa: papel marfil, filetes
+ * dorados, portada partida (texto y sello a la izquierda, lámina a la derecha), relato por
+ * capítulos con numeración romana, láminas numeradas sobre carbón y contacto reservado.
+ * Cada bloque solo aparece si el proyecto tiene ese contenido.
  */
 export default function ExclusiveProject({
   project,
@@ -79,354 +136,431 @@ export default function ExclusiveProject({
 
   const alcance = (project.alcance || []).filter(Boolean);
   const materiales = (project.materiales || []).filter((m) => m.elemento || m.detalle);
-  const cifras = (project.cifras || []).filter((c) => c.valor);
+  const cifras = (project.cifras || []).filter((c) => c.valor).slice(0, 4);
   const cta = projectCta(project);
+  const tel = settings.telefono.replace(/[^+\d]/g, "");
+
+  // Numeración continua de las láminas (portada = I).
+  let plate = 1;
+  const nextPlate = () => ++plate;
 
   return (
-    <main className="bg-ink text-white">
-      {/* Portada: foto a sangre, sello y título centrados */}
-      <header className="relative isolate flex min-h-[100svh] flex-col overflow-hidden">
-        <Image src={project.imagen} alt={project.title} fill priority sizes="100vw" className="-z-10 object-cover object-center" />
-        <div className="absolute inset-0 -z-10 bg-stone-950/55" />
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-stone-950/70 via-transparent to-stone-950" />
+    <main className="text-ink" style={{ backgroundColor: IVORY }}>
+      {/* Portada partida: texto y ficha a la izquierda, lámina a la derecha. */}
+      <header>
+        <div className="site-wrap pt-28 sm:pt-36 lg:pt-40">
+          <div className="hh-rise flex items-center justify-between gap-6 border-b pb-5" style={{ borderColor: `${EXCLUSIVE_GOLD}66` }}>
+            <Breadcrumbs
+              items={[{ label: "Proyectos", href: ROUTES.projects }, { label: project.title }]}
+              tone="dark"
+              className="min-w-0"
+            />
+            <Gold className="hidden shrink-0 sm:inline">
+              ALKO Exclusiva{project.indice ? ` · Nº ${project.indice}` : ""}
+            </Gold>
+          </div>
 
-        <Container className="pt-32 sm:pt-40">
-          <Breadcrumbs items={[{ label: "Proyectos", href: ROUTES.projects }, { label: project.title }]} />
-        </Container>
+          <div className="mt-12 grid grid-cols-12 gap-x-6 gap-y-14 sm:mt-16 lg:gap-x-10">
+            <div className="col-span-12 flex flex-col lg:col-span-5">
+              <div className="hh-rise flex items-center gap-5">
+                <ExclusiveSeal size={76} tone="dark" />
+                <span className="flex flex-col gap-1">
+                  <Gold>Monografía</Gold>
+                  <span className="text-[10px] uppercase tracking-[0.24em] text-stone-500">
+                    {[project.tipologia, project.anio].filter(Boolean).join(" · ") || "ALKO Exclusiva"}
+                  </span>
+                </span>
+              </div>
 
-        <div className="flex flex-1 flex-col items-center justify-center px-6 py-16 text-center">
-          <ExclusiveSeal size={128} className="reveal-item" />
-          <Eyebrow className="reveal-item mt-10">
-            ALKO Exclusiva{project.ubicacion ? ` · ${project.ubicacion}` : ""}
-          </Eyebrow>
-          <h1 className="display-title reveal-item mt-6 max-w-5xl text-4xl leading-[1.05] sm:text-6xl lg:text-7xl xl:text-8xl">
-            {project.title}
-          </h1>
-          <GoldDivider className="reveal-item mt-10" />
-          {(project.tipologia || project.anio) && (
-            <p className="display-title reveal-item mt-6 text-lg text-white/70 sm:text-xl">
-              {[project.tipologia, project.anio].filter(Boolean).join(" · ")}
-            </p>
-          )}
-        </div>
+              <h1 className="hh-rise display-title mt-10 text-[2.8rem] leading-[0.98] tracking-[-0.04em] sm:text-6xl xl:text-[5.25rem]">
+                {project.title}
+              </h1>
+              <span aria-hidden="true" className="hh-rise mt-10 block h-px w-20" style={{ backgroundColor: EXCLUSIVE_GOLD }} />
 
-        <div className="pb-10 text-center">
-          <span className="text-[10px] tracking-[0.22em] uppercase text-white/50">Descubrir el proyecto</span>
-          <span aria-hidden="true" className="mx-auto mt-4 block h-12 w-px bg-gradient-to-b from-white/50 to-transparent" />
+              {(ficha.length > 0 || project.cliente || servicio) && (
+                <dl className="hh-rise mt-10 border-t border-ink/15 lg:mt-auto" style={{ animationDelay: ".15s" }}>
+                  {ficha.map(([label, value]) => (
+                    <div key={label} className="flex items-baseline justify-between gap-6 border-b border-ink/15 py-3.5">
+                      <dt>
+                        <Gold>{label}</Gold>
+                      </dt>
+                      <dd className="display-title text-right text-lg">{value}</dd>
+                    </div>
+                  ))}
+                  {project.cliente && (
+                    <div className="flex items-baseline justify-between gap-6 border-b border-ink/15 py-3.5">
+                      <dt>
+                        <Gold>Cliente</Gold>
+                      </dt>
+                      <dd className="text-right text-sm">{project.cliente}</dd>
+                    </div>
+                  )}
+                  {servicio && (
+                    <div className="flex items-baseline justify-between gap-6 border-b border-ink/15 py-3.5">
+                      <dt>
+                        <Gold>Servicio</Gold>
+                      </dt>
+                      <dd className="text-right text-sm">
+                        <Link
+                          href={`${ROUTES.sectors}/${servicio.slug}`}
+                          className="underline decoration-ink/25 underline-offset-4 transition-colors hover:decoration-current"
+                        >
+                          {servicio.title} ↗
+                        </Link>
+                      </dd>
+                    </div>
+                  )}
+                </dl>
+              )}
+            </div>
+
+            {project.imagen && (
+              <div className="hh-rise col-span-12 lg:col-span-7" style={{ animationDelay: ".2s" }}>
+                <Plate
+                  src={project.imagen}
+                  alt={project.title}
+                  number={1}
+                  caption={project.ubicacion || "Portada"}
+                  aspect="aspect-[4/5] sm:aspect-[5/4]"
+                  sizes="(max-width: 1024px) 100vw, 58vw"
+                  priority
+                />
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
-      {/* Presentación y ficha */}
-      <section className="py-24 sm:py-32">
-        <Container>
-          {lead && (
-            <p className="display-title reveal-item mx-auto max-w-4xl text-center text-2xl leading-snug text-white/90 sm:text-3xl lg:text-4xl">
-              {lead}
+      {/* Presentación: entradilla grande con capitular dorada. */}
+      {lead && (
+        <section className="site-wrap pt-24 sm:pt-32">
+          <Rule mark="Presentación" />
+          <div className="mt-12 grid grid-cols-12 gap-6">
+            <p className="reveal-item display-title col-span-12 text-[1.75rem] leading-[1.2] tracking-[-0.02em] sm:text-4xl lg:col-span-9 lg:col-start-4 lg:text-[2.75rem]">
+              <span className="float-left mr-3 mt-1 text-[3.4em] leading-[0.8]" style={{ color: EXCLUSIVE_GOLD }}>
+                {lead.charAt(0)}
+              </span>
+              {lead.slice(1)}
             </p>
-          )}
+          </div>
+        </section>
+      )}
 
-          {ficha.length > 0 && (
-            <dl
-              className={`reveal-item mx-auto grid max-w-5xl grid-cols-2 gap-y-10 border-y border-white/10 py-10 sm:grid-cols-3 lg:grid-cols-5 ${lead ? "mt-20" : ""}`}
-            >
-              {ficha.map(([label, value]) => (
-                <div key={label} className="px-4 text-center">
-                  <dt className="text-[10px] tracking-[0.22em] uppercase" style={{ color: EXCLUSIVE_GOLD }}>
-                    {label}
-                  </dt>
-                  <dd className="display-title mt-3 text-lg text-white sm:text-xl">{value}</dd>
-                </div>
-              ))}
-            </dl>
-          )}
-
-          {(project.cliente || servicio) && (
-            <p className="mt-8 text-center text-sm font-light text-white/50">
-              {project.cliente}
-              {project.cliente && servicio ? " · " : ""}
-              {servicio && (
-                <Link
-                  href={`${ROUTES.sectors}/${servicio.slug}`}
-                  className="underline decoration-white/30 underline-offset-4 transition hover:text-white"
-                >
-                  {servicio.title}
-                </Link>
-              )}
-            </p>
-          )}
-        </Container>
-      </section>
-
-      {/* Imagen panorámica */}
+      {/* Lámina panorámica. */}
       {fotos[0] && (
-        <div className="reveal-scale relative h-[60vh] min-h-[380px] w-full overflow-hidden sm:h-[80vh]">
-          <Image src={fotos[0]} alt={`${project.title}, vista general`} fill sizes="100vw" className="object-cover object-center" />
+        <div className="site-wrap reveal-scale pt-20 sm:pt-28">
+          <Plate
+            src={fotos[0]}
+            alt={`${project.title}, vista general`}
+            number={nextPlate()}
+            caption="Vista general"
+            aspect="aspect-[4/3] sm:aspect-[21/9]"
+            sizes="100vw"
+          />
         </div>
       )}
 
-      {/* Relato por capítulos, sobre marfil, con fotos alternas */}
+      {/* Capítulos: numeral romano y título, texto y lámina. */}
       {capitulos.length > 0 && (
-        <section className="text-ink" style={{ backgroundColor: IVORY }}>
-          <Container className="space-y-24 py-24 sm:space-y-32 sm:py-32">
+        <section className="site-wrap pt-24 sm:pt-32">
+          <Rule mark="El relato" />
+          <div className="mt-4">
             {capitulos.map((cap, i) => {
               const reversed = i % 2 === 1;
               return (
-                <article key={cap.titulo} className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-20">
-                  <div className={`reveal-item lg:col-span-5 ${reversed ? "lg:order-2" : ""}`}>
-                    <span className="display-title text-6xl leading-none sm:text-7xl" style={{ color: EXCLUSIVE_GOLD }}>
-                      {ROMAN[i]}
-                    </span>
-                    <h2 className="display-title mt-6 text-3xl sm:text-4xl lg:text-5xl">{cap.titulo}</h2>
-                    <span aria-hidden="true" className="mt-8 block h-px w-12" style={{ backgroundColor: EXCLUSIVE_GOLD }} />
-                    <p className="mt-8 whitespace-pre-line text-lg font-light leading-relaxed text-stone-700">{cap.texto}</p>
-                  </div>
-                  <div className={`reveal-scale lg:col-span-7 ${reversed ? "lg:order-1" : ""}`}>
-                    <div className="relative aspect-[4/5] overflow-hidden sm:aspect-[4/3]">
-                      <Image
-                        src={fotoCapitulo(i)}
-                        alt={`${project.title}: ${cap.titulo.toLowerCase()}`}
-                        fill
-                        sizes="(max-width: 1024px) 100vw, 58vw"
-                        className="object-cover object-center"
-                      />
+                <article
+                  key={cap.titulo}
+                  className="grid grid-cols-12 items-start gap-x-6 gap-y-8 border-b border-ink/10 py-14 last:border-b-0 sm:py-20 lg:gap-x-10"
+                >
+                  <div className={`reveal-item col-span-12 lg:col-span-5 ${reversed ? "lg:order-2 lg:col-start-8" : ""}`}>
+                    <div className="flex items-baseline gap-5">
+                      <span className="display-title text-6xl leading-none sm:text-7xl" style={{ color: EXCLUSIVE_GOLD }}>
+                        {ROMAN[i]}
+                      </span>
+                      <Gold>Capítulo</Gold>
                     </div>
+                    <h2 className="display-title mt-6 text-3xl leading-tight sm:text-5xl">{cap.titulo}</h2>
+                    <p className="mt-6 whitespace-pre-line text-lg leading-relaxed text-stone-600">{cap.texto}</p>
+                  </div>
+                  <div className={`reveal-scale col-span-12 lg:col-span-6 ${reversed ? "lg:order-1" : "lg:col-start-7"}`}>
+                    <Plate
+                      src={fotoCapitulo(i)}
+                      alt={`${project.title}: ${cap.titulo.toLowerCase()}`}
+                      number={nextPlate()}
+                      caption={cap.titulo}
+                      aspect="aspect-[4/5] sm:aspect-[4/3]"
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                    />
                   </div>
                 </article>
               );
             })}
-          </Container>
+          </div>
         </section>
       )}
 
-      {/* Memoria completa, si el proyecto la tiene y no se ha contado por capítulos */}
+      {/* Memoria completa, si no se ha contado por capítulos. */}
       {capitulos.length === 0 && rest && (
-        <section className="text-ink" style={{ backgroundColor: IVORY }}>
-          <Container className="py-24 sm:py-32">
-            <div className="mx-auto max-w-3xl">
+        <section className="site-wrap pt-24 sm:pt-32">
+          <Rule mark="Memoria" />
+          <div className="mt-12 grid grid-cols-12 gap-6">
+            <div className="col-span-12 lg:col-span-7 lg:col-start-4">
               <Prose html={rest} variant="article" />
             </div>
-          </Container>
+          </div>
         </section>
       )}
 
-      {/* Cifras */}
+      {/* Cifras sobre carbón, separadas por filetes dorados. */}
       {cifras.length > 0 && (
-        <section className="border-b border-white/10 py-20 sm:py-24">
-          <Container>
-            <dl className="grid grid-cols-2 gap-10 text-center lg:grid-cols-4">
-              {cifras.slice(0, 4).map((c) => (
-                <div key={`${c.valor}-${c.etiqueta}`} className="reveal-item">
+        <section className="mt-24 bg-ink text-paper sm:mt-32">
+          <div className="site-wrap py-16 sm:py-20">
+            <dl className="grid grid-cols-2 gap-y-12 lg:grid-cols-4">
+              {cifras.map((c, i) => (
+                <div
+                  key={`${c.valor}-${i}`}
+                  className={`reveal-item px-2 text-center ${i % 2 === 1 ? "border-l" : ""} ${i > 0 ? "lg:border-l" : ""}`}
+                  style={{ borderColor: `${EXCLUSIVE_GOLD}55` }}
+                >
                   <dt className="sr-only">{c.etiqueta}</dt>
                   <dd>
-                    <span className="display-title block text-5xl sm:text-6xl" style={{ color: EXCLUSIVE_GOLD }}>
+                    <span className="display-title block text-5xl leading-none sm:text-6xl" style={{ color: EXCLUSIVE_GOLD }}>
                       {c.valor}
                     </span>
-                    <span className="mt-3 block text-sm font-light text-white/60">{c.etiqueta}</span>
+                    <span className="mt-4 block text-[10px] uppercase tracking-[0.24em] text-paper/60">{c.etiqueta}</span>
                   </dd>
                 </div>
               ))}
             </dl>
-          </Container>
+          </div>
         </section>
       )}
 
-      {/* Alcance y materiales */}
+      {/* Alcance y acabados. */}
       {(alcance.length > 0 || materiales.length > 0) && (
-        <section className="py-24 sm:py-32">
-          <Container>
-            <div className="text-center">
-              <Eyebrow>La obra en detalle</Eyebrow>
-              <h2 className="display-title mt-5 text-3xl sm:text-5xl">Alcance y acabados</h2>
-              <GoldDivider className="mt-8" />
-            </div>
-            <div className={`mt-16 grid grid-cols-1 gap-16 ${alcance.length > 0 && materiales.length > 0 ? "lg:grid-cols-2" : "mx-auto max-w-3xl"}`}>
-              {alcance.length > 0 && (
-                <ul className="reveal-item border-t border-white/10">
+        <section className="site-wrap pt-24 sm:pt-32">
+          <Rule mark="La obra en detalle" />
+          <h2 className="reveal-item display-title mt-12 text-4xl sm:text-5xl lg:text-6xl">Alcance y acabados</h2>
+          <div className={`mt-12 grid grid-cols-1 gap-14 ${alcance.length > 0 && materiales.length > 0 ? "lg:grid-cols-2" : "max-w-3xl"}`}>
+            {alcance.length > 0 && (
+              <div className="reveal-item">
+                <Gold>Partidas</Gold>
+                <ul className="mt-4 border-t border-ink/15">
                   {alcance.map((item, i) => (
-                    <li key={`${item}-${i}`} className="flex gap-6 border-b border-white/10 py-5">
-                      <span className="font-mono text-[11px] tracking-[0.2em]" style={{ color: EXCLUSIVE_GOLD }}>
-                        {String(i + 1).padStart(2, "0")}
+                    <li key={`${item}-${i}`} className="flex gap-6 border-b border-ink/15 py-4">
+                      <span className="display-title w-8 shrink-0 text-lg" style={{ color: EXCLUSIVE_GOLD }}>
+                        {ROMAN[i] || pad(i + 1)}
                       </span>
-                      <span className="font-light leading-relaxed text-white/85">{item}</span>
+                      <span className="leading-relaxed text-stone-700">{item}</span>
                     </li>
                   ))}
                 </ul>
-              )}
-              {materiales.length > 0 && (
-                <dl className="reveal-item border-t border-white/10">
+              </div>
+            )}
+            {materiales.length > 0 && (
+              <div className="reveal-item">
+                <Gold>Acabados</Gold>
+                <dl className="mt-4 border-t border-ink/15">
                   {materiales.map((m, i) => (
-                    <div key={`${m.elemento}-${i}`} className="grid grid-cols-1 gap-1 border-b border-white/10 py-5 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] sm:gap-6">
-                      <dt className="display-title text-lg text-white">{m.elemento}</dt>
-                      <dd className="font-light leading-relaxed text-white/65">{m.detalle}</dd>
+                    <div key={`${m.elemento}-${i}`} className="grid grid-cols-1 gap-1 border-b border-ink/15 py-4 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] sm:gap-6">
+                      <dt className="display-title text-lg">{m.elemento}</dt>
+                      <dd className="leading-relaxed text-stone-600">{m.detalle}</dd>
                     </div>
                   ))}
                 </dl>
-              )}
-            </div>
-          </Container>
+              </div>
+            )}
+          </div>
         </section>
       )}
 
-      {/* Antes y después */}
+      {/* Antes y después. */}
       {fotoAntes && fotoDespues && (
-        <section className="text-ink" style={{ backgroundColor: IVORY }}>
-          <Container className="py-24 sm:py-32">
-            <div className="text-center">
-              <Eyebrow>Transformación</Eyebrow>
-              <h2 className="display-title mt-5 text-3xl sm:text-5xl">Antes y después</h2>
-            </div>
-            <Lightbox className="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2">
-              {[
-                { src: fotoAntes, label: "Antes", extra: "grayscale" },
-                { src: fotoDespues, label: "Después", extra: "" },
-              ].map((f) => (
-                <figure key={f.label} className="reveal-scale">
-                  <button
-                    type="button"
-                    data-lightbox-src={f.src}
-                    data-lightbox-alt={`${project.title} · ${f.label}`}
-                    aria-label={`Ver foto de ${f.label.toLowerCase()} en grande`}
-                    className="relative block aspect-[4/3] w-full cursor-zoom-in overflow-hidden"
-                  >
-                    <Image src={f.src} alt={`${project.title}, ${f.label.toLowerCase()}`} fill sizes="(max-width: 640px) 100vw, 50vw" className={`object-cover ${f.extra}`} />
-                  </button>
-                  <figcaption className="text-[10px] tracking-[0.22em] mt-4 text-center uppercase text-stone-500">
-                    {f.label}
-                  </figcaption>
-                </figure>
-              ))}
-            </Lightbox>
-          </Container>
+        <section className="site-wrap pt-24 sm:pt-32">
+          <Rule mark="Transformación" />
+          <Lightbox className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2">
+            {[
+              { src: fotoAntes, label: "Antes" },
+              { src: fotoDespues, label: "Después" },
+            ].map((f) => (
+              <div key={f.label} className={`reveal-scale ${f.label === "Antes" ? "[&_img]:grayscale" : ""}`}>
+                <Plate
+                  src={f.src}
+                  alt={`${project.title}, ${f.label.toLowerCase()}`}
+                  number={nextPlate()}
+                  caption={f.label}
+                  aspect="aspect-[4/3]"
+                  sizes="(max-width: 640px) 100vw, 50vw"
+                  lightbox
+                />
+              </div>
+            ))}
+          </Lightbox>
         </section>
       )}
 
-      {/* Galería */}
+      {/* Láminas: galería sobre carbón. */}
       {fotos.length > 1 && (
-        <section className="py-24 sm:py-32">
-          <Container>
-            <div className="text-center">
-              <Eyebrow>Galería</Eyebrow>
-              <h2 className="display-title mt-5 text-3xl sm:text-5xl">El proyecto en imágenes</h2>
-              <GoldDivider className="mt-8" />
+        <section className="mt-24 bg-ink text-paper sm:mt-32">
+          <div className="site-wrap py-20 sm:py-28">
+            <div className="flex flex-col gap-4 border-b pb-8 sm:flex-row sm:items-end sm:justify-between" style={{ borderColor: `${EXCLUSIVE_GOLD}55` }}>
+              <div>
+                <Gold>Galería · {pad(fotos.length)} láminas</Gold>
+                <h2 className="display-title mt-4 text-4xl sm:text-5xl lg:text-6xl">El proyecto en imágenes</h2>
+              </div>
+              <ExclusiveSeal size={56} className="hidden sm:block" />
             </div>
-            <Lightbox className="mt-16 grid grid-cols-1 gap-4 sm:grid-cols-6 sm:gap-6">
+            <Lightbox className="mt-12 grid grid-cols-1 gap-x-6 gap-y-10 md:grid-cols-12">
               {fotos.map((src, i) => {
-                // Ritmo editorial: una ancha, dos medias, repetir.
-                const wide = i % 3 === 0;
+                // Ritmo: ancha (8) + estrecha (4), estrecha (4) + ancha (8), una a todo el ancho.
+                const spans = ["md:col-span-8", "md:col-span-4", "md:col-span-4", "md:col-span-8", "md:col-span-12"];
+                const aspects = ["aspect-[4/3]", "aspect-[4/3] md:aspect-[3/4.1]", "aspect-[4/3] md:aspect-[3/4.1]", "aspect-[4/3]", "aspect-[4/3] md:aspect-[21/9]"];
+                const k = i % 5;
+                const last = i === fotos.length - 1;
                 return (
-                  <figure key={`${src}-${i}`} className={`reveal-scale group relative overflow-hidden ${wide ? "sm:col-span-6 aspect-[16/9]" : "sm:col-span-3 aspect-[4/5]"}`}>
+                  <figure key={`${src}-${i}`} className={`reveal-scale ${last && (k === 0 || k === 2) ? "md:col-span-12" : spans[k]}`}>
                     <button
                       type="button"
                       data-lightbox-src={src}
-                      data-lightbox-alt={`${project.title} · Imagen ${i + 1}`}
-                      aria-label={`Ver imagen ${i + 1} en grande`}
-                      className="absolute inset-0 cursor-zoom-in"
+                      data-lightbox-alt={`${project.title} · Lámina ${i + 1}`}
+                      aria-label={`Ver lámina ${i + 1} en grande`}
+                      className={`group relative block w-full cursor-zoom-in overflow-hidden bg-stone-800 ${
+                        last && (k === 0 || k === 2) ? "aspect-[4/3] md:aspect-[21/9]" : aspects[k]
+                      }`}
                     >
                       <Image
                         src={src}
                         alt={`${project.title}, imagen ${i + 1}`}
                         fill
-                        sizes={wide ? "100vw" : "(max-width: 640px) 100vw, 50vw"}
-                        className="object-cover transition duration-1000 ease-out group-hover:scale-[1.03]"
+                        sizes={k === 4 ? "100vw" : "(max-width: 768px) 100vw, 66vw"}
+                        className="object-cover transition-transform duration-[1.8s] ease-alko group-hover:scale-[1.03]"
                       />
                     </button>
+                    <figcaption className="mt-3 text-[10px] uppercase tracking-[0.24em] text-paper/50">
+                      <span style={{ color: EXCLUSIVE_GOLD }}>{pad(i + 1)}</span> / {pad(fotos.length)}
+                    </figcaption>
                   </figure>
                 );
               })}
             </Lightbox>
-          </Container>
+          </div>
         </section>
       )}
 
-      {/* Reseña del cliente */}
+      {/* Reseña del cliente. */}
       {project.resenaTexto?.trim() && (
-        <section aria-labelledby="resena-exclusiva" className="border-t border-white/10 py-24 sm:py-32">
-          <Container>
-            <figure className="reveal-item mx-auto max-w-4xl text-center">
-              <h2 id="resena-exclusiva">
-                <Eyebrow>Lo que dice el cliente</Eyebrow>
-              </h2>
+        <section aria-labelledby="resena-exclusiva" className="site-wrap pt-24 sm:pt-32">
+          <Rule mark="Testimonio" />
+          <figure className="reveal-item mt-12 grid grid-cols-12 gap-6">
+            <h2 id="resena-exclusiva" className="sr-only">
+              Lo que dice el cliente
+            </h2>
+            <span aria-hidden="true" className="display-title col-span-12 text-8xl leading-[0.6] lg:col-span-2 lg:text-[9rem]" style={{ color: EXCLUSIVE_GOLD }}>
+              “
+            </span>
+            <div className="col-span-12 lg:col-span-9 lg:col-start-4">
               {!!project.resenaValoracion && (
-                <div className="mt-8 flex justify-center gap-1.5" role="img" aria-label={`${project.resenaValoracion} de 5 estrellas`}>
+                <div className="mb-6 flex gap-1.5" role="img" aria-label={`${project.resenaValoracion} de 5 estrellas`}>
                   {Array.from({ length: 5 }, (_, i) => (
-                    <svg key={i} viewBox="0 0 20 20" aria-hidden="true" className="h-4 w-4" style={{ fill: i < (project.resenaValoracion || 0) ? EXCLUSIVE_GOLD : "rgba(255,255,255,0.2)" }}>
+                    <svg
+                      key={i}
+                      viewBox="0 0 20 20"
+                      aria-hidden="true"
+                      className="h-4 w-4"
+                      style={{ fill: i < (project.resenaValoracion || 0) ? EXCLUSIVE_GOLD : "rgba(28,25,23,0.15)" }}
+                    >
                       <path d="M10 1.5l2.6 5.4 5.9.8-4.3 4.1 1 5.9L10 14.9l-5.2 2.8 1-5.9L1.5 7.7l5.9-.8z" />
                     </svg>
                   ))}
                 </div>
               )}
-              <blockquote className="display-title mt-10 text-2xl leading-snug text-white sm:text-3xl lg:text-4xl">
-                «{project.resenaTexto.trim()}»
+              <blockquote className="display-title text-[1.9rem] leading-[1.15] tracking-[-0.02em] sm:text-4xl lg:text-5xl">
+                {project.resenaTexto.trim()}
               </blockquote>
               {(project.resenaAutor || project.resenaCargo) && (
-                <figcaption className="mt-10">
-                  <GoldDivider />
-                  {project.resenaAutor && <span className="display-title mt-6 block text-lg text-white">{project.resenaAutor}</span>}
-                  {project.resenaCargo && (
-                    <span className="text-[10px] tracking-[0.22em] mt-1 block uppercase text-white/50">{project.resenaCargo}</span>
-                  )}
+                <figcaption className="mt-10 flex flex-wrap items-baseline gap-x-4 gap-y-1 border-t border-ink/15 pt-5">
+                  {project.resenaAutor && <span className="display-title text-lg">{project.resenaAutor}</span>}
+                  {project.resenaCargo && <Gold>{project.resenaCargo}</Gold>}
                 </figcaption>
               )}
-            </figure>
-          </Container>
+            </div>
+          </figure>
         </section>
       )}
 
-      {/* Contacto con el equipo de ALKO Exclusiva: texto a la izquierda, formulario abierto a la derecha */}
-      <section id="contacto-exclusiva" aria-labelledby="contacto-exclusiva-title" className="relative isolate overflow-hidden">
-        <Image src={fotos[fotos.length - 1] || project.imagen} alt="" fill sizes="100vw" className="-z-10 object-cover" />
-        <div className="absolute inset-0 -z-10 bg-stone-950/85" />
-        <Container className="py-24 sm:py-32">
-          <div className="grid grid-cols-1 items-center gap-14 lg:grid-cols-[1fr_420px] lg:gap-20">
-            <div className="text-center lg:text-left">
-              <ExclusiveSeal size={84} className="mx-auto lg:mx-0" />
-              <Eyebrow className="mt-10 block">Equipo ALKO Exclusiva</Eyebrow>
-              <h2
-                id="contacto-exclusiva-title"
-                className="display-title mx-auto mt-5 max-w-2xl whitespace-pre-line text-3xl leading-tight sm:text-5xl lg:mx-0"
-              >
-                {cta.titulo}
-              </h2>
-              <p className="mx-auto mt-6 max-w-xl text-base font-light leading-relaxed text-white/70 sm:text-lg lg:mx-0">{cta.texto}</p>
-              <GoldDivider className="mt-10 lg:justify-start" />
-              <p className="mt-8 text-sm font-light text-white/60">
-                O llámanos al{" "}
-                <a href={`tel:${settings.telefono.replace(/[^+\d]/g, "")}`} className="text-white underline decoration-[#c6a66b] underline-offset-4">
-                  {settings.telefono}
-                </a>
-              </p>
-            </div>
+      {/* Contacto reservado: texto a la izquierda, formulario en tarjeta carbón a la derecha. */}
+      <section id="contacto-exclusiva" aria-labelledby="contacto-exclusiva-title" className="site-wrap pb-24 pt-24 sm:pb-32 sm:pt-32">
+        <div className="grid grid-cols-12 gap-x-6 gap-y-12 border-t pt-12 lg:gap-x-10" style={{ borderColor: `${EXCLUSIVE_GOLD}80` }}>
+          <div className="col-span-12 lg:col-span-6">
+            <ExclusiveSeal size={84} tone="dark" />
+            <Gold className="mt-10 block">Equipo ALKO Exclusiva</Gold>
+            <h2
+              id="contacto-exclusiva-title"
+              className="display-title mt-5 max-w-[14ch] whitespace-pre-line text-[2.6rem] leading-[1] tracking-[-0.035em] sm:text-6xl lg:text-7xl"
+            >
+              {cta.titulo}
+            </h2>
+            <p className="mt-8 max-w-xl text-lg leading-relaxed text-stone-600">{cta.texto}</p>
+            <dl className="mt-10 max-w-md border-t border-ink/15">
+              <div className="flex items-baseline justify-between gap-6 border-b border-ink/15 py-3.5">
+                <dt>
+                  <Gold>Teléfono</Gold>
+                </dt>
+                <dd>
+                  <a href={`tel:${tel}`} className="display-title text-lg transition-colors hover:text-stone-500">
+                    {settings.telefono}
+                  </a>
+                </dd>
+              </div>
+              <div className="flex items-baseline justify-between gap-6 border-b border-ink/15 py-3.5">
+                <dt>
+                  <Gold>Atención</Gold>
+                </dt>
+                <dd className="text-sm">Personal y reservada</dd>
+              </div>
+            </dl>
+          </div>
 
-            <div className="border p-7 sm:p-9" style={{ borderColor: EXCLUSIVE_GOLD, backgroundColor: "rgba(12,10,9,0.7)" }}>
-              <span className="text-[10px] tracking-[0.22em] block uppercase" style={{ color: EXCLUSIVE_GOLD }}>
-                Contacto reservado
-              </span>
-              <h3 className="display-title mt-2 mb-6 text-2xl leading-tight text-white">{cta.boton}</h3>
-              <QuickContactForm compact source={`ALKO Exclusiva · ${project.title}`} email={settings.email} whatsappHref={whatsappHref} />
+          <div className="col-span-12 lg:col-span-5 lg:col-start-8">
+            <div className="relative bg-ink p-7 text-paper sm:p-10">
+              <span aria-hidden="true" className="pointer-events-none absolute inset-3 border" style={{ borderColor: `${EXCLUSIVE_GOLD}66` }} />
+              <div className="relative">
+                <Gold>Contacto reservado</Gold>
+                <h3 className="display-title mb-6 mt-3 text-2xl leading-tight sm:text-3xl">{cta.boton}</h3>
+                <QuickContactForm compact source={`ALKO Exclusiva · ${project.title}`} email={settings.email} whatsappHref={whatsappHref} />
+              </div>
             </div>
           </div>
-        </Container>
+        </div>
       </section>
 
-      {/* Más proyectos */}
+      {/* Más proyectos. */}
       {neighbours.length > 0 && (
-        <nav aria-label="Más proyectos" className="border-t border-white/10">
-          <div className={`grid grid-cols-1 ${neighbours.length > 1 ? "md:grid-cols-2" : ""}`}>
+        <nav aria-label="Más proyectos" className="site-wrap pb-16 sm:pb-20">
+          <div
+            className={`grid grid-cols-1 border-t ${neighbours.length > 1 ? "md:grid-cols-2" : ""}`}
+            style={{ borderColor: `${EXCLUSIVE_GOLD}80` }}
+          >
             {neighbours.map(({ label, project: other, arrow }, i) => (
               <Link
                 key={other.id}
                 href={`${ROUTES.projects}/${other.slug}`}
-                className={`group flex items-center gap-6 border-white/10 px-6 py-10 transition hover:bg-white/[0.03] sm:px-12 sm:py-14 ${i === 1 ? "md:justify-end md:border-l md:text-right" : ""}`}
+                className={`group flex items-center gap-6 pt-10 ${
+                  i === 1 ? "mt-10 border-t border-ink/10 md:mt-0 md:justify-end md:border-l md:border-t-0 md:pl-10 md:text-right" : "md:pr-10"
+                }`}
               >
-                <div>
-                  <span className="text-[10px] tracking-[0.22em] uppercase text-white/50">
+                <span className={`relative hidden aspect-square w-24 shrink-0 overflow-hidden sm:block ${i === 1 ? "md:order-2" : ""}`}>
+                  <Image src={other.imagen} alt="" fill sizes="96px" className="object-cover transition-transform duration-[1.6s] ease-alko group-hover:scale-110" />
+                </span>
+                <span>
+                  <span className="text-[10px] uppercase tracking-[0.24em] text-stone-500">
                     {arrow === "←" ? `${arrow} ${label}` : `${label} ${arrow}`}
                   </span>
-                  <span className="display-title mt-3 block text-2xl transition group-hover:text-[#c6a66b] sm:text-3xl">
+                  <span className="display-title mt-3 block text-2xl transition-colors group-hover:text-[#a8874c] sm:text-3xl">
                     {other.title}
                   </span>
-                  {other.exclusivo && <Eyebrow className="mt-2">ALKO Exclusiva</Eyebrow>}
-                </div>
+                  {other.exclusivo && <Gold className="mt-2 block">ALKO Exclusiva</Gold>}
+                </span>
               </Link>
             ))}
           </div>

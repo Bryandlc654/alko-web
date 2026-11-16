@@ -2,10 +2,11 @@ import { notFound } from "next/navigation";
 import Image from "@/components/ui/Image";
 import Link from "next/link";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
-import Container from "@/components/ui/Container";
 import Lightbox from "@/components/ui/Lightbox";
-import PageHero from "@/components/ui/PageHero";
-import ContactCta from "@/components/sections/ContactCta";
+import Prose from "@/components/ui/Prose";
+import ContactTrigger from "@/components/contact/ContactTrigger";
+import EditorialSection from "@/components/editorial/EditorialSection";
+import EditorialCta from "@/components/editorial/EditorialCta";
 import ExclusiveProject from "@/components/projects/ExclusiveProject";
 import { projectCta } from "@/lib/project-cta";
 import { ROUTES } from "@/lib/site";
@@ -22,6 +23,8 @@ const FICHA_COLS: Record<number, string> = {
   4: "sm:grid-cols-2 lg:grid-cols-4",
   5: "sm:grid-cols-3 lg:grid-cols-5",
 };
+
+const pad = (n: number) => String(n).padStart(2, "0");
 
 export async function generateStaticParams() {
   const projects = await getProjects();
@@ -57,14 +60,6 @@ export default async function ProjectDetail({
   if (!project) return notFound();
   const servicio = project.servicio ? await getSectorBySlug(project.servicio) : null;
 
-  const ficha = [
-    ["Tipología", project.tipologia],
-    ["Ubicación", project.ubicacion],
-    ["Superficie", project.superficie],
-    ["Plazo", project.plazo],
-    ["Año", project.anio],
-  ].filter(([, value]) => value);
-
   // Proyecto anterior y siguiente (circular) para seguir navegando.
   const index = projects.findIndex((p) => p.slug === project.slug);
   const prev = projects.length > 1 && index >= 0 ? projects[(index - 1 + projects.length) % projects.length] : null;
@@ -74,333 +69,373 @@ export default async function ProjectDetail({
     next && next.slug !== prev?.slug && { label: "Proyecto siguiente", project: next, arrow: "→" },
   ].filter(Boolean) as { label: string; project: typeof project; arrow: string }[];
 
-  const cta = projectCta(project);
-
   // Los proyectos ALKO Exclusiva tienen su propia plantilla.
   if (project.exclusivo) {
     return <ExclusiveProject project={project} servicio={servicio} neighbours={neighbours} settings={settings} />;
   }
 
-  // Antes y después solo si se han subido las dos; si no, se muestra únicamente la galería.
+  const cta = projectCta(project);
+  const { lead, rest } = splitLead(project.content || "");
+
+  const ficha = [
+    ["Tipología", project.tipologia],
+    ["Ubicación", project.ubicacion],
+    ["Superficie", project.superficie],
+    ["Plazo", project.plazo],
+    ["Año", project.anio],
+  ].filter(([, value]) => value);
+
+  const capitulos = [
+    { titulo: "El encargo", texto: project.reto },
+    { titulo: "La solución", texto: project.solucion },
+    { titulo: "El resultado", texto: project.resultado },
+  ].filter((c) => c.texto?.trim());
+
+  const alcance = (project.alcance || []).filter(Boolean);
+  const materiales = (project.materiales || []).filter((m) => m.elemento || m.detalle);
+  const cifras = (project.cifras || []).filter((c) => c.valor).slice(0, 4);
+
+  // Antes y después solo si se han subido las dos.
   const fotoAntes = project.fotoAntes?.trim();
   const fotoDespues = project.fotoDespues?.trim();
   const showBeforeAfter = Boolean(fotoAntes && fotoDespues);
 
-  // Galería de imágenes adicionales del proyecto
-  const galeriaImagenes = [project.imagen, ...project.galeria].filter(
-    (src, i, arr) => arr.indexOf(src) === i
-  );
+  // Galería sin la foto de portada (ya va arriba), salvo que sea la única.
+  const todas = [project.imagen, ...project.galeria]
+    .map((src) => src?.trim())
+    .filter((src, i, arr): src is string => !!src && arr.indexOf(src) === i);
+  const sinPortada = todas.filter((src) => src !== project.imagen?.trim());
+  const galeria = sinPortada.length > 0 ? sinPortada : todas;
 
-  // Lista de datos del proyecto para la columna izquierda
-  const infoResumida = [
-    { label: "Cliente", value: project.cliente },
-    {
-      label: "Servicio",
-      value: servicio ? (
-        <Link
-          href={`${ROUTES.sectors}/${servicio.slug}`}
-          className="text-ink underline decoration-amber-700/60 underline-offset-4 hover:text-amber-700 transition-colors"
-        >
-          {servicio.title}
-        </Link>
-      ) : null,
-    },
-    { label: "Tipología", value: project.tipologia },
-    { label: "Ubicación", value: project.ubicacion },
-    { label: "Superficie", value: project.superficie },
-    { label: "Plazo", value: project.plazo },
-    { label: "Año", value: project.anio },
-  ].filter((item) => Boolean(item.value));
+  // Numeración de las secciones según las que aparecen.
+  let n = 0;
+  const num = () => pad(++n);
 
   return (
-    <main className="bg-white text-ink">
-      {/* 1. Header Hero Principal */}
-      <PageHero
-        breadcrumbs={[{ label: "Proyectos", href: ROUTES.projects }, { label: project.title }]}
-        eyebrow={project.indice ? `Proyecto ${project.indice}` : "Proyecto"}
-        title={project.title}
-        image={project.imagen}
-        imageAlt={project.title}
-      >
-        {ficha.length > 0 && (
-          <dl className={`mt-12 grid grid-cols-1 border-t border-paper/20 ${FICHA_COLS[ficha.length]}`}>
-            {ficha.map(([label, value], i) => (
-              <div
-                key={label}
-                className={`flex items-baseline justify-between gap-4 border-b border-paper/20 py-4 sm:block sm:border-b-0 sm:py-5 sm:pr-4 ${
-                  i > 0 ? "sm:border-l sm:pl-4" : ""
-                }`}
-              >
-                <dt className="text-[10px] uppercase tracking-[0.22em] text-paper/60">{label}</dt>
-                <dd className="display-title text-right text-lg sm:mt-2 sm:text-left sm:text-2xl">{value}</dd>
-              </div>
-            ))}
-          </dl>
-        )}
-      </PageHero>
+    <main className="bg-paper text-ink">
+      {/* Cabecera clara: migas, titular grande y ficha técnica en una fila. */}
+      <header className="bg-paper">
+        <div className="site-wrap pt-28 sm:pt-36 lg:pt-40">
+          <div className="hh-rise flex items-center justify-between gap-6 border-b border-ink/15 pb-5">
+            <Breadcrumbs
+              items={[{ label: "Proyectos", href: ROUTES.projects }, { label: project.title }]}
+              tone="dark"
+              className="min-w-0"
+            />
+            <span className="hidden shrink-0 text-[10px] uppercase tracking-[0.22em] text-mid sm:inline">
+              Proyecto{project.indice && <span className="ml-2 text-bronze">{project.indice}</span>}
+            </span>
+          </div>
 
-      {/* 2. Bloque Memoria del Proyecto Simplificado */}
-      <section className="relative isolate overflow-clip">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 -z-10 mx-auto hidden max-w-7xl grid-cols-6 px-6 sm:px-10 lg:grid lg:px-12"
-        >
-          <div className="h-full border-x border-black/[0.06]" />
-          <div className="h-full border-r border-black/[0.06]" />
-          <div className="h-full border-r border-black/[0.06]" />
-          <div className="h-full border-r border-black/[0.06]" />
-          <div className="h-full border-r border-black/[0.06]" />
-          <div className="h-full border-r border-black/[0.06]" />
+          <h1 className="hh-rise display-title mt-12 max-w-[16ch] text-[2.9rem] leading-[0.96] tracking-[-0.045em] sm:mt-16 sm:text-7xl lg:text-[6.25rem] xl:text-[7.25rem]">
+            {project.title}
+          </h1>
+
+          {ficha.length > 0 && (
+            <dl
+              className={`hh-rise mt-12 grid grid-cols-1 border-t border-ink/15 sm:mt-16 ${FICHA_COLS[ficha.length]}`}
+              style={{ animationDelay: ".15s" }}
+            >
+              {ficha.map(([label, value], i) => (
+                <div
+                  key={label}
+                  className={`flex items-baseline justify-between gap-4 border-b border-ink/15 py-4 sm:block sm:border-b-0 sm:py-6 sm:pr-6 ${
+                    i > 0 ? "sm:border-l sm:pl-6" : ""
+                  }`}
+                >
+                  <dt className="text-[10px] uppercase tracking-[0.22em] text-mid">
+                    <span className="mr-2 text-bronze">{pad(i + 1)}</span>
+                    {label}
+                  </dt>
+                  <dd className="display-title text-right text-lg sm:mt-3 sm:text-left sm:text-2xl">{value}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
         </div>
 
-        <Container className="py-20 sm:py-28">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
-            {/* Columna Izquierda: Información Resumida en Lista */}
-            <div className="lg:col-span-4 reveal-item">
-              <div className="lg:sticky lg:top-32">
-                <div className="flex items-center gap-4">
-                  <span className="eyebrow">
-                    Memoria del proyecto
+        {project.imagen && (
+          <figure className="site-wrap mt-10 pb-6 sm:mt-14">
+            <div
+              className="hh-rise relative aspect-[4/3] overflow-hidden bg-piedra sm:aspect-[16/8]"
+              style={{ animationDelay: ".25s" }}
+            >
+              <Image src={project.imagen} alt={project.title} fill priority sizes="100vw" className="hh-zoom object-cover" />
+            </div>
+            <figcaption className="mt-4 flex items-center gap-4 text-mid">
+              <span className="text-[10px] uppercase tracking-[0.22em]">{project.cliente || "ALKO"}</span>
+              <span className="cota flex-1 text-ink" aria-hidden="true" />
+              {servicio ? (
+                <Link
+                  href={`${ROUTES.sectors}/${servicio.slug}`}
+                  className="text-[10px] uppercase tracking-[0.22em] transition-colors hover:text-bronze"
+                >
+                  {servicio.title} ↗
+                </Link>
+              ) : (
+                <span className="text-[10px] uppercase tracking-[0.22em]">{project.ubicacion || "Madrid"}</span>
+              )}
+            </figcaption>
+          </figure>
+        )}
+      </header>
+
+      {/* Memoria: entradilla grande, texto y relato por partes. */}
+      {(lead || rest || capitulos.length > 0) && (
+        <EditorialSection number={num()} label="Memoria del proyecto" title={lead || undefined}>
+          {rest && (
+            <div className="max-w-2xl">
+              <Prose html={rest} variant="article" />
+            </div>
+          )}
+          {capitulos.length > 0 && (
+            <ol className={`border-t border-ink/15 ${rest ? "mt-16" : ""}`}>
+              {capitulos.map((cap, i) => (
+                <li key={cap.titulo} className="reveal-item grid grid-cols-12 gap-x-6 gap-y-3 border-b border-ink/15 py-8">
+                  <span className="col-span-12 text-[10px] uppercase tracking-[0.22em] text-bronze sm:col-span-2">
+                    Parte {pad(i + 1)}
                   </span>
+                  <h3 className="display-title col-span-12 text-2xl leading-tight sm:col-span-4 sm:text-3xl">{cap.titulo}</h3>
+                  <p className="col-span-12 whitespace-pre-line leading-relaxed text-mid sm:col-span-6">{cap.texto}</p>
+                </li>
+              ))}
+            </ol>
+          )}
+        </EditorialSection>
+      )}
+
+      {/* Cifras en banda carbón. */}
+      {cifras.length > 0 && (
+        <section className="bg-ink text-paper">
+          <div className="site-wrap py-16 sm:py-20">
+            <dl className="grid grid-cols-2 gap-y-10 lg:grid-cols-4">
+              {cifras.map((c, i) => (
+                <div
+                  key={`${c.valor}-${i}`}
+                  className={`reveal-item pr-6 ${i % 2 === 1 ? "border-l border-paper/15 pl-6" : ""} ${
+                    i > 0 ? "lg:border-l lg:border-paper/15 lg:pl-8" : ""
+                  }`}
+                >
+                  <dt className="sr-only">{c.etiqueta}</dt>
+                  <dd>
+                    <span className="display-title block text-5xl leading-none text-bronze-light sm:text-6xl">{c.valor}</span>
+                    <span className="mt-4 block text-[10px] uppercase tracking-[0.22em] text-paper/60">{c.etiqueta}</span>
+                  </dd>
                 </div>
-
-                {infoResumida.length > 0 && (
-                  <dl className="mt-8 border-t border-stone-900/15">
-                    {infoResumida.map((item) => (
-                      <div key={item.label} className="border-b border-stone-900/15 py-4">
-                        <dt className="eyebrow">
-                          {item.label}
-                        </dt>
-                        <dd className="display-title mt-1 text-base sm:text-lg text-ink">
-                          {item.value}
-                        </dd>
-                      </div>
-                    ))}
-                  </dl>
-                )}
-              </div>
-            </div>
-
-            {/* Columna Derecha: Antes/Después (opcional) + Galería */}
-            <div className="lg:col-span-8 reveal-item" style={{ transitionDelay: "120ms" }}>
-              <Lightbox className="space-y-12 sm:space-y-16">
-                {/* Bloque 1: Comparativa Antes y Después */}
-                {showBeforeAfter && fotoAntes && fotoDespues && (
-                  <div>
-                    <div className="mb-6 flex items-center gap-4">
-                      <span className="eyebrow">
-                        Registro fotográfico · Antes y Después
-                      </span>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
-                      {/* Foto ANTES */}
-                      <div className="group relative overflow-hidden bg-stone-100 border border-stone-200/80">
-                        <button
-                          type="button"
-                          data-lightbox-src={fotoAntes}
-                          data-lightbox-alt={`${project.title} · Antes`}
-                          aria-label="Ver foto de antes en grande"
-                          className="relative block aspect-[4/3] w-full overflow-hidden cursor-zoom-in"
-                        >
-                          <Image
-                            src={fotoAntes}
-                            alt={`Estado inicial / antes de ${project.title}`}
-                            fill
-                            sizes="(max-width: 768px) 100vw, 500px"
-                            className="object-cover object-center grayscale contrast-125 transition duration-500 group-hover:scale-105"
-                          />
-                        </button>
-                        <div className="p-4 bg-stone-900 text-white flex items-center justify-between">
-                          <span className="text-[10px] tracking-[0.22em] uppercase text-stone-400">
-                            Estado Inicial
-                          </span>
-                          <span className="display-title text-sm uppercase tracking-wider text-amber-500">
-                            Antes
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Foto DESPUÉS */}
-                      <div className="group relative overflow-hidden bg-stone-100 border border-stone-200/80">
-                        <button
-                          type="button"
-                          data-lightbox-src={fotoDespues}
-                          data-lightbox-alt={`${project.title} · Después`}
-                          aria-label="Ver foto de después en grande"
-                          className="relative block aspect-[4/3] w-full overflow-hidden cursor-zoom-in"
-                        >
-                          <Image
-                            src={fotoDespues}
-                            alt={`Resultado / después de ${project.title}`}
-                            fill
-                            sizes="(max-width: 768px) 100vw, 500px"
-                            className="object-cover object-center transition duration-500 group-hover:scale-105"
-                          />
-                        </button>
-                        <div className="p-4 bg-amber-700 text-white flex items-center justify-between">
-                          <span className="text-[10px] tracking-[0.22em] uppercase text-amber-200">
-                            Obra Entregada
-                          </span>
-                          <span className="display-title text-sm uppercase tracking-wider text-white">
-                            Después
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                )}
-
-                {/* Bloque 2: Galería de Imágenes dentro de la misma sección */}
-                {galeriaImagenes.length > 0 && (
-                  <div className={showBeforeAfter ? "pt-10 border-t border-stone-200" : ""}>
-                    <div className="mb-6 flex items-center justify-between">
-                      <span className="eyebrow">
-                        Galería del proyecto · {galeriaImagenes.length} imágenes
-                      </span>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                      {galeriaImagenes.map((src, i, all) => {
-                        const wide = i === 0 || (all.length % 2 === 1 && i === all.length - 1);
-                        return (
-                          <figure
-                            key={`${src}-${i}`}
-                            className={`relative overflow-hidden bg-stone-200 border border-stone-200/80 group ${
-                              wide ? "sm:col-span-2 aspect-[16/9]" : "aspect-[4/3]"
-                            }`}
-                          >
-                            <button
-                              type="button"
-                              data-lightbox-src={src}
-                              data-lightbox-alt={`${project.title} · Imagen ${i + 1}`}
-                              aria-label={`Ver imagen ${i + 1} en grande`}
-                              className="absolute inset-0 cursor-zoom-in"
-                            >
-                              <Image
-                                src={src}
-                                alt={`${project.title} — imagen ${i + 1}`}
-                                fill
-                                sizes={wide ? "(max-width: 1280px) 100vw, 1000px" : "(max-width: 640px) 100vw, 500px"}
-                                className="object-cover object-center transition duration-700 ease-out group-hover:scale-105"
-                              />
-                            </button>
-                          </figure>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </Lightbox>
-            </div>
+              ))}
+            </dl>
           </div>
-        </Container>
-      </section>
-
-      {/* Reseña del cliente (solo si se ha escrito en el panel) */}
-      {project.resenaTexto?.trim() && (
-        <section aria-labelledby="resena-titulo" className="border-t border-stone-200 bg-stone-50">
-          <Container className="py-20 sm:py-28">
-            <figure className="reveal-item mx-auto max-w-4xl">
-              <div className="flex items-center gap-4">
-                <h2 id="resena-titulo" className="eyebrow">
-                  Lo que dice el cliente
-                </h2>
-              </div>
-
-              {!!project.resenaValoracion && (
-                <div className="mt-10 flex gap-1 text-amber-700" role="img" aria-label={`${project.resenaValoracion} de 5 estrellas`}>
-                  {Array.from({ length: 5 }, (_, i) => (
-                    <svg
-                      key={i}
-                      viewBox="0 0 20 20"
-                      aria-hidden="true"
-                      className={`h-5 w-5 ${i < (project.resenaValoracion || 0) ? "fill-current" : "fill-stone-300"}`}
-                    >
-                      <path d="M10 1.5l2.6 5.4 5.9.8-4.3 4.1 1 5.9L10 14.9l-5.2 2.8 1-5.9L1.5 7.7l5.9-.8z" />
-                    </svg>
-                  ))}
-                </div>
-              )}
-
-              <blockquote className={project.resenaValoracion ? "mt-6" : "mt-10"}>
-                <span aria-hidden="true" className="display-title block text-7xl leading-none text-amber-700/40 sm:text-8xl">
-                  “
-                </span>
-                <p className="display-title -mt-6 text-2xl leading-snug text-ink sm:-mt-8 sm:text-3xl lg:text-4xl">
-                  {project.resenaTexto.trim()}
-                </p>
-              </blockquote>
-
-              {(project.resenaAutor || project.resenaCargo) && (
-                <figcaption className="mt-10 flex items-center gap-4 border-t border-stone-900/15 pt-6">
-                  <span aria-hidden="true" className="h-px w-10 bg-amber-700" />
-                  <span>
-                    {project.resenaAutor && (
-                      <span className="display-title block text-lg text-ink">{project.resenaAutor}</span>
-                    )}
-                    {project.resenaCargo && (
-                      <span className="eyebrow mt-0.5 block">
-                        {project.resenaCargo}
-                      </span>
-                    )}
-                  </span>
-                </figcaption>
-              )}
-            </figure>
-          </Container>
         </section>
       )}
 
-      {/* 3. Navegación entre más proyectos */}
-      {neighbours.length > 0 && (
-        <nav aria-label="Más proyectos" className="border-t border-stone-300">
-          <div className={`grid grid-cols-1 ${neighbours.length > 1 ? "md:grid-cols-2" : ""}`}>
-            {neighbours.map(({ label, project: other, arrow }, i) => (
-              <Link
-                key={other.id}
-                href={`${ROUTES.projects}/${other.slug}`}
-                className={`group relative isolate flex min-h-[280px] sm:min-h-[340px] items-end overflow-hidden bg-stone-950 p-6 sm:p-10 lg:p-12 text-white ${
-                  i === 1 ? "md:text-right md:justify-end" : ""
-                }`}
-              >
-                <Image
-                  src={other.imagen}
-                  alt=""
-                  fill
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  className="-z-10 object-cover object-center opacity-50 transition duration-700 ease-out group-hover:scale-105 group-hover:opacity-70"
-                />
-                <div className="absolute inset-0 -z-10 bg-gradient-to-t from-stone-950/90 via-stone-950/30 to-transparent" />
-                <div>
-                  <span className="text-[10px] tracking-[0.22em] uppercase text-white/60">
-                    {arrow === "←" ? `${arrow} ${label}` : `${label} ${arrow}`}
+      {/* Alcance y acabados. */}
+      {(alcance.length > 0 || materiales.length > 0) && (
+        <EditorialSection number={num()} label="La obra en detalle" title="Alcance y acabados" tone="white">
+          <div className={`grid grid-cols-1 gap-12 ${alcance.length > 0 && materiales.length > 0 ? "xl:grid-cols-2" : ""}`}>
+            {alcance.length > 0 && (
+              <div className="reveal-item">
+                <p className="mb-4 text-[10px] uppercase tracking-[0.22em] text-mid">Partidas ejecutadas</p>
+                <ul className="border-t border-ink/15">
+                  {alcance.map((item, i) => (
+                    <li key={`${item}-${i}`} className="flex gap-5 border-b border-ink/15 py-4">
+                      <span className="pt-0.5 text-[10px] tracking-[0.18em] text-bronze">{pad(i + 1)}</span>
+                      <span className="leading-relaxed">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {materiales.length > 0 && (
+              <div className="reveal-item">
+                <p className="mb-4 text-[10px] uppercase tracking-[0.22em] text-mid">Materiales y acabados</p>
+                <dl className="border-t border-ink/15">
+                  {materiales.map((m, i) => (
+                    <div key={`${m.elemento}-${i}`} className="grid grid-cols-1 gap-1 border-b border-ink/15 py-4 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] sm:gap-6">
+                      <dt className="display-title text-lg">{m.elemento}</dt>
+                      <dd className="leading-relaxed text-mid">{m.detalle}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            )}
+          </div>
+        </EditorialSection>
+      )}
+
+      {/* Antes y después. */}
+      {showBeforeAfter && fotoAntes && fotoDespues && (
+        <EditorialSection number={num()} label="Registro fotográfico" title="Antes y después" wide>
+          <Lightbox className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            {[
+              { src: fotoAntes, label: "Antes", note: "Estado inicial", tag: "bg-paper text-ink", extra: "grayscale" },
+              { src: fotoDespues, label: "Después", note: "Obra entregada", tag: "bg-ink text-paper", extra: "" },
+            ].map((f) => (
+              <figure key={f.label} className="reveal-item">
+                <button
+                  type="button"
+                  data-lightbox-src={f.src}
+                  data-lightbox-alt={`${project.title} · ${f.label}`}
+                  aria-label={`Ver foto de ${f.label.toLowerCase()} en grande`}
+                  className="group relative block aspect-[4/3] w-full cursor-zoom-in overflow-hidden bg-piedra"
+                >
+                  <Image
+                    src={f.src}
+                    alt={`${project.title}, ${f.label.toLowerCase()}`}
+                    fill
+                    sizes="(max-width: 640px) 100vw, 50vw"
+                    className={`object-cover transition-transform duration-[1.6s] ease-alko group-hover:scale-[1.03] ${f.extra}`}
+                  />
+                  <span className={`absolute left-4 top-4 px-2.5 py-1.5 text-[10px] uppercase tracking-[0.22em] ${f.tag}`}>
+                    {f.label}
                   </span>
-                  <span className="display-title mt-3 block text-2xl sm:text-3xl lg:text-4xl leading-tight">
-                    {other.title}
-                  </span>
-                  <span className="mt-2 block text-sm text-white/60 font-light">
-                    {[other.tipologia, other.anio].filter(Boolean).join(" · ")}
-                  </span>
-                </div>
-              </Link>
+                </button>
+                <figcaption className="mt-4 flex items-center justify-between border-t border-ink/15 pt-3 text-[10px] uppercase tracking-[0.22em] text-mid">
+                  <span>{f.note}</span>
+                  <span>{project.title}</span>
+                </figcaption>
+              </figure>
             ))}
+          </Lightbox>
+        </EditorialSection>
+      )}
+
+      {/* Galería: ritmo de una ancha y dos medias, numeradas. */}
+      {galeria.length > 0 && (
+        <EditorialSection
+          number={num()}
+          label={`Galería · ${pad(galeria.length)} ${galeria.length === 1 ? "imagen" : "imágenes"}`}
+          title="El proyecto en imágenes"
+          tone="white"
+          wide
+        >
+          <Lightbox className="grid grid-cols-1 gap-x-6 gap-y-10 md:grid-cols-2">
+            {galeria.map((src, i, all) => {
+              const wide = i % 3 === 0 || (i === all.length - 1 && i % 3 === 1);
+              return (
+                <figure key={`${src}-${i}`} className={`reveal-item ${wide ? "md:col-span-2" : ""}`}>
+                  <button
+                    type="button"
+                    data-lightbox-src={src}
+                    data-lightbox-alt={`${project.title} · Imagen ${i + 1}`}
+                    aria-label={`Ver imagen ${i + 1} en grande`}
+                    className={`group relative block w-full cursor-zoom-in overflow-hidden bg-piedra ${
+                      wide ? "aspect-[4/3] md:aspect-[16/8]" : "aspect-[4/3] md:aspect-[4/5]"
+                    }`}
+                  >
+                    <Image
+                      src={src}
+                      alt={`${project.title}, imagen ${i + 1}`}
+                      fill
+                      sizes={wide ? "100vw" : "(max-width: 768px) 100vw, 50vw"}
+                      className="object-cover transition-transform duration-[1.6s] ease-alko group-hover:scale-[1.03]"
+                    />
+                  </button>
+                  <figcaption className="mt-3 flex items-center justify-between text-[10px] uppercase tracking-[0.22em] text-mid">
+                    <span>
+                      <span className="text-bronze">{pad(i + 1)}</span> / {pad(all.length)}
+                    </span>
+                    <span aria-hidden="true">↗</span>
+                  </figcaption>
+                </figure>
+              );
+            })}
+          </Lightbox>
+        </EditorialSection>
+      )}
+
+      {/* Reseña del cliente (solo si se ha escrito en el panel). */}
+      {project.resenaTexto?.trim() && (
+        <EditorialSection number={num()} label="Lo que dice el cliente">
+          <figure className="reveal-item">
+            {!!project.resenaValoracion && (
+              <div className="flex gap-1 text-bronze" role="img" aria-label={`${project.resenaValoracion} de 5 estrellas`}>
+                {Array.from({ length: 5 }, (_, i) => (
+                  <svg
+                    key={i}
+                    viewBox="0 0 20 20"
+                    aria-hidden="true"
+                    className={`h-4 w-4 ${i < (project.resenaValoracion || 0) ? "fill-current" : "fill-ink/15"}`}
+                  >
+                    <path d="M10 1.5l2.6 5.4 5.9.8-4.3 4.1 1 5.9L10 14.9l-5.2 2.8 1-5.9L1.5 7.7l5.9-.8z" />
+                  </svg>
+                ))}
+              </div>
+            )}
+            <blockquote className="display-title mt-8 max-w-4xl text-[1.9rem] leading-[1.15] tracking-[-0.02em] sm:text-4xl lg:text-5xl">
+              <span aria-hidden="true" className="text-bronze">«</span>
+              {project.resenaTexto.trim()}
+              <span aria-hidden="true" className="text-bronze">»</span>
+            </blockquote>
+            {(project.resenaAutor || project.resenaCargo) && (
+              <figcaption className="mt-10 flex flex-wrap items-baseline gap-x-4 gap-y-1 border-t border-ink/15 pt-5">
+                {project.resenaAutor && <span className="display-title text-lg">{project.resenaAutor}</span>}
+                {project.resenaCargo && (
+                  <span className="text-[10px] uppercase tracking-[0.22em] text-mid">{project.resenaCargo}</span>
+                )}
+              </figcaption>
+            )}
+          </figure>
+        </EditorialSection>
+      )}
+
+      {/* Cierre: llamada a la acción (textos editables en el panel). */}
+      <EditorialCta
+        label="Tu proyecto"
+        title={cta.titulo}
+        description={cta.texto}
+        meta={
+          <a href={`tel:${settings.telefono.replace(/[^+\d]/g, "")}`} className="transition-colors hover:text-paper">
+            O llámanos al <span className="text-paper underline decoration-bronze-light underline-offset-4">{settings.telefono}</span>
+          </a>
+        }
+      >
+        <ContactTrigger mode="avanzado" source={`Proyecto ${project.title}`} className="btn btn-paper">
+          {cta.boton} <span aria-hidden="true">→</span>
+        </ContactTrigger>
+        <Link href={ROUTES.projects} className="btn btn-ghost-light">
+          Ver todas las obras
+        </Link>
+      </EditorialCta>
+
+      {/* Más proyectos: anterior y siguiente con miniatura enmarcada. */}
+      {neighbours.length > 0 && (
+        <nav aria-label="Más proyectos" className="bg-paper">
+          <div className="site-wrap py-16 sm:py-20">
+            <div className={`grid grid-cols-1 gap-10 border-t border-ink/15 pt-8 ${neighbours.length > 1 ? "md:grid-cols-2" : ""}`}>
+              {neighbours.map(({ label, project: other, arrow }, i) => (
+                <Link
+                  key={other.id}
+                  href={`${ROUTES.projects}/${other.slug}`}
+                  className={`group grid grid-cols-[minmax(0,2fr)_minmax(0,3fr)] items-center gap-5 sm:gap-8 ${
+                    i === 1 ? "md:border-l md:border-ink/15 md:pl-10" : ""
+                  }`}
+                >
+                  <span className="relative block aspect-[4/3] overflow-hidden bg-piedra">
+                    <Image
+                      src={other.imagen}
+                      alt=""
+                      fill
+                      sizes="(max-width: 768px) 40vw, 20vw"
+                      className="object-cover transition-transform duration-[1.6s] ease-alko group-hover:scale-[1.05]"
+                    />
+                  </span>
+                  <span>
+                    <span className="text-[10px] uppercase tracking-[0.22em] text-mid">
+                      {arrow === "←" ? `${arrow} ${label}` : `${label} ${arrow}`}
+                    </span>
+                    <span className="display-title mt-3 block text-2xl leading-tight transition-colors group-hover:text-bronze sm:text-3xl">
+                      {other.title}
+                    </span>
+                    <span className="mt-2 block text-sm text-mid">
+                      {[other.tipologia, other.anio].filter(Boolean).join(" · ")}
+                    </span>
+                  </span>
+                </Link>
+              ))}
+            </div>
           </div>
         </nav>
       )}
-
-      {/* 4. Llamada a la acción final del proyecto (textos editables en el panel) */}
-      <ContactCta
-        settings={settings}
-        titulo={cta.titulo}
-        descripcion={cta.texto}
-        boton={cta.boton}
-        imagen={project.fotoDespues?.trim() || project.imagen}
-        source={`Proyecto ${project.title}`}
-        overlay
-        formulario="avanzado"
-      />
     </main>
   );
 }
