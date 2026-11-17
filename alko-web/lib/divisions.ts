@@ -28,7 +28,7 @@ export const DIVISIONS: Division[] = [
     name: "Residential",
     label: "Residencial",
     desc: "Viviendas, reformas integrales y proyectos residenciales de alta gama.",
-    image: "/el-viso.jpg",
+    image: "/division-residencial.jpg",
     sectorSlugs: ["reformas-integrales", "viviendas"],
   },
   {
@@ -37,7 +37,7 @@ export const DIVISIONS: Division[] = [
     name: "Corporate",
     label: "Corporativo",
     desc: "Oficinas, sedes empresariales e implantación de empresas.",
-    image: "/sector-oficinas.jpg",
+    image: "/division-corporate.jpg",
     sectorSlugs: ["oficinas"],
   },
   {
