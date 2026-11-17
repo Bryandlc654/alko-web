@@ -38,8 +38,8 @@ export default function Positioning() {
         <figure className="col-span-12 lg:col-span-5 lg:col-start-8">
           <div className="reveal-scale relative aspect-[4/5] overflow-hidden bg-piedra">
             <Image
-              src="/service-interior-1.jpg"
-              alt="Interior reformado por ALKO"
+              src="/tesis-cocina-tableta.jpg"
+              alt="Dirección de obra de una cocina integral por ALKO"
               fill
               sizes="(max-width: 1024px) 100vw, 40vw"
               className="object-cover"
