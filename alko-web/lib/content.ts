@@ -24,8 +24,21 @@ import type {
  */
 
 export const DEFAULT_HERO_SLIDES: Slide[] = [
-  { id: "hero-1", image: "/slide1.jpg", alt: "Proyecto de Arquitectura y Reforma 1" },
-  { id: "hero-2", image: "/slide2.jpg", alt: "Proyecto de Arquitectura y Reforma 2" },
+  {
+    id: "hero-1",
+    image: "/hero-dormitorio.jpg",
+    alt: "Dormitorio con iluminación indirecta, armario a medida y luz natural",
+  },
+  {
+    id: "hero-2",
+    image: "/hero-cocina.jpg",
+    alt: "Cocina con isla, electrodomésticos integrados y suelo de madera",
+  },
+  {
+    id: "hero-3",
+    image: "/hero-salon.jpg",
+    alt: "Salón con cocina integrada, ventanales y estanterías iluminadas",
+  },
 ];
 
 export const DEFAULT_SHOWCASE_SLIDES: Slide[] = [
