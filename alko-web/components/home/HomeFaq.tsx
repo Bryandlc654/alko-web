@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useId, useState } from "react";
 import ContactTrigger from "@/components/contact/ContactTrigger";
 import { HOME_FAQ } from "@/lib/faq";
@@ -21,22 +20,8 @@ export default function HomeFaq() {
         </h2>
       </div>
 
-      <div className="site-wrap mt-16 grid items-start gap-10 md:grid-cols-[172px_1fr_auto] lg:grid-cols-[1fr_564px_1fr]">
-        <aside className="reveal-item hidden w-[172px] bg-white p-1 md:block">
-          <span className="relative block aspect-[164/134]">
-            <Image src="/proceso-control.jpg" alt="" fill sizes="172px" className="object-cover" />
-          </span>
-          <p className="px-1.5 pt-3 text-[12px] leading-snug">Nuestro equipo te ayuda a planificar tu próximo proyecto.</p>
-          <ContactTrigger
-            mode="avanzado"
-            source="Portada · Preguntas"
-            className="mx-1.5 mb-2 mt-3 inline-flex items-center gap-3 border-b border-ink pb-1 text-[10px] uppercase tracking-[0.18em] transition-colors hover:border-bronze hover:text-bronze"
-          >
-            Contacto <span aria-hidden="true">→</span>
-          </ContactTrigger>
-        </aside>
-
-        <div className="mx-auto w-full max-w-[564px]">
+      <div className="site-wrap mt-16 grid items-start gap-10 md:grid-cols-[1fr_auto] lg:grid-cols-[1fr_564px_1fr]">
+        <div className="mx-auto w-full max-w-[564px] lg:col-start-2">
           {HOME_FAQ.map((item, i) => {
             const isOpen = open === i;
             const panelId = `${uid}-faq-${i}`;
