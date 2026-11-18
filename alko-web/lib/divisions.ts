@@ -71,25 +71,25 @@ export const METHOD_STEPS: { num: string; title: string; text: string; image: st
   {
     num: "02",
     title: "Definir el alcance",
-    image: "/proceso-instalaciones.jpg",
+    image: "/metodo-definir-alcance.jpg",
     text: "Establecemos las soluciones y partidas a estudiar, los criterios técnicos y las responsabilidades de cada interviniente.",
   },
   {
     num: "03",
     title: "Planificar y comprar",
-    image: "/proceso-compras.jpg",
+    image: "/metodo-planificar.jpg",
     text: "Organizamos los oficios, el calendario de ejecución y la selección de materiales de acuerdo con el proyecto aprobado.",
   },
   {
     num: "04",
     title: "Ejecutar y coordinar",
-    image: "/proceso-construccion.jpg",
+    image: "/metodo-ejecutar.jpg",
     text: "Trabajamos con control de calidad, seguimiento del avance y comunicación de incidencias durante la obra.",
   },
   {
     num: "05",
     title: "Verificar y entregar",
-    image: "/proceso-entrega.jpg",
+    image: "/metodo-entregar.jpg",
     text: "Comprobamos los trabajos y formalizamos la entrega conforme al alcance contratado.",
   },
 ];
