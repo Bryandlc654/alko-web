@@ -1485,7 +1485,7 @@ export const DEFAULT_NOSOTROS_PAGE_CONTENT: import('./types').NosotrosPageConten
   metodoLead: "Coordinar antes que ejecutar: un único equipo mantiene construcción, instalaciones, compras y gestión técnica bajo control de principio a fin.",
   metodoCol1: "Trabajamos como un solo equipo, no como departamentos aislados. Antes de empezar la obra definimos la secuencia, el calendario y las compras críticas para que cada oficio entre en el momento exacto.",
   metodoCol2: "Esa coordinación reduce interfaces, acelera decisiones y mantiene la coherencia técnica del proyecto. El resultado es una ejecución previsible, sin sorpresas de plazo ni de coste.",
-  metodoImagen: "/proceso-compras.jpg",
+  metodoImagen: "/nosotros-metodo.jpg",
 
   valoresTag: "Valores",
   valoresTitulo: "Lo que marca la diferencia.",

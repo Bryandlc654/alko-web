@@ -207,8 +207,8 @@ export default async function NosotrosPage() {
           </div>
           <div className="reveal-scale relative mt-14 aspect-[16/9] overflow-hidden bg-piedra">
             <Image
-              src={pageContent.metodoImagen || "/proceso-compras.jpg"}
-              alt="Compras y planificación de la obra por el equipo de ALKO"
+              src={pageContent.metodoImagen || "/nosotros-metodo.jpg"}
+              alt="Equipo de ALKO revisando planos en obra"
               fill
               sizes="(max-width: 1024px) 100vw, 75vw"
               className="object-cover"
