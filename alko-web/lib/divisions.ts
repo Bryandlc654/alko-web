@@ -65,7 +65,7 @@ export const METHOD_STEPS: { num: string; title: string; text: string; image: st
   {
     num: "01",
     title: "Escuchar y evaluar",
-    image: "/proceso-coordinacion.jpg",
+    image: "/metodo-escuchar.jpg",
     text: "Revisamos necesidades, documentación existente y características del inmueble para delimitar el encargo.",
   },
   {
