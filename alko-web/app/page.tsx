@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import DivisionsGrid from "@/components/home/DivisionsGrid";
 import FeaturedWorks from "@/components/home/FeaturedWorks";
 import HomeArticles from "@/components/home/HomeArticles";
-import HomeContact from "@/components/home/HomeContact";
+import FinalContact from "@/components/sections/FinalContact";
 import HomeFaq from "@/components/home/HomeFaq";
 import HomeHero from "@/components/home/HomeHero";
 import ManifestoBand from "@/components/home/ManifestoBand";
@@ -107,7 +107,7 @@ export default async function Home() {
       <Materials fabricantes={data.fabricantes} content={data.homeContent} />
       <HomeFaq />
       <HomeArticles articles={data.articles} />
-      <HomeContact settings={data.settings} />
+      <FinalContact settings={data.settings} />
     </main>
   );
 }

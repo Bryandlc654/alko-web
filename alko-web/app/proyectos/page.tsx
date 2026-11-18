@@ -1,7 +1,7 @@
 import ProjectsGallery from "@/components/ui/ProjectsGallery";
 import { projectCategory } from "@/lib/project-category";
 import EditorialHeader from "@/components/editorial/EditorialHeader";
-import ContactCta from "@/components/sections/ContactCta";
+import FinalContact from "@/components/sections/FinalContact";
 import { getProjects, getSettings } from "@/lib/wordpress";
 import { getDbProjectsPageContent } from "@/lib/db/mysql";
 import { splitLead } from "@/lib/utils";
@@ -69,7 +69,7 @@ export default async function ProyectosPage() {
         <ProjectsGallery projects={summaries} />
       </div>
 
-      <ContactCta settings={settings} />
+      <FinalContact settings={settings} id="contacto" source="Formulario proyectos · /proyectos" />
     </main>
   );
 }
