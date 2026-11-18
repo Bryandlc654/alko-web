@@ -201,6 +201,7 @@ export const DEFAULT_SECTORS: Sector[] = [
     enlace: "/servicios/residencial",
     content: "<p>Acompañamos a arquitectos y propietarios desde la cimentación o la demolición hasta el último detalle de carpintería y domótica. Redistribución espacial, refuerzo estructural y restauración de elementos protegidos, con un arquitecto técnico asignado y un presupuesto cerrado en cada fase.</p>",
     landing: {
+      supportImage: "/manifiesto-comedor.jpg",
       includesImage: "/residencial-equipo.jpg",
       // Mantiene la foto actual del cierre, independiente de la del bloque «Qué incluye».
       ctaImage: "https://raw.githubusercontent.com/Bryandlc654/alko-web/media/uploads/fotografia_reforma_rm_dsc6962-1793470043663.webp",
