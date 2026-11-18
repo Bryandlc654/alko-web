@@ -1610,7 +1610,7 @@ export const DEFAULT_EQUIPO_PAGE_CONTENT: import('./types').EquipoPageContent = 
   headerDescripcion: "Un equipo multidisciplinar que comparte un mismo criterio constructivo. Dirección técnica, arquitectura, obra, instalaciones y atención al cliente.",
   headerBgImage: "/proceso-coordinacion.jpg",
 
-  imagenDestacada: "/90dias.jpg",
+  imagenDestacada: "/equipo-header.jpg",
 
   filosofiaTitulo: "Menos compartimentos. Más equipo.",
   filosofiaTexto: "Trabajamos como un solo equipo, no como departamentos aislados. Eso reduce interfaces, acelera decisiones y mantiene la coherencia del proyecto de principio a fin.",

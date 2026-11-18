@@ -68,8 +68,8 @@ export default async function EquipoPage() {
             </div>
           </dl>
         }
-        image={pageContent.imagenDestacada || pageContent.headerBgImage || "/90dias.jpg"}
-        imageAlt="Interior de un proyecto de ALKO"
+        image={pageContent.imagenDestacada || pageContent.headerBgImage || "/equipo-header.jpg"}
+        imageAlt="Supervisor de ALKO revisando la obra con planos"
         imagePosition="object-top"
         caption="El equipo, en obra"
       />
