@@ -1,6 +1,6 @@
 import Image from "@/components/ui/Image";
 import Link from "next/link";
-import ContactCta from "@/components/sections/ContactCta";
+import FinalContact from "@/components/sections/FinalContact";
 import EditorialHeader from "@/components/editorial/EditorialHeader";
 import EditorialSection from "@/components/editorial/EditorialSection";
 import { ROUTES } from "@/lib/site";
@@ -123,7 +123,7 @@ export default async function ServiciosPage() {
         </ul>
       </EditorialSection>
 
-      <ContactCta settings={settings} source="Servicios" />
+      <FinalContact settings={settings} id="contacto" source="Formulario divisiones · /servicios" />
     </main>
   );
 }
