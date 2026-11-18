@@ -39,8 +39,8 @@ export default function TeamSplit({ sectors }: { sectors: Sector[] }) {
         </div>
         <div className="relative min-h-[420px] md:min-h-0">
           <Image
-            src="/proceso-coordinacion.jpg"
-            alt="Equipo de ALKO coordinando la obra"
+            src="/equipo-pasillo.jpg"
+            alt="Pasillo de una reforma en ejecución, con iluminación LED y un operario rematando el suelo"
             fill
             sizes="(max-width: 768px) 100vw, 52vw"
             className="object-cover"
