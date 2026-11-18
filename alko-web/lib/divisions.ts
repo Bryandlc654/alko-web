@@ -46,7 +46,7 @@ export const DIVISIONS: Division[] = [
     name: "Hospitality & Retail",
     label: "Hospitalidad y comercio",
     desc: "Hoteles, restauración, boutiques, locales comerciales y showrooms.",
-    image: "/sector-hospitality.jpg",
+    image: "/division-hospitality.jpg",
     sectorSlugs: ["retail", "hoteles-y-locales"],
   },
   {
@@ -55,7 +55,7 @@ export const DIVISIONS: Division[] = [
     name: "Industrial & Technical",
     label: "Industrial y técnico",
     desc: "Adecuación de naves, rehabilitación e instalaciones complejas.",
-    image: "/proceso-construccion.jpg",
+    image: "/division-industrial.jpg",
     sectorSlugs: ["naves-industriales", "industrial"],
   },
 ];
