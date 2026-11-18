@@ -6,7 +6,7 @@ export default function Materials({ fabricantes, content }: { fabricantes: Fabri
   if (fabricantes.length === 0) return null;
   // Cuatro columnas solo si llenan filas completas; si no, tres.
   const cols = fabricantes.length % 4 === 0 ? "lg:grid-cols-4" : "lg:grid-cols-3";
-  const tile = "group grid aspect-[16/7] place-items-center bg-white";
+  const tile = "group grid aspect-[16/7] place-items-center";
 
   return (
     <section id="materiales" aria-labelledby="materiales-titulo" className="bg-paper py-24 text-ink md:py-28">

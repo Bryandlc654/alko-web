@@ -27,7 +27,7 @@ export default function ManufacturerLogo({ src, name }: { src: string; name: str
       alt={name}
       loading="lazy"
       onError={() => setFailed(true)}
-      className="h-10 w-auto max-w-[160px] object-contain opacity-70 grayscale transition duration-300 group-hover:opacity-100 group-hover:grayscale-0"
+      className="h-12 w-auto max-w-full object-contain opacity-70 grayscale transition duration-300 group-hover:opacity-100 group-hover:grayscale-0"
     />
   );
 }

@@ -1235,9 +1235,12 @@ export const DEFAULT_FASES: Fase[] = [
 ];
 
 export const DEFAULT_FABRICANTES: Fabricante[] = [
-  { id: "fab-1", name: "Porcelanosa", logo: "/logo-porcelanosa.png", url: "https://www.porcelanosa.com" },
-  { id: "fab-2", name: "Cortizo", logo: "/logo-cortizo.png", url: "https://www.cortizo.com" },
-  { id: "fab-3", name: "Kömmerling", logo: "/logo-koemmerling.png", url: "https://www.koemmerling.com" },
+  { id: "fab-1", name: "Atlas Concorde", logo: "/logo-atlas-concorde.png", url: "https://www.atlasconcorde.com" },
+  { id: "fab-2", name: "Arbi Bathroom", logo: "/logo-arbi-bathroom.png", url: "https://www.arbiarredobagno.com" },
+  { id: "fab-3", name: "Effepi", logo: "/logo-effepi.png", url: "https://www.effepirubinetterie.com" },
+  { id: "fab-4", name: "Cortizo", logo: "/logo-cortizo.png", url: "https://www.cortizo.com" },
+  { id: "fab-5", name: "Kömmerling", logo: "/logo-koemmerling.png", url: "https://www.koemmerling.com" },
+  { id: "fab-6", name: "Porcelanosa Partners", logo: "/logo-porcelanosa.png", url: "https://www.porcelanosa.com" },
 ];
 
 export const DEFAULT_ARTICLES: Article[] = [
