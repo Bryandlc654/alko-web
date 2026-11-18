@@ -1464,19 +1464,19 @@ export const DEFAULT_NOSOTROS_PAGE_CONTENT: import('./types').NosotrosPageConten
       numero: "01",
       titulo: "Arquitectura",
       texto: "Partimos del proyecto y de su viabilidad técnica: mediciones, soluciones constructivas y materiales definidos antes de empezar la obra.",
-      imagen: "/proceso-control.jpg",
+      imagen: "/nosotros-arquitectura.jpg",
     },
     {
       numero: "02",
       titulo: "Construcción",
       texto: "Ejecutamos la obra civil, las instalaciones y los acabados con una secuencia por fases y control de tolerancias en cada partida.",
-      imagen: "/proceso-construccion.jpg",
+      imagen: "/nosotros-construccion.jpg",
     },
     {
       numero: "03",
       titulo: "Dirección integrada",
       texto: "Un mismo equipo coordina compras, gremios y plazos, de modo que proyecto y obra responden a una sola dirección técnica.",
-      imagen: "/proceso-coordinacion.jpg",
+      imagen: "/nosotros-direccion.jpg",
     },
   ],
 
