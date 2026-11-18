@@ -144,6 +144,8 @@ export interface SectorLandingData {
   faqs?: SectorFaq[];
   ctaHeadline?: string;
   ctaText?: string;
+  /** Imagen de fondo del CTA final; si falta se usa la de «Qué incluye». */
+  ctaImage?: string;
 }
 
 export interface Sector {

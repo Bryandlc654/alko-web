@@ -663,7 +663,7 @@ export default async function SectorDetailPage({
           landing?.ctaText ||
           "Cuéntanos qué necesitas y el equipo técnico te responderá con una valoración del alcance, el plazo y el presupuesto."
         }
-        imagen={includesImage}
+        imagen={landing?.ctaImage || includesImage}
         source={`Landing ${name} · Cierre`}
         sectorSlug={sector.slug}
       />
