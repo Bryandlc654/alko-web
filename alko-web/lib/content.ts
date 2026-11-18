@@ -1441,7 +1441,7 @@ export const DEFAULT_NOSOTROS_PAGE_CONTENT: import('./types').NosotrosPageConten
   headerBadge: "NOSOTROS",
   headerTitulo: "Arquitectura.\nConstrucción.\nDirección integrada.",
   headerDescripcion: "Estudio de construcción y reformas integrales en Madrid. Menos interfaces, más control.",
-  headerBgImage: "/oficinas.jpg",
+  headerBgImage: "/nosotros-header.jpg",
 
   introTag: "Sobre ALKO · Desde 1996",
   introTitulo: "Un criterio único para cada obra.",

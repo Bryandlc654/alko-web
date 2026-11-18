@@ -92,8 +92,8 @@ export default async function NosotrosPage() {
             ))}
           </dl>
         }
-        image={pageContent.headerBgImage || "/oficinas.jpg"}
-        imageAlt="Oficina de ALKO en Madrid"
+        image={pageContent.headerBgImage || "/nosotros-header.jpg"}
+        imageAlt="Cocina abierta al jardín y la piscina en una vivienda reformada por ALKO"
         caption="Estudio ALKO"
       />
 
