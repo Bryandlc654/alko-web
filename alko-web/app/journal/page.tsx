@@ -4,7 +4,7 @@ import EditorialHeader from "@/components/editorial/EditorialHeader";
 import EditorialSection from "@/components/editorial/EditorialSection";
 import ArticlesIndex from "@/components/ui/ArticlesIndex";
 import GuidesIndex from "@/components/ui/GuidesIndex";
-import ContactCta from "@/components/sections/ContactCta";
+import FinalContact from "@/components/sections/FinalContact";
 import { ROUTES } from "@/lib/site";
 import { getArticles, getGuides, getSettings } from "@/lib/wordpress";
 import { getDbArticulosPageContent, getDbGuiasPageContent } from "@/lib/db/mysql";
@@ -139,7 +139,7 @@ export default async function JournalPage() {
         </EditorialSection>
       )}
 
-      <ContactCta settings={settings} />
+      <FinalContact settings={settings} id="contacto" source="Formulario journal · /journal" />
     </main>
   );
 }

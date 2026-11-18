@@ -2,7 +2,7 @@ import Image from "@/components/ui/Image";
 import Link from "next/link";
 import EditorialHeader from "@/components/editorial/EditorialHeader";
 import EditorialSection from "@/components/editorial/EditorialSection";
-import ContactCta from "@/components/sections/ContactCta";
+import FinalContact from "@/components/sections/FinalContact";
 import Materials from "@/components/sections/Materials";
 import Process from "@/components/sections/Process";
 import { METHOD_HREF, ROUTES } from "@/lib/site";
@@ -274,7 +274,7 @@ export default async function NosotrosPage() {
         </div>
       </EditorialSection>
 
-      <ContactCta settings={settings} />
+      <FinalContact settings={settings} id="contacto" source="Formulario nosotros · /nosotros" />
     </main>
   );
 }
