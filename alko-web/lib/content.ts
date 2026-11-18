@@ -204,7 +204,7 @@ export const DEFAULT_SECTORS: Sector[] = [
       supportImage: "/manifiesto-comedor.jpg",
       includesImage: "/residencial-equipo.jpg",
       // Mantiene la foto actual del cierre, independiente de la del bloque «Qué incluye».
-      ctaImage: "https://raw.githubusercontent.com/Bryandlc654/alko-web/media/uploads/fotografia_reforma_rm_dsc6962-1793470043663.webp",
+      ctaImage: "/hero-salon.jpg",
     },
   },
   {
