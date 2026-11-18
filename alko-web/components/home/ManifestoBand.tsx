@@ -5,7 +5,7 @@ import ContactTrigger from "@/components/contact/ContactTrigger";
 export default function ManifestoBand() {
   return (
     <section aria-label="Manifiesto" className="relative min-h-[640px] overflow-hidden text-white md:h-[86vh] md:max-h-[820px]">
-      <Image src="/terrace-ocean.jpg" alt="" fill sizes="100vw" className="object-cover" />
+      <Image src="/manifiesto-comedor.jpg" alt="" fill sizes="100vw" className="object-cover" />
       <div className="absolute inset-0 bg-black/20" />
       <svg
         className="absolute bottom-24 left-[var(--gutter)] hidden w-24 text-white/80 md:block"
@@ -19,8 +19,8 @@ export default function ManifestoBand() {
       </svg>
       <div className="site-wrap relative flex h-full min-h-[640px] items-center justify-center py-24 md:min-h-0">
         <div className="reveal-item w-full max-w-[505px]">
-          <div className="bg-white/20 p-6 backdrop-blur-md md:p-7">
-            <p className="display-title text-[40px] leading-[1.02] md:text-[56px]">
+          <div className="bg-white/35 p-6 backdrop-blur-md md:p-7">
+            <p className="display-title text-[40px] leading-[1.02] text-ink md:text-[56px]">
               Construimos hoy espacios que permanecen mañana
             </p>
           </div>
