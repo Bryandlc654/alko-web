@@ -6,9 +6,10 @@ import FinalContact from "@/components/sections/FinalContact";
 import Materials from "@/components/sections/Materials";
 import Process from "@/components/sections/Process";
 import { METHOD_HREF, ROUTES } from "@/lib/site";
+import { METHOD_STEPS } from "@/lib/divisions";
 import { pageJsonLd, pageMetadata } from "@/lib/seo";
-import { getFabricantes, getFases, getProjects, getSectors, getSettings } from "@/lib/wordpress";
-import { getDbHomeContent, getDbNosotrosPageContent } from "@/lib/db/mysql";
+import { getFabricantes, getProjects, getSectors, getSettings } from "@/lib/wordpress";
+import { getDbNosotrosPageContent } from "@/lib/db/mysql";
 
 export const revalidate = 60;
 
@@ -22,15 +23,22 @@ export const metadata = pageMetadata({
   path: ROUTES.company,
 });
 
+/** Mismo método que la portada: cinco etapas con sus imágenes y textos. */
+const PROCESO_FASES = METHOD_STEPS.map((step) => ({
+  id: `metodo-${step.num}`,
+  tag: step.num,
+  title: step.title,
+  texto: step.text,
+  imagen: step.image,
+}));
+
 export default async function NosotrosPage() {
-  const [settings, projects, sectors, fases, fabricantes, pageContent, homeContent] = await Promise.all([
+  const [settings, projects, sectors, fabricantes, pageContent] = await Promise.all([
     getSettings(),
     getProjects(),
     getSectors(),
-    getFases(),
     getFabricantes(),
     getDbNosotrosPageContent(),
-    getDbHomeContent(),
   ]);
 
   const destacado = projects[0];
@@ -38,7 +46,7 @@ export default async function NosotrosPage() {
     { valor: "1996", etiqueta: "Construyendo y reformando en Madrid" },
     { valor: "1", etiqueta: "Interlocutor para todo el proyecto" },
     sectors.length > 0 && { valor: String(sectors.length), etiqueta: "Servicios y sectores especializados" },
-    fases.length > 0 && { valor: String(fases.length), etiqueta: "Fases de control por obra" },
+    METHOD_STEPS.length > 0 && { valor: String(METHOD_STEPS.length), etiqueta: "Fases de control por obra" },
   ].filter(Boolean) as { valor: string; etiqueta: string }[];
 
   const enlaces = [
@@ -208,12 +216,8 @@ export default async function NosotrosPage() {
           </div>
         </EditorialSection>
 
-        {/* Las fases del proceso: las mismas de la portada (se editan en cualquiera de las dos). */}
-        <Process
-          fases={homeContent.fases && homeContent.fases.length > 0 ? homeContent.fases : fases}
-          id="fases"
-          content={homeContent}
-        />
+        {/* Las fases del proceso: las mismas cinco etapas de la portada, con sus imágenes y textos. */}
+        <Process fases={PROCESO_FASES} id="fases" />
       </div>
 
       {/* 05 · Valores */}
