@@ -1,9 +1,9 @@
 import Image from "next/image";
 
 const IMAGES = [
-  { src: "/start-research-1.jpg", alt: "Chimenea suspendida y hormigón visto en una obra de ALKO" },
-  { src: "/service-interior-2.jpg", alt: "Detalle de acabados interiores" },
-  { src: "/proceso-instalaciones.jpg", alt: "Oficios trabajando en las instalaciones de una obra" },
+  { src: "/materia-salon.jpg", alt: "Salón con chimenea, madera y grandes ventanales en una reforma de ALKO" },
+  { src: "/materia-recibidor.jpg", alt: "Detalle de mármol, latón y vegetación en un interior reformado por ALKO" },
+  { src: "/materia-terraza.jpg", alt: "Terraza frente al mar con mobiliario de madera y tejidos naturales" },
 ];
 
 /** Franja de materialidad: tres imágenes y un texto, a todo el ancho (propuesta 6 · V4). */
