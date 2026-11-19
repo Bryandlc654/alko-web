@@ -1,6 +1,6 @@
 /**
  * Idiomas del sitio. El castellano es el idioma principal y vive en la raíz; el inglés,
- * bajo /en. Tienen versión inglesa las páginas de TRANSLATED (portada, proyectos, estudio, equipo, empleo y contacto);
+ * bajo /en. Tienen versión inglesa las páginas de TRANSLATED (portada, proyectos, estudio, equipo, empleo, contacto y el listado del Journal);
  * el resto siguen en castellano y el selector de idioma lleva a la portada inglesa.
  */
 
@@ -28,6 +28,7 @@ const TRANSLATED: Record<string, string> = {
   "/equipo": "/en/team",
   "/trabaja-con-nosotros": "/en/careers",
   "/contacto": "/en/contact",
+  "/journal": "/en/journal",
 };
 
 /**
