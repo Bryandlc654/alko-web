@@ -213,12 +213,15 @@ export const DEFAULT_SECTORS: Sector[] = [
     numero: "03",
     title: "Retail",
     descripcion: "Locales comerciales, boutiques y showrooms donde la imagen de marca y los plazos de apertura son innegociables.",
-    imagen: "/sector-retail.jpg",
+    imagen: "https://raw.githubusercontent.com/Bryandlc654/alko-web/media/uploads/retail-boutique-tonos-calidos-1795126297455.webp",
     enlace: "/servicios/retail",
     content: "<p>Ejecución ágil de proyectos comerciales con estricto control de costes y plazos de apertura al público. Cumplimiento exhaustivo de normativas de accesibilidad, seguridad y licencias de actividad en Madrid.</p>",
     landing: {
-      supportImage: "https://raw.githubusercontent.com/Bryandlc654/alko-web/media/uploads/showroom-vitrinas-iluminadas-1794027633271.webp",
-      includesImage: "https://raw.githubusercontent.com/Bryandlc654/alko-web/media/uploads/tienda-estanterias-blancas-1794027636025.webp",
+      // Fondo del bloque «Nuestro compromiso por escrito»: proyecto, planos y muestras.
+      supportImage: "https://raw.githubusercontent.com/Bryandlc654/alko-web/media/uploads/retail-proyecto-planos-muestras-1795126297455.webp",
+      // Bloque «Qué incluye»: el equipo de ALKO en obra.
+      includesImage: "https://raw.githubusercontent.com/Bryandlc654/alko-web/media/uploads/retail-reforma-tienda-en-curso-1795126297455.webp",
+      ctaImage: "https://raw.githubusercontent.com/Bryandlc654/alko-web/media/uploads/retail-boutique-moda-minimalista-1795126297455.webp",
     },
   },
   {
