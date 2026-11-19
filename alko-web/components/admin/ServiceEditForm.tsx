@@ -125,6 +125,9 @@ export default function ServiceEditForm({ initialSector, isNew = false }: Servic
       return {
         ...initialSector,
         landing: {
+          // Conserva los campos guardados que el formulario no edita (p. ej. resultsImages),
+          // para que guardar no los borre.
+          ...existingLanding,
           heroHeadline: existingLanding.heroHeadline || initialSector.title,
           lead: existingLanding.lead || initialSector.descripcion,
           statsTitle: existingLanding.statsTitle || "Proyectos entregados",
@@ -1037,6 +1040,44 @@ export default function ServiceEditForm({ initialSector, isNew = false }: Servic
                       placeholder="Cuéntanos qué necesitas y el equipo técnico te responderá con una valoración del alcance, el plazo y el presupuesto."
                       className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-slate-800 focus:outline-none focus:border-blue-500"
                     />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-medium text-slate-600 mb-1">
+                      Fotografía de Cierre (si se deja vacía, se usa la de «Qué incluye»)
+                    </label>
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 rounded-2xl border border-slate-200 bg-slate-50/50">
+                      <div className="w-32 h-20 rounded-xl overflow-hidden border border-slate-200 bg-slate-100 relative shrink-0">
+                        {sector.landing?.ctaImage || sector.landing?.includesImage || sector.imagen ? (
+                          <Image
+                            src={sector.landing?.ctaImage || sector.landing?.includesImage || sector.imagen || "/service-interior-2.jpg"}
+                            alt="Preview"
+                            fill
+                            className="object-cover object-center"
+                          />
+                        ) : (
+                          <div className="flex items-center justify-center h-full text-slate-400 text-xs">
+                            Sin imagen
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1 space-y-2 w-full">
+                        <input
+                          type="text"
+                          value={sector.landing?.ctaImage || ""}
+                          onChange={(e) => updateLanding({ ctaImage: e.target.value })}
+                          placeholder="URL o ruta de imagen"
+                          className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs text-slate-700 font-mono focus:outline-none focus:border-blue-500 bg-white"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handlePickImage(sector.landing?.ctaImage, (url) => updateLanding({ ctaImage: url }))}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 rounded-xl text-xs font-medium transition shadow-2xs"
+                        >
+                          <Upload className="w-3 h-3 text-blue-600" />
+                          <span>Elegir imagen de cierre</span>
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
