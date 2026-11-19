@@ -1,6 +1,7 @@
 import Image from "@/components/ui/Image";
 import type { ReactNode } from "react";
 import Breadcrumbs, { type Crumb } from "@/components/ui/Breadcrumbs";
+import type { Locale } from "@/lib/i18n";
 
 /**
  * Cabecera editorial clara (contacto, estudio, equipo, empleo y Journal): fondo papel, sin foto
@@ -20,6 +21,7 @@ export default function EditorialHeader({
   imagePosition = "object-center",
   caption,
   children,
+  locale = "es",
 }: {
   /** Marca de sección a la derecha de las migas (p. ej. «05»). */
   index?: string;
@@ -36,12 +38,14 @@ export default function EditorialHeader({
   caption?: string;
   /** Contenido a todo el ancho bajo la descripción. */
   children?: ReactNode;
+  /** Idioma de las migas de pan. */
+  locale?: Locale;
 }) {
   return (
     <header className="bg-paper text-ink">
       <div className="site-wrap pt-28 sm:pt-36 lg:pt-40">
         <div className="hh-rise flex items-center justify-between gap-6 border-b border-ink/15 pb-5">
-          {breadcrumbs ? <Breadcrumbs items={breadcrumbs} tone="dark" /> : <span />}
+          {breadcrumbs ? <Breadcrumbs items={breadcrumbs} tone="dark" locale={locale} /> : <span />}
           {(index || eyebrow) && (
             <span className="hidden shrink-0 text-[10px] uppercase tracking-[0.22em] text-mid sm:inline">
               {eyebrow}

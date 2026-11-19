@@ -3,7 +3,7 @@ import Link from "next/link";
 import Parallax from "@/components/ui/Parallax";
 import { ROUTES } from "@/lib/site";
 import type { Project } from "@/lib/types";
-import type { Locale } from "@/lib/i18n";
+import { localizedPath, type Locale } from "@/lib/i18n";
 import { HOME_COPY } from "@/lib/i18n/home";
 
 /** Imagen de la tarjeta: si coincide con la del hero, usa otra de la obra para no repetirla. */
@@ -127,7 +127,7 @@ export default function FeaturedWorks({
 
         <div className="mt-20 flex flex-col items-start justify-between gap-6 border-t border-ink/15 pt-8 sm:flex-row sm:items-center">
           <p className="text-[10px] uppercase tracking-[0.22em] text-mid">{t.documented}</p>
-          <Link href={ROUTES.projects} className="btn btn-ink">
+          <Link href={localizedPath(ROUTES.projects, locale)} className="btn btn-ink">
             {t.all} <span aria-hidden="true">→</span>
           </Link>
         </div>

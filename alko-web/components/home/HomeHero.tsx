@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import ContactTrigger from "@/components/contact/ContactTrigger";
-import type { Locale } from "@/lib/i18n";
+import { localizedPath, type Locale } from "@/lib/i18n";
 import { HOME_COPY } from "@/lib/i18n/home";
 import { ROUTES } from "@/lib/site";
 import type { Slide } from "@/lib/types";
@@ -128,7 +128,7 @@ export default function HomeHero({ slides, locale = "es" }: { slides: Slide[]; l
               {t.titleB}
             </h1>
             <div className="hh-rise mt-9 flex flex-wrap items-center gap-x-8 gap-y-4" style={{ animationDelay: ".25s" }}>
-              <Link href={ROUTES.projects} className="btn btn-paper">
+              <Link href={localizedPath(ROUTES.projects, locale)} className="btn btn-paper">
                 {t.explore} <span aria-hidden="true">↗</span>
               </Link>
               <ContactTrigger
