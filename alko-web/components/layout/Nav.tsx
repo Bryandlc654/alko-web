@@ -433,7 +433,7 @@ function MobileDrawer({
               ),
             )}
             <Link
-              href={ROUTES.contact}
+              href={localizedPath(ROUTES.contact, locale)}
               onClick={onClose}
               className="block border-b border-line py-4 text-base text-ink hover:text-bronze"
             >

@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import type { MouseEvent, ReactNode } from "react";
+import { localeFromPath, localizedPath } from "@/lib/i18n";
 import { ROUTES } from "@/lib/site";
 import { useContactModal, type ContactMode } from "./ContactModalProvider";
 
@@ -30,13 +31,15 @@ export default function ContactTrigger({
 }) {
   const modal = useContactModal();
   const pathname = usePathname();
+  // Página de contacto del idioma actual (/contacto o /en/contact).
+  const contactPath = localizedPath(ROUTES.contact, localeFromPath(pathname));
 
   function handleClick(event: MouseEvent<HTMLAnchorElement>) {
     onClick?.(event);
     if (event.defaultPrevented || !modal) return;
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     // En la página de contacto el formulario completo ya está a la vista: se baja hasta él.
-    if (mode === "avanzado" && pathname === ROUTES.contact) return;
+    if (mode === "avanzado" && pathname === contactPath) return;
 
     event.preventDefault();
     modal.open(mode, { source: `${source} · ${pathname}`, tipo });
@@ -44,7 +47,7 @@ export default function ContactTrigger({
 
   return (
     <a
-      href={`${ROUTES.contact}#formulario`}
+      href={`${contactPath}#formulario`}
       // El cargador de rutas no debe animar: este clic abre un modal, no cambia de página.
       data-modal-trigger=""
       onClick={handleClick}
