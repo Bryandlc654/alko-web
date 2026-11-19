@@ -15,7 +15,9 @@ import { OG_IMAGE, ROUTES, SITE } from "@/lib/site";
 import type { PosicionEmpleo } from "@/lib/types";
 import { getSettings } from "@/lib/wordpress";
 
-const HEADER_IMAGE = "/proceso-control.jpg";
+/** Imágenes por defecto: trabajadores de ALKO en obra y el equipo reunido sobre los planos. */
+const HEADER_IMAGE = "/metodo-ejecutar.jpg";
+const CULTURE_IMAGE = "/nosotros-metodo.jpg";
 
 /** Vacantes del panel (o las de respaldo si no hay ninguna). */
 const allPositions = (posiciones?: PosicionEmpleo[]) =>
@@ -136,6 +138,7 @@ export default async function CareersPage({ locale }: { locale: Locale }) {
         }
         image={headerImage}
         imageAlt={t.header.alt}
+        imagePosition="object-[center_30%]"
         caption={t.header.caption}
       />
 
@@ -149,7 +152,7 @@ export default async function CareersPage({ locale }: { locale: Locale }) {
         </div>
         <div className="reveal-scale relative mt-14 aspect-[16/9] overflow-hidden bg-piedra">
           <Image
-            src={panel.culturaImagen || "/proceso-construccion.jpg"}
+            src={panel.culturaImagen || CULTURE_IMAGE}
             alt={t.culture.alt}
             fill
             sizes="(max-width: 1024px) 100vw, 75vw"

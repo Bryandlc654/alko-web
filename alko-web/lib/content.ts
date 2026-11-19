@@ -1668,13 +1668,13 @@ export const DEFAULT_EMPLEO_PAGE_CONTENT: import('./types').EmpleoPageContent = 
   headerBadge: "TRABAJA CON NOSOTROS",
   headerTitulo: "Construimos con las personas",
   headerDescripcion: "Buscamos profesionales que compartan nuestro criterio técnico y quieran crecer dentro de un equipo que trabaja como una dirección única.",
-  headerBgImage: "/proceso-control.jpg",
+  headerBgImage: "/metodo-ejecutar.jpg",
 
   culturaTag: "El equipo ALKO",
   culturaTitulo: "Un equipo pequeño, con criterio y sin intermediarios",
   culturaParrafo1: "En ALKO cada persona tiene responsabilidad real sobre el proyecto. Trabajamos cerca de la obra, con decisiones rápidas y una única dirección técnica.",
   culturaParrafo2: "Buscamos perfiles con oficio y ambición de crecer: gente que disfrute resolviendo problemas constructivos y cuidando el detalle hasta la entrega.",
-  culturaImagen: "/proceso-construccion.jpg",
+  culturaImagen: "/nosotros-metodo.jpg",
 
   posicionesTag: "POSICIONES ABIERTAS",
   posicionesTitulo: "Únete al equipo",
