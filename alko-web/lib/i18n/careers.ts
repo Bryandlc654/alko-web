@@ -30,7 +30,7 @@ const es = {
       "Buscamos profesionales que compartan nuestro criterio técnico y quieran crecer dentro de un equipo que trabaja como una dirección única.",
     open: "Posiciones abiertas",
     see: "Ver puestos",
-    alt: "Operario de ALKO trabajando en una obra en Madrid",
+    alt: "Operarios de ALKO trabajando en una reforma en Madrid",
     caption: "Trabajo en obra",
   },
   culture: {
@@ -38,7 +38,7 @@ const es = {
     title: "Un equipo pequeño, con criterio y sin intermediarios",
     p1: "En ALKO cada persona tiene responsabilidad real sobre el proyecto. Trabajamos cerca de la obra, con decisiones rápidas y una única dirección técnica.",
     p2: "Buscamos perfiles con oficio y ambición de crecer: gente que disfrute resolviendo problemas constructivos y cuidando el detalle hasta la entrega.",
-    alt: "Equipo de obra de ALKO trabajando en una reforma",
+    alt: "Equipo técnico de ALKO revisando planos en obra",
   },
   positionsSection: {
     tag: "Posiciones abiertas",
@@ -111,7 +111,7 @@ const en: CareersCopy = {
       "We are looking for professionals who share our technical standards and want to grow in a team that works under a single management.",
     open: "Open positions",
     see: "See roles",
-    alt: "ALKO tradesman working on a site in Madrid",
+    alt: "ALKO tradespeople working on a renovation in Madrid",
     caption: "Work on site",
   },
   culture: {
@@ -119,7 +119,7 @@ const en: CareersCopy = {
     title: "A small team, with judgement and no middlemen",
     p1: "At ALKO everyone has real responsibility for the project. We work close to the site, with quick decisions and a single technical lead.",
     p2: "We look for people with craft and the drive to grow: people who enjoy solving construction problems and caring for detail all the way to handover.",
-    alt: "ALKO site team working on a renovation",
+    alt: "ALKO technical team reviewing drawings on site",
   },
   positionsSection: {
     tag: "Open positions",

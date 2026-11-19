@@ -2946,7 +2946,7 @@ export default function LiveEditor({
               <header className="relative isolate flex min-h-[560px] sm:min-h-[620px] lg:min-h-[72vh] items-end overflow-hidden bg-stone-950 text-white pt-36 sm:pt-44 pb-14 sm:pb-20">
                 <div className="absolute inset-0 z-0 overflow-hidden">
                   <InlineImage
-                    src={empleoContent.headerBgImage || "/proceso-control.jpg"}
+                    src={empleoContent.headerBgImage || "/metodo-ejecutar.jpg"}
                     alt="Fondo de empleo"
                     label="Cambiar fondo de cabecera"
                     onImageChange={(newUrl) => updateEmpleoField("headerBgImage", newUrl)}
@@ -3039,7 +3039,7 @@ export default function LiveEditor({
 
                   <div className="relative mt-12 aspect-[16/9] w-full overflow-hidden bg-stone-100 sm:aspect-[16/7]">
                     <InlineImage
-                      src={empleoContent.culturaImagen || "/proceso-construccion.jpg"}
+                      src={empleoContent.culturaImagen || "/nosotros-metodo.jpg"}
                       alt="Equipo de obra de ALKO"
                       label="Cambiar foto de cultura"
                       onImageChange={(newUrl) => updateEmpleoField("culturaImagen", newUrl)}
