@@ -6,9 +6,11 @@ import type { Locale } from "@/lib/i18n";
  */
 const es = {
   meta: {
-    title: "Proyectos — ALKO",
+    title: "Proyectos de reformas integrales en Madrid | ALKO",
     description:
-      "Proyectos residenciales y corporativos ejecutados con dirección técnica unificada y rigor constructivo.",
+      "Obras de ALKO en Madrid: reformas integrales de viviendas, oficinas y locales, con fotos, alcance y acabados. Un único equipo de proyecto a entrega.",
+    /** Nombre de la lista de obras en los datos estructurados. */
+    listName: "Proyectos de ALKO",
   },
   sourceSuffix: "",
   breadcrumb: "Proyectos",
@@ -41,9 +43,10 @@ export type ProjectsCopy = typeof es;
 
 const en: ProjectsCopy = {
   meta: {
-    title: "Projects — ALKO | Renovations in Madrid",
+    title: "Renovation projects in Madrid | ALKO",
     description:
-      "Residential and commercial renovation projects in Madrid, delivered with unified technical management and careful construction.",
+      "Renovation projects by ALKO in Madrid: full renovations of homes, offices and commercial spaces, with photos, scope and finishes, delivered by a single team.",
+    listName: "ALKO projects",
   },
   sourceSuffix: " · EN",
   breadcrumb: "Projects",

@@ -48,6 +48,10 @@ Este directorio contiene las especificaciones arquitectónicas, operativas y de 
    - Interfaces globales de `lib/types.ts`: `Project`, `Article`, `Lead`, `AdminUser`, `SiteSettings`.
    - Estructuras de datos garantizadas entre backend y frontend.
 
+9. **[09. Estrategia SEO](09-estrategia-seo.md)**
+   - Mapa de palabras clave por página, SEO técnico hecho y pendiente.
+   - Plan de contenidos del Journal, tareas del panel, SEO local y medición.
+
 ---
 
 ## 📌 Historial de Actualizaciones

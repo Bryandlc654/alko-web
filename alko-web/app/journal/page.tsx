@@ -5,6 +5,7 @@ import EditorialSection from "@/components/editorial/EditorialSection";
 import ArticlesIndex from "@/components/ui/ArticlesIndex";
 import GuidesIndex from "@/components/ui/GuidesIndex";
 import FinalContact from "@/components/sections/FinalContact";
+import { pageMetadata } from "@/lib/seo";
 import { ROUTES } from "@/lib/site";
 import { getArticles, getGuides, getSettings } from "@/lib/wordpress";
 import { getDbArticulosPageContent, getDbGuiasPageContent } from "@/lib/db/mysql";
@@ -12,11 +13,12 @@ import { formatDate } from "@/lib/utils";
 
 export const revalidate = 60;
 
-export const metadata = {
-  title: "Journal — ALKO",
+export const metadata = pageMetadata({
+  title: "Blog de reformas: guías y consejos técnicos | ALKO Journal",
   description:
-    "Artículos técnicos y guías paso a paso de ALKO: climatización, materiales, gestión de obra y cómo afrontar una reforma integral.",
-};
+    "Artículos y guías de ALKO para planificar una reforma en Madrid: costes, plazos, materiales, climatización, instalaciones y gestión de obra.",
+  path: ROUTES.journal,
+});
 
 /** Journal: artículos y guías en una sola página (antes, Conocimiento con dos listados). */
 export default async function JournalPage() {

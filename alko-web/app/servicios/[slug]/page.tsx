@@ -9,6 +9,7 @@ import Materials from "@/components/sections/Materials";
 import { parseService } from "@/lib/services";
 import { ROUTES, SITE } from "@/lib/site";
 import { sectorKeyword, sectorSlug } from "@/lib/content";
+import { pageMetadata } from "@/lib/seo";
 import {
   getFabricantes,
   getFases,
@@ -35,14 +36,14 @@ export async function generateMetadata({
   const sector = await getSectorBySlug(slug);
   if (!sector) return {};
   const keyword = sectorKeyword(sector);
-  const title = `${keyword.charAt(0).toUpperCase()}${keyword.slice(1)} en Madrid — ALKO`;
-  const description = sector.landing?.lead || sector.descripcion;
-  return {
-    title,
-    description,
-    alternates: { canonical: `${ROUTES.sectors}/${sector.slug}` },
-    openGraph: { title, description, images: sector.imagen ? [sector.imagen] : undefined },
-  };
+  // Canonical y Open Graph completos (nombre del sitio, idioma, URL e imagen con su alt).
+  return pageMetadata({
+    title: `${keyword.charAt(0).toUpperCase()}${keyword.slice(1)} en Madrid | ALKO`,
+    description: sector.landing?.lead || sector.descripcion,
+    path: `${ROUTES.sectors}/${sector.slug}`,
+    image: sector.imagen || undefined,
+    imageAlt: `${sector.title} en Madrid`,
+  });
 }
 
 /** Compromisos por defecto si el servicio no tiene los suyos. */
@@ -273,7 +274,11 @@ export default async function SectorDetailPage({
               {landing?.heroTagline || `${name} · Madrid`}
             </p>
             <h1 className="display-title mt-8 max-w-[16ch] text-[2.7rem] leading-[0.98] tracking-[-0.04em] sm:text-6xl lg:text-7xl xl:text-[5.5rem]">
-              {landing?.heroHeadline || `${Keyword} en Madrid`}
+              {/* Un titular que solo repite el nombre de la división («Residencial») no dice nada a
+                  Google: entonces manda el H1 con la búsqueda («Reformas de viviendas en Madrid»). */}
+              {landing?.heroHeadline && landing.heroHeadline.trim().toLowerCase() !== name.trim().toLowerCase()
+                ? landing.heroHeadline
+                : `${Keyword} en Madrid`}
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-paper/80">{lead}</p>
 

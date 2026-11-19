@@ -11,26 +11,48 @@ export function pageMetadata({
   description,
   path,
   image,
+  imageAlt,
+  article,
 }: {
   title: string;
   description: string;
   path: string;
   image?: string;
+  /** Texto alternativo de la imagen (por defecto, el título). */
+  imageAlt?: string;
+  /** Artículos del Journal: Open Graph de tipo article con su fecha. */
+  article?: { publishedTime?: string };
 }): Metadata {
+  const desc = metaDescription(description);
   return {
     title: { absolute: title },
-    description,
+    description: desc,
     alternates: { canonical: path },
     openGraph: {
       title,
-      description,
+      description: desc,
       url: path,
-      type: "website",
       locale: SITE.locale,
       siteName: SITE.name,
-      images: [image ? { url: image, alt: title } : OG_IMAGE],
+      images: [image ? { url: image, alt: imageAlt || title } : OG_IMAGE],
+      ...(article
+        ? { type: "article" as const, ...(article.publishedTime && { publishedTime: article.publishedTime }) }
+        : { type: "website" as const }),
     },
   };
+}
+
+/** Descripción para buscadores: texto plano de 155 caracteres como mucho, sin cortar palabras. */
+export function metaDescription(text: string | undefined, max = 155): string {
+  const plain = (text || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  if (plain.length <= max) return plain;
+  return plain.slice(0, max - 1).replace(/\s+\S*$/, "").replace(/[\s,;:.—-]+$/, "") + "…";
+}
+
+/** Nombre de una obra para los títulos: las que se escriben en mayúsculas («SEDE ALMAGRO») pasan a «Sede Almagro». */
+export function displayName(name: string): string {
+  if (name !== name.toUpperCase()) return name;
+  return name.toLowerCase().replace(/(^|[\s-])(\p{L})/gu, (_, sep: string, ch: string) => sep + ch.toUpperCase());
 }
 
 /** Nodo de la empresa para los datos estructurados (el mismo @id que en la portada). */

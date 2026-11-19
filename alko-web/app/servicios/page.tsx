@@ -3,17 +3,19 @@ import Link from "next/link";
 import FinalContact from "@/components/sections/FinalContact";
 import EditorialHeader from "@/components/editorial/EditorialHeader";
 import EditorialSection from "@/components/editorial/EditorialSection";
+import { pageMetadata } from "@/lib/seo";
 import { ROUTES } from "@/lib/site";
 import { getSectors, getSettings } from "@/lib/wordpress";
 import { getDbServiciosPageContent } from "@/lib/db/mysql";
 
 export const revalidate = 60;
 
-export const metadata = {
-  title: "Servicios — ALKO",
+export const metadata = pageMetadata({
+  title: "Servicios de reformas y construcción en Madrid | ALKO",
   description:
-    "Especialidades: rehabilitación, reforma integral, obra nueva y gestión de instalaciones técnicas con un único responsable.",
-};
+    "Reformas integrales de pisos, oficinas y locales, viviendas unifamiliares, naves y carpintería en Madrid. Un único equipo y presupuesto cerrado por escrito.",
+  path: ROUTES.sectors,
+});
 
 const pad = (n: number) => String(n).padStart(2, "0");
 

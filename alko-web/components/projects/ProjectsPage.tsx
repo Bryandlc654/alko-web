@@ -7,7 +7,9 @@ import { getDbProjectsPageContent } from "@/lib/db/mysql";
 import { LOCALE_META, languageAlternates, localizedPath, type Locale } from "@/lib/i18n";
 import { PROJECTS_COPY } from "@/lib/i18n/projects";
 import { projectCategory } from "@/lib/project-category";
+import { organizationNode } from "@/lib/seo";
 import { OG_IMAGE, ROUTES, SITE } from "@/lib/site";
+import type { Project } from "@/lib/types";
 import { splitLead } from "@/lib/utils";
 import { getProjects, getSettings } from "@/lib/wordpress";
 
@@ -25,9 +27,54 @@ export function projectsMetadata(locale: Locale): Metadata {
       url: path,
       type: "website",
       locale: LOCALE_META[locale].ogLocale,
+      alternateLocale: [LOCALE_META[locale === "es" ? "en" : "es"].ogLocale],
       siteName: SITE.name,
       images: [OG_IMAGE],
     },
+  };
+}
+
+/** URL absoluta (las imágenes del panel pueden venir relativas o absolutas). */
+const absoluteUrl = (path: string) => (/^https?:\/\//.test(path) ? path : `${SITE.url}${path.startsWith("/") ? "" : "/"}${path}`);
+
+/**
+ * Datos estructurados del listado: la página como colección de obras, con la lista de todas
+ * ellas (enlace, nombre e imagen) y la empresa con el mismo @id que en la portada.
+ */
+function projectsJsonLd(locale: Locale, projects: Project[]) {
+  const t = PROJECTS_COPY[locale].meta;
+  const url = absoluteUrl(localizedPath(ROUTES.projects, locale));
+  const org = organizationNode();
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CollectionPage",
+        "@id": `${url}#pagina`,
+        url,
+        name: t.title,
+        description: t.description,
+        inLanguage: locale === "es" ? "es-ES" : "en",
+        isPartOf: { "@type": "WebSite", "@id": `${SITE.url}/#web`, name: SITE.name, url: SITE.url },
+        about: { "@id": org["@id"] },
+        primaryImageOfPage: absoluteUrl(projects[0]?.imagen || OG_IMAGE.url),
+        mainEntity: { "@id": `${url}#obras` },
+      },
+      {
+        "@type": "ItemList",
+        "@id": `${url}#obras`,
+        name: t.listName,
+        numberOfItems: projects.length,
+        itemListElement: projects.map((project, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          url: `${SITE.url}${ROUTES.projects}/${project.slug}`,
+          name: project.title,
+          ...(project.imagen && { image: absoluteUrl(project.imagen) }),
+        })),
+      },
+      org,
+    ],
   };
 }
 
@@ -77,6 +124,10 @@ export default async function ProjectsPage({ locale }: { locale: Locale }) {
   return (
     <main className="bg-paper text-ink">
       <HtmlLang locale={locale} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(projectsJsonLd(locale, projects)) }}
+      />
       <EditorialHeader
         locale={locale}
         breadcrumbs={[{ label: t.breadcrumb }]}
@@ -99,7 +150,7 @@ export default async function ProjectsPage({ locale }: { locale: Locale }) {
         <ProjectsGallery projects={summaries} locale={locale} />
       </div>
 
-      <FinalContact settings={settings} id="contacto" source="Formulario proyectos · /proyectos" locale={locale} />
+      <FinalContact settings={settings} id="contacto" source={`Formulario proyectos · ${localizedPath(ROUTES.projects, locale)}`} locale={locale} />
     </main>
   );
 }
