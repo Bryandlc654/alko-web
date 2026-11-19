@@ -1,7 +1,7 @@
 /**
  * Idiomas del sitio. El castellano es el idioma principal y vive en la raíz; el inglés,
- * bajo /en. Por ahora solo la portada tiene versión inglesa (/en): el resto de páginas
- * siguen en castellano y el selector de idioma lleva a la portada inglesa.
+ * bajo /en. Tienen versión inglesa las páginas de TRANSLATED (portada, proyectos y estudio);
+ * el resto siguen en castellano y el selector de idioma lleva a la portada inglesa.
  */
 
 export type Locale = "es" | "en";
@@ -24,6 +24,7 @@ export function localeFromPath(pathname?: string | null): Locale {
 const TRANSLATED: Record<string, string> = {
   "/": "/en",
   "/proyectos": "/en/projects",
+  "/nosotros": "/en/about",
 };
 
 /**

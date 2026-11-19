@@ -26,6 +26,8 @@ export default function Process({
     procesoSubtitulo?: string;
     procesoColHeading?: string;
     procesoColText?: string;
+    /** Palabra de la etiqueta de cada fase en el texto alternativo («Fase», «Stage»). */
+    procesoFaseLabel?: string;
   };
 }) {
   const [active, setActive] = useState(0);
@@ -51,7 +53,7 @@ export default function Process({
                 <Image
                   key={fase.id}
                   src={fase.imagen}
-                  alt={i === active ? `ALKO · Fase ${phaseNumber(fase, i)} · ${fase.title}` : ""}
+                  alt={i === active ? `ALKO · ${content?.procesoFaseLabel || "Fase"} ${phaseNumber(fase, i)} · ${fase.title}` : ""}
                   fill
                   sizes="30vw"
                   className={`object-cover transition-opacity duration-500 ${i === active ? "opacity-90" : "opacity-0"}`}

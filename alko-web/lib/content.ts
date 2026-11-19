@@ -1522,10 +1522,10 @@ export const DEFAULT_NOSOTROS_PAGE_CONTENT: import('./types').NosotrosPageConten
 
   enlaceEquipoEtiqueta: "Equipo",
   enlaceEquipoTitulo: "Las personas detrás de cada obra",
-  enlaceEquipoImagen: "/proceso-entrega.jpg",
+  enlaceEquipoImagen: "/equipo-header.jpg",
   enlaceEmpleoEtiqueta: "Trabaja con nosotros",
   enlaceEmpleoTitulo: "Buscamos profesionales con criterio",
-  enlaceEmpleoImagen: "/proceso-instalaciones.jpg",
+  enlaceEmpleoImagen: "/equipo-pasillo.jpg",
 
   procesoTitulo: "Nuestro proceso",
   procesoSubtitulo: "SECUENCIA DE COORDINACIÓN INTEGRAL · 6 FASES · 1 EQUIPO",
