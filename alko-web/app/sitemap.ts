@@ -1,5 +1,5 @@
 import { MetadataRoute } from "next";
-import { HOME_PATHS } from "@/lib/i18n";
+import { languageAlternates, localizedPath } from "@/lib/i18n";
 import { ROUTES, SITE } from "@/lib/site";
 import { getArticles, getGuides, getNews, getProjects, getSectors } from "@/lib/wordpress";
 
@@ -23,17 +23,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: route === ROUTES.home ? 1 : 0.8,
     }));
 
-  // Portada en los dos idiomas, cada una con sus alternativas hreflang.
-  const homeLanguages = { es: SITE.url, en: `${SITE.url}${HOME_PATHS.en}`, "x-default": SITE.url };
-  const home = staticRoutes.find((entry) => entry.url === `${SITE.url}${ROUTES.home}`);
-  if (home) home.alternates = { languages: homeLanguages };
-  staticRoutes.push({
-    url: `${SITE.url}${HOME_PATHS.en}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly",
-    priority: 0.9,
-    alternates: { languages: homeLanguages },
-  });
+  // Páginas traducidas: la versión inglesa y, en las dos, sus alternativas hreflang.
+  const absolute = (path: string) => (path === "/" ? SITE.url : `${SITE.url}${path}`);
+  for (const esPath of [ROUTES.home, ROUTES.projects]) {
+    const alt = languageAlternates(esPath);
+    const languages = { es: absolute(alt.es), en: absolute(alt.en), "x-default": absolute(alt["x-default"]) };
+    const original = staticRoutes.find((entry) => entry.url === `${SITE.url}${esPath}`);
+    if (original) original.alternates = { languages };
+    staticRoutes.push({
+      url: absolute(localizedPath(esPath, "en")),
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: esPath === ROUTES.home ? 0.9 : 0.7,
+      alternates: { languages },
+    });
+  }
 
   const dynamic: MetadataRoute.Sitemap = [
     ...projects.map((project) => ({

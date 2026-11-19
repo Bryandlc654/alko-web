@@ -8,8 +8,11 @@ import ExclusiveSeal, { EXCLUSIVE_GOLD } from "@/components/ui/ExclusiveSeal";
 import type { Project } from "@/lib/types";
 import { CATEGORY_ORDER, projectCategory } from "@/lib/project-category";
 import { Loader2 } from "lucide-react";
+import type { Locale } from "@/lib/i18n";
+import { PROJECTS_COPY } from "@/lib/i18n/projects";
 
-const ALL = "Todos";
+/** Valor interno del filtro «todas las categorías». */
+const ALL = "__all__";
 const INITIAL_PAGE_SIZE = 6;
 const LOAD_MORE_STEP = 3;
 
@@ -23,7 +26,9 @@ export interface ProjectSummary extends Project {
  * Listado de /proyectos: rejilla de fotos a sangre (una a todo el ancho y dos en pareja) con filtro por tipología
  * y carga progresiva (paginación infinita por scroll + botón de "Mostrar más obras").
  */
-export default function ProjectsGallery({ projects }: { projects: ProjectSummary[] }) {
+export default function ProjectsGallery({ projects, locale = "es" }: { projects: ProjectSummary[]; locale?: Locale }) {
+  const t = PROJECTS_COPY[locale].gallery;
+  const filterLabel = (name: string) => (name === ALL ? t.all : (t.categories[name] ?? name));
   const [active, setActive] = useState(ALL);
   const [visibleCount, setVisibleCount] = useState(INITIAL_PAGE_SIZE);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -91,14 +96,13 @@ export default function ProjectsGallery({ projects }: { projects: ProjectSummary
     <div>
       <div className="reveal-item grid grid-cols-12 items-end gap-6">
         <div className="col-span-12 lg:col-span-7">
-          <p className="eyebrow">Portfolio</p>
+          <p className="eyebrow">{t.eyebrow}</p>
           <h2 className="display-title mt-6 text-5xl leading-none sm:text-6xl xl:text-[5.5rem]">
-            Todas las obras.
+            {t.title}
           </h2>
         </div>
         <p className="col-span-12 leading-relaxed text-mid lg:col-span-4 lg:col-start-9">
-          Viviendas, oficinas y locales ejecutados con dirección técnica unificada. Entra en cada uno para ver su
-          ficha completa.
+          {t.text}
         </p>
       </div>
 
@@ -106,7 +110,7 @@ export default function ProjectsGallery({ projects }: { projects: ProjectSummary
         // Filtros como fichas cuadradas: la activa en tinta.
         <div
           role="group"
-          aria-label="Filtrar por tipología"
+          aria-label={t.filterLabel}
           className="no-scrollbar -mx-[var(--gutter)] mt-12 flex gap-2 overflow-x-auto px-[var(--gutter)] sm:mx-0 sm:flex-wrap sm:px-0"
         >
           {filters.map((filter) => {
@@ -123,7 +127,7 @@ export default function ProjectsGallery({ projects }: { projects: ProjectSummary
                     : "border-ink/20 text-ink hover:border-ink"
                 }`}
               >
-                {filter.name}
+                {filterLabel(filter.name)}
                 <span className={`text-[10px] tracking-normal ${selected ? "text-paper/60" : "text-mid"}`}>
                   {String(filter.count).padStart(2, "0")}
                 </span>
@@ -137,7 +141,10 @@ export default function ProjectsGallery({ projects }: { projects: ProjectSummary
         {visibleProjects.map((project, i) => {
           // Ritmo de tres: una obra a todo el ancho y dos en pareja.
           const wide = i % 3 === 0;
-          const meta = [project.tipologia, project.ubicacion].filter(Boolean).join(" · ");
+          // En castellano, la tipología tal cual; en otros idiomas, su categoría traducida.
+          const tipo =
+            locale === "es" ? project.tipologia : project.tipologia && filterLabel(projectCategory(project.tipologia));
+          const meta = [tipo, project.ubicacion].filter(Boolean).join(" · ");
           return (
             <li key={project.id} className={`hh-rise ${wide ? "md:col-span-2" : ""}`} style={{ animationDuration: "1s" }}>
               <Link
@@ -176,14 +183,14 @@ export default function ProjectsGallery({ projects }: { projects: ProjectSummary
                         style={{ color: EXCLUSIVE_GOLD }}
                       >
                         <span aria-hidden="true" className="h-px w-8" style={{ backgroundColor: EXCLUSIVE_GOLD }} />
-                        ALKO Exclusiva
+                        {t.exclusive}
                       </span>
                     )}
                     {meta && <p className="text-[10px] uppercase tracking-[0.22em] text-white/70">{meta}</p>}
                     <h3 className={`display-title mt-3 ${wide ? "text-3xl md:text-5xl" : "text-3xl md:text-4xl"}`}>
                       {project.title}
                     </h3>
-                    {project.extracto && (
+                    {t.showExcerpt && project.extracto && (
                       <p
                         className={`mt-4 max-w-xl text-sm leading-relaxed text-white/80 ${
                           wide ? "line-clamp-2" : "line-clamp-2 md:hidden"
@@ -219,11 +226,11 @@ export default function ProjectsGallery({ projects }: { projects: ProjectSummary
               {isLoadingMore ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Cargando más obras...</span>
+                  <span>{t.loadingMore}</span>
                 </>
               ) : (
                 <>
-                  <span>Mostrar más obras</span>
+                  <span>{t.showMore}</span>
                   <span aria-hidden="true" className="transition-transform group-hover:translate-y-0.5">
                     ↓
                   </span>
@@ -231,14 +238,14 @@ export default function ProjectsGallery({ projects }: { projects: ProjectSummary
               )}
             </button>
             <span className="text-[10px] uppercase tracking-[0.22em] text-mid">
-              Mostrando {visibleProjects.length} de {filtered.length} proyectos
+              {t.showing(visibleProjects.length, filtered.length)}
             </span>
           </div>
         ) : (
           filtered.length > 0 && (
             <div className="mx-auto w-full max-w-xs border-t border-ink/15 py-6 text-center">
               <span className="text-[10px] uppercase tracking-[0.22em] text-mid">
-                Has visto todas las obras ({filtered.length})
+                {t.seenAll(filtered.length)}
               </span>
             </div>
           )

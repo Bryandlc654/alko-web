@@ -3,7 +3,7 @@ import Link from "next/link";
 import ContactTrigger from "@/components/contact/ContactTrigger";
 import { FOOTER_NAV, FOOTER_NAV_SECONDARY, GUIDES_HREF, METHOD_HREF, ROUTES, SITE, SOCIAL_LINKS } from "@/lib/site";
 import type { SiteSettings } from "@/lib/types";
-import { HOME_PATHS, type Locale } from "@/lib/i18n";
+import { HOME_PATHS, localizedPath, type Locale } from "@/lib/i18n";
 import { LAYOUT_COPY } from "@/lib/i18n/layout";
 
 const heading = "text-[10px] uppercase tracking-[0.22em] text-white/50";
@@ -14,7 +14,7 @@ export default function Footer({ settings, locale = "es" }: { settings: SiteSett
   const t = LAYOUT_COPY[locale].footer;
   // «Inicio» lleva a la portada del idioma; el resto, a las páginas (en castellano).
   const localize = (link: { href: string; label: string }) => ({
-    href: link.href === ROUTES.home ? HOME_PATHS[locale] : link.href,
+    href: localizedPath(link.href, locale),
     label: t.links[link.href] ?? link.label,
   });
   const telHref = `tel:${settings.telefono.replace(/[^+\d]/g, "")}`;

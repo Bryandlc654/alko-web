@@ -1,5 +1,11 @@
 import Link from "next/link";
-import { ROUTES, SITE } from "@/lib/site";
+import { SITE } from "@/lib/site";
+import { HOME_PATHS, type Locale } from "@/lib/i18n";
+
+const LABELS: Record<Locale, { home: string; nav: string }> = {
+  es: { home: "Inicio", nav: "Migas de pan" },
+  en: { home: "Home", nav: "Breadcrumb" },
+};
 
 export interface Crumb {
   label: string;
@@ -15,17 +21,20 @@ export default function Breadcrumbs({
   items,
   className = "",
   tone = "light",
+  locale = "es",
 }: {
   items: Crumb[];
   className?: string;
   /** «light»: texto blanco sobre foto; «dark»: texto tinta sobre fondo claro. */
   tone?: "light" | "dark";
+  locale?: Locale;
 }) {
   const c =
     tone === "dark"
       ? { base: "text-mid", hover: "hover:text-ink", current: "text-ink", sep: "text-ink/30" }
       : { base: "text-white/70", hover: "hover:text-white", current: "text-white", sep: "text-white/40" };
-  const trail: Crumb[] = [{ label: "Inicio", href: ROUTES.home }, ...items];
+  const labels = LABELS[locale];
+  const trail: Crumb[] = [{ label: labels.home, href: HOME_PATHS[locale] }, ...items];
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -39,7 +48,7 @@ export default function Breadcrumbs({
   };
 
   return (
-    <nav aria-label="Migas de pan" className={className}>
+    <nav aria-label={labels.nav} className={className}>
       <ol className={`text-[10px] tracking-[0.22em] flex flex-wrap items-center gap-x-2 gap-y-1 uppercase ${c.base}`}>
         {trail.map((item, index) => {
           const last = index === trail.length - 1;

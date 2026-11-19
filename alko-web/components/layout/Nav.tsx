@@ -14,7 +14,7 @@ import {
   type ServiceLink,
 } from "@/lib/site";
 import type { SiteSettings } from "@/lib/types";
-import { HOME_PATHS, LOCALES, LOCALE_META, localeFromPath, pathInLocale, type Locale } from "@/lib/i18n";
+import { HOME_PATHS, LOCALES, LOCALE_META, localeFromPath, localizedPath, pathInLocale, type Locale } from "@/lib/i18n";
 import { LAYOUT_COPY, type LayoutCopy } from "@/lib/i18n/layout";
 
 type NavCopy = LayoutCopy["nav"];
@@ -27,7 +27,7 @@ type NavCopy = LayoutCopy["nav"];
 function localizeNav(items: NavItem[], locale: Locale, t: NavCopy): NavItem[] {
   return items.map((item) => ({
     ...item,
-    href: item.href === ROUTES.home ? HOME_PATHS[locale] : item.href,
+    href: localizedPath(item.href, locale),
     label: t.items[item.href] ?? item.label,
     children: item.children?.map((child) => ({ ...child, ...(item.href === ROUTES.company ? t.company[child.href] : {}) })),
   }));
