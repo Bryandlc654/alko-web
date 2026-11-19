@@ -116,7 +116,7 @@ Es lo que más rinde ahora mismo y no necesita programar:
 
 ## 6. Inglés
 
-La versión inglesa cubre portada, proyectos (`/en/projects`) estudio (`/en/about`) y equipo (`/en/team`). Decisión: **las siguientes páginas a traducir son
+La versión inglesa cubre portada, proyectos (`/en/projects`) estudio (`/en/about`) equipo (`/en/team`) y empleo (`/en/careers`). Decisión: **las siguientes páginas a traducir son
 `/servicios/concierge-familias-extranjeras` y `/servicios/implantacion-de-empresas`**, porque su cliente
 busca en inglés. Después, Contacto. El resto de servicios y el Journal se quedan en castellano: el
 cliente madrileño busca en castellano y traducirlos no traería visitas que conviertan.

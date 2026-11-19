@@ -1,21 +1,29 @@
 "use client";
 
 import { useState, useRef } from "react";
-import type { PosicionEmpleo } from "@/lib/types";
+import type { Locale } from "@/lib/i18n";
+import { CAREERS_COPY, SPONTANEOUS_VALUE, type LocalizedPosition } from "@/lib/i18n/careers";
+import { localizedPath } from "@/lib/i18n";
+import { ROUTES } from "@/lib/site";
 
 interface JobApplicationModalProps {
   isOpen: boolean;
   onClose: () => void;
+  /** Puesto marcado de entrada: el valor del panel, en castellano. */
   selectedPuesto?: string;
-  vacantes: PosicionEmpleo[];
+  /** Vacantes con sus textos en el idioma de la página (`valor` es el del panel). */
+  vacantes: LocalizedPosition[];
+  locale?: Locale;
 }
 
 export default function JobApplicationModal({
   isOpen,
   onClose,
-  selectedPuesto = "Candidatura espontánea",
+  selectedPuesto = SPONTANEOUS_VALUE,
   vacantes,
+  locale = "es",
 }: JobApplicationModalProps) {
+  const t = CAREERS_COPY[locale].modal;
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
   const [telefono, setTelefono] = useState("");
@@ -40,7 +48,7 @@ export default function JobApplicationModal({
     if (e.target.files && e.target.files[0]) {
       const selected = e.target.files[0];
       if (selected.size > 10 * 1024 * 1024) {
-        setError("El archivo supera el tamaño máximo permitido de 10MB.");
+        setError(t.tooBig);
         return;
       }
       setFile(selected);
@@ -58,7 +66,8 @@ export default function JobApplicationModal({
       formData.append("nombre", nombre);
       formData.append("email", email);
       formData.append("telefono", telefono);
-      formData.append("puesto", puesto);
+      // Siempre el nombre del panel (en castellano); en inglés se marca el idioma para el equipo.
+      formData.append("puesto", locale === "es" ? puesto : `${puesto} · EN`);
       formData.append("mensaje", mensaje);
       if (file) {
         formData.append("cv", file);
@@ -71,7 +80,7 @@ export default function JobApplicationModal({
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || "Error al enviar la postulación");
+        throw new Error(data.error || t.error);
       }
 
       setSuccess(true);
@@ -85,7 +94,7 @@ export default function JobApplicationModal({
         onClose();
       }, 3500);
     } catch (err: any) {
-      setError(err.message || "No se pudo enviar la postulación.");
+      setError(err.message || t.error);
     } finally {
       setLoading(false);
     }
@@ -110,15 +119,15 @@ export default function JobApplicationModal({
         {/* Cabecera */}
         <div className="flex items-start justify-between gap-6 border-b border-ink/15 px-6 py-5 sm:px-8">
           <div>
-            <p className="text-[10px] uppercase tracking-[0.22em] text-bronze">Trabaja con nosotros</p>
+            <p className="text-[10px] uppercase tracking-[0.22em] text-bronze">{t.eyebrow}</p>
             <h2 id="job-modal-title" className="display-title mt-2 text-2xl leading-tight sm:text-3xl">
-              Envía tu candidatura
+              {t.title}
             </h2>
           </div>
           <button
             type="button"
             onClick={onClose}
-            aria-label="Cerrar"
+            aria-label={t.close}
             className="flex h-10 w-10 shrink-0 items-center justify-center border border-ink/15 text-lg transition-colors hover:border-ink"
           >
             <span aria-hidden="true">×</span>
@@ -130,10 +139,9 @@ export default function JobApplicationModal({
           {success ? (
             <div className="py-10">
               <span aria-hidden="true" className="display-title block text-5xl text-bronze">✓</span>
-              <h3 className="display-title mt-6 text-2xl">Candidatura recibida</h3>
+              <h3 className="display-title mt-6 text-2xl">{t.successTitle}</h3>
               <p className="mt-3 max-w-md leading-relaxed text-mid">
-                Gracias por tu interés en unirte a ALKO. Nuestro equipo de dirección técnica revisará tu perfil y nos
-                pondremos en contacto contigo.
+                {t.successText}
               </p>
             </div>
           ) : (
@@ -146,12 +154,12 @@ export default function JobApplicationModal({
 
               <div>
                 <label htmlFor="job-puesto" className={label}>
-                  Puesto o vacante
+                  {t.position}
                 </label>
                 <select id="job-puesto" value={puesto} onChange={(e) => setPuesto(e.target.value)} className={`${field} cursor-pointer`}>
-                  <option value="Candidatura espontánea">Candidatura espontánea (general)</option>
+                  <option value={SPONTANEOUS_VALUE}>{t.spontaneous}</option>
                   {vacantes.map((v) => (
-                    <option key={v.id || v.titulo} value={v.titulo}>
+                    <option key={v.id || v.valor} value={v.valor}>
                       {v.titulo} ({v.departamento} · {v.ubicacion})
                     </option>
                   ))}
@@ -160,7 +168,7 @@ export default function JobApplicationModal({
 
               <div>
                 <label htmlFor="job-nombre" className={label}>
-                  Nombre y apellidos *
+                  {t.name}
                 </label>
                 <input
                   id="job-nombre"
@@ -168,7 +176,7 @@ export default function JobApplicationModal({
                   required
                   value={nombre}
                   onChange={(e) => setNombre(e.target.value)}
-                  placeholder="Ej.: Marcos Gómez"
+                  placeholder={t.namePlaceholder}
                   className={field}
                 />
               </div>
@@ -176,7 +184,7 @@ export default function JobApplicationModal({
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 <div>
                   <label htmlFor="job-email" className={label}>
-                    Correo electrónico *
+                    {t.email}
                   </label>
                   <input
                     id="job-email"
@@ -184,13 +192,13 @@ export default function JobApplicationModal({
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="marcos@ejemplo.com"
+                    placeholder={t.emailPlaceholder}
                     className={field}
                   />
                 </div>
                 <div>
                   <label htmlFor="job-telefono" className={label}>
-                    Teléfono *
+                    {t.phone}
                   </label>
                   <input
                     id="job-telefono"
@@ -205,7 +213,7 @@ export default function JobApplicationModal({
               </div>
 
               <div>
-                <span className={label}>Currículum (PDF o DOCX, máx. 10 MB)</span>
+                <span className={label}>{t.cv}</span>
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
@@ -214,16 +222,16 @@ export default function JobApplicationModal({
                   {file ? (
                     <span className="min-w-0">
                       <span className="block truncate text-sm">{file.name}</span>
-                      <span className="block text-xs text-mid">{(file.size / (1024 * 1024)).toFixed(2)} MB · Pulsa para cambiarlo</span>
+                      <span className="block text-xs text-mid">{(file.size / (1024 * 1024)).toFixed(2)} MB · {t.cvChange}</span>
                     </span>
                   ) : (
                     <span>
-                      <span className="block text-sm">Selecciona tu CV</span>
-                      <span className="block text-xs text-mid">PDF, DOC o DOCX</span>
+                      <span className="block text-sm">{t.cvSelect}</span>
+                      <span className="block text-xs text-mid">{t.cvTypes}</span>
                     </span>
                   )}
                   <span aria-hidden="true" className="text-[10px] uppercase tracking-[0.22em] text-bronze transition-transform group-hover:-translate-y-0.5">
-                    {file ? "✓" : "↑ Subir"}
+                    {file ? "✓" : t.upload}
                   </span>
                 </button>
                 <input ref={fileInputRef} type="file" accept=".pdf,.doc,.docx" onChange={handleFileChange} className="hidden" />
@@ -231,27 +239,27 @@ export default function JobApplicationModal({
 
               <div>
                 <label htmlFor="job-mensaje" className={label}>
-                  Carta de presentación o comentarios (opcional)
+                  {t.message}
                 </label>
                 <textarea
                   id="job-mensaje"
                   rows={3}
                   value={mensaje}
                   onChange={(e) => setMensaje(e.target.value)}
-                  placeholder="Cuéntanos brevemente tu experiencia en obra o proyectos…"
+                  placeholder={t.messagePlaceholder}
                   className={`${field} resize-none`}
                 />
               </div>
 
               <div className="flex flex-col gap-4 border-t border-ink/15 pt-6 sm:flex-row sm:items-center sm:justify-between">
                 <p className="text-xs leading-relaxed text-mid">
-                  Usaremos tus datos solo para este proceso de selección.{" "}
-                  <a href="/politica-de-privacidad" className="underline underline-offset-2 hover:text-ink">
-                    Política de privacidad
+                  {t.privacy}{" "}
+                  <a href={localizedPath(ROUTES.privacy, locale)} className="underline underline-offset-2 hover:text-ink">
+                    {t.privacyLink}
                   </a>
                 </p>
                 <button type="submit" disabled={loading} className="btn btn-ink shrink-0 disabled:opacity-50">
-                  {loading ? "Enviando…" : "Enviar candidatura"} <span aria-hidden="true">→</span>
+                  {loading ? t.sending : t.submit} <span aria-hidden="true">→</span>
                 </button>
               </div>
             </form>

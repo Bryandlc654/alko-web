@@ -25,7 +25,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Páginas traducidas: la versión inglesa y, en las dos, sus alternativas hreflang.
   const absolute = (path: string) => (path === "/" ? SITE.url : `${SITE.url}${path}`);
-  for (const esPath of [ROUTES.home, ROUTES.projects, ROUTES.company, ROUTES.team]) {
+  for (const esPath of [ROUTES.home, ROUTES.projects, ROUTES.company, ROUTES.team, ROUTES.careers]) {
     const alt = languageAlternates(esPath);
     const languages = { es: absolute(alt.es), en: absolute(alt.en), "x-default": absolute(alt["x-default"]) };
     const original = staticRoutes.find((entry) => entry.url === `${SITE.url}${esPath}`);

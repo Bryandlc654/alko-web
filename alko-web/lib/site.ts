@@ -159,6 +159,7 @@ export const SOLID_HEADER_ROUTES: string[] = [
   "/en/projects",
   "/en/about",
   "/en/team",
+  "/en/careers",
   "/proyectos/:slug",
   "/servicios",
   "/politica-de-privacidad",
