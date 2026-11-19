@@ -75,7 +75,8 @@ export default async function RootLayout({
   const [settings, sectors] = await Promise.all([getSettings(), getSectors()]);
 
   return (
-    <html lang="es" className="scroll-smooth">
+    // lang lo ajusta /en (script) y SiteShell al navegar: es la única diferencia esperada.
+    <html lang="es" className="scroll-smooth" suppressHydrationWarning>
       <body
         className={`${manrope.variable} ${dmSans.variable} bg-stone-950 text-white font-sans antialiased overflow-x-hidden selection:bg-piedra selection:text-ink`}
       >
@@ -92,7 +93,9 @@ export default async function RootLayout({
               />
             }
             footer={<Footer settings={settings} />}
+            footerEn={<Footer settings={settings} locale="en" />}
             whatsapp={<WhatsAppFloat settings={settings} />}
+            whatsappEn={<WhatsAppFloat settings={settings} locale="en" />}
             chat={<ChatWidget />}
             scripts={
               <>

@@ -6,13 +6,14 @@ import Link from "next/link";
 import { ROUTES } from "@/lib/site";
 import {
   CONTACT_LIMITS,
-  CONTACT_MESSAGES,
   FECHAS,
   PRESUPUESTOS,
   SITUACIONES,
   cleanSurface,
   contactKind,
 } from "@/lib/contact/config";
+import type { Locale } from "@/lib/i18n";
+import { CONTACT_COPY } from "@/lib/i18n/contact";
 
 type Status = "idle" | "sending" | "sent" | "error";
 type Errors = Partial<Record<"tipo" | "nombre" | "contacto", string>>;
@@ -38,6 +39,7 @@ export default function ContactForm({
   source,
   onClose,
   onSent,
+  locale = "es",
 }: {
   projectTypes: string[];
   email: string;
@@ -50,7 +52,13 @@ export default function ContactForm({
   onClose?: () => void;
   /** Se llama cuando el envío termina bien (el modal oculta entonces el enlace al otro formulario). */
   onSent?: () => void;
+  /** Idioma de los textos. Los valores enviados siguen en castellano. */
+  locale?: Locale;
 }) {
+  const copy = CONTACT_COPY[locale];
+  const t = copy.full;
+  const c = copy.common;
+  const optionLabel = (value: string) => copy.options[value] ?? value;
   const uid = useId();
   const id = (name: string) => `${uid}-${name}`;
   const formRef = useRef<HTMLFormElement>(null);
@@ -77,10 +85,10 @@ export default function ContactForm({
 
     // Validación en el navegador (el servidor vuelve a comprobarlo todo).
     const found: Errors = {};
-    if (!value("tipo")) found.tipo = "Elige la división de tu proyecto.";
-    if (!value("nombre")) found.nombre = "Dinos tu nombre o el de tu empresa.";
-    if (!value("contacto")) found.contacto = "Escribe un teléfono o un email para poder contestarte.";
-    else if (!contactKind(value("contacto"))) found.contacto = "No parece un teléfono ni un email válido.";
+    if (!value("tipo")) found.tipo = t.errTipo;
+    if (!value("nombre")) found.nombre = t.errNombre;
+    if (!value("contacto")) found.contacto = t.errContacto;
+    else if (!contactKind(value("contacto"))) found.contacto = t.errContactoInvalid;
     setErrors(found);
     if (Object.keys(found).length > 0) {
       const first = (["tipo", "nombre", "contacto"] as const).find((key) => found[key]);
@@ -111,9 +119,9 @@ export default function ContactForm({
         return;
       }
       const message = (json as { error?: unknown } | null)?.error;
-      setServerError(typeof message === "string" && message ? message : CONTACT_MESSAGES.failed);
+      setServerError(c.useServerMessage && typeof message === "string" && message ? message : c.failed);
     } catch {
-      setServerError(CONTACT_MESSAGES.failed); // sin conexión
+      setServerError(c.failed); // sin conexión
     }
     setStatus("error");
   }
@@ -128,8 +136,8 @@ export default function ContactForm({
   // --- Confirmación ---------------------------------------------------------------------------
   if (status === "sent" && sent) {
     const resumen: [string, string][] = [
-      ["División", sent.tipo],
-      ["Ubicación", sent.ubicacion],
+      [t.sentDivision, optionLabel(sent.tipo)],
+      [t.sentLocation, sent.ubicacion],
     ];
     return (
       <div
@@ -141,11 +149,10 @@ export default function ContactForm({
       >
         <CheckCircle2 className="h-12 w-12 text-bronze-light" strokeWidth={1.25} aria-hidden="true" />
         <h3 className="display-title mt-6 text-3xl sm:text-4xl leading-tight">
-          Hemos recibido tu proyecto
+          {t.sentTitle}
         </h3>
         <p className="mt-4 max-w-xl text-lg font-light text-white/70 leading-relaxed">
-          Gracias, {sent.nombre}. El equipo técnico revisará la información que nos has enviado y se pondrá en
-          contacto contigo en <span className="text-white">{sent.contacto}</span>.
+          {t.sentThanks} {sent.nombre}. {t.sentBody} <span className="text-white">{sent.contacto}</span>.
         </p>
 
         <dl className="mt-8 max-w-xl border-t border-white/15">
@@ -170,7 +177,7 @@ export default function ContactForm({
           }
           className="mt-10 inline-flex items-center gap-2 border-b border-white pb-1 text-xs font-semibold uppercase tracking-[0.22em] text-white transition hover:border-bronze-light hover:text-bronze-light"
         >
-          {onClose ? "Cerrar" : "Enviar otro proyecto"}
+          {onClose ? c.close : t.sendAnother}
         </button>
       </div>
     );
@@ -191,11 +198,11 @@ export default function ContactForm({
           className={`${input} appearance-none pr-8 [&:invalid]:text-white/30`}
         >
           <option value="" className="bg-ink text-white/60">
-            Sin indicar
+            {t.notSpecified}
           </option>
           {options.map((option) => (
             <option key={option} value={option} className="bg-ink text-white">
-              {option}
+              {optionLabel(option)}
             </option>
           ))}
         </select>
@@ -211,21 +218,20 @@ export default function ContactForm({
   return (
     <form ref={formRef} onSubmit={handleSubmit} noValidate aria-busy={sending}>
       <p className="mb-10 max-w-xl text-sm font-light leading-relaxed text-white/60">
-        Solo necesitamos la división, tu nombre y un teléfono o email. El resto es opcional y nos ayuda
-        a orientarte mejor.
+        {t.intro}
       </p>
 
       {/* Campo trampa para bots: las personas no lo ven */}
       <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
         <label>
-          No rellenar
+          {c.honeypot}
           <input type="text" name="website" tabIndex={-1} autoComplete="off" />
         </label>
       </div>
 
       <p className={group}>
         <span className="text-bronze-light">01</span>
-        <span>Tu proyecto</span>
+        <span>{t.groupProject}</span>
         <span className="h-px flex-1 bg-white/15" />
       </p>
       <div className="grid grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-2">
@@ -234,7 +240,7 @@ export default function ContactForm({
           data-invalid={errors.tipo ? "true" : undefined}
           aria-describedby={errors.tipo ? id("tipo-error") : undefined}
         >
-          <legend className={`${label} mb-3`}>División *</legend>
+          <legend className={`${label} mb-3`}>{t.division}</legend>
           <div className="flex flex-wrap gap-2">
             {projectTypes.map((type) => (
               <label key={type} className="cursor-pointer">
@@ -248,7 +254,7 @@ export default function ContactForm({
                   className="peer sr-only"
                 />
                 <span className="inline-flex border border-white/25 px-4 py-2 text-[11px] font-light uppercase tracking-[0.16em] text-white/70 transition-colors hover:border-white hover:text-white peer-checked:border-paper peer-checked:bg-paper peer-checked:text-ink peer-focus-visible:ring-2 peer-focus-visible:ring-white peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-ink group-data-[invalid=true]:border-bronze-light">
-                  {type}
+                  {optionLabel(type)}
                 </span>
               </label>
             ))}
@@ -262,7 +268,7 @@ export default function ContactForm({
 
         <div>
           <label htmlFor={id("ubicacion")} className={label}>
-            Ubicación
+            {t.location}
           </label>
           <input
             id={id("ubicacion")}
@@ -270,13 +276,13 @@ export default function ContactForm({
             maxLength={CONTACT_LIMITS.maxUbicacion}
             autoComplete="address-level2"
             className={input}
-            placeholder="Madrid, barrio o municipio"
+            placeholder={t.locationPlaceholder}
           />
         </div>
 
         <div>
           <label htmlFor={id("superficie")} className={label}>
-            Superficie
+            {t.surface}
           </label>
           <div className="relative">
             <input
@@ -288,26 +294,26 @@ export default function ContactForm({
                 e.target.value = cleanSurface(e.target.value);
               }}
               className={`${input} pr-10`}
-              placeholder="Aproximada"
+              placeholder={t.surfacePlaceholder}
             />
             <span className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-white/50">m²</span>
           </div>
         </div>
 
-        {select("situacion", "Situación actual", SITUACIONES)}
-        {select("fecha", "Fecha prevista", FECHAS)}
-        <div className="sm:col-span-2">{select("presupuesto", "Presupuesto aproximado", PRESUPUESTOS)}</div>
+        {select("situacion", t.situation, SITUACIONES)}
+        {select("fecha", t.date, FECHAS)}
+        <div className="sm:col-span-2">{select("presupuesto", t.budget, PRESUPUESTOS)}</div>
       </div>
 
       <p className={`${group} mt-14`}>
         <span className="text-bronze-light">02</span>
-        <span>Tus datos</span>
+        <span>{t.groupDetails}</span>
         <span className="h-px flex-1 bg-white/15" />
       </p>
       <div className="grid grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-2">
         <div>
           <label htmlFor={id("nombre")} className={label}>
-            Nombre / empresa *
+            {t.name}
           </label>
           <input
             id={id("nombre")}
@@ -319,7 +325,7 @@ export default function ContactForm({
             aria-describedby={errors.nombre ? id("nombre-error") : undefined}
             onChange={() => errors.nombre && setErrors((prev) => ({ ...prev, nombre: undefined }))}
             className={input}
-            placeholder="Tu nombre o el de tu empresa"
+            placeholder={c.namePlaceholder}
           />
           {errors.nombre && (
             <p id={id("nombre-error")} role="alert" className={error}>
@@ -330,7 +336,7 @@ export default function ContactForm({
 
         <div>
           <label htmlFor={id("contacto")} className={label}>
-            Teléfono / email *
+            {t.contact}
           </label>
           <input
             id={id("contacto")}
@@ -342,7 +348,7 @@ export default function ContactForm({
             aria-describedby={errors.contacto ? id("contacto-error") : id("contacto-hint")}
             onChange={() => errors.contacto && setErrors((prev) => ({ ...prev, contacto: undefined }))}
             className={input}
-            placeholder="600 000 000 o tu@email.com"
+            placeholder={t.contactPlaceholder}
           />
           {errors.contacto ? (
             <p id={id("contacto-error")} role="alert" className={error}>
@@ -350,17 +356,17 @@ export default function ContactForm({
             </p>
           ) : (
             <p id={id("contacto-hint")} className={hint}>
-              Con uno de los dos nos basta.
+              {c.oneIsEnough}
             </p>
           )}
         </div>
 
         <p className="sm:col-span-2 text-sm font-light leading-relaxed text-white/60">
-          ¿Tienes planos o documentación? Cuando te contestemos podrás enviárnoslos por{" "}
+          {t.docsA}{" "}
           <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className="text-white underline underline-offset-4">
             WhatsApp
           </a>{" "}
-          o a{" "}
+          {t.docsOr}{" "}
           <a href={`mailto:${email}`} className="text-white underline underline-offset-4">
             {email}
           </a>
@@ -385,9 +391,9 @@ export default function ContactForm({
 
       <div className="mt-12 flex flex-col justify-between gap-6 border-t border-white/15 pt-8 sm:flex-row sm:items-center">
         <p className="max-w-sm text-sm font-light leading-relaxed text-white/50">
-          Usaremos tus datos solo para responder a tu consulta.{" "}
+          {c.privacyNote}{" "}
           <Link href={ROUTES.privacy} className="underline underline-offset-2 hover:text-white">
-            Política de privacidad
+            {c.privacy}
           </Link>
         </p>
         <button
@@ -398,11 +404,11 @@ export default function ContactForm({
           {sending ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-              Enviando…
+              {c.sending}
             </>
           ) : (
             <>
-              Enviar proyecto
+              {t.submit}
               <span aria-hidden="true" className="transition-transform group-hover/btn:translate-x-1">
                 →
               </span>

@@ -8,7 +8,9 @@
 export const SITE = {
   name: "ALKO",
   legalName: "ALKO Construcción y Reformas Integrales",
-  url: (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.alko.es").replace(/\/+$/, ""),
+  // Dominio con el que Google ya conoce la web (canonical actual, sin www). Ojo: alko.es es de
+  // otra empresa; si se usara como respaldo, canonical, sitemap y datos estructurados apuntarían allí.
+  url: (process.env.NEXT_PUBLIC_SITE_URL || "https://alkoreformas.com").replace(/\/+$/, ""),
   locale: "es_ES",
   title: "Reformas integrales y construcción en Madrid | ALKO",
   description:

@@ -25,3 +25,34 @@ export const HOME_FAQ: { q: string; a: string }[] = [
     a: "Presenta tu proyecto con el formulario. Un técnico de la división correspondiente revisará tu solicitud y te llamará para concretar una visita.",
   },
 ];
+
+/** Las mismas preguntas en inglés (portada /en). */
+export const HOME_FAQ_EN: { q: string; a: string }[] = [
+  {
+    q: "How do I know whether ALKO is the right company for my project?",
+    a: "We start with a conversation to understand your needs, any existing documentation and the property. From there we define the brief and tell you clearly whether it is a good fit for what we do.",
+  },
+  {
+    q: "What kind of projects do you take on?",
+    a: "We work across four divisions: homes and full renovations, offices and headquarters, hotels, restaurants and retail, and industrial buildings and technical installations.",
+  },
+  {
+    q: "How long does a project take?",
+    a: "It depends on the scope and the condition of the property. We set the schedule during the planning stage, before work starts, and keep you informed of any change during the build.",
+  },
+  {
+    q: "Can you work within our budget?",
+    a: "We define solutions and work packages around your planned budget, and propose alternative materials and finishes where needed.",
+  },
+  {
+    q: "Do you manage the project from start to finish?",
+    a: "Yes. A single point of contact coordinates trades, technical staff and suppliers, tracks progress and reports any issues to you until handover.",
+  },
+  {
+    q: "How do we get started?",
+    a: "Tell us about your project using the form. A specialist from the relevant division will review your request and call you to arrange a visit.",
+  },
+];
+
+/** Preguntas frecuentes de la portada por idioma. */
+export const HOME_FAQ_BY_LOCALE = { es: HOME_FAQ, en: HOME_FAQ_EN } as const;

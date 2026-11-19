@@ -1,14 +1,17 @@
 import type { SiteSettings } from "@/lib/types";
+import type { Locale } from "@/lib/i18n";
+import { LAYOUT_COPY } from "@/lib/i18n/layout";
 
-export default function WhatsAppFloat({ settings }: { settings: SiteSettings }) {
+export default function WhatsAppFloat({ settings, locale = "es" }: { settings: SiteSettings; locale?: Locale }) {
+  const t = LAYOUT_COPY[locale].whatsapp;
   const number = settings.whatsapp.replace(/[^\d]/g, "");
 
   return (
     <a
-      href={`https://wa.me/${number}?text=Hola%20ALKO%2C%20quiero%20informaci%C3%B3n%20sobre%20un%20proyecto.`}
+      href={`https://wa.me/${number}?text=${encodeURIComponent(t.message)}`}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="Contactar por WhatsApp"
+      aria-label={t.label}
       className="group fixed bottom-5 left-5 sm:bottom-6 sm:left-6 z-50 flex items-center"
     >
       <span className="relative flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#25D366] text-white transition-all duration-300 hover:scale-105 hover:bg-[#1ebe5a] active:scale-95">
@@ -24,7 +27,7 @@ export default function WhatsAppFloat({ settings }: { settings: SiteSettings }) 
         </svg>
       </span>
       <span className="hidden sm:inline-block ml-0 max-w-0 overflow-hidden whitespace-nowrap bg-paper text-ink text-xs font-semibold tracking-wide opacity-0 transition-all duration-300 group-hover:ml-3 group-hover:max-w-[230px] group-hover:px-4 group-hover:py-2.5 group-hover:opacity-100">
-        Escríbenos por WhatsApp
+        {t.hover}
       </span>
     </a>
   );
