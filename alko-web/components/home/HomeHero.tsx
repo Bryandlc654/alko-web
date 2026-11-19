@@ -4,19 +4,21 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import ContactTrigger from "@/components/contact/ContactTrigger";
+import type { Locale } from "@/lib/i18n";
+import { HOME_COPY } from "@/lib/i18n/home";
 import { ROUTES } from "@/lib/site";
 import type { Slide } from "@/lib/types";
 
 const DURATION = 6500;
-/** Rótulo de cada imagen del carrusel (se repiten si hay más imágenes que rótulos). */
-const CAPTIONS = ["Construcción integral", "Residential", "Arquitectura interior", "Corporate"];
 
 /**
  * Hero de la propuesta 6 (parte superior de la V4): imágenes a sangre con fundido
  * y zoom lento, titular abajo a la izquierda y controles con barras de progreso.
  * Avanza solo; se pausa con el cursor, el foco o «reducir movimiento».
  */
-export default function HomeHero({ slides }: { slides: Slide[] }) {
+export default function HomeHero({ slides, locale = "es" }: { slides: Slide[]; locale?: Locale }) {
+  const copy = HOME_COPY[locale];
+  const t = copy.hero;
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [reduced, setReduced] = useState(false);
@@ -63,14 +65,15 @@ export default function HomeHero({ slides }: { slides: Slide[] }) {
     return () => window.clearTimeout(timer);
   }, [running, index, go]);
 
-  const caption = (i: number) => CAPTIONS[i % CAPTIONS.length];
+  // Rótulo de cada imagen del carrusel (se repiten si hay más imágenes que rótulos).
+  const caption = (i: number) => t.captions[i % t.captions.length];
 
   return (
     <header
       className="relative isolate h-[100svh] max-h-[1100px] min-h-[620px] w-full overflow-hidden bg-ink text-paper"
       data-hero-parallax
-      aria-roledescription="carrusel"
-      aria-label="Ámbitos de ALKO"
+      aria-roledescription={t.roledescription}
+      aria-label={t.label}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
@@ -97,7 +100,7 @@ export default function HomeHero({ slides }: { slides: Slide[] }) {
             {mounted.has(i) && (
               <Image
                 src={slide.image}
-                alt={slide.alt}
+                alt={t.alts[slide.image] ?? slide.alt}
                 fill
                 priority={i === 0}
                 quality={82}
@@ -116,20 +119,24 @@ export default function HomeHero({ slides }: { slides: Slide[] }) {
         <div className="grid grid-cols-12 items-end gap-x-6 gap-y-10">
           <div className="col-span-12 lg:col-span-8">
             <h1 className="hh-rise display-title text-[2.9rem] leading-[.98] tracking-[-0.035em] sm:text-6xl xl:text-[5.4rem]">
-              <span className="sm:whitespace-nowrap">Construimos espacios</span>
+              {/* Palabra clave principal dentro del H1, visible como antetítulo. */}
+              <span className="eyebrow mb-6 block leading-[1.4] tracking-[0.22em] text-paper sm:text-[11px] [text-shadow:0_1px_12px_rgba(0,0,0,0.45)]">
+                {t.keyword}
+              </span>
+              <span className="sm:whitespace-nowrap">{t.titleA}</span>
               <br />
-              que permanecen.
+              {t.titleB}
             </h1>
             <div className="hh-rise mt-9 flex flex-wrap items-center gap-x-8 gap-y-4" style={{ animationDelay: ".25s" }}>
               <Link href={ROUTES.projects} className="btn btn-paper">
-                Explorar proyectos <span aria-hidden="true">↗</span>
+                {t.explore} <span aria-hidden="true">↗</span>
               </Link>
               <ContactTrigger
                 mode="avanzado"
-                source="Portada"
+                source={`Portada${copy.sourceSuffix}`}
                 className="border-b border-paper/50 pb-1 text-[11px] uppercase tracking-[0.22em] transition-colors hover:border-paper"
               >
-                Presentar proyecto
+                {t.present}
               </ContactTrigger>
             </div>
           </div>
@@ -149,7 +156,7 @@ export default function HomeHero({ slides }: { slides: Slide[] }) {
                     type="button"
                     onClick={() => go(index - 1)}
                     className="grid h-10 w-10 place-items-center rounded-full border border-paper/40 transition-colors hover:bg-paper hover:text-ink"
-                    aria-label="Imagen anterior"
+                    aria-label={t.prev}
                   >
                     ←
                   </button>
@@ -157,7 +164,7 @@ export default function HomeHero({ slides }: { slides: Slide[] }) {
                     type="button"
                     onClick={() => go(index + 1)}
                     className="grid h-10 w-10 place-items-center rounded-full border border-paper/40 transition-colors hover:bg-paper hover:text-ink"
-                    aria-label="Imagen siguiente"
+                    aria-label={t.next}
                   >
                     →
                   </button>
@@ -169,7 +176,7 @@ export default function HomeHero({ slides }: { slides: Slide[] }) {
                     key={`${slide.id}-${i === index ? index : "x"}`}
                     type="button"
                     onClick={() => go(i)}
-                    aria-label={`Ver ${caption(i)}`}
+                    aria-label={`${t.view} ${caption(i)}`}
                     aria-current={i === index}
                     className={`hh-bar ${i < index || (i === index && !running) ? "done" : ""} ${i === index && running ? "run" : ""}`}
                     style={{ "--dur": `${DURATION}ms` } as CSSProperties}

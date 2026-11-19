@@ -2,13 +2,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { DIVISIONS } from "@/lib/divisions";
 import { ROUTES } from "@/lib/site";
+import type { Locale } from "@/lib/i18n";
+import { HOME_COPY } from "@/lib/i18n/home";
 import type { Sector } from "@/lib/types";
 
 /**
  * Cuatro divisiones en paneles que se expanden al pasar el cursor (escritorio);
  * en móvil y tableta, tarjetas en rejilla. Propuesta 6 · V4.
  */
-export default function DivisionsGrid({ sectors }: { sectors: Sector[] }) {
+export default function DivisionsGrid({ sectors, locale = "es" }: { sectors: Sector[]; locale?: Locale }) {
+  const t = HOME_COPY[locale].divisions;
   const slugs = new Set(sectors.map((sector) => sector.slug));
   const hrefFor = (candidates: string[]) => {
     const match = candidates.find((slug) => slugs.has(slug));
@@ -19,16 +22,15 @@ export default function DivisionsGrid({ sectors }: { sectors: Sector[] }) {
     <section id="divisiones" className="bg-paper text-ink">
       <div className="site-wrap grid grid-cols-12 items-end gap-6 pb-14 pt-24 lg:pt-36">
         <div className="col-span-12 lg:col-span-7">
-          <p className="eyebrow reveal-item">01 / Qué hacemos</p>
+          <p className="eyebrow reveal-item">{t.eyebrow}</p>
           <h2 className="reveal-item display-title mt-6 text-5xl leading-none sm:text-6xl xl:text-[5.5rem]">
-            Cuatro ámbitos.
+            {t.titleA}
             <br />
-            Un mismo criterio.
+            {t.titleB}
           </h2>
         </div>
         <p className="reveal-item col-span-12 leading-relaxed text-mid lg:col-span-4 lg:col-start-9">
-          Un mismo sistema de trabajo, adaptado a lo que necesita cada cliente: tranquilidad en casa,
-          continuidad en la empresa, experiencia en el local y rendimiento en la nave.
+          {t.text}
         </p>
       </div>
 
@@ -37,7 +39,7 @@ export default function DivisionsGrid({ sectors }: { sectors: Sector[] }) {
           <Link
             key={division.id}
             href={hrefFor(division.sectorSlugs)}
-            aria-label={`Explorar ${division.name}`}
+            aria-label={`${t.explore} ${division.name}`}
             className={`div-panel group relative aspect-[4/5] overflow-hidden bg-ink text-paper sm:aspect-[3/4] lg:aspect-auto ${
               i < DIVISIONS.length - 1 ? "lg:border-r lg:border-paper/20" : ""
             }`}
@@ -58,9 +60,9 @@ export default function DivisionsGrid({ sectors }: { sectors: Sector[] }) {
             </span>
             <div className="div-panel-body absolute inset-x-6 bottom-6 lg:bottom-8">
               <h3 className="display-title text-3xl lg:text-4xl">{division.name}</h3>
-              <p className="mt-3 max-w-xs text-sm text-paper/80">{division.desc}</p>
+              <p className="mt-3 max-w-xs text-sm text-paper/80">{t.desc[division.id]}</p>
               <span className="mt-6 inline-flex items-center gap-3 text-[10px] uppercase tracking-[0.22em]">
-                Explorar división <span aria-hidden="true">↗</span>
+                {t.exploreDivision} <span aria-hidden="true">↗</span>
               </span>
             </div>
           </Link>
@@ -69,9 +71,9 @@ export default function DivisionsGrid({ sectors }: { sectors: Sector[] }) {
 
       {/* Las imágenes de división son provisionales: no se presentan como obras ALKO (brief §3). */}
       <div className="site-wrap flex flex-col-reverse gap-4 pb-24 text-[10px] uppercase tracking-[0.12em] text-mid sm:flex-row sm:justify-between lg:pb-36">
-        <span>Imágenes de referencia · No representan obras de ALKO</span>
+        <span>{t.disclaimer}</span>
         <Link href={ROUTES.sectors} className="transition-colors hover:text-ink">
-          Explorar divisiones ↗
+          {t.all} ↗
         </Link>
       </div>
     </section>

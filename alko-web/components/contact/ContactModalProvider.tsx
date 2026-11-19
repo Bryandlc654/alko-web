@@ -1,7 +1,9 @@
 "use client";
 
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import ContactModal from "./ContactModal";
+import { localeFromPath } from "@/lib/i18n";
 
 export type ContactMode = "rapido" | "avanzado";
 
@@ -44,6 +46,8 @@ export default function ContactModalProvider({
   children: ReactNode;
 }) {
   const [state, setState] = useState<State | null>(null);
+  // El modal habla el idioma de la página desde la que se abre.
+  const locale = localeFromPath(usePathname());
 
   const open = useCallback((mode: ContactMode, options: OpenOptions = {}) => {
     setState({ mode, ...options });
@@ -63,6 +67,7 @@ export default function ContactModalProvider({
           whatsappHref={whatsappHref}
           onClose={() => setState(null)}
           onSwitch={(mode) => setState((prev) => (prev ? { ...prev, mode } : prev))}
+          locale={locale}
         />
       )}
     </ContactModalContext.Provider>

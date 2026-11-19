@@ -2,9 +2,11 @@
 
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { CheckCircle2, Loader2 } from "lucide-react";
-import { CONTACT_LIMITS, CONTACT_MESSAGES, contactKind } from "@/lib/contact/config";
+import { CONTACT_LIMITS, contactKind } from "@/lib/contact/config";
 import Link from "next/link";
 import { ROUTES } from "@/lib/site";
+import type { Locale } from "@/lib/i18n";
+import { CONTACT_COPY } from "@/lib/i18n/contact";
 
 type Status = "idle" | "sending" | "sent" | "error";
 type Errors = Partial<Record<"nombre" | "email" | "telefono" | "contacto", string>>;
@@ -23,6 +25,7 @@ export default function QuickContactForm({
   onClose,
   onSent,
   compact = false,
+  locale = "es",
 }: {
   /** Versión compacta, abierta en la página (p. ej. sobre el hero de la portada). */
   compact?: boolean;
@@ -34,7 +37,11 @@ export default function QuickContactForm({
   onClose?: () => void;
   /** Se llama cuando el envío termina bien (el modal oculta entonces el enlace al otro formulario). */
   onSent?: () => void;
+  locale?: Locale;
 }) {
+  const copy = CONTACT_COPY[locale];
+  const t = copy.quick;
+  const c = copy.common;
   const uid = useId();
   const id = (name: string) => `${uid}-${name}`;
   const confirmRef = useRef<HTMLDivElement>(null);
@@ -56,10 +63,10 @@ export default function QuickContactForm({
 
     // Validación en el navegador (el servidor vuelve a comprobarlo todo).
     const found: Errors = {};
-    if (!value("nombre")) found.nombre = "Dinos tu nombre.";
-    if (!value("email") && !value("telefono")) found.contacto = "Déjanos un correo o un teléfono para poder contestarte.";
-    if (value("email") && contactKind(value("email")) !== "email") found.email = "Este correo no parece válido.";
-    if (value("telefono") && contactKind(value("telefono")) !== "phone") found.telefono = "Este teléfono no parece válido.";
+    if (!value("nombre")) found.nombre = t.errNombre;
+    if (!value("email") && !value("telefono")) found.contacto = t.errContacto;
+    if (value("email") && contactKind(value("email")) !== "email") found.email = t.errEmail;
+    if (value("telefono") && contactKind(value("telefono")) !== "phone") found.telefono = t.errTelefono;
     setErrors(found);
     const first = (["nombre", "email", "telefono"] as const).find((key) => found[key] || (found.contacto && key === "email"));
     if (Object.keys(found).length > 0) {
@@ -85,9 +92,9 @@ export default function QuickContactForm({
         return;
       }
       const message = (json as { error?: unknown } | null)?.error;
-      setServerError(typeof message === "string" && message ? message : CONTACT_MESSAGES.failed);
+      setServerError(c.useServerMessage && typeof message === "string" && message ? message : c.failed);
     } catch {
-      setServerError(CONTACT_MESSAGES.failed); // sin conexión
+      setServerError(c.failed); // sin conexión
     }
     setStatus("error");
   }
@@ -104,10 +111,10 @@ export default function QuickContactForm({
       <div ref={confirmRef} tabIndex={-1} role="status" aria-live="polite" className="py-2 outline-none">
         <CheckCircle2 className={compact ? "h-9 w-9 text-bronze-light" : "h-12 w-12 text-bronze-light"} strokeWidth={1.25} aria-hidden="true" />
         <h3 className={`display-title leading-tight text-white ${compact ? "mt-4 text-2xl" : "mt-6 text-3xl"}`}>
-          Hemos recibido tus datos
+          {t.sentTitle}
         </h3>
         <p className={`font-light leading-relaxed text-white/70 ${compact ? "mt-3 text-sm" : "mt-4 text-lg"}`}>
-          Gracias, {sent.nombre}. Una persona del equipo se pondrá en contacto contigo en{" "}
+          {t.sentThanks} {sent.nombre}. {t.sentBody}{" "}
           <span className="text-white">{sent.via}</span>.
         </p>
         <button
@@ -115,7 +122,7 @@ export default function QuickContactForm({
           onClick={onClose ?? (() => setStatus("idle"))}
           className={`${compact ? "mt-6" : "mt-10"} inline-flex items-center gap-2 border-b border-white pb-1 text-xs font-semibold uppercase tracking-[0.22em] text-white transition hover:border-bronze-light hover:text-bronze-light`}
         >
-          {onClose ? "Cerrar" : "Enviar otra solicitud"}
+          {onClose ? c.close : t.sendAnother}
         </button>
       </div>
     );
@@ -127,14 +134,14 @@ export default function QuickContactForm({
     <form onSubmit={handleSubmit} noValidate aria-busy={sending} className="relative">
       {!compact && (
         <p className="mb-8 text-sm font-light leading-relaxed text-white/60">
-          Solo necesitamos tu nombre y un correo o un teléfono. Te contestará una persona del equipo técnico.
+          {t.intro}
         </p>
       )}
 
       {/* Campo trampa para bots: las personas no lo ven */}
       <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
         <label>
-          No rellenar
+          {c.honeypot}
           <input type="text" name="website" tabIndex={-1} autoComplete="off" />
         </label>
       </div>
@@ -142,7 +149,7 @@ export default function QuickContactForm({
       <div className={`grid grid-cols-1 ${compact ? "gap-y-4" : "gap-y-7"}`}>
         <div>
           <label htmlFor={id("nombre")} className={label}>
-            Nombre *
+            {t.name}
           </label>
           <input
             id={id("nombre")}
@@ -155,7 +162,7 @@ export default function QuickContactForm({
             aria-describedby={errors.nombre ? id("nombre-error") : undefined}
             onChange={() => errors.nombre && setErrors((prev) => ({ ...prev, nombre: undefined }))}
             className={input}
-            placeholder="Tu nombre o el de tu empresa"
+            placeholder={c.namePlaceholder}
           />
           {errors.nombre && (
             <p id={id("nombre-error")} role="alert" className={error}>
@@ -166,7 +173,7 @@ export default function QuickContactForm({
 
         <div>
           <label htmlFor={id("email")} className={label}>
-            Correo electrónico
+            {t.email}
           </label>
           <input
             id={id("email")}
@@ -179,7 +186,7 @@ export default function QuickContactForm({
             aria-describedby={errors.email ? id("email-error") : errors.contacto ? id("contacto-error") : undefined}
             onChange={() => setErrors((prev) => ({ ...prev, email: undefined, contacto: undefined }))}
             className={input}
-            placeholder="tu@email.com"
+            placeholder={t.emailPlaceholder}
           />
           {errors.email && (
             <p id={id("email-error")} role="alert" className={error}>
@@ -190,7 +197,7 @@ export default function QuickContactForm({
 
         <div>
           <label htmlFor={id("telefono")} className={label}>
-            Teléfono
+            {t.phone}
           </label>
           <input
             id={id("telefono")}
@@ -215,7 +222,7 @@ export default function QuickContactForm({
               {errors.contacto}
             </p>
           ) : (
-            <p className={`mt-2 font-light text-white/50 ${compact ? "text-xs" : "text-sm"}`}>Con uno de los dos nos basta.</p>
+            <p className={`mt-2 font-light text-white/50 ${compact ? "text-xs" : "text-sm"}`}>{c.oneIsEnough}</p>
           )}
         </div>
       </div>
@@ -243,9 +250,9 @@ export default function QuickContactForm({
         }
       >
         <p className={`font-light leading-relaxed text-white/50 ${compact ? "order-last text-[11px]" : "max-w-xs text-sm"}`}>
-          Usaremos tus datos solo para responder a tu consulta.{" "}
+          {c.privacyNote}{" "}
           <Link href={ROUTES.privacy} className="underline underline-offset-2 hover:text-white">
-            Política de privacidad
+            {c.privacy}
           </Link>
         </p>
         <button
@@ -256,11 +263,11 @@ export default function QuickContactForm({
           {sending ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-              Enviando…
+              {c.sending}
             </>
           ) : (
             <>
-              Enviar
+              {t.submit}
               <span aria-hidden="true" className="transition-transform group-hover/btn:translate-x-1">
                 →
               </span>

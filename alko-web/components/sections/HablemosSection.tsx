@@ -2,6 +2,8 @@ import Image from "@/components/ui/Image";
 import ContactForm from "@/components/ui/ContactForm";
 import { DIVISION_OPTIONS, divisionForSector } from "@/lib/divisions";
 import type { SiteSettings } from "@/lib/types";
+import type { Locale } from "@/lib/i18n";
+import { HOME_COPY } from "@/lib/i18n/home";
 
 /**
  * Cierre «Hablemos» (propuesta 6 · V5): foto a sangre, titular grande a la izquierda y el
@@ -18,6 +20,7 @@ export default function HablemosSection({
   title,
   eyebrow,
   overlay = false,
+  locale = "es",
 }: {
   settings: SiteSettings;
   /** Origen que llega en el correo (p. ej. «Formulario portada · /»). */
@@ -33,7 +36,10 @@ export default function HablemosSection({
   eyebrow?: string;
   /** Velo más oscuro sobre toda la foto (fotos de obra claras). */
   overlay?: boolean;
+  /** Idioma de los textos por defecto y del formulario. */
+  locale?: Locale;
 }) {
+  const copy = HOME_COPY[locale].contact;
   const telHref = `tel:${settings.telefono.replace(/[^+\d]/g, "")}`;
 
   return (
@@ -50,12 +56,11 @@ export default function HablemosSection({
             <h2 className="display-title whitespace-pre-line text-[2.6rem] leading-[1.02] md:text-5xl">{title}</h2>
           ) : (
             <h2 className="display-title whitespace-nowrap text-[60px] leading-[.95] tracking-[-0.045em] md:text-[64px] lg:text-[84px]">
-              Hablemos <span aria-hidden="true">↘</span>
+              {copy.title} <span aria-hidden="true">↘</span>
             </h2>
           )}
           <p className="mt-6 max-w-xs text-white/85">
-            {description ||
-              "Cuéntanos lo esencial. Un técnico de la división correspondiente revisará tu solicitud y te contactará."}
+            {description || copy.description}
           </p>
           <p className="mt-8 space-y-1 text-sm text-white/80">
             <a href={telHref} className="block hover:text-white">
@@ -75,6 +80,7 @@ export default function HablemosSection({
             whatsappHref={`https://wa.me/${settings.whatsapp.replace(/[^\d]/g, "")}`}
             defaultTipo={divisionForSector(sectorSlug)}
             source={source}
+            locale={locale}
           />
         </div>
       </div>

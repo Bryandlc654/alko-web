@@ -3,6 +3,8 @@ import Link from "next/link";
 import Parallax from "@/components/ui/Parallax";
 import { ROUTES } from "@/lib/site";
 import type { Project } from "@/lib/types";
+import type { Locale } from "@/lib/i18n";
+import { HOME_COPY } from "@/lib/i18n/home";
 
 /** Imagen de la tarjeta: si coincide con la del hero, usa otra de la obra para no repetirla. */
 function cardImage(project: Project, avoid?: string) {
@@ -11,15 +13,24 @@ function cardImage(project: Project, avoid?: string) {
 }
 
 /** Tres proyectos destacados: uno grande con ficha y dos escalonados (propuesta 6 · V4). */
-export default function FeaturedWorks({ projects, heroImage }: { projects: Project[]; heroImage?: string }) {
+export default function FeaturedWorks({
+  projects,
+  heroImage,
+  locale = "es",
+}: {
+  projects: Project[];
+  heroImage?: string;
+  locale?: Locale;
+}) {
+  const t = HOME_COPY[locale].works;
   const [first, ...rest] = projects.slice(0, 3);
   if (!first) return null;
 
   const specs = [
-    { label: "Tipología", value: first.tipologia },
-    { label: "Ubicación", value: first.ubicacion },
-    { label: "Superficie", value: first.superficie },
-    { label: "Plazo", value: first.plazo },
+    { label: t.specs.tipologia, value: first.tipologia },
+    { label: t.specs.ubicacion, value: first.ubicacion },
+    { label: t.specs.superficie, value: first.superficie },
+    { label: t.specs.plazo, value: first.plazo },
   ].filter((row) => row.value);
   const href = (project: Project) => `${ROUTES.projects}/${project.slug}`;
 
@@ -28,16 +39,15 @@ export default function FeaturedWorks({ projects, heroImage }: { projects: Proje
       <div className="site-wrap py-24 lg:py-36">
         <div className="grid grid-cols-12 items-end gap-6">
           <div className="col-span-12 lg:col-span-7">
-            <p className="eyebrow reveal-item">02 / Proyectos seleccionados</p>
+            <p className="eyebrow reveal-item">{t.eyebrow}</p>
             <h2 className="reveal-item display-title mt-6 text-5xl leading-none sm:text-6xl xl:text-[5.5rem]">
-              Obra a obra.
+              {t.titleA}
               <br />
-              Detalle a detalle.
+              {t.titleB}
             </h2>
           </div>
           <p className="reveal-item col-span-12 leading-relaxed text-mid lg:col-span-4 lg:col-start-9">
-            Cada intervención tiene su propia ficha: punto de partida, condicionantes, intervención de ALKO y
-            resultado.
+            {t.text}
           </p>
         </div>
 
@@ -46,7 +56,7 @@ export default function FeaturedWorks({ projects, heroImage }: { projects: Proje
             <Parallax strength={10}>
               <Image
                 src={cardImage(first, heroImage)}
-                alt={`Proyecto ${first.title}`}
+                alt={`${t.project} ${first.title}`}
                 fill
                 sizes="(max-width: 1024px) 100vw, 64vw"
                 className="object-cover transition-transform duration-[1.6s] ease-alko group-hover:scale-[1.04]"
@@ -67,7 +77,7 @@ export default function FeaturedWorks({ projects, heroImage }: { projects: Proje
               </dl>
             )}
             <Link href={href(first)} className="arrow-link mt-8">
-              Ver ficha del proyecto <span aria-hidden="true">↗</span>
+              {t.viewSheet} <span aria-hidden="true">↗</span>
             </Link>
           </div>
         </article>
@@ -87,7 +97,7 @@ export default function FeaturedWorks({ projects, heroImage }: { projects: Proje
                   <Parallax strength={i === 0 ? 10 : 16}>
                     <Image
                       src={cardImage(project, heroImage)}
-                      alt={`Proyecto ${project.title}`}
+                      alt={`${t.project} ${project.title}`}
                       fill
                       sizes="(max-width: 768px) 100vw, 40vw"
                       className="object-cover transition-transform duration-[1.6s] ease-alko group-hover:scale-[1.04]"
@@ -104,9 +114,10 @@ export default function FeaturedWorks({ projects, heroImage }: { projects: Proje
                   </div>
                   <Link
                     href={href(project)}
+                    aria-label={`${t.viewSheet}: ${project.title}`}
                     className="shrink-0 border-b border-ink pb-1 text-[10px] uppercase tracking-[0.22em] transition-colors hover:border-bronze hover:text-bronze"
                   >
-                    Ver ficha ↗
+                    {t.viewShort} ↗
                   </Link>
                 </div>
               </article>
@@ -115,9 +126,9 @@ export default function FeaturedWorks({ projects, heroImage }: { projects: Proje
         )}
 
         <div className="mt-20 flex flex-col items-start justify-between gap-6 border-t border-ink/15 pt-8 sm:flex-row sm:items-center">
-          <p className="text-[10px] uppercase tracking-[0.22em] text-mid">Cada obra, documentada de principio a fin</p>
+          <p className="text-[10px] uppercase tracking-[0.22em] text-mid">{t.documented}</p>
           <Link href={ROUTES.projects} className="btn btn-ink">
-            Ver todos los proyectos <span aria-hidden="true">→</span>
+            {t.all} <span aria-hidden="true">→</span>
           </Link>
         </div>
       </div>

@@ -5,6 +5,8 @@ import { X } from "lucide-react";
 import ContactForm from "@/components/ui/ContactForm";
 import QuickContactForm from "@/components/ui/QuickContactForm";
 import type { ContactMode } from "./ContactModalProvider";
+import type { Locale } from "@/lib/i18n";
+import { CONTACT_COPY } from "@/lib/i18n/contact";
 
 const FOCUSABLE = [
   "a[href]",
@@ -30,6 +32,7 @@ export default function ContactModal({
   whatsappHref,
   onClose,
   onSwitch,
+  locale = "es",
 }: {
   mode: ContactMode;
   source?: string;
@@ -39,7 +42,9 @@ export default function ContactModal({
   whatsappHref: string;
   onClose: () => void;
   onSwitch: (mode: ContactMode) => void;
+  locale?: Locale;
 }) {
+  const t = CONTACT_COPY[locale].modal;
   const titleId = useId();
   const dialogRef = useRef<HTMLDivElement>(null);
   const [entered, setEntered] = useState(false);
@@ -132,19 +137,19 @@ export default function ContactModal({
           <div className="flex items-start justify-between gap-6 border-b border-white/10 px-6 pb-5 pt-6 sm:px-10 sm:pt-8">
             <div>
               <span className="text-[10px] tracking-[0.22em] block text-white/50 uppercase">
-                {rapido ? "Contacto" : "Solicitud de presupuesto"}
+                {rapido ? t.quickTag : t.fullTag}
               </span>
               <h2
                 id={titleId}
                 className="display-title mt-3 text-3xl leading-tight sm:text-4xl"
               >
-                {rapido ? "Déjanos tus datos" : "Cuéntanos tu proyecto"}
+                {rapido ? t.quickTitle : t.fullTitle}
               </h2>
             </div>
             <button
               type="button"
               onClick={onClose}
-              aria-label="Cerrar"
+              aria-label={t.close}
               className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/20 text-white/90 transition hover:bg-white/10 hover:text-white"
             >
               <X className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
@@ -161,11 +166,12 @@ export default function ContactModal({
                   whatsappHref={whatsappHref}
                   onClose={onClose}
                   onSent={() => setSent(true)}
+                  locale={locale}
                 />
                 {!sent && (
                   <div className="mt-10 border-t border-white/10 pt-6">
                     <p className="mb-3 text-sm font-light text-white/50">
-                      ¿Prefieres contarnos el proyecto con más detalle y adjuntar planos?
+                      {t.toFullQ}
                     </p>
                     <button
                       type="button"
@@ -175,7 +181,7 @@ export default function ContactModal({
                       }}
                       className={switchClass}
                     >
-                      Abrir el formulario completo
+                      {t.toFull}
                       <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">
                         →
                       </span>
@@ -194,11 +200,12 @@ export default function ContactModal({
                   source={source}
                   onClose={onClose}
                   onSent={() => setSent(true)}
+                  locale={locale}
                 />
                 {!sent && (
                   <div className="mt-10 border-t border-white/10 pt-6">
                     <p className="mb-3 text-sm font-light text-white/50">
-                      ¿Prefieres que te contactemos sin más detalles?
+                      {t.toQuickQ}
                     </p>
                     <button
                       type="button"
@@ -208,7 +215,7 @@ export default function ContactModal({
                       }}
                       className={switchClass}
                     >
-                      Déjanos solo tus datos
+                      {t.toQuick}
                       <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">
                         →
                       </span>

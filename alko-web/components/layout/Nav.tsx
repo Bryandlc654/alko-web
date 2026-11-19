@@ -14,22 +14,63 @@ import {
   type ServiceLink,
 } from "@/lib/site";
 import type { SiteSettings } from "@/lib/types";
+import { HOME_PATHS, LOCALES, LOCALE_META, localeFromPath, pathInLocale, type Locale } from "@/lib/i18n";
+import { LAYOUT_COPY, type LayoutCopy } from "@/lib/i18n/layout";
 
-/** Texto introductorio de cada mega menú (columna izquierda). */
-const MEGA_INTRO: Record<string, { tag: string; title: string; text: string; cta: string }> = {
-  [ROUTES.sectors]: {
-    tag: "Divisiones ALKO",
-    title: "Cuatro ámbitos. Un mismo criterio.",
-    text: "Una estructura de obra integrada para cada tipo de cliente.",
-    cta: "Ver todas las divisiones",
-  },
-  [ROUTES.company]: {
-    tag: "Estudio",
-    title: "Una constructora con sensibilidad arquitectónica.",
-    text: "Equipo, trayectoria y forma de trabajar.",
-    cta: "Conocer ALKO",
-  },
-};
+type NavCopy = LayoutCopy["nav"];
+
+/**
+ * Navegación en el idioma de la página: nombres traducidos, «Inicio» a la portada de ese
+ * idioma y el submenú de Estudio con sus descripciones. Los servicios vienen del panel y se
+ * muestran tal cual.
+ */
+function localizeNav(items: NavItem[], locale: Locale, t: NavCopy): NavItem[] {
+  return items.map((item) => ({
+    ...item,
+    href: item.href === ROUTES.home ? HOME_PATHS[locale] : item.href,
+    label: t.items[item.href] ?? item.label,
+    children: item.children?.map((child) => ({ ...child, ...(item.href === ROUTES.company ? t.company[child.href] : {}) })),
+  }));
+}
+
+/** Selector de idioma: enlaza a la misma página en el otro idioma (o a su portada si no está traducida). */
+function LanguageSwitch({
+  pathname,
+  locale,
+  label,
+  className = "",
+  itemClass,
+}: {
+  pathname: string;
+  locale: Locale;
+  label: string;
+  className?: string;
+  itemClass: (active: boolean) => string;
+}) {
+  return (
+    <nav aria-label={label} className={`flex items-center gap-1 text-[11px] tracking-[0.12em] ${className}`}>
+      {LOCALES.map((code, i) => (
+        <span key={code} className="flex items-center gap-1">
+          {i > 0 && (
+            <span aria-hidden="true" className="opacity-40">
+              /
+            </span>
+          )}
+          <Link
+            href={pathInLocale(pathname, code)}
+            hrefLang={LOCALE_META[code].htmlLang}
+            lang={LOCALE_META[code].htmlLang}
+            aria-label={LOCALE_META[code].name}
+            aria-current={code === locale ? "true" : undefined}
+            className={`px-1 py-2 transition-colors ${itemClass(code === locale)}`}
+          >
+            {LOCALE_META[code].short}
+          </Link>
+        </span>
+      ))}
+    </nav>
+  );
+}
 
 export default function Nav({
   settings,
@@ -39,7 +80,9 @@ export default function Nav({
   services?: ServiceLink[];
 }) {
   const pathname = usePathname();
-  const items = buildMainNav(services);
+  const locale = localeFromPath(pathname);
+  const t = LAYOUT_COPY[locale].nav;
+  const items = localizeNav(buildMainNav(services), locale, t);
   const transparent =
     !isSolidHeaderRoute(pathname) &&
     TRANSPARENT_HEADER_ROUTES.some((route) =>
@@ -85,12 +128,12 @@ export default function Nav({
         className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${solid ? "is-scrolled" : ""}`}
       >
         <nav
-          aria-label="Principal"
+          aria-label={t.label}
           className={`site-wrap relative flex items-center justify-between gap-8 transition-[height] duration-300 ${
             solid ? "h-[72px] lg:h-[84px]" : "h-[80px] lg:h-[96px]"
           }`}
         >
-          <Link href={ROUTES.home} className="flex shrink-0 items-center" aria-label="ALKO · Inicio">
+          <Link href={HOME_PATHS[locale]} className="flex shrink-0 items-center" aria-label={t.home}>
             <Image
               src={solid ? "/logo-alko-footer.webp" : "/logo.webp"}
               skeleton={false}
@@ -123,7 +166,7 @@ export default function Nav({
                       <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </Link>
-                  <MegaMenu item={link} pathname={pathname} />
+                  <MegaMenu item={link} pathname={pathname} intro={t.mega[link.href]} />
                 </div>
               ) : (
                 <Link
@@ -138,19 +181,34 @@ export default function Nav({
           </div>
 
           <div className="flex items-center gap-3">
+            <LanguageSwitch
+              pathname={pathname}
+              locale={locale}
+              label={t.language}
+              className="hidden sm:flex"
+              itemClass={(active) =>
+                solid
+                  ? active
+                    ? "text-ink font-semibold"
+                    : "text-ink/50 hover:text-ink"
+                  : active
+                    ? "text-white font-semibold"
+                    : "text-white/60 hover:text-white"
+              }
+            />
             <ContactTrigger
               mode="avanzado"
-              source="Cabecera"
+              source={t.ctaSource}
               className={`btn hidden gap-6 px-5 py-[14px] text-[11px] sm:inline-flex ${
                 solid ? "btn-ink" : "btn-paper"
               }`}
             >
-              Presentar proyecto <span aria-hidden="true">↗</span>
+              {t.cta} <span aria-hidden="true">↗</span>
             </ContactTrigger>
             <button
               id="mobile-menu-btn"
               type="button"
-              aria-label="Abrir menú"
+              aria-label={t.openMenu}
               aria-expanded={open}
               aria-controls="mobile-menu"
               onClick={() => setOpen(true)}
@@ -175,6 +233,8 @@ export default function Nav({
         isActive={isActive}
         settings={settings}
         items={items}
+        locale={locale}
+        t={t}
       />
     </>
   );
@@ -184,9 +244,15 @@ export default function Nav({
  * Mega menú de escritorio en horizontal: banda a todo el ancho con la introducción a la
  * izquierda y los enlaces en fila, una columna por división.
  */
-function MegaMenu({ item, pathname }: { item: NavItem; pathname: string }) {
-  const intro = MEGA_INTRO[item.href];
-
+function MegaMenu({
+  item,
+  pathname,
+  intro,
+}: {
+  item: NavItem;
+  pathname: string;
+  intro?: { tag: string; title: string; text: string; cta: string };
+}) {
   return (
     <div className="invisible absolute inset-x-0 top-full z-50 -translate-y-2 opacity-0 transition-all duration-300 ease-alko group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100">
       <div className="site-wrap pt-3">
@@ -241,6 +307,8 @@ function MobileDrawer({
   isActive,
   settings,
   items,
+  locale,
+  t,
 }: {
   open: boolean;
   onClose: () => void;
@@ -248,6 +316,8 @@ function MobileDrawer({
   isActive: (href: string) => boolean;
   settings?: SiteSettings;
   items: NavItem[];
+  locale: Locale;
+  t: NavCopy;
 }) {
   const closeRef = useRef<HTMLButtonElement>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
@@ -293,7 +363,7 @@ function MobileDrawer({
             <button
               ref={closeRef}
               type="button"
-              aria-label="Cerrar menú"
+              aria-label={t.closeMenu}
               onClick={onClose}
               className="p-2 text-ink/70 transition hover:text-ink"
             >
@@ -303,7 +373,7 @@ function MobileDrawer({
             </button>
           </div>
 
-          <nav aria-label="Principal móvil" className="mt-4">
+          <nav aria-label={t.mobileLabel} className="mt-4">
             {items.map((item) =>
               item.children ? (
                 <div key={item.href} className="border-b border-line">
@@ -332,7 +402,7 @@ function MobileDrawer({
                         onClick={onClose}
                         className="block py-2 text-[11px] uppercase tracking-[0.12em] text-bronze"
                       >
-                        Ver todo ↗
+                        {t.viewAll} ↗
                       </Link>
                       {item.children.map((child) => (
                         <Link
@@ -367,9 +437,16 @@ function MobileDrawer({
               onClick={onClose}
               className="block border-b border-line py-4 text-base text-ink hover:text-bronze"
             >
-              Contacto
+              {t.contact}
             </Link>
           </nav>
+          <LanguageSwitch
+            pathname={pathname}
+            locale={locale}
+            label={t.language}
+            className="mt-6"
+            itemClass={(active) => (active ? "text-ink font-semibold" : "text-ink/50 hover:text-ink")}
+          />
         </div>
 
         <div className="space-y-4 pt-8">
@@ -383,8 +460,8 @@ function MobileDrawer({
               </a>
             </div>
           )}
-          <ContactTrigger mode="avanzado" source="Cabecera Móvil" className="btn btn-ink w-full">
-            Presentar proyecto <span aria-hidden="true">↗</span>
+          <ContactTrigger mode="avanzado" source={t.ctaSourceMobile} className="btn btn-ink w-full">
+            {t.cta} <span aria-hidden="true">↗</span>
           </ContactTrigger>
         </div>
       </div>
