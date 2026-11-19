@@ -1,11 +1,14 @@
 import Image from "next/image";
 import ContactTrigger from "@/components/contact/ContactTrigger";
+import Parallax from "@/components/ui/Parallax";
 
 /** Banda de manifiesto: foto a sangre con un bloque translúcido y otro carbón (propuesta 6 · V5). */
 export default function ManifestoBand() {
   return (
     <section aria-label="Manifiesto" className="relative min-h-[640px] overflow-hidden text-white md:h-[86vh] md:max-h-[820px]">
-      <Image src="/manifiesto-comedor.jpg" alt="" fill sizes="100vw" className="object-cover" />
+      <Parallax strength={18}>
+        <Image src="/manifiesto-comedor.jpg" alt="" fill sizes="100vw" className="object-cover" />
+      </Parallax>
       <div className="absolute inset-0 bg-black/20" />
       <svg
         className="absolute bottom-24 left-[var(--gutter)] hidden w-24 text-white/80 md:block"

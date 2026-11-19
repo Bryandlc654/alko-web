@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import Parallax from "@/components/ui/Parallax";
 import { ROUTES } from "@/lib/site";
 import type { Project } from "@/lib/types";
 
@@ -42,13 +43,15 @@ export default function FeaturedWorks({ projects, heroImage }: { projects: Proje
 
         <article className="mt-16 grid grid-cols-12 items-end gap-6 lg:mt-24">
           <Link href={href(first)} className="reveal-scale group relative col-span-12 block aspect-[16/10] overflow-hidden bg-piedra lg:col-span-8">
-            <Image
-              src={cardImage(first, heroImage)}
-              alt={`Proyecto ${first.title}`}
-              fill
-              sizes="(max-width: 1024px) 100vw, 64vw"
-              className="object-cover transition-transform duration-[1.6s] ease-alko group-hover:scale-[1.04]"
-            />
+            <Parallax strength={10}>
+              <Image
+                src={cardImage(first, heroImage)}
+                alt={`Proyecto ${first.title}`}
+                fill
+                sizes="(max-width: 1024px) 100vw, 64vw"
+                className="object-cover transition-transform duration-[1.6s] ease-alko group-hover:scale-[1.04]"
+              />
+            </Parallax>
           </Link>
           <div className="reveal-item col-span-12 lg:col-span-4 lg:pl-6">
             <p className="display-title text-7xl text-bronze/70">01</p>
@@ -81,13 +84,15 @@ export default function FeaturedWorks({ projects, heroImage }: { projects: Proje
                 }
               >
                 <Link href={href(project)} className="reveal-scale group relative block aspect-[4/5] overflow-hidden bg-piedra">
-                  <Image
-                    src={cardImage(project, heroImage)}
-                    alt={`Proyecto ${project.title}`}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 40vw"
-                    className="object-cover transition-transform duration-[1.6s] ease-alko group-hover:scale-[1.04]"
-                  />
+                  <Parallax strength={i === 0 ? 10 : 16}>
+                    <Image
+                      src={cardImage(project, heroImage)}
+                      alt={`Proyecto ${project.title}`}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 40vw"
+                      className="object-cover transition-transform duration-[1.6s] ease-alko group-hover:scale-[1.04]"
+                    />
+                  </Parallax>
                 </Link>
                 <div className="reveal-item mt-6 flex items-start justify-between gap-6">
                   <div>

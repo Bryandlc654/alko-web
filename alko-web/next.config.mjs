@@ -32,7 +32,10 @@ const nextConfig = {
     // primera petición de cada tamaño dejaba las imágenes varios segundos en cola.
     formats: ["image/webp"],
     // Menos variantes = menos trabajo del optimizador y más aciertos de caché.
-    deviceSizes: [640, 828, 1080, 1440, 1920],
+    // 2560 cubre pantallas retina y monitores grandes con imágenes a sangre; sin él se estiraba
+    // la de 1920 y se veía borrosa. Solo la descargan esas pantallas, y nunca se amplía el
+    // original: si la foto mide menos, se sirve a su tamaño real.
+    deviceSizes: [640, 828, 1080, 1440, 1920, 2560],
     imageSizes: [64, 128, 256, 384],
     minimumCacheTTL: 2678400,
     remotePatterns,

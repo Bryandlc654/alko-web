@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 
 type ScrollTriggerApi = typeof import("gsap/ScrollTrigger").ScrollTrigger;
@@ -17,6 +17,28 @@ type ScrollTriggerApi = typeof import("gsap/ScrollTrigger").ScrollTrigger;
  */
 export default function SiteScripts() {
   const pathname = usePathname();
+  // Al navegar, la ruta nueva se monta primero con app/loading.tsx y el contenido llega
+  // después, sin que cambie la ruta. Si el efecto solo dependiera de `pathname`, no vería esos
+  // bloques y se quedarían invisibles (opacity 0). Se vuelve a inicializar cuando aparecen
+  // bloques `.reveal-*` que todavía no se han preparado.
+  const [domVersion, setDomVersion] = useState(0);
+  useEffect(() => {
+    let frame = 0;
+    const observer = new MutationObserver(() => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        if (document.querySelector(".reveal-item:not([data-reveal-ready]), .reveal-scale:not([data-reveal-ready])")) {
+          setDomVersion((v) => v + 1);
+        }
+      });
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+    return () => {
+      observer.disconnect();
+      cancelAnimationFrame(frame);
+    };
+  }, []);
 
   useEffect(() => {
     const timers: number[] = [];
@@ -89,6 +111,7 @@ export default function SiteScripts() {
 
     /* ---------- GSAP (cargado en diferido para no bloquear la carga inicial) ---------- */
     const allAnimated = Array.from(document.querySelectorAll(".reveal-item, .reveal-scale"));
+    allAnimated.forEach((el) => el.setAttribute("data-reveal-ready", ""));
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     // Lo que ya está en pantalla aparece sin esperar a GSAP (con la transición CSS):
@@ -126,29 +149,46 @@ export default function SiteScripts() {
         gsap.registerPlugin(ScrollTrigger);
         ScrollTrigger.config({ ignoreMobileResize: true });
 
+        // Retraso explícito de cada elemento (style.transitionDelay), si lo tiene.
+        const explicitDelay = new Map<Element, number>();
         animatedElements.forEach((el) => {
-          const isScale = el.classList.contains("reveal-scale");
           const rawDelay = (el as HTMLElement).style.transitionDelay;
-          const delay = rawDelay
-            ? parseFloat(rawDelay) / (rawDelay.indexOf("ms") > -1 ? 1000 : 1)
-            : 0;
-
+          if (rawDelay) {
+            explicitDelay.set(el, parseFloat(rawDelay) / (rawDelay.indexOf("ms") > -1 ? 1000 : 1));
+          }
           (el as HTMLElement).style.transition = "none";
           (el as HTMLElement).style.transitionDelay = "0ms";
+        });
 
-          gsap.fromTo(
-            el,
-            { autoAlpha: 0, y: isScale ? 46 : 34, scale: isScale ? 0.96 : 1 },
-            {
-              autoAlpha: 1,
-              y: 0,
-              scale: 1,
-              duration: isScale ? 1.15 : 0.9,
-              ease: "power3.out",
-              delay,
-              scrollTrigger: { trigger: el, start: "top 88%", once: true },
-            },
-          );
+        // Los elementos que entran en pantalla a la vez (antetítulo, título, texto…) aparecen
+        // escalonados en lugar de todos de golpe. Con tope, para que una rejilla larga no tarde.
+        ScrollTrigger.batch(animatedElements, {
+          start: "top 88%",
+          once: true,
+          onEnter: (batch) => {
+            batch.forEach((el, i) => {
+              const isScale = el.classList.contains("reveal-scale");
+              gsap.fromTo(
+                el,
+                { autoAlpha: 0, y: isScale ? 46 : 34, scale: isScale ? 0.96 : 1 },
+                {
+                  autoAlpha: 1,
+                  y: 0,
+                  scale: 1,
+                  duration: isScale ? 1.2 : 0.95,
+                  ease: "power3.out",
+                  delay: explicitDelay.get(el) ?? Math.min(i * 0.09, 0.45),
+                  // Al terminar se pasa a la clase final y se quitan los estilos en línea, para
+                  // que no quede una capa de composición por elemento. La transición CSS sigue
+                  // anulada en línea, así que el cambio no se anima de nuevo.
+                  onComplete: () => {
+                    el.classList.add("is-visible");
+                    gsap.set(el, { clearProps: "transform,opacity,visibility" });
+                  },
+                },
+              );
+            });
+          },
         });
 
         /* Parallax del hero */
@@ -173,7 +213,55 @@ export default function SiteScripts() {
           });
         }
 
-        /* Parallax de imágenes */
+        /*
+         * Parallax de la portada (HomeHero) y de las imágenes con <Parallax>. Solo mueve
+         * `transform` (lo resuelve la GPU, sin recalcular el diseño) y solo desde tableta: en
+         * móvil el scroll táctil gana más con no tener trabajo extra que con el efecto.
+         */
+        const mm = gsap.matchMedia();
+        cleanups.push(() => mm.revert());
+        mm.add("(min-width: 768px)", () => {
+          const homeHero = document.querySelector<HTMLElement>("[data-hero-parallax]");
+          const homeBg = homeHero?.querySelector<HTMLElement>("[data-hero-bg]");
+          const homeFg = homeHero?.querySelector<HTMLElement>("[data-hero-fg]");
+          if (homeHero && homeBg) {
+            // La foto baja a menos velocidad que la página: se queda «detrás».
+            gsap.to(homeBg, {
+              yPercent: 22,
+              ease: "none",
+              scrollTrigger: { trigger: homeHero, start: "top top", end: "bottom top", scrub: true },
+            });
+          }
+          if (homeHero && homeFg) {
+            // El titular sube un poco más rápido y se desvanece antes de salir.
+            gsap.to(homeFg, {
+              y: -90,
+              autoAlpha: 0,
+              ease: "none",
+              scrollTrigger: { trigger: homeHero, start: "top top", end: "75% top", scrub: true },
+            });
+          }
+
+          gsap.utils.toArray<HTMLElement>("[data-parallax-layer]").forEach((layer) => {
+            const container = layer.parentElement;
+            if (!container) return;
+            const strength = Number(container.dataset.parallax) || 12;
+            // La capa sobresale strength/2 % del contenedor por arriba y por abajo; su recorrido
+            // (en % de su propia altura) se limita a eso para que nunca asome un borde.
+            const travel = (strength / 2 / (100 + strength)) * 100;
+            gsap.fromTo(
+              layer,
+              { yPercent: -travel },
+              {
+                yPercent: travel,
+                ease: "none",
+                scrollTrigger: { trigger: container, start: "top bottom", end: "bottom top", scrub: 0.4 },
+              },
+            );
+          });
+        });
+
+        /* Parallax de imágenes (marcado antiguo: data-parallax con la imagen dentro, sin capa) */
         function setupParallax(img: HTMLImageElement, strength: number) {
           const container = img.parentElement;
           if (!container || container.dataset.parallaxReady === "1") return;
@@ -202,8 +290,8 @@ export default function SiteScripts() {
           );
         }
 
-        document
-          .querySelectorAll<HTMLImageElement>("[data-parallax] img")
+        Array.from(document.querySelectorAll<HTMLImageElement>("[data-parallax] img"))
+          .filter((img) => !img.closest("[data-parallax-layer]"))
           .forEach((img) => {
             const strength = Number((img.parentElement?.dataset.parallax as string) || "10") || 10;
             setupParallax(img, strength);
@@ -591,7 +679,7 @@ export default function SiteScripts() {
         .querySelectorAll<HTMLElement>("[data-parallax-ready]")
         .forEach((el) => delete el.dataset.parallaxReady);
     };
-  }, [pathname]);
+  }, [pathname, domVersion]);
 
   return null;
 }
