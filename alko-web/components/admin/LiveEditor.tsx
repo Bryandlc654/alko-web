@@ -2239,7 +2239,7 @@ export default function LiveEditor({
                   <div className="relative isolate flex min-h-[320px] items-end overflow-hidden bg-stone-950 p-6 text-white sm:min-h-[380px] sm:p-10 lg:p-12 group">
                     <div className="absolute inset-0 z-0 overflow-hidden">
                       <InlineImage
-                        src={nosotrosContent.enlaceEquipoImagen || "/proceso-entrega.jpg"}
+                        src={nosotrosContent.enlaceEquipoImagen || "/equipo-header.jpg"}
                         alt="Equipo ALKO"
                         label="Cambiar foto de equipo"
                         onImageChange={(newUrl) => updateNosotrosField("enlaceEquipoImagen", newUrl)}
@@ -2272,7 +2272,7 @@ export default function LiveEditor({
                   <div className="relative isolate flex min-h-[320px] items-end overflow-hidden bg-stone-950 p-6 text-white sm:min-h-[380px] sm:p-10 lg:p-12 group">
                     <div className="absolute inset-0 z-0 overflow-hidden">
                       <InlineImage
-                        src={nosotrosContent.enlaceEmpleoImagen || "/proceso-instalaciones.jpg"}
+                        src={nosotrosContent.enlaceEmpleoImagen || "/equipo-pasillo.jpg"}
                         alt="Empleo ALKO"
                         label="Cambiar foto de empleo"
                         onImageChange={(newUrl) => updateNosotrosField("enlaceEmpleoImagen", newUrl)}
