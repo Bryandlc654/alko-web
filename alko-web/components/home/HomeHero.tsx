@@ -31,7 +31,30 @@ export default function HomeHero({ slides }: { slides: Slide[] }) {
     return () => media.removeEventListener("change", onChange);
   }, []);
 
-  const go = useCallback((next: number) => setIndex(((next % total) + total) % total), [total]);
+  // Diapositivas cuya imagen ya se puede descargar. Al principio solo la primera, para que no
+  // compita con nada; la siguiente se pide cuando la actual termina de cargar, así está lista
+  // antes del fundido.
+  const [mounted, setMounted] = useState<Set<number>>(() => new Set([0]));
+  const mount = useCallback((i: number) => {
+    setMounted((prev) => (prev.has(i) ? prev : new Set(prev).add(i)));
+  }, []);
+
+  const [loaded, setLoaded] = useState<Set<number>>(() => new Set());
+  const markLoaded = useCallback((i: number) => {
+    setLoaded((prev) => (prev.has(i) ? prev : new Set(prev).add(i)));
+  }, []);
+  useEffect(() => {
+    if (total > 1 && loaded.has(index)) mount((index + 1) % total);
+  }, [index, loaded, total, mount]);
+
+  const go = useCallback(
+    (next: number) => {
+      const target = ((next % total) + total) % total;
+      mount(target);
+      setIndex(target);
+    },
+    [total, mount],
+  );
 
   const running = total > 1 && !paused && !reduced;
   useEffect(() => {
@@ -45,6 +68,7 @@ export default function HomeHero({ slides }: { slides: Slide[] }) {
   return (
     <header
       className="relative isolate h-[100svh] max-h-[1100px] min-h-[620px] w-full overflow-hidden bg-ink text-paper"
+      data-hero-parallax
       aria-roledescription="carrusel"
       aria-label="Ámbitos de ALKO"
       onMouseEnter={() => setPaused(true)}
@@ -67,17 +91,28 @@ export default function HomeHero({ slides }: { slides: Slide[] }) {
         touchX.current = null;
       }}
     >
-      <div className="absolute inset-0 -z-20">
+      <div data-hero-bg className="absolute inset-0 -z-20">
         {slides.map((slide, i) => (
           <figure key={slide.id} className={`hh-slide ${i === index ? "is-active" : ""}`} aria-hidden={i !== index}>
-            <Image src={slide.image} alt={slide.alt} fill priority={i === 0} sizes="100vw" className="object-cover" />
+            {mounted.has(i) && (
+              <Image
+                src={slide.image}
+                alt={slide.alt}
+                fill
+                priority={i === 0}
+                quality={82}
+                sizes="100vw"
+                className="object-cover"
+                onLoad={() => markLoaded(i)}
+              />
+            )}
           </figure>
         ))}
       </div>
       {/* Velo solo abajo: imagen limpia y titular legible */}
       <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-t from-ink/80 via-ink/20 to-ink/35" />
 
-      <div className="site-wrap flex h-full flex-col justify-end pb-10 lg:pb-14">
+      <div data-hero-fg className="site-wrap flex h-full flex-col justify-end pb-10 lg:pb-14">
         <div className="grid grid-cols-12 items-end gap-x-6 gap-y-10">
           <div className="col-span-12 lg:col-span-8">
             <h1 className="hh-rise display-title text-[2.9rem] leading-[.98] tracking-[-0.035em] sm:text-6xl xl:text-[5.4rem]">

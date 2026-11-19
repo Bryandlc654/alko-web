@@ -9,7 +9,7 @@ const IMAGES = [
 /** Franja de materialidad: tres imágenes y un texto, a todo el ancho (propuesta 6 · V4). */
 export default function MaterialStrip() {
   const tile = (img: (typeof IMAGES)[number]) => (
-    <div key={img.src} className="group relative aspect-square overflow-hidden">
+    <div key={img.src} className="reveal-item group relative aspect-square overflow-hidden">
       <Image
         src={img.src}
         alt={img.alt}
@@ -23,7 +23,7 @@ export default function MaterialStrip() {
   return (
     <section aria-label="Materialidad" className="grid grid-cols-2 lg:grid-cols-4">
       {tile(IMAGES[0])}
-      <div className="flex aspect-square flex-col justify-between bg-surface p-8 text-ink lg:p-12">
+      <div className="reveal-item flex aspect-square flex-col justify-between bg-surface p-8 text-ink lg:p-12">
         <svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="var(--bronze)" strokeWidth="1" aria-hidden="true">
           <path d="M17 2 31 10v14l-14 8-14-8V10z" />
           <path d="M3 10l14 8 14-8M17 18v14" />

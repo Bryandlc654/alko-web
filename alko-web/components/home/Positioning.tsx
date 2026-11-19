@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import Parallax from "@/components/ui/Parallax";
 import { ROUTES } from "@/lib/site";
 
 const FACTS = [
@@ -37,13 +38,15 @@ export default function Positioning() {
 
         <figure className="col-span-12 lg:col-span-5 lg:col-start-8">
           <div className="reveal-scale relative aspect-[4/5] overflow-hidden bg-piedra">
-            <Image
-              src="/tesis-cocina-tableta.jpg"
-              alt="Dirección de obra de una cocina integral por ALKO"
-              fill
-              sizes="(max-width: 1024px) 100vw, 40vw"
-              className="object-cover"
-            />
+            <Parallax>
+              <Image
+                src="/tesis-cocina-tableta.jpg"
+                alt="Dirección de obra de una cocina integral por ALKO"
+                fill
+                sizes="(max-width: 1024px) 100vw, 40vw"
+                className="object-cover"
+              />
+            </Parallax>
           </div>
           <figcaption className="mt-4 flex items-center gap-4 text-mid">
             <span className="text-[10px] uppercase tracking-[0.22em]">Interior</span>

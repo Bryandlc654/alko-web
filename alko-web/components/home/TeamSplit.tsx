@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import Parallax from "@/components/ui/Parallax";
 import { ROUTES } from "@/lib/site";
 import type { Sector } from "@/lib/types";
 
@@ -38,13 +39,15 @@ export default function TeamSplit({ sectors }: { sectors: Sector[] }) {
           )}
         </div>
         <div className="relative min-h-[420px] md:min-h-0">
-          <Image
-            src="/equipo-pasillo.jpg"
-            alt="Pasillo de una reforma en ejecución, con iluminación LED y un operario rematando el suelo"
-            fill
-            sizes="(max-width: 768px) 100vw, 52vw"
-            className="object-cover"
-          />
+          <Parallax strength={14}>
+            <Image
+              src="/equipo-pasillo.jpg"
+              alt="Pasillo de una reforma en ejecución, con iluminación LED y un operario rematando el suelo"
+              fill
+              sizes="(max-width: 768px) 100vw, 52vw"
+              className="object-cover"
+            />
+          </Parallax>
         </div>
       </div>
     </section>

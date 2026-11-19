@@ -32,7 +32,7 @@ export default function DivisionsGrid({ sectors }: { sectors: Sector[] }) {
         </p>
       </div>
 
-      <div className="div-panels mx-auto grid max-w-site gap-3 px-[var(--gutter)] pb-6 sm:grid-cols-2 lg:flex lg:gap-0 lg:px-0">
+      <div className="reveal-item div-panels mx-auto grid max-w-site gap-3 px-[var(--gutter)] pb-6 sm:grid-cols-2 lg:flex lg:gap-0 lg:px-0">
         {DIVISIONS.map((division, i) => (
           <Link
             key={division.id}
