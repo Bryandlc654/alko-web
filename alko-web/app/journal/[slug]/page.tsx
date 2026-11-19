@@ -10,6 +10,7 @@ import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import Image from "@/components/ui/Image";
 import Prose from "@/components/ui/Prose";
 import { prepareArticle } from "@/lib/articles";
+import { pageMetadata } from "@/lib/seo";
 import { GUIDES_HREF, ROUTES, SITE } from "@/lib/site";
 import { getArticleBySlug, getArticles } from "@/lib/wordpress";
 import { formatDate } from "@/lib/utils";
@@ -29,18 +30,14 @@ export async function generateMetadata({
   const { slug } = await params;
   const article = await getArticleBySlug(slug);
   if (!article) return {};
-  const description = article.excerpt || article.content.replace(/<[^>]+>/g, "").slice(0, 160);
-  return {
-    title: `${article.title} — ALKO`,
-    description,
-    openGraph: {
-      title: article.title,
-      description,
-      type: "article",
-      publishedTime: article.date || undefined,
-      images: article.image ? [article.image] : undefined,
-    },
-  };
+  return pageMetadata({
+    title: `${article.title} | ALKO`,
+    description: article.excerpt || article.content,
+    path: `${ROUTES.articles}/${article.slug}`,
+    image: article.image || undefined,
+    imageAlt: article.title,
+    article: { publishedTime: article.date || undefined },
+  });
 }
 
 export default async function ArticleDetail({

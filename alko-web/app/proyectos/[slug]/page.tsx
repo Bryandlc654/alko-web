@@ -9,6 +9,7 @@ import EditorialSection from "@/components/editorial/EditorialSection";
 import EditorialCta from "@/components/editorial/EditorialCta";
 import ExclusiveProject from "@/components/projects/ExclusiveProject";
 import { projectCta } from "@/lib/project-cta";
+import { displayName, pageMetadata } from "@/lib/seo";
 import { ROUTES } from "@/lib/site";
 import { getProjectBySlug, getProjects, getSectorBySlug, getSettings } from "@/lib/wordpress";
 import { splitLead } from "@/lib/utils";
@@ -39,11 +40,39 @@ export async function generateMetadata({
   const { slug } = await params;
   const project = await getProjectBySlug(slug);
   if (!project) return {};
-  return {
-    title: `${project.title} — ${project.exclusivo ? "ALKO Exclusiva" : "ALKO"}`,
-    description: splitLead(project.content).lead.slice(0, 160),
-    openGraph: { images: project.imagen ? [project.imagen] : undefined },
-  };
+  // «Reforma Velázquez: residencial de alta gama en Barrio de Salamanca, Madrid | ALKO»: el nombre de
+  // la obra no lo busca nadie; la tipología y el barrio, sí.
+  const name = displayName(project.title);
+  // Los textos del panel a veces llevan punto final («Residencial.»).
+  const clean = (value?: string) => (value || "").trim().replace(/\.+$/, "");
+  const tipologia = clean(project.tipologia);
+  const tipo = tipologia ? tipologia.charAt(0).toUpperCase() + tipologia.slice(1).toLowerCase() : "";
+  const lugar = clean(project.ubicacion);
+  const detail = [tipo, lugar && `en ${lugar}`].filter(Boolean).join(" ");
+  const brand = project.exclusivo ? "ALKO Exclusiva" : "ALKO";
+  const lower = detail.charAt(0).toLowerCase() + detail.slice(1);
+  // Sin repetir «Reforma»: «Reforma Hermosilla» + «Reforma de baños en…» → «Reforma de baños en… · Hermosilla».
+  const rest = name.replace(/^reforma\s+/i, "");
+  const startsWithReforma = /^reforma\b/i.test(detail);
+  const heading = !detail
+    ? name
+    : startsWithReforma && detail.toLowerCase().includes(rest.toLowerCase())
+      ? detail
+      : startsWithReforma && /^reforma\s/i.test(name)
+        ? `${detail} · ${rest}`
+        : `${name}: ${lower}`;
+  const altParts = [name, project.tipologia, project.ubicacion].filter(
+    (part, i, all): part is string => !!part && all.findIndex((p) => p?.toLowerCase() === part.toLowerCase()) === i,
+  );
+  return pageMetadata({
+    title: `${heading} | ${brand}`,
+    description:
+      splitLead(project.content).lead ||
+      `${name}, ${detail ? lower : "obra de ALKO en Madrid"}: alcance, acabados y fotos del proyecto ejecutado por ALKO.`,
+    path: `${ROUTES.projects}/${project.slug}`,
+    image: project.imagen || undefined,
+    imageAlt: altParts.join(", "),
+  });
 }
 
 export default async function ProjectDetail({

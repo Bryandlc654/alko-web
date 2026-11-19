@@ -138,15 +138,24 @@ export default function ProjectsGallery({ projects, locale = "es" }: { projects:
       )}
 
       <ul className="mt-10 grid grid-cols-1 gap-2 md:grid-cols-2">
-        {visibleProjects.map((project, i) => {
+        {/* Todas las obras van en el HTML (Google no hace scroll ni pulsa «Mostrar más», y así
+            ve el enlace a cada ficha); las que aún no tocan se ocultan y sus fotos, perezosas,
+            no se descargan hasta que se muestran. */}
+        {filtered.map((project, i) => {
           // Ritmo de tres: una obra a todo el ancho y dos en pareja.
           const wide = i % 3 === 0;
+          const hidden = i >= visibleCount;
           // En castellano, la tipología tal cual; en otros idiomas, su categoría traducida.
           const tipo =
             locale === "es" ? project.tipologia : project.tipologia && filterLabel(projectCategory(project.tipologia));
           const meta = [tipo, project.ubicacion].filter(Boolean).join(" · ");
           return (
-            <li key={project.id} className={`hh-rise ${wide ? "md:col-span-2" : ""}`} style={{ animationDuration: "1s" }}>
+            <li
+              key={project.id}
+              hidden={hidden}
+              className={`hh-rise ${wide ? "md:col-span-2" : ""}`}
+              style={{ animationDuration: "1s" }}
+            >
               <Link
                 href={`${ROUTES.projects}/${project.slug}`}
                 className={`group relative block aspect-[4/5] overflow-hidden bg-ink text-white ${
@@ -155,8 +164,9 @@ export default function ProjectsGallery({ projects, locale = "es" }: { projects:
               >
                 <Image
                   src={project.imagen}
-                  alt={project.title}
+                  alt={[project.title, project.tipologia, project.ubicacion].filter(Boolean).join(", ")}
                   fill
+                  priority={i === 0}
                   sizes={wide ? "100vw" : "(max-width: 768px) 100vw, 50vw"}
                   className="object-cover transition-transform duration-[1.6s] ease-alko group-hover:scale-[1.04]"
                 />

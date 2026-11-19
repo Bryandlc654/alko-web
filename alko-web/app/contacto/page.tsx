@@ -2,16 +2,19 @@ import Image from "@/components/ui/Image";
 import EditorialHeader from "@/components/editorial/EditorialHeader";
 import EditorialSection from "@/components/editorial/EditorialSection";
 import QuickContactForm from "@/components/ui/QuickContactForm";
+import { pageMetadata } from "@/lib/seo";
+import { ROUTES } from "@/lib/site";
 import { getSettings } from "@/lib/wordpress";
 import { getDbContactoPageContent } from "@/lib/db/mysql";
 
 export const revalidate = 60;
 
-export const metadata = {
-  title: "Contacto — ALKO",
+export const metadata = pageMetadata({
+  title: "Pide presupuesto para tu reforma en Madrid | Contacto ALKO",
   description:
-    "Solicita presupuesto o consulta técnica. Una única interlocución para tu proyecto.",
-};
+    "Cuéntanos tu reforma y un arquitecto técnico visitará la obra para darte un presupuesto cerrado por partidas y un plazo por escrito. Madrid y alrededores.",
+  path: ROUTES.contact,
+});
 
 const NEXT_STEPS = [
   {

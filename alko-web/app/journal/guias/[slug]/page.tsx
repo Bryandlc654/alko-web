@@ -7,6 +7,7 @@ import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import EditorialCta from "@/components/editorial/EditorialCta";
 import Prose from "@/components/ui/Prose";
 import { prepareArticle } from "@/lib/articles";
+import { pageMetadata } from "@/lib/seo";
 import { GUIDES_HREF, ROUTES } from "@/lib/site";
 import { getGuideBySlug, getGuides } from "@/lib/wordpress";
 
@@ -25,10 +26,13 @@ export async function generateMetadata({
   const { slug } = await params;
   const guide = await getGuideBySlug(slug);
   if (!guide) return {};
-  return {
-    title: `${guide.title} — ALKO`,
+  return pageMetadata({
+    title: `${guide.title} | ALKO`,
     description: guide.descripcion,
-  };
+    path: `${ROUTES.guides}/${guide.slug}`,
+    image: guide.imagen || undefined,
+    imageAlt: guide.title,
+  });
 }
 
 export default async function GuideDetail({
