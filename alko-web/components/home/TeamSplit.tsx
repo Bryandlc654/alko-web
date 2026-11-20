@@ -3,7 +3,7 @@ import Link from "next/link";
 import Parallax from "@/components/ui/Parallax";
 import { ROUTES } from "@/lib/site";
 import type { Sector } from "@/lib/types";
-import type { Locale } from "@/lib/i18n";
+import { localizedPath, type Locale } from "@/lib/i18n";
 import { HOME_COPY } from "@/lib/i18n/home";
 
 /** Equipo: texto y servicios a la izquierda, foto a sangre a la derecha (propuesta 6 · V5). */
@@ -23,7 +23,7 @@ export default function TeamSplit({ sectors, locale = "es" }: { sectors: Sector[
           <p className="reveal-item mt-6 max-w-[400px] text-[17px] leading-relaxed text-mid">
             {t.text}
           </p>
-          <Link href={ROUTES.team} className="reveal-item btn btn-ink mt-8">
+          <Link href={localizedPath(ROUTES.team, locale)} className="reveal-item btn btn-ink mt-8">
             {t.cta} <span aria-hidden="true">→</span>
           </Link>
           {sectors.length > 0 && (

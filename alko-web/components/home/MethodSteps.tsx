@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { METHOD_STEPS } from "@/lib/divisions";
 import { METHOD_HREF } from "@/lib/site";
-import type { Locale } from "@/lib/i18n";
+import { localizedPath, type Locale } from "@/lib/i18n";
 import { HOME_COPY } from "@/lib/i18n/home";
 
 /**
@@ -32,7 +32,7 @@ export default function MethodSteps({ locale = "es" }: { locale?: Locale }) {
             <p className="reveal-item mt-8 max-w-sm leading-relaxed text-paper/60">
               {t.text}
             </p>
-            <Link href={METHOD_HREF} className="reveal-item arrow-link mt-8 text-paper">
+            <Link href={localizedPath(METHOD_HREF, locale)} className="reveal-item arrow-link mt-8 text-paper">
               {t.cta} <span aria-hidden="true">↗</span>
             </Link>
             <div className="reveal-item relative mt-12 hidden aspect-[4/3] overflow-hidden lg:block">

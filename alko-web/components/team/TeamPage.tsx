@@ -10,7 +10,7 @@ import { getDbEquipoPageContent } from "@/lib/db/mysql";
 import { LOCALE_META, languageAlternates, localizedPath, type Locale } from "@/lib/i18n";
 import { TEAM_COPY } from "@/lib/i18n/team";
 import { pageJsonLd } from "@/lib/seo";
-import { METHOD_HREF, OG_IMAGE, ROUTES, SITE } from "@/lib/site";
+import { METHOD_HREF, OG_IMAGE, ogImage, siteKeywords, ROUTES, SITE } from "@/lib/site";
 import { getSettings } from "@/lib/wordpress";
 
 const HEADER_IMAGE = "/equipo-header.jpg";
@@ -23,6 +23,7 @@ export function teamMetadata(locale: Locale): Metadata {
     title: { absolute: t.meta.title },
     description: t.meta.description,
     alternates: { canonical: path, languages: languageAlternates(ROUTES.team) },
+    keywords: siteKeywords(locale),
     openGraph: {
       title: t.meta.title,
       description: t.meta.description,
@@ -31,7 +32,7 @@ export function teamMetadata(locale: Locale): Metadata {
       locale: LOCALE_META[locale].ogLocale,
       alternateLocale: [LOCALE_META[locale === "es" ? "en" : "es"].ogLocale],
       siteName: SITE.name,
-      images: [{ url: HEADER_IMAGE, alt: t.header.alt }, OG_IMAGE],
+      images: [{ url: HEADER_IMAGE, alt: t.header.alt }, ogImage(locale)],
     },
   };
 }

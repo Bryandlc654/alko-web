@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { localizeProject } from "@/lib/i18n/project-text";
 import Image from "@/components/ui/Image";
 import Link from "next/link";
 import EditorialHeader from "@/components/editorial/EditorialHeader";
@@ -12,7 +13,7 @@ import { LOCALE_META, languageAlternates, localizedPath, type Locale } from "@/l
 import { ABOUT_COPY } from "@/lib/i18n/about";
 import { HOME_COPY } from "@/lib/i18n/home";
 import { pageJsonLd } from "@/lib/seo";
-import { METHOD_HREF, OG_IMAGE, ROUTES, SITE } from "@/lib/site";
+import { METHOD_HREF, OG_IMAGE, ogImage, siteKeywords, ROUTES, SITE } from "@/lib/site";
 import { getDbNosotrosPageContent } from "@/lib/db/mysql";
 import { getFabricantes, getProjects, getSectors, getSettings } from "@/lib/wordpress";
 
@@ -27,6 +28,7 @@ export function aboutMetadata(locale: Locale): Metadata {
     title: { absolute: t.title },
     description: t.description,
     alternates: { canonical: path, languages: languageAlternates(ROUTES.company) },
+    keywords: siteKeywords(locale),
     openGraph: {
       title: t.title,
       description: t.description,
@@ -35,7 +37,7 @@ export function aboutMetadata(locale: Locale): Metadata {
       locale: LOCALE_META[locale].ogLocale,
       alternateLocale: [LOCALE_META[locale === "es" ? "en" : "es"].ogLocale],
       siteName: SITE.name,
-      images: [{ url: "/nosotros-header.jpg", alt: ABOUT_COPY[locale].headerAlt }, OG_IMAGE],
+      images: [{ url: "/nosotros-header.jpg", alt: ABOUT_COPY[locale].headerAlt }, ogImage(locale)],
     },
   };
 }
@@ -112,14 +114,14 @@ export default async function AboutPage({ locale }: { locale: Locale }) {
 
   const enlaces = [
     {
-      href: ROUTES.team,
+      href: localizedPath(ROUTES.team, locale),
       etiqueta: (!en && panel.enlaceEquipoEtiqueta) || t.links.team.tag,
       titulo: (!en && panel.enlaceEquipoTitulo) || t.links.team.title,
       imagen: panel.enlaceEquipoImagen || ABOUT_LINK_IMAGES.team,
       alt: t.links.team.alt,
     },
     {
-      href: ROUTES.careers,
+      href: localizedPath(ROUTES.careers, locale),
       etiqueta: (!en && panel.enlaceEmpleoEtiqueta) || t.links.careers.tag,
       titulo: (!en && panel.enlaceEmpleoTitulo) || t.links.careers.title,
       imagen: panel.enlaceEmpleoImagen || ABOUT_LINK_IMAGES.careers,
@@ -127,7 +129,7 @@ export default async function AboutPage({ locale }: { locale: Locale }) {
     },
   ];
 
-  const destacado = projects[0];
+  const destacado = projects[0] && localizeProject(projects[0], locale);
   const path = localizedPath(ROUTES.company, locale);
   // Año de fundación, si figura entre las cifras (p. ej. «1996»).
   const fundacion = baseCifras.find((x) => /^(19|20)\d{2}$/.test(x.valor.trim()))?.valor.trim();

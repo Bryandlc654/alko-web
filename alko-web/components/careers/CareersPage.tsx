@@ -11,7 +11,7 @@ import { getDbEmpleoPageContent } from "@/lib/db/mysql";
 import { LOCALE_META, languageAlternates, localizedPath, type Locale } from "@/lib/i18n";
 import { CAREERS_COPY, localizePosition } from "@/lib/i18n/careers";
 import { metaDescription, pageJsonLd } from "@/lib/seo";
-import { OG_IMAGE, ROUTES, SITE } from "@/lib/site";
+import { OG_IMAGE, ogImage, siteKeywords, ROUTES, SITE } from "@/lib/site";
 import type { PosicionEmpleo } from "@/lib/types";
 import { getSettings } from "@/lib/wordpress";
 
@@ -42,6 +42,7 @@ export async function careersMetadata(locale: Locale): Promise<Metadata> {
     title: { absolute: t.meta.title },
     description,
     alternates: { canonical: path, languages: languageAlternates(ROUTES.careers) },
+    keywords: siteKeywords(locale),
     openGraph: {
       title: t.meta.title,
       description,
@@ -50,7 +51,7 @@ export async function careersMetadata(locale: Locale): Promise<Metadata> {
       locale: LOCALE_META[locale].ogLocale,
       alternateLocale: [LOCALE_META[locale === "es" ? "en" : "es"].ogLocale],
       siteName: SITE.name,
-      images: [{ url: image, alt: t.header.alt }, OG_IMAGE],
+      images: [{ url: image, alt: t.header.alt }, ogImage(locale)],
     },
   };
 }

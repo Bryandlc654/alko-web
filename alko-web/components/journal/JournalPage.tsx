@@ -11,7 +11,7 @@ import { getDbArticulosPageContent, getDbGuiasPageContent } from "@/lib/db/mysql
 import { LOCALE_META, languageAlternates, localizedPath, type Locale } from "@/lib/i18n";
 import { JOURNAL_COPY, localizeArticle, localizeGuide } from "@/lib/i18n/journal";
 import { pageJsonLd } from "@/lib/seo";
-import { OG_IMAGE, ROUTES, SITE } from "@/lib/site";
+import { OG_IMAGE, ogImage, siteKeywords, ROUTES, SITE } from "@/lib/site";
 import { formatDate } from "@/lib/utils";
 import { getArticles, getGuides, getSettings } from "@/lib/wordpress";
 
@@ -23,6 +23,7 @@ export function journalMetadata(locale: Locale): Metadata {
     title: { absolute: t.title },
     description: t.description,
     alternates: { canonical: path, languages: languageAlternates(ROUTES.journal) },
+    keywords: siteKeywords(locale),
     openGraph: {
       title: t.title,
       description: t.description,
@@ -31,7 +32,7 @@ export function journalMetadata(locale: Locale): Metadata {
       locale: LOCALE_META[locale].ogLocale,
       alternateLocale: [LOCALE_META[locale === "es" ? "en" : "es"].ogLocale],
       siteName: SITE.name,
-      images: [OG_IMAGE],
+      images: [ogImage(locale)],
     },
   };
 }

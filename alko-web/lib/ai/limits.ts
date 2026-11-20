@@ -38,3 +38,20 @@ export const AI_MESSAGES = {
   invalid: "No hemos podido leer tu mensaje. Revisa que no esté vacío ni supere los 1000 caracteres.",
   tooLong: "Tu mensaje es demasiado largo. Intenta resumirlo en menos de 1000 caracteres.",
 } as const;
+
+/** Los mismos avisos en inglés, para las páginas de /en. */
+export const AI_MESSAGES_EN: Record<keyof typeof AI_MESSAGES, string> = {
+  unavailable:
+    "The virtual assistant is not available right now. Write to us from the contact page or on WhatsApp and we will reply as soon as possible.",
+  failed:
+    "We could not reply just now. Please try again in a few minutes, or write to us from the contact page or on WhatsApp.",
+  tooMany:
+    "You have sent a lot of questions in a row. Please wait a few minutes to continue, or write to us from the contact page or on WhatsApp.",
+  invalid: "We could not read your message. Check that it is not empty and is under 1,000 characters.",
+  tooLong: "Your message is too long. Try to keep it under 1,000 characters.",
+};
+
+/** Avisos del asistente en el idioma de la página. */
+export function aiMessages(locale: "es" | "en"): Record<keyof typeof AI_MESSAGES, string> {
+  return locale === "en" ? AI_MESSAGES_EN : AI_MESSAGES;
+}

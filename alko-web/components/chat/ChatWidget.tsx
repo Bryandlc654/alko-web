@@ -2,7 +2,9 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { MessageSquare, Send, X, RotateCcw, Sparkles, Bot, Loader2 } from "lucide-react";
-import { AI_LIMITS, AI_MESSAGES } from "@/lib/ai/limits";
+import { usePathname } from "next/navigation";
+import { AI_LIMITS, aiMessages } from "@/lib/ai/limits";
+import { localeFromPath, type Locale } from "@/lib/i18n";
 
 interface Message {
   id: string;
@@ -11,24 +13,87 @@ interface Message {
   timestamp: Date;
 }
 
-const INITIAL_SUGGESTIONS = [
-  "¿Qué tipo de reformas realizáis?",
-  "¿Cómo es vuestro proceso y plazos?",
-  "¿Qué materiales y marcas utilizáis?",
-  "Quiero pedir presupuesto para mi vivienda",
-];
-
-const INITIAL_MESSAGE: Message = {
-  id: "welcome",
-  role: "assistant",
-  content:
-    "Bienvenido a ALKO. Soy tu asesor técnico de arquitectura y reformas integrales. ¿Tienes un proyecto en mente o deseas información sobre nuestros servicios en Madrid?",
-  timestamp: new Date(),
+/** Textos del asistente en cada idioma (el idioma sale de la URL: /en es inglés). */
+const COPY: Record<Locale, {
+  suggestions: string[];
+  welcome: string;
+  dialog: string;
+  title: string;
+  subtitle: string;
+  reset: string;
+  close: string;
+  closeLabel: string;
+  thinking: string;
+  faq: string;
+  placeholder: string;
+  send: string;
+  footer: string;
+  open: string;
+  tooltip: string;
+}> = {
+  es: {
+    suggestions: [
+      "¿Qué tipo de reformas realizáis?",
+      "¿Cómo es vuestro proceso y plazos?",
+      "¿Qué materiales y marcas utilizáis?",
+      "Quiero pedir presupuesto para mi vivienda",
+    ],
+    welcome:
+      "Bienvenido a ALKO. Soy tu asesor técnico de arquitectura y reformas integrales. ¿Tienes un proyecto en mente o deseas información sobre nuestros servicios en Madrid?",
+    dialog: "Asistente Virtual ALKO",
+    title: "ALKO Asistente",
+    subtitle: "Arquitectura & Reformas",
+    reset: "Reiniciar conversación",
+    close: "Cerrar chat",
+    closeLabel: "Cerrar ventana de chat",
+    thinking: "Consultando asistente",
+    faq: "Preguntas frecuentes:",
+    placeholder: "Escribe tu consulta sobre tu obra o proyecto...",
+    send: "Enviar mensaje",
+    footer: "ALKO IA · Atención preliminar y orientación técnica",
+    open: "Abrir asistente de arquitectura",
+    tooltip: "Asistente ALKO",
+  },
+  en: {
+    suggestions: [
+      "What kind of renovations do you do?",
+      "What is your process and how long does it take?",
+      "Which materials and brands do you use?",
+      "I would like a quote for my home",
+    ],
+    welcome:
+      "Welcome to ALKO. I am your technical adviser for architecture and full renovations. Do you have a project in mind, or would you like to know more about our services in Madrid?",
+    dialog: "ALKO virtual assistant",
+    title: "ALKO Assistant",
+    subtitle: "Architecture & Renovations",
+    reset: "Restart conversation",
+    close: "Close chat",
+    closeLabel: "Close chat window",
+    thinking: "Thinking",
+    faq: "Frequently asked questions:",
+    placeholder: "Ask about your building work or project...",
+    send: "Send message",
+    footer: "ALKO AI · Initial guidance and technical advice",
+    open: "Open the architecture assistant",
+    tooltip: "ALKO Assistant",
+  },
 };
 
+function welcomeMessage(locale: Locale): Message {
+  return { id: "welcome", role: "assistant", content: COPY[locale].welcome, timestamp: new Date() };
+}
+
 export default function ChatWidget() {
+  const locale = localeFromPath(usePathname());
+  const t = COPY[locale];
+  const AI_MESSAGES = aiMessages(locale);
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
+  const [messages, setMessages] = useState<Message[]>(() => [welcomeMessage(locale)]);
+
+  // Al cambiar de idioma con la conversación sin empezar, la bienvenida pasa al nuevo idioma.
+  useEffect(() => {
+    setMessages((prev) => (prev.length === 1 && prev[0].id === "welcome" ? [welcomeMessage(locale)] : prev));
+  }, [locale]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -65,7 +130,7 @@ export default function ChatWidget() {
       // Solo se envían los mensajes más recientes: el servidor no admite historiales largos.
       const res = await fetch("/api/chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-chat-locale": locale },
         body: JSON.stringify({
           messages: newHistory.slice(-AI_LIMITS.maxMessages).map((m) => ({
             role: m.role,
@@ -103,12 +168,7 @@ export default function ChatWidget() {
   };
 
   const handleReset = () => {
-    setMessages([
-      {
-        ...INITIAL_MESSAGE,
-        timestamp: new Date(),
-      },
-    ]);
+    setMessages([welcomeMessage(locale)]);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -124,7 +184,7 @@ export default function ChatWidget() {
       {isOpen && (
         <div
           role="dialog"
-          aria-label="Asistente Virtual ALKO"
+          aria-label={t.dialog}
           className="mb-4 w-[calc(100vw-2.5rem)] sm:w-[420px] h-[560px] max-h-[82vh] flex flex-col bg-white/95 backdrop-blur-2xl border border-ink/15 shadow-ink/15 overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200"
         >
           {/* Cabecera del chat */}
@@ -136,9 +196,9 @@ export default function ChatWidget() {
               </div>
               <div>
                 <h3 className="text-sm font-semibold tracking-wide text-ink flex items-center gap-1.5 font-sans">
-                  ALKO Asistente
+                  {t.title}
                 </h3>
-                <p className="text-[11px] text-mid">Arquitectura & Reformas</p>
+                <p className="text-[11px] text-mid">{t.subtitle}</p>
               </div>
             </div>
 
@@ -146,18 +206,18 @@ export default function ChatWidget() {
               <button
                 type="button"
                 onClick={handleReset}
-                title="Reiniciar conversación"
+                title={t.reset}
                 className="p-1.5 text-mid hover:text-ink hover:bg-piedra/60 transition-colors"
-                aria-label="Reiniciar conversación"
+                aria-label={t.reset}
               >
                 <RotateCcw className="w-4 h-4" />
               </button>
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                title="Cerrar chat"
+                title={t.close}
                 className="p-1.5 text-mid hover:text-ink hover:bg-piedra/60 transition-colors"
-                aria-label="Cerrar ventana de chat"
+                aria-label={t.closeLabel}
               >
                 <X className="w-4 h-4" />
               </button>
@@ -209,7 +269,7 @@ export default function ChatWidget() {
                   <Loader2 className="w-3.5 h-3.5 animate-spin text-bronze" />
                 </div>
                 <div className="px-4 py-2.5 bg-paper border border-ink/15 text-xs text-mid flex items-center gap-1.5">
-                  <span>Consultando asistente</span>
+                  <span>{t.thinking}</span>
                   <span className="inline-flex gap-1">
                     <span className="w-1 h-1 bg-bronze rounded-full animate-bounce [animation-delay:-0.3s]" />
                     <span className="w-1 h-1 bg-bronze rounded-full animate-bounce [animation-delay:-0.15s]" />
@@ -223,10 +283,10 @@ export default function ChatWidget() {
             {messages.length === 1 && !isLoading && (
               <div className="pt-2">
                 <p className="text-[11px] uppercase tracking-wider text-mid font-medium mb-2 px-1">
-                  Preguntas frecuentes:
+                  {t.faq}
                 </p>
                 <div className="flex flex-col gap-1.5">
-                  {INITIAL_SUGGESTIONS.map((suggestion, idx) => (
+                  {t.suggestions.map((suggestion, idx) => (
                     <button
                       key={idx}
                       type="button"
@@ -259,14 +319,14 @@ export default function ChatWidget() {
                 onChange={(e) => setInput(e.target.value)}
                 maxLength={AI_LIMITS.maxMessageChars}
                 onKeyDown={handleKeyDown}
-                placeholder="Escribe tu consulta sobre tu obra o proyecto..."
+                placeholder={t.placeholder}
                 disabled={isLoading}
                 className="flex-1 bg-paper border border-ink/15 focus:border-[#8B7560] focus:ring-1 focus:ring-[#8B7560]/30 px-3.5 py-2.5 text-sm text-ink placeholder-mid focus:outline-none transition-colors shadow-xs"
               />
               <button
                 type="submit"
                 disabled={!input.trim() || isLoading}
-                aria-label="Enviar mensaje"
+                aria-label={t.send}
                 className="flex items-center justify-center w-10 h-10 bg-bronze hover:bg-[#75624F] text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all active:scale-95 flex-shrink-0"
               >
                 {isLoading ? (
@@ -277,7 +337,7 @@ export default function ChatWidget() {
               </button>
             </form>
             <div className="text-[10px] text-center text-mid mt-2">
-              ALKO IA · Atención preliminar y orientación técnica
+              {t.footer}
             </div>
           </div>
         </div>
@@ -287,7 +347,7 @@ export default function ChatWidget() {
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        aria-label={isOpen ? "Cerrar asistente" : "Abrir asistente de arquitectura"}
+        aria-label={isOpen ? t.close : t.open}
         className="group relative flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-paper border border-ink/15 hover:border-[#8B7560]/60 text-bronze shadow-ink/10 transition-all duration-300 hover:scale-105 active:scale-95"
       >
         {/* Anillo de pulso sutil */}
@@ -307,7 +367,7 @@ export default function ChatWidget() {
         {/* Tooltip visible en desktop */}
         {!isOpen && (
           <span className="hidden sm:inline-block absolute right-full mr-3 whitespace-nowrap bg-paper border border-ink/15 px-3.5 py-1.5 text-xs text-ink font-medium opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 pointer-events-none">
-            Asistente ALKO
+            {t.tooltip}
           </span>
         )}
       </button>

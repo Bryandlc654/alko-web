@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { localizeProject } from "@/lib/i18n/project-text";
 import EditorialHeader from "@/components/editorial/EditorialHeader";
 import HtmlLang from "@/components/i18n/HtmlLang";
 import FinalContact from "@/components/sections/FinalContact";
@@ -8,7 +9,7 @@ import { LOCALE_META, languageAlternates, localizedPath, type Locale } from "@/l
 import { PROJECTS_COPY } from "@/lib/i18n/projects";
 import { projectCategory } from "@/lib/project-category";
 import { organizationNode } from "@/lib/seo";
-import { OG_IMAGE, ROUTES, SITE } from "@/lib/site";
+import { OG_IMAGE, ogImage, siteKeywords, ROUTES, SITE } from "@/lib/site";
 import type { Project } from "@/lib/types";
 import { splitLead } from "@/lib/utils";
 import { getProjects, getSettings } from "@/lib/wordpress";
@@ -21,6 +22,7 @@ export function projectsMetadata(locale: Locale): Metadata {
     title: { absolute: t.title },
     description: t.description,
     alternates: { canonical: path, languages: languageAlternates(ROUTES.projects) },
+    keywords: siteKeywords(locale),
     openGraph: {
       title: t.title,
       description: t.description,
@@ -29,7 +31,7 @@ export function projectsMetadata(locale: Locale): Metadata {
       locale: LOCALE_META[locale].ogLocale,
       alternateLocale: [LOCALE_META[locale === "es" ? "en" : "es"].ogLocale],
       siteName: SITE.name,
-      images: [OG_IMAGE],
+      images: [ogImage(locale)],
     },
   };
 }
@@ -91,7 +93,7 @@ export default async function ProjectsPage({ locale }: { locale: Locale }) {
     getDbProjectsPageContent(),
   ]);
   const summaries = projects.map((project) => ({
-    ...project,
+    ...localizeProject(project, locale, { keepTypology: true }),
     extracto: splitLead(project.content).lead,
   }));
 
@@ -126,7 +128,7 @@ export default async function ProjectsPage({ locale }: { locale: Locale }) {
       <HtmlLang locale={locale} />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(projectsJsonLd(locale, projects)) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(projectsJsonLd(locale, summaries)) }}
       />
       <EditorialHeader
         locale={locale}

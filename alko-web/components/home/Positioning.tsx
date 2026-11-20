@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Parallax from "@/components/ui/Parallax";
 import { ROUTES } from "@/lib/site";
-import type { Locale } from "@/lib/i18n";
+import { localizedPath, type Locale } from "@/lib/i18n";
 import { HOME_COPY } from "@/lib/i18n/home";
 
 const FACT_NUMS = ["01", "04", "05"];
@@ -29,7 +29,7 @@ export default function Positioning({ locale = "es" }: { locale?: Locale }) {
               </div>
             ))}
           </dl>
-          <Link href={ROUTES.company} className="reveal-item btn btn-outline mt-12">
+          <Link href={localizedPath(ROUTES.company, locale)} className="reveal-item btn btn-outline mt-12">
             {t.cta} <span aria-hidden="true">→</span>
           </Link>
         </div>
