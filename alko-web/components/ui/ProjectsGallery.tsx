@@ -8,7 +8,7 @@ import ExclusiveSeal, { EXCLUSIVE_GOLD } from "@/components/ui/ExclusiveSeal";
 import type { Project } from "@/lib/types";
 import { CATEGORY_ORDER, projectCategory } from "@/lib/project-category";
 import { Loader2 } from "lucide-react";
-import type { Locale } from "@/lib/i18n";
+import { localizedPath, type Locale } from "@/lib/i18n";
 import { PROJECTS_COPY } from "@/lib/i18n/projects";
 
 /** Valor interno del filtro «todas las categorías». */
@@ -157,7 +157,7 @@ export default function ProjectsGallery({ projects, locale = "es" }: { projects:
               style={{ animationDuration: "1s" }}
             >
               <Link
-                href={`${ROUTES.projects}/${project.slug}`}
+                href={localizedPath(`${ROUTES.projects}/${project.slug}`, locale)}
                 className={`group relative block aspect-[4/5] overflow-hidden bg-ink text-white ${
                   wide ? "md:aspect-[16/8]" : "md:aspect-[57/60]"
                 }`}

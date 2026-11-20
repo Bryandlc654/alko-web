@@ -6,6 +6,8 @@ import Prose from "@/components/ui/Prose";
 import QuickContactForm from "@/components/ui/QuickContactForm";
 import ExclusiveSeal, { EXCLUSIVE_GOLD } from "@/components/ui/ExclusiveSeal";
 import { ROUTES } from "@/lib/site";
+import { localizedPath, type Locale } from "@/lib/i18n";
+import { PROJECT_PAGE_COPY, type ProjectPageCopy } from "@/lib/i18n/project-page";
 import { splitLead } from "@/lib/utils";
 import { projectCta } from "@/lib/project-cta";
 import type { Project, Sector, SiteSettings } from "@/lib/types";
@@ -44,7 +46,10 @@ function Plate({
   sizes,
   priority = false,
   lightbox = false,
+  t,
 }: {
+  /** Textos del idioma de la página. */
+  t: ProjectPageCopy["exclusive"];
   src: string;
   alt: string;
   number: number;
@@ -74,7 +79,7 @@ function Plate({
           type="button"
           data-lightbox-src={src}
           data-lightbox-alt={alt}
-          aria-label={`Ver lámina ${number} en grande`}
+          aria-label={t.seePlate(number)}
           className={`group relative block w-full cursor-zoom-in overflow-hidden bg-stone-300 ${aspect}`}
         >
           {img}
@@ -84,7 +89,7 @@ function Plate({
       )}
       <figcaption className="mt-3 flex items-baseline justify-between gap-4 text-[10px] uppercase tracking-[0.24em] text-stone-500">
         <span>
-          <span style={{ color: EXCLUSIVE_GOLD }}>Lámina {ROMAN[number - 1] || number}</span>
+          <span style={{ color: EXCLUSIVE_GOLD }}>{t.plate} {ROMAN[number - 1] || number}</span>
           {caption && <> · {caption}</>}
         </span>
       </figcaption>
@@ -103,12 +108,16 @@ export default function ExclusiveProject({
   servicio,
   neighbours,
   settings,
+  locale = "es",
 }: {
   project: Project;
   servicio: Sector | null;
   neighbours: { label: string; project: Project; arrow: string }[];
   settings: SiteSettings;
+  locale?: Locale;
 }) {
+  const page = PROJECT_PAGE_COPY[locale];
+  const t = page.exclusive;
   const whatsappHref = `https://wa.me/${settings.whatsapp.replace(/[^\d]/g, "")}`;
   const { lead, rest } = splitLead(project.content || "");
   const fotoAntes = project.fotoAntes?.trim();
@@ -121,23 +130,23 @@ export default function ExclusiveProject({
   const fotoCapitulo = (i: number) => capituloFotos[i] || fotos[i % Math.max(fotos.length, 1)] || project.imagen;
 
   const ficha = [
-    ["Ubicación", project.ubicacion],
-    ["Tipología", project.tipologia],
-    ["Superficie", project.superficie],
-    ["Plazo", project.plazo],
-    ["Año", project.anio],
+    [page.ficha.ubicacion, project.ubicacion],
+    [page.ficha.tipologia, project.tipologia],
+    [page.ficha.superficie, project.superficie],
+    [page.ficha.plazo, project.plazo],
+    [page.ficha.anio, project.anio],
   ].filter(([, value]) => value);
 
   const capitulos = [
-    { titulo: "El encargo", texto: project.reto },
-    { titulo: "La solución", texto: project.solucion },
-    { titulo: "El resultado", texto: project.resultado },
+    { titulo: page.chapters.reto, texto: project.reto },
+    { titulo: page.chapters.solucion, texto: project.solucion },
+    { titulo: page.chapters.resultado, texto: project.resultado },
   ].filter((c) => c.texto?.trim());
 
   const alcance = (project.alcance || []).filter(Boolean);
   const materiales = (project.materiales || []).filter((m) => m.elemento || m.detalle);
   const cifras = (project.cifras || []).filter((c) => c.valor).slice(0, 4);
-  const cta = projectCta(project);
+  const cta = projectCta(project, locale);
   const tel = settings.telefono.replace(/[^+\d]/g, "");
 
   // Numeración continua de las láminas (portada = I).
@@ -151,12 +160,13 @@ export default function ExclusiveProject({
         <div className="site-wrap pt-28 sm:pt-36 lg:pt-40">
           <div className="hh-rise flex items-center justify-between gap-6 border-b pb-5" style={{ borderColor: `${EXCLUSIVE_GOLD}66` }}>
             <Breadcrumbs
-              items={[{ label: "Proyectos", href: ROUTES.projects }, { label: project.title }]}
+              items={[{ label: page.breadcrumb, href: localizedPath(ROUTES.projects, locale) }, { label: project.title }]}
               tone="dark"
               className="min-w-0"
+              locale={locale}
             />
             <Gold className="hidden shrink-0 sm:inline">
-              ALKO Exclusiva{project.indice ? ` · Nº ${project.indice}` : ""}
+              {t.brand}{project.indice ? ` · ${t.number} ${project.indice}` : ""}
             </Gold>
           </div>
 
@@ -165,7 +175,7 @@ export default function ExclusiveProject({
               <div className="hh-rise flex items-center gap-5">
                 <ExclusiveSeal size={76} tone="dark" />
                 <span className="flex flex-col gap-1">
-                  <Gold>Monografía</Gold>
+                  <Gold>{t.monograph}</Gold>
                   <span className="text-[10px] uppercase tracking-[0.24em] text-stone-500">
                     {[project.tipologia, project.anio].filter(Boolean).join(" · ") || "ALKO Exclusiva"}
                   </span>
@@ -190,7 +200,7 @@ export default function ExclusiveProject({
                   {project.cliente && (
                     <div className="flex items-baseline justify-between gap-6 border-b border-ink/15 py-3.5">
                       <dt>
-                        <Gold>Cliente</Gold>
+                        <Gold>{t.client}</Gold>
                       </dt>
                       <dd className="text-right text-sm">{project.cliente}</dd>
                     </div>
@@ -198,11 +208,11 @@ export default function ExclusiveProject({
                   {servicio && (
                     <div className="flex items-baseline justify-between gap-6 border-b border-ink/15 py-3.5">
                       <dt>
-                        <Gold>Servicio</Gold>
+                        <Gold>{t.service}</Gold>
                       </dt>
                       <dd className="text-right text-sm">
                         <Link
-                          href={`${ROUTES.sectors}/${servicio.slug}`}
+                          href={localizedPath(`${ROUTES.sectors}/${servicio.slug}`, locale)}
                           className="underline decoration-ink/25 underline-offset-4 transition-colors hover:decoration-current"
                         >
                           {servicio.title} ↗
@@ -220,7 +230,8 @@ export default function ExclusiveProject({
                   src={project.imagen}
                   alt={project.title}
                   number={1}
-                  caption={project.ubicacion || "Portada"}
+                  caption={project.ubicacion || t.cover}
+                  t={t}
                   aspect="aspect-[4/5] sm:aspect-[5/4]"
                   sizes="(max-width: 1024px) 100vw, 58vw"
                   priority
@@ -234,7 +245,7 @@ export default function ExclusiveProject({
       {/* Presentación: entradilla grande con capitular dorada. */}
       {lead && (
         <section className="site-wrap pt-24 sm:pt-32">
-          <Rule mark="Presentación" />
+          <Rule mark={t.presentation} />
           <div className="mt-12 grid grid-cols-12 gap-6">
             <p className="reveal-item display-title col-span-12 text-[1.75rem] leading-[1.2] tracking-[-0.02em] sm:text-4xl lg:col-span-9 lg:col-start-4 lg:text-[2.75rem]">
               <span className="float-left mr-3 mt-1 text-[3.4em] leading-[0.8]" style={{ color: EXCLUSIVE_GOLD }}>
@@ -251,9 +262,10 @@ export default function ExclusiveProject({
         <div className="site-wrap reveal-scale pt-20 sm:pt-28">
           <Plate
             src={fotos[0]}
-            alt={`${project.title}, vista general`}
+            alt={`${project.title}, ${t.overviewAlt}`}
             number={nextPlate()}
-            caption="Vista general"
+            caption={t.overview}
+            t={t}
             aspect="aspect-[4/3] sm:aspect-[21/9]"
             sizes="100vw"
           />
@@ -263,7 +275,7 @@ export default function ExclusiveProject({
       {/* Capítulos: numeral romano y título, texto y lámina. */}
       {capitulos.length > 0 && (
         <section className="site-wrap pt-24 sm:pt-32">
-          <Rule mark="El relato" />
+          <Rule mark={t.story} />
           <div className="mt-4">
             {capitulos.map((cap, i) => {
               const reversed = i % 2 === 1;
@@ -277,7 +289,7 @@ export default function ExclusiveProject({
                       <span className="display-title text-6xl leading-none sm:text-7xl" style={{ color: EXCLUSIVE_GOLD }}>
                         {ROMAN[i]}
                       </span>
-                      <Gold>Capítulo</Gold>
+                      <Gold>{t.chapter}</Gold>
                     </div>
                     <h2 className="display-title mt-6 text-3xl leading-tight sm:text-5xl">{cap.titulo}</h2>
                     <p className="mt-6 whitespace-pre-line text-lg leading-relaxed text-stone-600">{cap.texto}</p>
@@ -288,6 +300,7 @@ export default function ExclusiveProject({
                       alt={`${project.title}: ${cap.titulo.toLowerCase()}`}
                       number={nextPlate()}
                       caption={cap.titulo}
+                      t={t}
                       aspect="aspect-[4/5] sm:aspect-[4/3]"
                       sizes="(max-width: 1024px) 100vw, 50vw"
                     />
@@ -302,7 +315,7 @@ export default function ExclusiveProject({
       {/* Memoria completa, si no se ha contado por capítulos. */}
       {capitulos.length === 0 && rest && (
         <section className="site-wrap pt-24 sm:pt-32">
-          <Rule mark="Memoria" />
+          <Rule mark={t.memoria} />
           <div className="mt-12 grid grid-cols-12 gap-6">
             <div className="col-span-12 lg:col-span-7 lg:col-start-4">
               <Prose html={rest} variant="article" />
@@ -339,12 +352,12 @@ export default function ExclusiveProject({
       {/* Alcance y acabados. */}
       {(alcance.length > 0 || materiales.length > 0) && (
         <section className="site-wrap pt-24 sm:pt-32">
-          <Rule mark="La obra en detalle" />
-          <h2 className="reveal-item display-title mt-12 text-4xl sm:text-5xl lg:text-6xl">Alcance y acabados</h2>
+          <Rule mark={page.detailLabel} />
+          <h2 className="reveal-item display-title mt-12 text-4xl sm:text-5xl lg:text-6xl">{page.detailTitle}</h2>
           <div className={`mt-12 grid grid-cols-1 gap-14 ${alcance.length > 0 && materiales.length > 0 ? "lg:grid-cols-2" : "max-w-3xl"}`}>
             {alcance.length > 0 && (
               <div className="reveal-item">
-                <Gold>Partidas</Gold>
+                <Gold>{t.scope}</Gold>
                 <ul className="mt-4 border-t border-ink/15">
                   {alcance.map((item, i) => (
                     <li key={`${item}-${i}`} className="flex gap-6 border-b border-ink/15 py-4">
@@ -359,7 +372,7 @@ export default function ExclusiveProject({
             )}
             {materiales.length > 0 && (
               <div className="reveal-item">
-                <Gold>Acabados</Gold>
+                <Gold>{t.finishes}</Gold>
                 <dl className="mt-4 border-t border-ink/15">
                   {materiales.map((m, i) => (
                     <div key={`${m.elemento}-${i}`} className="grid grid-cols-1 gap-1 border-b border-ink/15 py-4 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] sm:gap-6">
@@ -377,18 +390,19 @@ export default function ExclusiveProject({
       {/* Antes y después. */}
       {fotoAntes && fotoDespues && (
         <section className="site-wrap pt-24 sm:pt-32">
-          <Rule mark="Transformación" />
+          <Rule mark={t.transformation} />
           <Lightbox className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2">
             {[
-              { src: fotoAntes, label: "Antes" },
-              { src: fotoDespues, label: "Después" },
+              { src: fotoAntes, label: page.before.label, alt: page.before.alt, before: true },
+              { src: fotoDespues, label: page.after.label, alt: page.after.alt, before: false },
             ].map((f) => (
-              <div key={f.label} className={`reveal-scale ${f.label === "Antes" ? "[&_img]:grayscale" : ""}`}>
+              <div key={f.label} className={`reveal-scale ${f.before ? "[&_img]:grayscale" : ""}`}>
                 <Plate
                   src={f.src}
-                  alt={`${project.title}, ${f.label.toLowerCase()}`}
+                  alt={`${project.title}, ${f.alt}`}
                   number={nextPlate()}
                   caption={f.label}
+                  t={t}
                   aspect="aspect-[4/3]"
                   sizes="(max-width: 640px) 100vw, 50vw"
                   lightbox
@@ -405,8 +419,8 @@ export default function ExclusiveProject({
           <div className="site-wrap py-20 sm:py-28">
             <div className="flex flex-col gap-4 border-b pb-8 sm:flex-row sm:items-end sm:justify-between" style={{ borderColor: `${EXCLUSIVE_GOLD}55` }}>
               <div>
-                <Gold>Galería · {pad(fotos.length)} láminas</Gold>
-                <h2 className="display-title mt-4 text-4xl sm:text-5xl lg:text-6xl">El proyecto en imágenes</h2>
+                <Gold>{t.gallery(pad(fotos.length))}</Gold>
+                <h2 className="display-title mt-4 text-4xl sm:text-5xl lg:text-6xl">{page.galleryTitle}</h2>
               </div>
               <ExclusiveSeal size={56} className="hidden sm:block" />
             </div>
@@ -422,15 +436,15 @@ export default function ExclusiveProject({
                     <button
                       type="button"
                       data-lightbox-src={src}
-                      data-lightbox-alt={`${project.title} · Lámina ${i + 1}`}
-                      aria-label={`Ver lámina ${i + 1} en grande`}
+                      data-lightbox-alt={`${project.title} · ${t.plate} ${i + 1}`}
+                      aria-label={t.seePlate(i + 1)}
                       className={`group relative block w-full cursor-zoom-in overflow-hidden bg-stone-800 ${
                         last && (k === 0 || k === 2) ? "aspect-[4/3] md:aspect-[21/9]" : aspects[k]
                       }`}
                     >
                       <Image
                         src={src}
-                        alt={`${project.title}, imagen ${i + 1}`}
+                        alt={`${project.title}, ${page.imageAlt(i + 1)}`}
                         fill
                         sizes={k === 4 ? "100vw" : "(max-width: 768px) 100vw, 66vw"}
                         className="object-cover transition-transform duration-[1.8s] ease-alko group-hover:scale-[1.03]"
@@ -450,17 +464,17 @@ export default function ExclusiveProject({
       {/* Reseña del cliente. */}
       {project.resenaTexto?.trim() && (
         <section aria-labelledby="resena-exclusiva" className="site-wrap pt-24 sm:pt-32">
-          <Rule mark="Testimonio" />
+          <Rule mark={t.testimonial} />
           <figure className="reveal-item mt-12 grid grid-cols-12 gap-6">
             <h2 id="resena-exclusiva" className="sr-only">
-              Lo que dice el cliente
+              {page.reviewLabel}
             </h2>
             <span aria-hidden="true" className="display-title col-span-12 text-8xl leading-[0.6] lg:col-span-2 lg:text-[9rem]" style={{ color: EXCLUSIVE_GOLD }}>
               “
             </span>
             <div className="col-span-12 lg:col-span-9 lg:col-start-4">
               {!!project.resenaValoracion && (
-                <div className="mb-6 flex gap-1.5" role="img" aria-label={`${project.resenaValoracion} de 5 estrellas`}>
+                <div className="mb-6 flex gap-1.5" role="img" aria-label={page.stars(project.resenaValoracion)}>
                   {Array.from({ length: 5 }, (_, i) => (
                     <svg
                       key={i}
@@ -493,7 +507,7 @@ export default function ExclusiveProject({
         <div className="grid grid-cols-12 gap-x-6 gap-y-12 border-t pt-12 lg:gap-x-10" style={{ borderColor: `${EXCLUSIVE_GOLD}80` }}>
           <div className="col-span-12 lg:col-span-6">
             <ExclusiveSeal size={84} tone="dark" />
-            <Gold className="mt-10 block">Equipo ALKO Exclusiva</Gold>
+            <Gold className="mt-10 block">{t.team}</Gold>
             <h2
               id="contacto-exclusiva-title"
               className="display-title mt-5 max-w-[14ch] whitespace-pre-line text-[2.6rem] leading-[1] tracking-[-0.035em] sm:text-6xl lg:text-7xl"
@@ -504,7 +518,7 @@ export default function ExclusiveProject({
             <dl className="mt-10 max-w-md border-t border-ink/15">
               <div className="flex items-baseline justify-between gap-6 border-b border-ink/15 py-3.5">
                 <dt>
-                  <Gold>Teléfono</Gold>
+                  <Gold>{t.phone}</Gold>
                 </dt>
                 <dd>
                   <a href={`tel:${tel}`} className="display-title text-lg transition-colors hover:text-stone-500">
@@ -514,9 +528,9 @@ export default function ExclusiveProject({
               </div>
               <div className="flex items-baseline justify-between gap-6 border-b border-ink/15 py-3.5">
                 <dt>
-                  <Gold>Atención</Gold>
+                  <Gold>{t.attention}</Gold>
                 </dt>
-                <dd className="text-sm">Personal y reservada</dd>
+                <dd className="text-sm">{t.attentionValue}</dd>
               </div>
             </dl>
           </div>
@@ -525,9 +539,15 @@ export default function ExclusiveProject({
             <div className="relative bg-ink p-7 text-paper sm:p-10">
               <span aria-hidden="true" className="pointer-events-none absolute inset-3 border" style={{ borderColor: `${EXCLUSIVE_GOLD}66` }} />
               <div className="relative">
-                <Gold>Contacto reservado</Gold>
+                <Gold>{t.reserved}</Gold>
                 <h3 className="display-title mb-6 mt-3 text-2xl leading-tight sm:text-3xl">{cta.boton}</h3>
-                <QuickContactForm compact source={`ALKO Exclusiva · ${project.title}`} email={settings.email} whatsappHref={whatsappHref} />
+                <QuickContactForm
+                  compact
+                  source={`ALKO Exclusiva · ${project.title}${locale === "en" ? " · EN" : ""}`}
+                  email={settings.email}
+                  whatsappHref={whatsappHref}
+                  locale={locale}
+                />
               </div>
             </div>
           </div>
@@ -536,7 +556,7 @@ export default function ExclusiveProject({
 
       {/* Más proyectos. */}
       {neighbours.length > 0 && (
-        <nav aria-label="Más proyectos" className="site-wrap pb-16 sm:pb-20">
+        <nav aria-label={page.moreProjects} className="site-wrap pb-16 sm:pb-20">
           <div
             className={`grid grid-cols-1 border-t ${neighbours.length > 1 ? "md:grid-cols-2" : ""}`}
             style={{ borderColor: `${EXCLUSIVE_GOLD}80` }}
@@ -544,7 +564,7 @@ export default function ExclusiveProject({
             {neighbours.map(({ label, project: other, arrow }, i) => (
               <Link
                 key={other.id}
-                href={`${ROUTES.projects}/${other.slug}`}
+                href={localizedPath(`${ROUTES.projects}/${other.slug}`, locale)}
                 className={`group flex items-center gap-6 pt-10 ${
                   i === 1 ? "mt-10 border-t border-ink/10 md:mt-0 md:justify-end md:border-l md:border-t-0 md:pl-10 md:text-right" : "md:pr-10"
                 }`}
@@ -559,7 +579,7 @@ export default function ExclusiveProject({
                   <span className="display-title mt-3 block text-2xl transition-colors group-hover:text-[#a8874c] sm:text-3xl">
                     {other.title}
                   </span>
-                  {other.exclusivo && <Gold className="mt-2 block">ALKO Exclusiva</Gold>}
+                  {other.exclusivo && <Gold className="mt-2 block">{t.brand}</Gold>}
                 </span>
               </Link>
             ))}

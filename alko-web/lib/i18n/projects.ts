@@ -59,7 +59,7 @@ const en: ProjectsCopy = {
   gallery: {
     eyebrow: "Portfolio",
     title: "All our work.",
-    text: "Homes, offices and commercial spaces delivered with unified technical management. Open each one to see its full case study (in Spanish).",
+    text: "Homes, offices and commercial spaces delivered with unified technical management. Open each one to see its full case study.",
     all: "All",
     filterLabel: "Filter by type",
     exclusive: "ALKO Exclusive",

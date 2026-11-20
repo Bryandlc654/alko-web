@@ -1,7 +1,7 @@
 /**
  * Idiomas del sitio. El castellano es el idioma principal y vive en la raíz; el inglés,
  * bajo /en. Tienen versión inglesa las páginas de TRANSLATED (portada, proyectos, estudio, equipo, empleo, contacto,
- * el listado del Journal y servicios) y las fichas de TRANSLATED_PREFIXES (cada servicio);
+ * el listado del Journal y servicios) y las fichas de TRANSLATED_PREFIXES (cada servicio y cada proyecto);
  * el resto siguen en castellano y el selector de idioma lleva a la portada inglesa.
  */
 
@@ -36,6 +36,7 @@ const TRANSLATED: Record<string, string> = {
 /** Fichas traducidas: el slug se mantiene y cambia el prefijo (/servicios/retail → /en/services/retail). */
 const TRANSLATED_PREFIXES: Record<string, string> = {
   "/servicios/": "/en/services/",
+  "/proyectos/": "/en/projects/",
 };
 
 /** Ruta inglesa de una ruta en castellano, o undefined si no está traducida. */

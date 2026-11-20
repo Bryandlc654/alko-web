@@ -70,7 +70,7 @@ function projectsJsonLd(locale: Locale, projects: Project[]) {
         itemListElement: projects.map((project, index) => ({
           "@type": "ListItem",
           position: index + 1,
-          url: `${SITE.url}${ROUTES.projects}/${project.slug}`,
+          url: `${SITE.url}${localizedPath(`${ROUTES.projects}/${project.slug}`, locale)}`,
           name: project.title,
           ...(project.imagen && { image: absoluteUrl(project.imagen) }),
         })),
