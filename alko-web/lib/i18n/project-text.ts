@@ -35,6 +35,14 @@ export function placeEn(place: string): string {
   return PLACES_EN.reduce((text, [re, to]) => text.replace(re, to), place.trim().replace(/\.+$/, ""));
 }
 
+/** Plazos del panel («12 meses», «6 semanas») en inglés. */
+export function durationEn(text: string): string {
+  return text
+    .replace(/\b(\d+)\s*mes(es)?\b/gi, (_, n: string) => `${n} ${n === "1" ? "month" : "months"}`)
+    .replace(/\b(\d+)\s*semanas?\b/gi, (_, n: string) => `${n} ${n === "1" ? "week" : "weeks"}`)
+    .replace(/\b(\d+)\s*días?\b/gi, (_, n: string) => `${n} ${n === "1" ? "day" : "days"}`);
+}
+
 /** Tipología → categoría en inglés (las mismas del filtro del listado). */
 const CATEGORIES_EN: Record<string, string> = {
   "Reformas integrales": "Full renovation",
@@ -57,6 +65,7 @@ export function localizeProject<T extends Project>(project: T, locale: Locale, {
     ...project,
     title: projectTitleEn(project.title),
     ubicacion: project.ubicacion ? placeEn(project.ubicacion) : project.ubicacion,
+    plazo: project.plazo ? durationEn(project.plazo) : project.plazo,
     tipologia: keepTypology || !project.tipologia ? project.tipologia : typologyEn(project.tipologia),
   };
 }

@@ -25,7 +25,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Páginas traducidas: la versión inglesa y, en las dos, sus alternativas hreflang.
   const absolute = (path: string) => (path === "/" ? SITE.url : `${SITE.url}${path}`);
-  for (const esPath of [ROUTES.home, ROUTES.projects, ROUTES.company, ROUTES.team, ROUTES.careers, ROUTES.contact, ROUTES.journal]) {
+  for (const esPath of [ROUTES.home, ROUTES.projects, ROUTES.company, ROUTES.team, ROUTES.careers, ROUTES.contact, ROUTES.journal, ROUTES.sectors]) {
     const alt = languageAlternates(esPath);
     const languages = { es: absolute(alt.es), en: absolute(alt.en), "x-default": absolute(alt["x-default"]) };
     const original = staticRoutes.find((entry) => entry.url === `${SITE.url}${esPath}`);
@@ -46,12 +46,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly" as const,
       priority: 0.9,
     })),
-    ...sectors.map((sector) => ({
-      url: `${SITE.url}${ROUTES.sectors}/${sector.slug}`,
-      lastModified: new Date(),
-      changeFrequency: "monthly" as const,
-      priority: 0.9,
-    })),
+    // Cada servicio en los dos idiomas, con sus alternativas hreflang.
+    ...sectors.flatMap((sector) => {
+      const esPath = `${ROUTES.sectors}/${sector.slug}`;
+      const alt = languageAlternates(esPath);
+      const languages = { es: absolute(alt.es), en: absolute(alt.en), "x-default": absolute(alt["x-default"]) };
+      return [esPath, localizedPath(esPath, "en")].map((path, i) => ({
+        url: absolute(path),
+        lastModified: new Date(),
+        changeFrequency: "monthly" as const,
+        priority: i === 0 ? 0.9 : 0.8,
+        alternates: { languages },
+      }));
+    }),
     ...articles.map((article) => ({
       url: `${SITE.url}${ROUTES.articles}/${article.slug}`,
       lastModified: new Date(article.date),

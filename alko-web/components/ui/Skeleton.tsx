@@ -1,3 +1,8 @@
+"use client";
+
+import { usePathname } from "next/navigation";
+import { localeFromPath } from "@/lib/i18n";
+
 /** Bloque que late mientras llega el contenido real. */
 export function Skeleton({ className = "" }: { className?: string }) {
   return <div aria-hidden="true" className={`animate-pulse bg-ink/[0.07] ${className}`} />;
@@ -9,8 +14,10 @@ export function Skeleton({ className = "" }: { className?: string }) {
  * y una rejilla de tarjetas.
  */
 export function PageSkeleton() {
+  // Cliente: así sabe el idioma de la página que se está cargando.
+  const label = localeFromPath(usePathname()) === "en" ? "Loading" : "Cargando";
   return (
-    <main aria-busy="true" aria-label="Cargando" className="bg-paper">
+    <main aria-busy="true" aria-label={label} className="bg-paper">
       <div className="site-wrap pt-28 sm:pt-36 lg:pt-40">
         <div className="flex items-center justify-between gap-6 border-b border-ink/15 pb-5">
           <Skeleton className="h-2.5 w-40" />

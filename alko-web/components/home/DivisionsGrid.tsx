@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { DIVISIONS } from "@/lib/divisions";
 import { ROUTES } from "@/lib/site";
-import type { Locale } from "@/lib/i18n";
+import { localizedPath, type Locale } from "@/lib/i18n";
 import { HOME_COPY } from "@/lib/i18n/home";
 import type { Sector } from "@/lib/types";
 
@@ -15,7 +15,7 @@ export default function DivisionsGrid({ sectors, locale = "es" }: { sectors: Sec
   const slugs = new Set(sectors.map((sector) => sector.slug));
   const hrefFor = (candidates: string[]) => {
     const match = candidates.find((slug) => slugs.has(slug));
-    return match ? `${ROUTES.sectors}/${match}` : ROUTES.sectors;
+    return localizedPath(match ? `${ROUTES.sectors}/${match}` : ROUTES.sectors, locale);
   };
 
   return (
@@ -72,7 +72,7 @@ export default function DivisionsGrid({ sectors, locale = "es" }: { sectors: Sec
       {/* Las imágenes de división son provisionales: no se presentan como obras ALKO (brief §3). */}
       <div className="site-wrap flex flex-col-reverse gap-4 pb-24 text-[10px] uppercase tracking-[0.12em] text-mid sm:flex-row sm:justify-between lg:pb-36">
         <span>{t.disclaimer}</span>
-        <Link href={ROUTES.sectors} className="transition-colors hover:text-ink">
+        <Link href={localizedPath(ROUTES.sectors, locale)} className="transition-colors hover:text-ink">
           {t.all} ↗
         </Link>
       </div>

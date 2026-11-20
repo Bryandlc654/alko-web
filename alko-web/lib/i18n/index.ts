@@ -1,6 +1,7 @@
 /**
  * Idiomas del sitio. El castellano es el idioma principal y vive en la raíz; el inglés,
- * bajo /en. Tienen versión inglesa las páginas de TRANSLATED (portada, proyectos, estudio, equipo, empleo, contacto y el listado del Journal);
+ * bajo /en. Tienen versión inglesa las páginas de TRANSLATED (portada, proyectos, estudio, equipo, empleo, contacto,
+ * el listado del Journal y servicios) y las fichas de TRANSLATED_PREFIXES (cada servicio);
  * el resto siguen en castellano y el selector de idioma lleva a la portada inglesa.
  */
 
@@ -29,7 +30,34 @@ const TRANSLATED: Record<string, string> = {
   "/trabaja-con-nosotros": "/en/careers",
   "/contacto": "/en/contact",
   "/journal": "/en/journal",
+  "/servicios": "/en/services",
 };
+
+/** Fichas traducidas: el slug se mantiene y cambia el prefijo (/servicios/retail → /en/services/retail). */
+const TRANSLATED_PREFIXES: Record<string, string> = {
+  "/servicios/": "/en/services/",
+};
+
+/** Ruta inglesa de una ruta en castellano, o undefined si no está traducida. */
+function englishPath(esPath: string): string | undefined {
+  if (TRANSLATED[esPath]) return TRANSLATED[esPath];
+  for (const [es, en] of Object.entries(TRANSLATED_PREFIXES)) {
+    const slug = esPath.startsWith(es) ? esPath.slice(es.length) : "";
+    if (slug && !slug.includes("/")) return en + slug;
+  }
+  return undefined;
+}
+
+/** Ruta en castellano de una ruta inglesa, o undefined si no es una página traducida. */
+function spanishPath(enPath: string): string | undefined {
+  const page = Object.keys(TRANSLATED).find((es) => TRANSLATED[es] === enPath);
+  if (page) return page;
+  for (const [es, en] of Object.entries(TRANSLATED_PREFIXES)) {
+    const slug = enPath.startsWith(en) ? enPath.slice(en.length) : "";
+    if (slug && !slug.includes("/")) return es + slug;
+  }
+  return undefined;
+}
 
 /**
  * Ruta de una página en un idioma, a partir de su ruta en castellano. Si no está traducida,
@@ -38,7 +66,7 @@ const TRANSLATED: Record<string, string> = {
 export function localizedPath(esPath: string, locale: Locale): string {
   if (locale === "es") return esPath;
   const [path, hash] = esPath.split("#");
-  const target = TRANSLATED[path];
+  const target = englishPath(path);
   return target ? `${target}${hash ? `#${hash}` : ""}` : esPath;
 }
 
@@ -48,14 +76,15 @@ export function localizedPath(esPath: string, locale: Locale): string {
  */
 export function pathInLocale(pathname: string, target: Locale): string {
   const path = pathname.replace(/\/+$/, "") || "/";
-  const esPath = localeFromPath(path) === "es" ? path : Object.keys(TRANSLATED).find((es) => TRANSLATED[es] === path);
-  if (!esPath || !(esPath in TRANSLATED)) return HOME_PATHS[target];
-  return target === "es" ? esPath : TRANSLATED[esPath];
+  const esPath = localeFromPath(path) === "es" ? path : spanishPath(path);
+  const enPath = esPath && englishPath(esPath);
+  if (!esPath || !enPath) return HOME_PATHS[target];
+  return target === "es" ? esPath : enPath;
 }
 
 /** Alternativas hreflang de una página traducida (para metadatos y sitemap), en rutas relativas. */
 export function languageAlternates(esPath: string) {
-  return { es: esPath, en: TRANSLATED[esPath] ?? esPath, "x-default": esPath };
+  return { es: esPath, en: englishPath(esPath) ?? esPath, "x-default": esPath };
 }
 
 /** Datos de cada idioma para el selector y los metadatos. */

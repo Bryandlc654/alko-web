@@ -3,6 +3,14 @@
 import Image from "@/components/ui/Image";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { usePathname } from "next/navigation";
+import { localeFromPath } from "@/lib/i18n";
+
+/** Etiquetas del visor según el idioma de la página. */
+const LABELS = {
+  es: { viewer: "Visor de imágenes", close: "Cerrar", prev: "Imagen anterior", next: "Imagen siguiente" },
+  en: { viewer: "Image viewer", close: "Close", prev: "Previous image", next: "Next image" },
+} as const;
 
 interface LightboxItem {
   src: string;
@@ -15,6 +23,7 @@ interface LightboxItem {
  * el orden de navegación es el del DOM. Teclado: flechas para pasar y Escape para cerrar.
  */
 export default function Lightbox({ children, className }: { children: ReactNode; className?: string }) {
+  const labels = LABELS[localeFromPath(usePathname())];
   const rootRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const openerRef = useRef<HTMLElement | null>(null);
@@ -75,7 +84,7 @@ export default function Lightbox({ children, className }: { children: ReactNode;
           <div
             role="dialog"
             aria-modal="true"
-            aria-label="Visor de imágenes"
+            aria-label={labels.viewer}
             className="fixed inset-0 z-[100] flex items-center justify-center bg-ink/95"
             onClick={(event) => {
               if (event.target === event.currentTarget) close();
@@ -106,7 +115,7 @@ export default function Lightbox({ children, className }: { children: ReactNode;
               ref={closeRef}
               type="button"
               onClick={close}
-              aria-label="Cerrar"
+              aria-label={labels.close}
               className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full border border-white/30 text-2xl leading-none text-white transition hover:bg-white/10"
             >
               ×
@@ -117,7 +126,7 @@ export default function Lightbox({ children, className }: { children: ReactNode;
                 <button
                   type="button"
                   onClick={() => step(-1)}
-                  aria-label="Imagen anterior"
+                  aria-label={labels.prev}
                   className="absolute left-3 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/30 text-xl text-white transition hover:bg-white/10 sm:left-6"
                 >
                   ←
@@ -125,7 +134,7 @@ export default function Lightbox({ children, className }: { children: ReactNode;
                 <button
                   type="button"
                   onClick={() => step(1)}
-                  aria-label="Imagen siguiente"
+                  aria-label={labels.next}
                   className="absolute right-3 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/30 text-xl text-white transition hover:bg-white/10 sm:right-6"
                 >
                   →
