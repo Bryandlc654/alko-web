@@ -157,7 +157,8 @@ export const TRANSPARENT_HEADER_ROUTES: string[] = ["/*"];
 
 /**
  * Excepciones: páginas con cabecera editorial clara (sin foto detrás), donde la navegación
- * arranca sólida. Coincidencia exacta; «/journal/:slug» cubre los artículos (no las guías).
+ * arranca sólida. Coincidencia exacta; «/journal/:slug» cubre los artículos (no las guías). Cada página
+ * traducida lleva también su ruta inglesa: si falta, en inglés el menú arranca transparente.
  */
 export const SOLID_HEADER_ROUTES: string[] = [
   "/contacto",
@@ -174,9 +175,14 @@ export const SOLID_HEADER_ROUTES: string[] = [
   "/en/careers",
   "/en/contact",
   "/en/journal",
+  "/en/journal/:slug",
+  "/en/journal/guides/:slug",
   "/proyectos/:slug",
+  "/en/projects/:slug",
   "/servicios",
+  "/en/services",
   "/politica-de-privacidad",
+  "/en/privacy-policy",
 ];
 
 /** ¿La ruta lleva la navegación sólida desde el principio? */
@@ -184,7 +190,7 @@ export function isSolidHeaderRoute(pathname: string) {
   const path = pathname.replace(/\/+$/, "") || "/";
   return SOLID_HEADER_ROUTES.some((route) =>
     route.endsWith("/:slug")
-      ? new RegExp(`^${route.slice(0, -6)}/(?!guias(/|$))[^/]+$`).test(path)
+      ? new RegExp(`^${route.slice(0, -6)}/(?!(guias|guides)(/|$))[^/]+$`).test(path)
       : path === route,
   );
 }
