@@ -34,6 +34,18 @@ export const OG_IMAGE = {
   alt: "ALKO, reformas integrales y construcción en Madrid",
 } as const;
 
+/** La imagen para compartir con su texto alternativo en el idioma de la página. */
+export function ogImage(locale: "es" | "en") {
+  return locale === "en" ? { ...OG_IMAGE, alt: "ALKO, full renovations and construction in Madrid" } : OG_IMAGE;
+}
+
+/** Palabras clave de la página según su idioma (las del layout raíz son las de castellano). */
+export function siteKeywords(locale: "es" | "en"): string[] {
+  return locale === "en"
+    ? ["renovation company Madrid", "full renovations Madrid", "flat renovation Madrid", "construction Madrid", "office renovation", "commercial premises renovation", "ALKO"]
+    : [...SITE.keywords];
+}
+
 export interface NavItem {
   href: string;
   label: string;

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { localizeProject } from "@/lib/i18n/project-text";
 import DivisionsGrid from "@/components/home/DivisionsGrid";
 import FeaturedWorks from "@/components/home/FeaturedWorks";
 import HomeArticles from "@/components/home/HomeArticles";
@@ -14,7 +15,8 @@ import Materials from "@/components/sections/Materials";
 import { HOME_FAQ_BY_LOCALE } from "@/lib/faq";
 import { HOME_PATHS, LOCALE_META, type Locale } from "@/lib/i18n";
 import { HOME_COPY } from "@/lib/i18n/home";
-import { OG_IMAGE, ROUTES, SITE } from "@/lib/site";
+import { SERVICES_EN } from "@/lib/i18n/services";
+import { OG_IMAGE, ogImage, siteKeywords, ROUTES, SITE } from "@/lib/site";
 import type { Sector, SiteSettings } from "@/lib/types";
 import { getHomeData } from "@/lib/wordpress";
 
@@ -35,6 +37,7 @@ export function homeMetadata(locale: Locale): Metadata {
       canonical: HOME_PATHS[locale],
       languages: { es: HOME_PATHS.es, en: HOME_PATHS.en, "x-default": HOME_PATHS.es },
     },
+    keywords: siteKeywords(locale),
     openGraph: {
       title: t.title,
       description: t.description,
@@ -43,7 +46,7 @@ export function homeMetadata(locale: Locale): Metadata {
       locale: LOCALE_META[locale].ogLocale,
       alternateLocale: locale === "es" ? [LOCALE_META.en.ogLocale] : [LOCALE_META.es.ogLocale],
       siteName: SITE.name,
-      images: [OG_IMAGE],
+      images: [ogImage(locale)],
     },
   };
 }
@@ -56,7 +59,9 @@ export function homeMetadata(locale: Locale): Metadata {
 function homeJsonLd(settings: SiteSettings, sectors: Sector[], locale: Locale) {
   const t = HOME_COPY[locale];
   const url = homeUrl(locale);
-  const services = sectors.map((s) => s.title);
+  // En inglés, los servicios con sus nombres de lib/i18n/services (el panel solo los tiene en castellano).
+  const serviceName = (s: Sector) => (locale === "en" && SERVICES_EN[s.slug]?.title) || s.title;
+  const services = sectors.map(serviceName);
   const postalCode = settings.direccion?.match(/\b\d{5}\b/)?.[0];
   const sameAs = [settings.instagram, settings.facebook].filter((u) => /^https?:\/\//.test(u ?? ""));
   const business = {
@@ -89,12 +94,12 @@ function homeJsonLd(settings: SiteSettings, sectors: Sector[], locale: Locale) {
     ...(sectors.length > 0 && {
       hasOfferCatalog: {
         "@type": "OfferCatalog",
-        name: "Servicios de reforma y construcción",
+        name: locale === "en" ? "Renovation and construction services" : "Servicios de reforma y construcción",
         itemListElement: sectors.map((sector) => ({
           "@type": "Offer",
           itemOffered: {
             "@type": "Service",
-            name: sector.title,
+            name: serviceName(sector),
             url: `${SITE.url}${ROUTES.sectors}/${sector.slug}`,
             areaServed: { "@type": "City", name: "Madrid" },
           },
@@ -157,7 +162,7 @@ export default async function HomePage({ locale }: { locale: Locale }) {
       <HomeHero slides={slides} locale={locale} />
       <Positioning locale={locale} />
       <DivisionsGrid sectors={data.sectors} locale={locale} />
-      <FeaturedWorks projects={data.projects} heroImage={slides[0]?.image} locale={locale} />
+      <FeaturedWorks projects={data.projects.map((p) => localizeProject(p, locale))} heroImage={slides[0]?.image} locale={locale} />
       <MaterialStrip locale={locale} />
       <MethodSteps locale={locale} />
       <ManifestoBand locale={locale} />

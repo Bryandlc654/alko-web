@@ -21,10 +21,10 @@ export default function Footer({ settings, locale = "es" }: { settings: SiteSett
   // Solo Instagram y Facebook: la URL del panel manda; si está vacía, la de lib/site.
   const socials = SOCIAL_LINKS.map((social) => ({ label: social.label, href: settings[social.key] || social.fallback }));
   const resources = [
-    { href: ROUTES.journal, label: "Journal" },
-    { href: GUIDES_HREF, label: t.guides },
+    { href: localizedPath(ROUTES.journal, locale), label: "Journal" },
+    { href: localizedPath(GUIDES_HREF, locale), label: t.guides },
     { href: `${HOME_PATHS[locale]}#preguntas`, label: t.faq },
-    { href: METHOD_HREF, label: t.method },
+    { href: localizedPath(METHOD_HREF, locale), label: t.method },
   ];
 
   return (

@@ -164,7 +164,7 @@ export default function ProjectsGallery({ projects, locale = "es" }: { projects:
               >
                 <Image
                   src={project.imagen}
-                  alt={[project.title, project.tipologia, project.ubicacion].filter(Boolean).join(", ")}
+                  alt={[project.title, tipo, project.ubicacion].filter(Boolean).join(", ")}
                   fill
                   priority={i === 0}
                   sizes={wide ? "100vw" : "(max-width: 768px) 100vw, 50vw"}

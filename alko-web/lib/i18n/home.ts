@@ -266,7 +266,7 @@ const en: HomeCopy = {
       Hospitality: "Hospitality",
       "Viviendas unifamiliares": "Detached houses",
       "Naves industriales": "Industrial buildings",
-      "Restauración de locales": "Restaurant fit-outs",
+      "Restauración de locales": "Commercial premises restoration",
       "Carpintería metálica": "Metalwork",
       "Ventanas acústicas": "Acoustic windows",
       "Cabinas acústicas para oficinas": "Office acoustic pods",

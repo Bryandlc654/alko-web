@@ -14,6 +14,7 @@ import {
   type ServiceLink,
 } from "@/lib/site";
 import type { SiteSettings } from "@/lib/types";
+import { SERVICES_EN } from "@/lib/i18n/services";
 import { HOME_PATHS, LOCALES, LOCALE_META, localeFromPath, localizedPath, pathInLocale, type Locale } from "@/lib/i18n";
 import { LAYOUT_COPY, type LayoutCopy } from "@/lib/i18n/layout";
 
@@ -29,7 +30,16 @@ function localizeNav(items: NavItem[], locale: Locale, t: NavCopy): NavItem[] {
     ...item,
     href: localizedPath(item.href, locale),
     label: t.items[item.href] ?? item.label,
-    children: item.children?.map((child) => ({ ...child, ...(item.href === ROUTES.company ? t.company[child.href] : {}) })),
+    children: item.children?.map((child) => {
+      // Servicios: vienen del panel en castellano; en inglés, sus textos de lib/i18n/services.
+      const service = locale === "en" && item.href === ROUTES.sectors ? SERVICES_EN[child.href.split("/").pop() ?? ""] : undefined;
+      return {
+        ...child,
+        ...(item.href === ROUTES.company ? t.company[child.href] : {}),
+        ...(service && { label: service.title, description: service.description }),
+        href: localizedPath(child.href, locale),
+      };
+    }),
   }));
 }
 

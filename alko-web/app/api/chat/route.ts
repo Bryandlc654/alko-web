@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import { AI_CONFIG } from "@/lib/ai/config";
-import { AI_LIMITS, AI_MESSAGES } from "@/lib/ai/limits";
+import { AI_LIMITS, aiMessages } from "@/lib/ai/limits";
 import { clientIp, isSameOrigin } from "@/lib/http";
 import { createRateLimiter } from "@/lib/rate-limit";
 
@@ -52,6 +52,9 @@ const checkRateLimit = createRateLimiter();
 let warnedMissingKey = false;
 
 export async function POST(req: NextRequest) {
+  // Idioma de la página desde la que se escribe (lo envía el widget): avisos y respuestas en ese idioma.
+  const english = req.headers.get("x-chat-locale") === "en";
+  const AI_MESSAGES = aiMessages(english ? "en" : "es");
   if (!isSameOrigin(req)) return reply(AI_MESSAGES.invalid, 403);
 
   // 1. Límite de peticiones por IP (y tope diario global).
@@ -100,7 +103,13 @@ export async function POST(req: NextRequest) {
       model: AI_CONFIG.defaultModel,
       temperature: AI_CONFIG.temperature,
       max_tokens: AI_CONFIG.maxTokens,
-      messages: [{ role: "system", content: AI_CONFIG.systemPrompt }, ...messages],
+      messages: [
+        { role: "system", content: AI_CONFIG.systemPrompt },
+        ...(english
+          ? [{ role: "system" as const, content: "The visitor is on the English version of the website. Always reply in English (British spelling), even though the instructions above are in Spanish." }]
+          : []),
+        ...messages,
+      ],
     });
 
     const content = response.choices[0]?.message?.content?.trim();
