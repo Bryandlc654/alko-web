@@ -201,7 +201,7 @@ export default async function AboutPage({ locale }: { locale: Locale }) {
       {destacado && (
         <section className="bg-paper">
           <div className="site-wrap pb-6">
-            <Link href={`${ROUTES.projects}/${destacado.slug}`} className="group block">
+            <Link href={localizedPath(`${ROUTES.projects}/${destacado.slug}`, locale)} className="group block">
               <div className="reveal-scale relative aspect-[4/3] overflow-hidden bg-piedra sm:aspect-[21/9]">
                 <Image
                   src={destacado.imagen}

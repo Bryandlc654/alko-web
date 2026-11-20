@@ -32,7 +32,7 @@ export default function FeaturedWorks({
     { label: t.specs.superficie, value: first.superficie },
     { label: t.specs.plazo, value: first.plazo },
   ].filter((row) => row.value);
-  const href = (project: Project) => `${ROUTES.projects}/${project.slug}`;
+  const href = (project: Project) => localizedPath(`${ROUTES.projects}/${project.slug}`, locale);
 
   return (
     <section id="proyectos" className="bg-piedra/45 text-ink">

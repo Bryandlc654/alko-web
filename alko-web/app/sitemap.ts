@@ -40,12 +40,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   const dynamic: MetadataRoute.Sitemap = [
-    ...projects.map((project) => ({
-      url: `${SITE.url}${ROUTES.projects}/${project.slug}`,
-      lastModified: new Date(),
-      changeFrequency: "monthly" as const,
-      priority: 0.9,
-    })),
+    // Cada proyecto en los dos idiomas, con sus alternativas hreflang.
+    ...projects.flatMap((project) => {
+      const esPath = `${ROUTES.projects}/${project.slug}`;
+      const alt = languageAlternates(esPath);
+      const languages = { es: absolute(alt.es), en: absolute(alt.en), "x-default": absolute(alt["x-default"]) };
+      return [esPath, localizedPath(esPath, "en")].map((path, i) => ({
+        url: absolute(path),
+        lastModified: new Date(),
+        changeFrequency: "monthly" as const,
+        priority: i === 0 ? 0.9 : 0.8,
+        alternates: { languages },
+      }));
+    }),
     // Cada servicio en los dos idiomas, con sus alternativas hreflang.
     ...sectors.flatMap((sector) => {
       const esPath = `${ROUTES.sectors}/${sector.slug}`;
