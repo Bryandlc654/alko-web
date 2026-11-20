@@ -3,7 +3,7 @@
 import Image from "@/components/ui/Image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import type { Locale } from "@/lib/i18n";
+import { localizedPath, type Locale } from "@/lib/i18n";
 import { JOURNAL_COPY, type LocalizedArticle } from "@/lib/i18n/journal";
 import { ROUTES } from "@/lib/site";
 import { formatDate } from "@/lib/utils";
@@ -68,8 +68,8 @@ export default function ArticlesIndex({ articles, locale = "es" }: { articles: L
         {visible.map((article, i) => (
           <li key={`${active}-${article.id}`} className="hh-rise" style={{ animationDuration: "1s", animationDelay: `${(i % 3) * 80}ms` }}>
             <Link
-              href={`${ROUTES.articles}/${article.slug}`}
-              hrefLang={locale === "es" ? undefined : "es"}
+              href={article.hasPage ? localizedPath(`${ROUTES.articles}/${article.slug}`, locale) : `${ROUTES.articles}/${article.slug}`}
+              hrefLang={article.hasPage ? undefined : "es"}
               className="group flex h-full flex-col"
             >
               <span className="relative block aspect-[4/3] overflow-hidden bg-piedra">

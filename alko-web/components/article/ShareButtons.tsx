@@ -2,9 +2,32 @@
 
 import { useState } from "react";
 import { Check, Link2, Mail, MessageCircle } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { localeFromPath } from "@/lib/i18n";
+
+/** Etiquetas según el idioma de la página. */
+const LABELS = {
+  es: {
+    copied: "Enlace copiado",
+    copy: "Copiar enlace",
+    prompt: "Copia este enlace:",
+    whatsapp: "Compartir por WhatsApp",
+    linkedin: "Compartir en LinkedIn",
+    email: "Compartir por correo",
+  },
+  en: {
+    copied: "Link copied",
+    copy: "Copy link",
+    prompt: "Copy this link:",
+    whatsapp: "Share on WhatsApp",
+    linkedin: "Share on LinkedIn",
+    email: "Share by email",
+  },
+} as const;
 
 /** Compartir el artículo: copiar el enlace, WhatsApp, LinkedIn y correo. */
 export default function ShareButtons({ url, title }: { url: string; title: string }) {
+  const l = LABELS[localeFromPath(usePathname())];
   const [copied, setCopied] = useState(false);
   const text = encodeURIComponent(title);
   const link = encodeURIComponent(url);
@@ -15,7 +38,7 @@ export default function ShareButtons({ url, title }: { url: string; title: strin
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      window.prompt("Copia este enlace:", url);
+      window.prompt(l.prompt, url);
     }
   }
 
@@ -25,7 +48,7 @@ export default function ShareButtons({ url, title }: { url: string; title: strin
 
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <button type="button" onClick={copy} className={item} aria-label={copied ? "Enlace copiado" : "Copiar enlace"}>
+      <button type="button" onClick={copy} className={item} aria-label={copied ? l.copied : l.copy}>
         {copied ? <Check className={icon} aria-hidden="true" /> : <Link2 className={icon} aria-hidden="true" />}
       </button>
       <a
@@ -33,7 +56,7 @@ export default function ShareButtons({ url, title }: { url: string; title: strin
         target="_blank"
         rel="noopener noreferrer"
         className={item}
-        aria-label="Compartir por WhatsApp"
+        aria-label={l.whatsapp}
       >
         <MessageCircle className={icon} aria-hidden="true" />
       </a>
@@ -42,17 +65,17 @@ export default function ShareButtons({ url, title }: { url: string; title: strin
         target="_blank"
         rel="noopener noreferrer"
         className={item}
-        aria-label="Compartir en LinkedIn"
+        aria-label={l.linkedin}
       >
         <svg viewBox="0 0 24 24" fill="currentColor" className={icon} aria-hidden="true">
           <path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9.75h4v11.5H3V9.75Zm6.5 0h3.83v1.57h.06c.53-.95 1.84-1.95 3.78-1.95 4.04 0 4.78 2.66 4.78 6.12v5.76h-4v-5.1c0-1.22-.02-2.78-1.7-2.78-1.7 0-1.96 1.33-1.96 2.69v5.19h-4V9.75Z" />
         </svg>
       </a>
-      <a href={`mailto:?subject=${text}&body=${link}`} className={item} aria-label="Compartir por correo">
+      <a href={`mailto:?subject=${text}&body=${link}`} className={item} aria-label={l.email}>
         <Mail className={icon} aria-hidden="true" />
       </a>
       <span role="status" aria-live="polite" className="text-sm text-mid">
-        {copied ? "Enlace copiado" : ""}
+        {copied ? l.copied : ""}
       </span>
     </div>
   );

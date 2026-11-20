@@ -5,7 +5,7 @@ import { CheckCircle2, Loader2 } from "lucide-react";
 import { CONTACT_LIMITS, contactKind } from "@/lib/contact/config";
 import Link from "next/link";
 import { ROUTES } from "@/lib/site";
-import type { Locale } from "@/lib/i18n";
+import { localizedPath, type Locale } from "@/lib/i18n";
 import { CONTACT_COPY } from "@/lib/i18n/contact";
 
 type Status = "idle" | "sending" | "sent" | "error";
@@ -251,7 +251,7 @@ export default function QuickContactForm({
       >
         <p className={`font-light leading-relaxed text-white/50 ${compact ? "order-last text-[11px]" : "max-w-xs text-sm"}`}>
           {c.privacyNote}{" "}
-          <Link href={ROUTES.privacy} className="underline underline-offset-2 hover:text-white">
+          <Link href={localizedPath(ROUTES.privacy, locale)} className="underline underline-offset-2 hover:text-white">
             {c.privacy}
           </Link>
         </p>

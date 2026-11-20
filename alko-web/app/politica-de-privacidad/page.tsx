@@ -4,13 +4,14 @@ import Link from "next/link";
 import EditorialHeader from "@/components/editorial/EditorialHeader";
 import { getSettings } from "@/lib/wordpress";
 import { LEGAL, ROUTES, SITE } from "@/lib/site";
+import { languageAlternates } from "@/lib/i18n";
 
 export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Política de privacidad — ALKO",
   description: "Cómo trata ALKO los datos personales que nos facilitas a través de esta web y qué derechos tienes.",
-  alternates: { canonical: ROUTES.privacy },
+  alternates: { canonical: ROUTES.privacy, languages: languageAlternates(ROUTES.privacy) },
 };
 
 function Section({ n, title, children }: { n: string; title: string; children: ReactNode }) {

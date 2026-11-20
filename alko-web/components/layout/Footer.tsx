@@ -119,7 +119,7 @@ export default function Footer({ settings, locale = "es" }: { settings: SiteSett
           </span>
           {settings.horario && <span>{settings.horario}</span>}
           <span className="flex flex-wrap gap-x-6 gap-y-2">
-            <Link href={ROUTES.privacy} className="transition-colors hover:text-white">
+            <Link href={localizedPath(ROUTES.privacy, locale)} className="transition-colors hover:text-white">
               {t.privacy}
             </Link>
             <span>{t.place}</span>

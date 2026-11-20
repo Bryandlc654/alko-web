@@ -1,13 +1,17 @@
 import Image from "@/components/ui/Image";
 import Link from "next/link";
 import { ROUTES } from "@/lib/site";
+import { localizedPath, type Locale } from "@/lib/i18n";
 import type { Article } from "@/lib/types";
 
-const dateFmt = new Intl.DateTimeFormat("es-ES", { month: "short", year: "numeric" });
+const DATE_FMT: Record<Locale, Intl.DateTimeFormat> = {
+  es: new Intl.DateTimeFormat("es-ES", { month: "short", year: "numeric" }),
+  en: new Intl.DateTimeFormat("en-GB", { month: "short", year: "numeric" }),
+};
 
-function shortDate(iso: string) {
+function shortDate(iso: string, locale: Locale) {
   const date = new Date(iso);
-  return Number.isNaN(date.getTime()) ? "" : dateFmt.format(date).replace(".", "");
+  return Number.isNaN(date.getTime()) ? "" : DATE_FMT[locale].format(date).replace(".", "");
 }
 
 /** Tarjeta de artículo · Propuesta 6 (tarjeta blanca de la V5). */
@@ -15,16 +19,19 @@ export default function ArticleCard({
   article,
   index,
   className = "",
+  locale = "es",
 }: {
   article: Article;
   index?: number;
   className?: string;
+  /** Idioma de la página: la tarjeta enlaza al artículo en ese idioma. */
+  locale?: Locale;
 }) {
-  const date = shortDate(article.date);
+  const date = shortDate(article.date, locale);
 
   return (
     <article className={`reveal-item bg-white p-1.5 ${className}`}>
-      <Link href={`${ROUTES.articles}/${article.slug}`} className="group flex h-full flex-col">
+      <Link href={localizedPath(`${ROUTES.articles}/${article.slug}`, locale)} className="group flex h-full flex-col">
         <span className="relative block aspect-[368/278] overflow-hidden bg-piedra">
           <Image
             src={article.image}

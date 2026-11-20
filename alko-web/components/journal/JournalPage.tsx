@@ -40,8 +40,8 @@ export function journalMetadata(locale: Locale): Metadata {
 const absolute = (src: string) => (!src ? undefined : /^https?:\/\//.test(src) ? src : `${SITE.url}${src}`);
 
 /**
- * Journal: artículos y guías en una sola página, compartida por /journal y /en/journal. Los
- * artículos están en castellano; en inglés se traducen los textos de las tarjetas y se avisa.
+ * Journal: artículos y guías en una sola página, compartida por /journal y /en/journal. En inglés,
+ * las tarjetas enlazan a la versión inglesa de cada artículo (o a la castellana si no la tiene).
  */
 export default async function JournalPage({ locale }: { locale: Locale }) {
   const t = JOURNAL_COPY[locale];
@@ -78,12 +78,17 @@ export default async function JournalPage({ locale }: { locale: Locale }) {
   const path = localizedPath(ROUTES.journal, locale);
   const items = [
     ...articles.map((a) => ({
-      url: `${SITE.url}${ROUTES.articles}/${a.slug}`,
+      url: `${SITE.url}${a.hasPage ? localizedPath(`${ROUTES.articles}/${a.slug}`, locale) : `${ROUTES.articles}/${a.slug}`}`,
       name: a.title,
       image: absolute(a.image),
       date: a.date,
     })),
-    ...guides.map((g) => ({ url: `${SITE.url}${ROUTES.guides}/${g.slug}`, name: g.title, image: absolute(g.imagen), date: "" })),
+    ...guides.map((g) => ({
+      url: `${SITE.url}${g.hasPage ? localizedPath(`${ROUTES.guides}/${g.slug}`, locale) : `${ROUTES.guides}/${g.slug}`}`,
+      name: g.title,
+      image: absolute(g.imagen),
+      date: "",
+    })),
   ];
   const jsonLd = pageJsonLd({
     type: "CollectionPage",
@@ -150,7 +155,11 @@ export default async function JournalPage({ locale }: { locale: Locale }) {
       {featured && (
         <section className="bg-paper">
           <div className="site-wrap pb-20 sm:pb-28">
-            <Link href={`${ROUTES.articles}/${featured.slug}`} hrefLang={es ? undefined : "es"} className="group block">
+            <Link
+              href={featured.hasPage ? localizedPath(`${ROUTES.articles}/${featured.slug}`, locale) : `${ROUTES.articles}/${featured.slug}`}
+              hrefLang={featured.hasPage ? undefined : "es"}
+              className="group block"
+            >
               <div className="relative mt-8 aspect-[4/3] overflow-hidden bg-piedra sm:aspect-[21/9]">
                 <Image
                   src={featured.image}

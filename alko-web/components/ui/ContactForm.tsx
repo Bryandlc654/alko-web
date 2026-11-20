@@ -12,7 +12,7 @@ import {
   cleanSurface,
   contactKind,
 } from "@/lib/contact/config";
-import type { Locale } from "@/lib/i18n";
+import { localizedPath, type Locale } from "@/lib/i18n";
 import { CONTACT_COPY } from "@/lib/i18n/contact";
 
 type Status = "idle" | "sending" | "sent" | "error";
@@ -392,7 +392,7 @@ export default function ContactForm({
       <div className="mt-12 flex flex-col justify-between gap-6 border-t border-white/15 pt-8 sm:flex-row sm:items-center">
         <p className="max-w-sm text-sm font-light leading-relaxed text-white/50">
           {c.privacyNote}{" "}
-          <Link href={ROUTES.privacy} className="underline underline-offset-2 hover:text-white">
+          <Link href={localizedPath(ROUTES.privacy, locale)} className="underline underline-offset-2 hover:text-white">
             {c.privacy}
           </Link>
         </p>
