@@ -31,7 +31,7 @@ export default function TeamSplit({ sectors, locale = "es" }: { sectors: Sector[
               {sectors.slice(0, 6).map((sector) => (
                 <li key={sector.slug}>
                   <Link
-                    href={`${ROUTES.sectors}/${sector.slug}`}
+                    href={localizedPath(`${ROUTES.sectors}/${sector.slug}`, locale)}
                     className="inline-flex items-center gap-3 bg-white px-3 py-2.5 transition-colors hover:bg-ink hover:text-paper"
                   >
                     {t.sectors[sector.title] ?? sector.title} <span aria-hidden="true">→</span>

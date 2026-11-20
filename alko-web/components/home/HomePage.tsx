@@ -13,7 +13,7 @@ import TeamSplit from "@/components/home/TeamSplit";
 import FinalContact from "@/components/sections/FinalContact";
 import Materials from "@/components/sections/Materials";
 import { HOME_FAQ_BY_LOCALE } from "@/lib/faq";
-import { HOME_PATHS, LOCALE_META, type Locale } from "@/lib/i18n";
+import { HOME_PATHS, LOCALE_META, localizedPath, type Locale } from "@/lib/i18n";
 import { HOME_COPY } from "@/lib/i18n/home";
 import { SERVICES_EN } from "@/lib/i18n/services";
 import { OG_IMAGE, ogImage, siteKeywords, ROUTES, SITE } from "@/lib/site";
@@ -100,7 +100,7 @@ function homeJsonLd(settings: SiteSettings, sectors: Sector[], locale: Locale) {
           itemOffered: {
             "@type": "Service",
             name: serviceName(sector),
-            url: `${SITE.url}${ROUTES.sectors}/${sector.slug}`,
+            url: `${SITE.url}${localizedPath(`${ROUTES.sectors}/${sector.slug}`, locale)}`,
             areaServed: { "@type": "City", name: "Madrid" },
           },
         })),
@@ -126,7 +126,7 @@ function homeJsonLd(settings: SiteSettings, sectors: Sector[], locale: Locale) {
     isPartOf: { "@id": website["@id"] },
     about: { "@id": business["@id"] },
     primaryImageOfPage: `${SITE.url}${OG_IMAGE.url}`,
-    relatedLink: [`${SITE.url}${ROUTES.projects}`, `${SITE.url}${ROUTES.sectors}`],
+    relatedLink: [`${SITE.url}${localizedPath(ROUTES.projects, locale)}`, `${SITE.url}${localizedPath(ROUTES.sectors, locale)}`],
   };
   // Las mismas preguntas que se ven en la portada (HomeFaq): el marcado debe reflejar contenido visible.
   const faq = {

@@ -1,5 +1,6 @@
 import HablemosSection from "@/components/sections/HablemosSection";
 import type { HomeContent, SiteSettings } from "@/lib/types";
+import type { Locale } from "@/lib/i18n";
 
 /**
  * Cierre de las páginas: el bloque «Hablemos» con el formulario (propuesta 6).
@@ -15,6 +16,7 @@ export default function ContactCta({
   source = "Cierre de página",
   overlay = false,
   sectorSlug,
+  locale = "es",
 }: {
   settings: SiteSettings;
   content?: HomeContent;
@@ -32,17 +34,19 @@ export default function ContactCta({
   formulario?: "rapido" | "avanzado";
   /** Servicio desde el que se muestra, para preseleccionar su división. */
   sectorSlug?: string;
+  locale?: Locale;
 }) {
   return (
     <HablemosSection
       settings={settings}
       source={source}
       title={titulo}
-      eyebrow={overlay ? "Siguiente paso" : undefined}
+      eyebrow={overlay ? (locale === "en" ? "Next step" : "Siguiente paso") : undefined}
       overlay={overlay}
       description={descripcion || content?.contactoDescripcion}
       image={imagen || content?.contactoBgImagen || "/cta-bg.jpg"}
       sectorSlug={sectorSlug}
+      locale={locale}
     />
   );
 }
