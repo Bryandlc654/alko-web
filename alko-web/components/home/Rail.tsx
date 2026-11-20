@@ -1,9 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { usePathname } from "next/navigation";
+import { localeFromPath } from "@/lib/i18n";
 
 /** Carrusel horizontal con scroll-snap y flechas que se desactivan en los extremos. */
 export default function Rail({ children, label }: { children: ReactNode; label: string }) {
+  const en = localeFromPath(usePathname()) === "en";
   const ref = useRef<HTMLDivElement>(null);
   const [edges, setEdges] = useState({ start: true, end: false });
 
@@ -43,10 +46,10 @@ export default function Rail({ children, label }: { children: ReactNode; label: 
         {children}
       </div>
       <div className="mt-8 flex justify-center gap-2">
-        <button type="button" className={arrow} onClick={() => move(-1)} disabled={edges.start} aria-label="Anterior">
+        <button type="button" className={arrow} onClick={() => move(-1)} disabled={edges.start} aria-label={en ? "Previous" : "Anterior"}>
           ←
         </button>
-        <button type="button" className={arrow} onClick={() => move(1)} disabled={edges.end} aria-label="Siguiente">
+        <button type="button" className={arrow} onClick={() => move(1)} disabled={edges.end} aria-label={en ? "Next" : "Siguiente"}>
           →
         </button>
       </div>
