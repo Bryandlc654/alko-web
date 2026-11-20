@@ -76,6 +76,8 @@ export default function JobApplicationModal({
       const res = await fetch("/api/empleo/postulacion", {
         method: "POST",
         body: formData,
+        // Los avisos de error del servidor, en el idioma de la página.
+        headers: { "x-form-locale": locale },
       });
 
       const data = await res.json();

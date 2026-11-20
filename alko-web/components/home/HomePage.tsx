@@ -169,7 +169,7 @@ export default async function HomePage({ locale }: { locale: Locale }) {
       <TeamSplit sectors={data.sectors} locale={locale} />
       <Materials fabricantes={data.fabricantes} content={data.homeContent} locale={locale} />
       <HomeFaq locale={locale} />
-      {locale === "es" && <HomeArticles articles={data.articles} />}
+      <HomeArticles articles={data.articles} locale={locale} />
       <FinalContact settings={data.settings} locale={locale} />
     </main>
   );

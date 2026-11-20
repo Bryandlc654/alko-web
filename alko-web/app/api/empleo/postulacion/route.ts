@@ -11,9 +11,32 @@ const ALLOWED_EXTENSIONS = new Set([".pdf", ".doc", ".docx"]);
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
 const checkRateLimit = createRateLimiter();
 
+/** Mensajes al candidato en cada idioma (el formulario envía el idioma de la página en la cabecera). */
+const MESSAGES = {
+  es: {
+    forbidden: "Petición no permitida",
+    tooMany: "Has superado el límite de envíos de candidaturas. Inténtalo más tarde.",
+    required: "Por favor, completa los campos requeridos: nombre, email y teléfono.",
+    tooBig: "El archivo del CV supera el límite máximo de 10MB.",
+    format: "Formato no válido. Solo se admiten archivos PDF, DOC o DOCX.",
+    sent: "¡Candidatura enviada correctamente! Revisaremos tu perfil en detalle.",
+    failed: "Ocurrió un error al procesar tu postulación. Por favor intenta de nuevo.",
+  },
+  en: {
+    forbidden: "Request not allowed",
+    tooMany: "You have reached the limit of applications. Please try again later.",
+    required: "Please fill in the required fields: name, email and phone.",
+    tooBig: "The CV file is larger than the 10 MB limit.",
+    format: "Invalid format. Only PDF, DOC or DOCX files are accepted.",
+    sent: "Application sent! We will review your profile in detail.",
+    failed: "Something went wrong while processing your application. Please try again.",
+  },
+} as const;
+
 export async function POST(req: NextRequest) {
+  const m = MESSAGES[req.headers.get("x-form-locale") === "en" ? "en" : "es"];
   if (!isSameOrigin(req)) {
-    return NextResponse.json({ error: "Petición no permitida" }, { status: 403 });
+    return NextResponse.json({ error: m.forbidden }, { status: 403 });
   }
 
   // Rate limiting: máximo 5 postulaciones por IP cada 15 minutos
@@ -25,7 +48,7 @@ export async function POST(req: NextRequest) {
 
   if (!rate.ok) {
     return NextResponse.json(
-      { error: "Has superado el límite de envíos de candidaturas. Inténtalo más tarde." },
+      { error: m.tooMany },
       { status: 429, headers: { "Retry-After": String(rate.retryAfter) } }
     );
   }
@@ -41,7 +64,7 @@ export async function POST(req: NextRequest) {
 
     if (!nombre || !email || !telefono) {
       return NextResponse.json(
-        { error: "Por favor, completa los campos requeridos: nombre, email y teléfono." },
+        { error: m.required },
         { status: 400 }
       );
     }
@@ -52,7 +75,7 @@ export async function POST(req: NextRequest) {
     if (cvFile && cvFile.size > 0) {
       if (cvFile.size > MAX_FILE_SIZE_BYTES) {
         return NextResponse.json(
-          { error: "El archivo del CV supera el límite máximo de 10MB." },
+          { error: m.tooBig },
           { status: 400 }
         );
       }
@@ -62,7 +85,7 @@ export async function POST(req: NextRequest) {
 
       if (!ALLOWED_EXTENSIONS.has(extension)) {
         return NextResponse.json(
-          { error: "Formato no válido. Solo se admiten archivos PDF, DOC o DOCX." },
+          { error: m.format },
           { status: 400 }
         );
       }
@@ -92,13 +115,13 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: "¡Candidatura enviada correctamente! Revisaremos tu perfil en detalle.",
+      message: m.sent,
       candidatura: saved,
     });
   } catch (err: any) {
     console.error("Error al procesar candidatura:", err);
     return NextResponse.json(
-      { error: "Ocurrió un error al procesar tu postulación. Por favor intenta de nuevo." },
+      { error: m.failed },
       { status: 500 }
     );
   }
