@@ -102,7 +102,7 @@ const en: ContactCopy = {
     sending: "Sending…",
     close: "Close",
     privacyNote: "We will only use your details to reply to your enquiry.",
-    privacy: "Privacy policy (in Spanish)",
+    privacy: "Privacy policy",
     oneIsEnough: "Either one is enough.",
     namePlaceholder: "Your name or company",
     failed:

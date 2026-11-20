@@ -1,3 +1,4 @@
+import { ARTICLES_EN, GUIDES_EN } from "@/lib/i18n/journal-content";
 import type { Locale } from "@/lib/i18n";
 import type { Article, Guide } from "@/lib/types";
 
@@ -73,16 +74,16 @@ const en: JournalCopy = {
     guides: "Guides",
     latest: "Latest post",
   },
-  languageNote: "Our articles and guides are written in Spanish. Here you’ll find what each one covers.",
+  languageNote: "",
   featured: "Featured",
-  readArticle: "Read article (in Spanish)",
+  readArticle: "Read article",
   archive: {
     label: "Archive",
     title: "All articles",
     intro: "Filter by topic. Every article is written by the people who do the work on site.",
     all: "All",
     filterLabel: "Filter by category",
-    read: "Read (in Spanish)",
+    read: "Read",
     empty: "There are no articles in this category yet.",
   },
   guidesSection: {
@@ -91,7 +92,7 @@ const en: JournalCopy = {
     intro: "Step-by-step walkthroughs of the key decisions in a project: planning, budget, materials and handover.",
     guide: "Guide",
     reading: (time: string) => `${time} read`,
-    read: "Read guide (in Spanish)",
+    read: "Read guide",
   },
   source: "Formulario journal · /en/journal",
   categories: {
@@ -105,59 +106,10 @@ const en: JournalCopy = {
     Climatización: "HVAC",
     Diseño: "Design",
   },
-  articles: {
-    "suelo-radiante-con-aerotermia": {
-      title: "Underfloor heating with aerothermal heat pumps: how it works, what it costs and when it pays off",
-      excerpt:
-        "The most efficient way to heat and cool a home: low-temperature water, heat spread across the whole floor and summer cooling from the same system. What you need to know before deciding.",
-    },
-    "porcelanico-de-gran-formato-instalacion": {
-      title: "Large-format porcelain tiles: the keys to an installation without lippage or broken pieces",
-      excerpt:
-        "Tiles of 120×120, 160×320 or larger transform a space, but they don’t forgive mistakes. Substrate, adhesive, joints and handling: what separates a flawless finish from one that has to be ripped out.",
-    },
-    "como-planificar-una-reforma-integral-sin-desviaciones": {
-      title: "How to plan a full renovation without time or budget overruns",
-      excerpt:
-        "A complete construction design, an itemised quote, a phased schedule and every change in writing: the method that gets the job finished when and how it was agreed.",
-    },
-    "domotica-y-electricidad-en-viviendas-unifamiliares": {
-      title: "Home automation and electrics in detached houses: how to design a connected home",
-      excerpt:
-        "Lighting, climate, blinds, security and energy controlled from a single system. What to decide before the first cable goes in, so the house works today and can grow tomorrow.",
-    },
-    "construir-una-piscina-en-enero": {
-      title: "Building a pool in January: why winter is the best time to start",
-      excerpt:
-        "Start your pool in spring and you’ll usually first swim in it at the end of summer. Permit, excavation, shell, services and finishes: how the work is organised so it’s ready in June.",
-    },
-    "reforma-de-oficinas-sin-parar-la-actividad": {
-      title: "Renovating offices without stopping work: how a phased project is organised",
-      excerpt:
-        "Phasing plans, internal moves, site hoarding and noisy work out of hours: how a headquarters is renewed while the team keeps working.",
-    },
-    "carpinteria-a-medida": {
-      title: "Bespoke joinery: wardrobes, doors and panelling designed with the home",
-      excerpt:
-        "Bespoke interior joinery makes use of every centimetre and brings the whole home together. Materials, hardware, manufacturing lead times and how it is coordinated with the rest of the works.",
-    },
-    "climatizacion-industrial": {
-      title: "Industrial HVAC: how to choose the system for warehouses and large-volume spaces",
-      excerpt:
-        "In a warehouse the challenge isn’t just cooling or heating: it’s doing it at great heights, with open doors, internal loads and controlled consumption. Systems, design criteria and mistakes that raise running costs.",
-    },
-    "acabados-para-hosteleria-y-retail": {
-      title: "Finishes for hospitality and retail: materials that stand up to heavy use",
-      excerpt:
-        "Floors, walls and work surfaces for hotels, restaurants and shops: how to choose materials that withstand foot traffic, daily cleaning and the passing years.",
-    },
-  },
+  // Títulos y extractos en inglés: los de la traducción completa (lib/i18n/journal-content).
+  articles: Object.fromEntries(Object.entries(ARTICLES_EN).map(([slug, a]) => [slug, { title: a.title, excerpt: a.excerpt }])),
   guides: {
-    "guia-reforma-integral": {
-      title: "The complete guide to taking on a full renovation",
-      descripcion:
-        "Step by step, from defining your needs to handing over the keys: budget, design, permits in Madrid, contract, order of works, acceptance and guarantees.",
-    },
+    ...Object.fromEntries(Object.entries(GUIDES_EN).map(([slug, g]) => [slug, { title: g.title, descripcion: g.descripcion }])),
     "checklist-obra": {
       title: "Technical checklist for accepting finished works",
     },
@@ -184,7 +136,11 @@ export function localizeArticle(article: Article, locale: Locale) {
     title: tr?.title ?? article.title,
     excerpt: tr ? (tr.excerpt ?? "") : article.excerpt,
     category: t.categories[category] ?? category,
+    // Cuerpo completo: en inglés, el de la traducción (vacío si no la hay).
+    content: locale === "es" ? article.content : (ARTICLES_EN[article.slug]?.content ?? ""),
     translated: locale === "es" || !!tr,
+    /** Si tiene página propia en este idioma (en inglés, solo si el artículo entero está traducido). */
+    hasPage: locale === "es" || !!ARTICLES_EN[article.slug],
   };
 }
 
@@ -197,7 +153,9 @@ export function localizeGuide(guide: Guide, locale: Locale) {
     title: tr?.title ?? guide.title,
     descripcion: tr ? (tr.descripcion ?? "") : guide.descripcion,
     tema: t.themes[guide.tema?.trim().toUpperCase()] ?? guide.tema,
+    content: locale === "es" ? guide.content : (GUIDES_EN[guide.slug]?.content ?? ""),
     translated: locale === "es" || !!tr,
+    hasPage: locale === "es" || !!GUIDES_EN[guide.slug],
   };
 }
 

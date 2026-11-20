@@ -1,10 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import type { TocItem } from "@/lib/articles";
+import { localeFromPath } from "@/lib/i18n";
 
 /** Índice del artículo; resalta el apartado que se está leyendo. */
 export default function TableOfContents({ items }: { items: TocItem[] }) {
+  const label = localeFromPath(usePathname()) === "en" ? "Article contents" : "Índice del artículo";
   const [active, setActive] = useState(items[0]?.id ?? "");
 
   useEffect(() => {
@@ -28,7 +31,7 @@ export default function TableOfContents({ items }: { items: TocItem[] }) {
   }, [items]);
 
   return (
-    <nav aria-label="Índice del artículo">
+    <nav aria-label={label}>
       <ol className="space-y-1 border-l border-ink/15">
         {items.map((item, index) => {
           const current = item.id === active;

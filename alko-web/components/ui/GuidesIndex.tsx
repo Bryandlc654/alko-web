@@ -1,6 +1,6 @@
 import Image from "@/components/ui/Image";
 import Link from "next/link";
-import type { Locale } from "@/lib/i18n";
+import { localizedPath, type Locale } from "@/lib/i18n";
 import { JOURNAL_COPY, type LocalizedGuide } from "@/lib/i18n/journal";
 import { ROUTES } from "@/lib/site";
 
@@ -15,8 +15,8 @@ export default function GuidesIndex({ guides, locale = "es" }: { guides: Localiz
       {guides.map((guide) => (
         <article key={guide.id} className="reveal-item group border-b border-ink/15">
           <Link
-            href={`${ROUTES.guides}/${guide.slug}`}
-            hrefLang={locale === "es" ? undefined : "es"}
+            href={guide.hasPage ? localizedPath(`${ROUTES.guides}/${guide.slug}`, locale) : `${ROUTES.guides}/${guide.slug}`}
+            hrefLang={guide.hasPage ? undefined : "es"}
             className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 py-10 sm:py-12 lg:items-center"
           >
             <span className="flex items-baseline gap-3 lg:col-span-2 lg:block">
