@@ -166,7 +166,7 @@ const en: HomeCopy = {
     alts: {
       "/hero-dormitorio.jpg": "Bedroom with indirect lighting, made-to-measure wardrobe and natural light",
       "/hero-cocina.jpg": "Kitchen with island, integrated appliances and wooden floor",
-      "/hero-salon.jpg": "Living room with open-plan kitchen, large windows and lit shelving",
+      "/hero-salon-bar.jpg": "Living room with a green lacquered bar cabinet, fireplace and doors to the garden",
     },
   },
   positioning: {

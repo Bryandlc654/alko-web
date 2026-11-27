@@ -36,8 +36,8 @@ export const DEFAULT_HERO_SLIDES: Slide[] = [
   },
   {
     id: "hero-3",
-    image: "/hero-salon.jpg",
-    alt: "Salón con cocina integrada, ventanales y estanterías iluminadas",
+    image: "/hero-salon-bar.jpg",
+    alt: "Salón con mueble bar verde lacado, chimenea y salida al jardín",
   },
 ];
 
